@@ -144,6 +144,9 @@ Wordpressやnoteなどで記事をつくったことがある人はわかるか�
 
 この記事の下にリンクリストを設けた。このリンクによるローカルネットワークが右のグラフビューに現れている。**グラフの深度を調整することでこのノートを起点としたリンクの接続を様々なレベルで視覚化できるようになる**。
 
+[ヘルプドキュメントの翻訳プロジェクト](https://zenn.dev/estra/articles/translate-with-gitandgithub)で作成したドキュメントのノードグラフとネットワーク化された一連のメモ郡↓
+@[tweet](https://twitter.com/ankiyorihajimey/status/1382644621956714500?s=20)
+
 ### ナレッジベースからアウトプットコンテンツへ高速アクセス
 
 ![sidebarMOC](https://storage.googleapis.com/zenn-user-upload/jbhh36qo4vt4fyj3j5491z8q51ip)
