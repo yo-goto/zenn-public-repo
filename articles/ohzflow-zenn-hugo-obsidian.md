@@ -4,8 +4,10 @@ emoji: "💎"
 type: "idea"
 topics: ["zenn", "obsidian", "hugo", "PKM", "マークダウン"]
 published: true
-alias: [OHZフロー, OHZflow]
+aliases: [OHZフロー, OHZflow]
+tags: " #obsidian #Hugo #Zenn #PKM "
 ---
+
 
 # はじめに
 ZennやHugoをObsidianで利用して運用するためのアイデアとその方法をまとめました。[スクラップ上でまとめたもの](https://zenn.dev/estra/scraps/644e7c229c3dcb)を記事化してます(追加の内容あり)。(現在、より広域な概念を包括したフローに関する内容を追記したbook作成をすすめています。)
@@ -593,37 +595,7 @@ aliasはZennやHugoでも記述しても特に問題がなかったのでどの�
 	- ｢課題3: フォルダ除外｣の項目を追加
 
 ---
-
-Linklist 
-- [[090 Blog MOC ⌨️]]
-- [[095 PKM MOC 🗺|PKM MOC]]
-- [[Hugo MOC]]
-- [[Obsidianの名前の由来]]
-- [[OHZフローのアイデア]]
-- [[システム論 MOC]]
-- [[断片の編集プロセス]]
-- [[networked thought]]
-- [[拡張認知]]
-- [[メディア論 MOC]]
-- [[フィードバックループ]]
-- [[オートポイエーシス]]
-- [[自己組織化]]
-- [[創発とは]]
-- [[相転移]]
-- [[グラフ理論]]
-- [[Obsidianにおけるノートの状態変化|ノートの状態変化]]
-- [[Zettelkastenで作成するノートの種類]]
-- [[知識の結晶化]]
-
-
-ここにあるリンクはObsidian上では認識されます。
-
----
+# Meta
 links: [[090 Blog MOC ⌨️|Blog MOC]]
-srcs: 
-url: [Zenn & Hugo in Obsidian : OHZフローによるナレッジベースとアウトプットコンテンツの完全統括](https://zenn.dev/estra/articles/ohzflow-zenn-hugo-obsidian)
-type: 
-tags: #obsidian | #Hugo | #Zenn | #PKM |
-
----
+URL: [Zenn & Hugo in Obsidian : OHZフローによるナレッジベースとアウトプットコンテンツの完全統括](https://zenn.dev/estra/articles/ohzflow-zenn-hugo-obsidian)
 

@@ -5,7 +5,8 @@ type: "tech"
 topics: ["git", "github", "英語", "翻訳","Obsidian"]
 published: true
 date: 2021-03-28
-alias: [git翻訳のまとめ記事, zenn プルリクエストによる翻訳作業のやり方]
+aliases: [git翻訳のまとめ記事, プルリクエストによる翻訳作業のやり方]
+tags: " #type-zenn #git #github #Zenn #翻訳 #obsidian "
 ---
 
 # はじめに
@@ -418,9 +419,4 @@ ObsidianはElectronベースで開発されているのでdeveloper toolが使�
 ---
 # Meta
 links: [[Github Fork Pull Requestの一連の流れ]] ←|→ [[Github Fork Pull Requestの一連の流れ#流れのダイアグラム]] | 
-srcs: [プルリクエストによる翻訳作業のやり方](https://zenn.dev/estra/articles/translate-with-gitandgithub)
-type: #記事 
-tags: #git | #github | #Zenn | #翻訳 | #obsidian |
-
----
-
+URL: [プルリクエストによる翻訳作業のやり方](https://zenn.dev/estra/articles/translate-with-gitandgithub)
