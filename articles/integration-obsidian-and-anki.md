@@ -4,7 +4,8 @@ emoji: "💫"
 type: "idea"
 topics: ["Obsidian", "Anki", "PKM", "学習", "勉強"]
 published: true
-alias: [OTA, Obsidian_to_Ankiの使い方]
+aliases: [OTA, Obsidian_to_Ankiの使い方]
+tags: " #type-zenn #obsidian #anki #PKM "
 ---
 
 # はじめに
@@ -907,6 +908,7 @@ END
 ## Ankiカード作成日に関して
 作成日が変わることはないが、変更日はちゃんとプラグインで更新があったものだけ変更される。
 
+---
 
 
 # Self
@@ -927,13 +929,8 @@ END
 - 2021-04-22
 	- [[#シンタックスハイライト]]の項目追加
 
-
----
 ## Meta
-links: [[096 Obsidian MOC|Obsidian]] | [[Anki MOC|Anki]] | [[Obsidian_to_Ankiの雑感]] | --> [[OTA追記メモ]]
-srcs: 
-url: [Obsidian_to_Ankiの使い方 : ZettelkastenとSRSを組み合わせる](https://zenn.dev/estra/articles/integration-obsidian-and-anki)
-type: #type-post
-tags: #anki | #obsidian | #PKM |
 
----
+links: [[096 Obsidian MOC|Obsidian]] | [[Anki MOC|Anki]] | [[Obsidian_to_Ankiの雑感]] | --> [[OTA追記メモ]]
+url: [Obsidian_to_Ankiの使い方 : ZettelkastenとSRSを組み合わせる](https://zenn.dev/estra/articles/integration-obsidian-and-anki)
+
