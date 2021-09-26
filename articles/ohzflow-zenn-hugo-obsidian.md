@@ -66,7 +66,7 @@ https://jmatsuzaki.com/archives/26813
 
 https://note.com/takibayashi/n/n4e5e7c505e16
 
-(--> [[Obsidianとは]])
+(--> [[Obsidianが掲げる3つの指針]])
 
 # PKMとは
 そもそもPKMとは何か?

@@ -12,7 +12,7 @@ tags: " #type/zenn #obsidian/plugin "
 
 # はじめに
 
-久しぶりのZennの記事ですが、[Obsidian October 2021](https://forum.obsidian.md/t/obsidian-october-2021-make-plugins-and-themes-together-and-win-awards/24471)のイベント開催を記念してObsidianでのプラグインの作り方を紹介したいと思います。偶然なのですが、ちょうど自分も初のプラグインを作成しコミュニティプラグインとしてリリースしたので、自分自身のアウトプットも兼ねて**ゼロから**始めたいと思います。
+久しぶりのZennの記事ですが、[Obsidian October 2021](https://forum.obsidian.md/t/obsidian-october-2021-make-plugins-and-themes-together-and-win-awards/24471)のイベント開催を記念してObsidianでのプラグインの作り方を紹介したいと思います。偶然なのですが、ちょうど自分も初のプラグインを作成しコミュニティプラグインとしてリリースしたので、自分自身のアウトプットも兼ねてプラグイン開発について**ゼロから**説明する記事にしたいと思います。
 
 今回は、初心者の方がプラグインを作ってみたいと思った時に役立つ開発のやり方と公開までのロードマップを初歩から解説します。長い話になるので複数回の記事にする予定で、これが第一回目となります。
 
@@ -74,7 +74,7 @@ https://zenn.dev/estra/articles/translate-with-gitandgithub
 
 プラグイン開発で最も役立ったのは、他の人が作成したプラグインにプルリクエストを送ってみるというものでした。Obsidianのコミュニティモデレーターの一人であるdeath_au氏が開発したSliding Paneというプラグインに日本人用のスタイル変更機能を実装してプルリクエストをかけ、無事にマージされました。
 
-![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_makePR)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_makePR.png)
 
 プルリクエストの際にSliding Paneの構造をみて解析し、自分のほしい機能をなんとか作ってみましたが、これによってプラグインの基本構造を理解することができました。僕が初めて開発したプラグインもSliding Paneと同じ構造、基本システムとなっています。お気に入りのコミュニティプラグインにプルリクエストをかけることでプラグインの基本構造と機能実装を学ぶことができるのかなりオススメです。
 
@@ -110,14 +110,14 @@ Obsidianのプラグイン開発や解析を始める前に、まずはプラグ
 
 コミュニティプラグインの各ファイルが置いてあるディレクトリは設定画面のコミュニティプラグインのタブを開いて画像のフォルダアイコンをクリックすることで開くことができます。
 
-![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_プラグインフォルダ.png)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_plFolder.png)
 
 コミュニティプラグインを一つでもインストールすると
 `path/vaultFolderName/.obsidian/plugins/` のように保管庫のフォルダ直下にあるObsidianのconfigフォルダに`plugins`というフォルダが作成されます。この`plugins`フォルダに各プラグインごとにフォルダが作成されてコードがダウンロードされることになります。
 
 実際にフォルダを開いてみるとこんな感じになっています。
 
-![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_folderLocation)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_folderLocation.png)
 
 プラグインを開発する際には、プラグイン開発用の保管庫の`.obsidian/plugins/`に開発プラグイン用ディレクトリを作成してデバッグしていきます。
 
@@ -142,15 +142,13 @@ Obsidianのプラグイン開発や解析を始める前に、まずはプラグ
 
 このセクションではサンプルプラグインのソースコードを読み解き、ビルドして実際に動かしてみるまでの説明を行います。
 
----
-
 Obsidianの公式が公開している[サンプルプラグイン](https://github.com/obsidianmd/obsidian-sample-plugin)ではプラグインの作成と公開の手順が記載されています。このリポジトリは初めて開発する際には必ず参照してください。
 
 また、プラグイン開発を行う際にはこのプラグインをテンプレートとして開発していくので重要なリポジトリとなっています。
 
 それではまずローカルにcloneしてみましょう。
 
-![](/images/obsidian-plugin-dev_1/img_obs-plugindev_1.png)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_sample.png)
 
 上で説明した、`.obsidian/plugins/`のフォルダにこれをgit cloneしてください。cloneしたらvscode等で開いてみてください。
 
@@ -319,7 +317,7 @@ npm run dev
 code ./
 ```
 
-![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_コンパイル後.png)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_afterCompile.png)
 
 しらないものがいくつかできていますね。まずは`node_modules`ですが、これはnpmでインストールしたパッケージ類のためのフォルダです。中を簡単にみてみると、ずらっと色々なフォルダがあり、Obsidianという名前のフォルダもあることがわかります。あとで説明しますがこのフォルダの中にObsidianのAPIモジュール(`obsidina.d.ts`)が入っています。
 
@@ -331,11 +329,11 @@ code ./
 
 設定からコミュニティプラグインタブを開いて｢プラグインの再読み込み｣を行ってください。
 
-![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_プラグインの再読み込み.png)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_reloadPlugin.png)
 
 これでSample Pluginが有効化できるようになったはずです。画面をスクロールして有効化ボタンをおしましょう。有効化して設定画面の左側の文字色が下のように赤になれば成功です。
 
-![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_有効化.png)
+![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_pluginEnabled.png)
 
 サンプルプラグインでできることはReadmeに書いてあるとおり
 - デフォルトカラーの変更

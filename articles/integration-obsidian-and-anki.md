@@ -2,10 +2,10 @@
 title: "Obsidian_to_Ankiの使い方 : ZettelkastenとSRSを組み合わせる"
 emoji: "💫"
 type: "idea"
-topics: ["Obsidian", "Anki", "PKM", "学習", "勉強"]
+topics: [ "Obsidian", "Anki", "PKM", "学習", "勉強" ]
 published: true
-aliases: [OTA, Obsidian_to_Ankiの使い方]
-tags: " #type-zenn #obsidian #anki #PKM "
+aliases: [ OTA, Obsidian_to_Ankiの使い方 ]
+tags: " #type/zenn #obsidian #anki #PKM "
 ---
 
 # はじめに
