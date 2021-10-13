@@ -29,9 +29,11 @@ tags: " #type/zenn #obsidian/plugin "
 ## リソース
 この連載記事は初心者の観点からプラグイン開発について書いています。より詳しいリソースは次のドキュメントや記事を参考にすることをおすすめします。
 
-- https://marcus.se.net/obsidian-plugin-docs/
-- https://forum.obsidian.md/t/plugins-mini-faq/7737
-- https://phibr0.medium.com/how-to-create-your-own-obsidian-plugin-53f2d5d44046
+https://marcus.se.net/obsidian-plugin-docs/
+
+https://forum.obsidian.md/t/plugins-mini-faq/7737
+
+https://phibr0.medium.com/how-to-create-your-own-obsidian-plugin-53f2d5d44046
 
 実際の開発を行う際に[Marcus Olsson](https://www.buymeacoffee.com/marcusolsson/)の非公式プラグイン開発ドキュメントを参考にするのをおすすめします。彼はObsidian Octoberの開発メンターです。
 
@@ -39,7 +41,7 @@ tags: " #type/zenn #obsidian/plugin "
 
 https://marcus.se.net/obsidian-plugin-docs/api
 
-https://github.com/marcusolsson/obsidian-plugin-docs
+[Github Repo](https://github.com/marcusolsson/obsidian-plugin-docs)
 
 
 # サンプルプラグインの構造
@@ -138,13 +140,13 @@ ObsidianにAPIドキュメントと呼べるものがいまだありません。
 
 TypeScriptではクラスを使用することができるので、一番上の階層から見ていきます。VSCodeなどが使えれば、画像のようにクラスの部分や処理のブロックで**折り畳む**ことができます。実際にサンプルプラグインの`main.ts`の中身を開いてコードブロックを折り畳んでみてみると下の画像のようになります。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_21.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_21.jpg)
 
 このようにして上の構造(コードブロックの上層)から徐々になにをやっているかということを特定していくことで少しずつ理解度を上げていきます。`main.ts` も最初開いた時点では何をやっているのか圧倒されてしまうと思いますが、このように折り畳んであげればたった6つのブロックしかないので恐れずに解析していけます。
 
 クラスがわかったら、次はクラスの中の構造で何をしているのかを突き止めます。クラス内のメソッドを折りたたんでメソッドの名前を把握していきます。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_22.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_22.jpg)
 
 例えば、`MyPlugin`のクラス内を見てみると定義されているmethodは`onload()`と`onunload()`、`loadSettings()`、`saveSettings()`のたった4つしかありません。メソッドの名前からして
 
@@ -155,7 +157,7 @@ TypeScriptではクラスを使用することができるので、一番上の�
 
 の4つの機能だろうと予測します。予測したら、メソッドを展開して中を見てきます。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_23.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_23.jpg)
 
 ここでも文を折りたたんで名前をまずは把握します。`onlodoad()`の中身は以下で、名前から機能を予測します。
 
@@ -221,9 +223,9 @@ this.addCommand({
 
 ｢ああ、この箇所で使うものを定義していたのか｣ということがわかりました。逆に画像のように`SampleModal`を選択、右クリックしてメニューから｢参照へ移動｣という項目をクリックすると`addCommand`のところへ戻ることができます。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_14.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_14.jpg)
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_16.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_16.jpg)
 
 このようにして定義や参照などをしらべていくことでソースコードへの解像度があがってきます。しかし、こういった機能をもつようなエディタがないとソースコードを読むのは苦しいでしょう。便利ですね。こういった機能を使って
 
@@ -321,11 +323,11 @@ export class Modal implements CloseableComponent {
 
 メソッドの名前から推測するに、モーダルが開いたときの処理、モーダルが閉じた時の処理であろうということがわかるかもしれません。さて、予測だけだと実際にこのプラグインがどのような機能を提供しているのかはわかりませんので、Sample Pluginを実際に使ってみましょう。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_19.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_19.jpg)
 
 コマンドパレットを開いて｢Sample Plugin｣と入力すると｢Sample Plugin: Open Sample Modal｣コマンドがサジェストされるのでそれを実行します。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_20.gif)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_20.gif)
 
 小さいウィンドウが開き｢Woah!｣というテキストが表示されました。予想通り単純にモーダルを開くコマンドでした。もういちど`addCommand()`の部分を見てみると
 
@@ -410,7 +412,7 @@ npm run dev
 
 コンパイル成功後、プラグインを再読み込みしSample Pluginのコマンドを実行します。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_24.gif)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_24.gif)
 
 画像のようにコマンド名とモーダルでの表示テキストを変更できました。このように、どういう挙動をするのか知りたい場合には色々なところをいじってみて実際に動かしてみるのがわかりやすいです。
 
@@ -667,11 +669,11 @@ containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
 
 `createEl()`メソッドはHTML要素を作成するメソッドで引数についてはいつもと同じように｢定義へ移動｣で`obsidian.d.ts`を見ます。ですが、見なくても次のようにエディタでサジェストしてくれるのこれを見ればよいですね。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_27.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_27.jpg)
 
 使い方はこういったものをちまちま見ていきます。今回は以下のようにHTMLの`<h2>`要素を作成して`Settings for my awesome plugin.`というテキストを表示させています。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_25.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_25.jpg)
 
 そして重要な一番最後の部分となります。
 
@@ -869,7 +871,7 @@ manifeset.jsonですが、これもプラグインのコード配布に必要な
 
 たとえば、途中ででてきた｢オブジェクトの分割代入｣ですが、`main.ts`でも`main.js`でもまったく同じ用に書かれていることがわかります。したがってTypeScriptの特殊な書き方ではなくJavaScriptで存在する書き方ということがわかります。
 
-![](/images/obsidian-pluign-dev_2/img_obpldev-2_26.jpg)
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_26.jpg)
 
 # 終わり
 
