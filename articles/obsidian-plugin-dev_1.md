@@ -6,7 +6,7 @@ topics: ["typescript", "obsidian", "npm", "プラグイン" ]
 published: true
 date: 2021-09-25
 alias: [ゼロから始めるObsidianプラグイン開発-01]
-url: "https://zenn.dev/estra/articles/obsidian-dev-plugin"
+url: "https://zenn.dev/estra/articles/obsidian-dev-plugin_1"
 tags: " #type/zenn #obsidian/plugin "
 ---
 
@@ -32,6 +32,12 @@ https://publish.obsidian.md/hub/11+-+Events/Obsidian+October+2021
 ## 今回の記事の内容
 第一回の記事では、プラグインシステムの基礎とサンプルプラグインを実際に動かすところまでを説明していきます。例の如く、記事公開後も内容追加していきたいと思いますので注意してください。
 
+## 環境
+開発を行っているのはM1チップのmacOS Big Sur v11.3です。windowsやlinux版については解説しませんので注意してください。
+
+- obsidian API: v0.12.0
+- Obsidian Sample Plugin: commit hash c228a70
+
 # プラグイン開発の前に
 
 ## 必要な前提知識
@@ -45,17 +51,22 @@ https://publish.obsidian.md/hub/11+-+Events/Obsidian+October+2021
 
 https://publish.obsidian.md/hub/09+-+Digital+Garden/09.02+-+How+To/Guides/Themes/How+to+Style+Obsidian
 
+ObsidiainのカスタムCSSの改造やターミナルコマンドなどについては以下の自分のブログ記事で説明したので興味がある方は読んで見てください。
+- [Obsidianのスタイルを改造する](https://www.ankiyorihajimeyo.com/obsidian/obsidian_customcss/)
+- [ObsidianのスタイルをSCSSで作る](https://www.ankiyorihajimeyo.com/obsidian/obsidian_scss/)
+
 また、かなり遠回りになりますが、静的サイトによるブログやAnkiなどで簡単なHTML/CSS/Javascriptをゼロから作りながらある覚えたので並行でそういったことをやってみるのもオススメです。
 
 https://apps.ankiweb.net
 
 https://gohugo.io
 
-実際のプラグイン開発ではJavascriptのスーパセットであるTypescriptという言語を使用しますが、Javascriptをある程度触ったことがあれば、他のプラグインを見てほしい機能の実装参考にする程度で簡単なプラグインは作ることができました。
+実際のプラグイン開発ではJavascriptのスーパセットであるTypescriptという言語を使用しますが、Javascriptをある程度触ったことがあれば、他のプラグインを見てからほしい機能の実装参考にする程度で簡単なプラグインは作ることができました。(具体的にはCSSの制御とコマンドを実装するなど)
 
 ちなみにtypescriptで書く処理部分よりも環境やらの方が開発の最初ではハードルとなっていました。
 
 なので、最初はそこまで恐れる必要はないと思います。作るのと平行に調べながらやっていきましょう。
+
 
 ## 具体的ステップアップ
 
@@ -82,6 +93,8 @@ https://zenn.dev/estra/articles/translate-with-gitandgithub
 
 実際にプラグインを初めて開発して公開するまでの一連の流れの概略は以下となります。
 
+
+:::message
 1. Obsidianのプラグインシステムの基本を理解する
 2. サンプルプラグインから開発に必要なフォルダ構造を理解する
 3. 開発に必要な環境(npm等)を理解して用意しサンプルプラグインをビルドして動かす
@@ -93,6 +106,8 @@ https://zenn.dev/estra/articles/translate-with-gitandgithub
 9. リリース方法を理解し、公式リポジトリにプルリクエストを作成
 10. コードレビューを受けてプルリクエストがマージされればコミュニティプラグインとして正式にリリースされる
 11. リリース後にはブラッシュアップやissue、バグレポートの解決などを行っていく
+:::
+
 
 流れを見てみると｢実際に作ってみる｣までにいくつかのハードルがあるのでその部分について説明していきましょう。
 
@@ -144,6 +159,10 @@ Obsidianのプラグイン開発や解析を始める前に、まずはプラグ
 
 Obsidianの公式が公開している[サンプルプラグイン](https://github.com/obsidianmd/obsidian-sample-plugin)ではプラグインの作成と公開の手順が記載されています。このリポジトリは初めて開発する際には必ず参照してください。
 
+:::message
+Sample PlguinやAPIはまだ開発途中であり、変更がしばしばあるので注意してください。
+:::
+
 また、プラグイン開発を行う際にはこのプラグインをテンプレートとして開発していくので重要なリポジトリとなっています。
 
 それではまずローカルにcloneしてみましょう。
@@ -153,6 +172,11 @@ Obsidianの公式が公開している[サンプルプラグイン](https://gith
 上で説明した、`.obsidian/plugins/`のフォルダにこれをgit cloneしてください。cloneしたらvscode等で開いてみてください。
 
 ![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_clone.png)
+
+gitをターミナル等から使ったことがない人は、zipファイルをダウンロードして解答してvscodeからフォルダを開くことでみてください。
+
+![](/images/obsidian-plugin-dev_1/img_obpldev_downloadaszip.png)
+
 
 ## Readmeを見てみる
 
@@ -174,6 +198,20 @@ Obsidianの公式が公開している[サンプルプラグイン](https://gith
 - 設定ページにプラグイン設定タブを追加
 - グローバルclickイベント登録とコンソールへの'click'アウトプット
 - 'setInterval'をコンソールに記録するグローバルインターバルでの登録
+
+## プラグイン開発は初めて?
+
+新規プラグイン開発のためのクイックスタートガイド
+
+- ｢Use this template｣ボタンをクリックしてこのリポジトリをテンプレートとしてコピーしてください
+- リポジトリをローカルの開発用フォルダへとクローンしてください。kのフォルダは`.obsidian/plugins/your-plugin-name` folder`に置いておくと開発に便利です。
+- NodeJSをインストールして、リポジトリの元で`npm i`コマンドを実行します。
+- プラグイン用に`main.ts`から`main.js`へとコンパイルするために`npm run dev`を実行します。
+- `main.ts`(または新しく`.ts`ファイルを作成し)へ変更を加えます。これらの変更は自動的に`main.js`へとコンパイルされます。
+- Obsidianをリロードしてプラグインの最新バージョンをロードします。
+- 設定ウィンドウにてプラグインを有効化してください。
+- ObsidianのAPIをアップデートするにはリポジトリフォルダにてコマンドラインから`npm update`を実行してください。
+
 
 ### 新規リリース方法
 
@@ -230,10 +268,10 @@ Readmeを軽く目を透したら、次はフォルダ構造を見てみます�
 ファイル名 | 役割 |
 ---|---
 `.gitignore` | git監視しないアイテムを記述する(ビルドした`main.js`など)
-`README.md` | コミュニティリリースの説明ドキュメントとなる
-`main.ts` | プラグインのメインプログラムファイル
+`README.md` | コミュニティリリース時の説明ドキュメントとなる
+`main.ts` | プラグインのメインプログラムファイルでソースコード
 `manifest.json` | プラグインのメタ情報(作者やバージョン情報などを記載)
-`package.json` | nodeモジュールの依存などを記載
+`package.json` | nodeモジュールの依存やnpmのscriptなどを記載
 `rollup.config.js` | `main.ts`(Typescript)を`main.js`(Javascript)にコンパイルするための設定ファイル
 `styles.css` | プラグイン用のスタイル(カスタムCSSと考えれば良い)
 `tsconfig.json` | Typescriptのconfigファイル
@@ -309,9 +347,9 @@ npm run dev
 
 ![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_rundev.png)
 
-このモードであればソースコードに変更を加えてもリアルタイムでコンパイルを行ってくれます。デバッグ時にはこのコマンドを使いましょう。
+このモードであればソースコードに変更を加えてもリアルタイムでコンパイルを行ってくれます。デバッグ時にはこのコマンドを使いましょう。このモードを止めるにはTerminal上で`Cmd+C` を押してください。
 
-さて、vscode等でこのディレクトリを開いてみましょう。
+さて、vscode等でこのディレクトリを開いてみましょう。vscodeを入れておけば次のコマンドでこのディレクトリをvscodeで開くことができます。
 
 ```shell
 code ./
@@ -319,7 +357,7 @@ code ./
 
 ![](/images/obsidian-plugin-dev_1/img_ob-pl-dev_afterCompile.png)
 
-しらないものがいくつかできていますね。まずは`node_modules`ですが、これはnpmでインストールしたパッケージ類のためのフォルダです。中を簡単にみてみると、ずらっと色々なフォルダがあり、Obsidianという名前のフォルダもあることがわかります。あとで説明しますがこのフォルダの中にObsidianのAPIモジュール(`obsidina.d.ts`)が入っています。
+しらないファイルとフォルダがいくつかできていますね。まずは`node_modules`ですが、これはnpmでインストールしたパッケージ類のためのフォルダです。中を簡単にみてみると、ずらっと色々なフォルダがあり、Obsidianという名前のフォルダもあることがわかります。あとで説明しますがこのフォルダの中にObsidianのAPIモジュール(`obsidina.d.ts`)が入っています。
 
 次に`pakage-lock.json`ですが、これは`npm i`によって生成されたファイルです。実際にインストールされたパッケージ情報が記載されています。とりあえずのところは気にしなくても大丈夫です。
 
@@ -345,3 +383,6 @@ code ./
 などです。実際に触ってみてください。
 
 次の記事ではサンプルプラグインの構造について説明していきたいと思います。
+
+↓次回
+https://zenn.dev/estra/articles/obsidian-dev-plugin_2
