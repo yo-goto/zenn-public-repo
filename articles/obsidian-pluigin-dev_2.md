@@ -26,7 +26,14 @@ tags: " #type/zenn #obsidian/plugin "
 実はサンプルプラグインや他のコミュニティプラグインのソースコードをみれば、JavaScriptやTypeScriptのことをちゃんと知らなくてもつくれてしまうので、あまり恐れずに挑戦してみてください。コードの細かい点については開発しながら学べば十分です。
 :::
 
+## 環境
+開発を行っているのはM1チップのmacOS Big Sur v11.3です。windowsやlinux版については解説しませんので注意してください。
+
+- obsidian API: v0.12.0
+- Obsidian Sample Plugin: commit hash c228a70
+
 ## リソース
+
 この連載記事は初心者の観点からプラグイン開発について書いています。より詳しいリソースは次のドキュメントや記事を参考にすることをおすすめします。
 
 https://marcus.se.net/obsidian-plugin-docs/
@@ -42,7 +49,6 @@ https://phibr0.medium.com/how-to-create-your-own-obsidian-plugin-53f2d5d44046
 https://marcus.se.net/obsidian-plugin-docs/api
 
 [Github Repo](https://github.com/marcusolsson/obsidian-plugin-docs)
-
 
 # サンプルプラグインの構造
 
@@ -67,12 +73,12 @@ https://marcus.se.net/obsidian-plugin-docs/api
 `README.md` | コミュニティリリース時の説明ドキュメントとなる
 `main.ts` | プラグインのメインプログラムファイルでソースコード
 `main.js` | プラグインのメインプログラムファイルでリリースとして配布される
-`manifest.json` | プラグインのメタ情報(作者やバージョン情報などを記載)
+`manifest.json` | プラグインのメタ情報(作者やバージョン情報など)が記載されている
 `package.json` | nodeモジュールの依存やnpmのscriptなどを記載
-`package-lock.json` | nodeモジュールの
-`rollup.config.js` | `main.ts`(Typescript)を`main.js`(Javascript)にコンパイルするための設定ファイル
+`package-lock.json` | `npm install`で実際にインストールされたパッケージ情報が記載されている
+`rollup.config.js` | [Rollup](https://rollupjs.org/guide/en/)用の設定ファイル
 `styles.css` | プラグイン用のスタイル(カスタムCSSと考えれば良い)
-`tsconfig.json` | Typescriptのconfigファイル
+`tsconfig.json` | `main.ts`(Typescript)を`main.js`(Javascript)にコンパイルするための設定ファイル
 `versions.json` | プラグインのバージョン情報
 `node_modules` | `npm i` コマンドでローカルインストールされたnodeのパッケージ
 
@@ -174,6 +180,8 @@ TypeScriptではクラスを使用することができるので、一番上の�
 だいたいの予測ができたら、さらに下の階層を展開して中身を見てきます。このようにして徐々に階層をもぐってコードをみていくとソースコードに圧倒されずに理解していくことができます。
 
 また、`addCommand()`などのわかりやすい名前はObsidianが公式に提供しているAPIで実装されているためにこのような名前になっています。例えばVSCodeを使っていれば、`addCommand`の部分を選択し右クリックするとメニューが出てきますが、そのメニューに｢定義へ移動｣という項目があります。この項目をクリックするとそれが定義された箇所にとぶことができます。
+
+![](/images/obsidian-plugin-dev_2/img_obpldev-2_14.jpg)
 
 実際に定義にとんでみると、次のようにobsidianパッケージの`obsidian.d.ts`ファイルが開き、モジュール内部にAPIとして定義されていることがわかります。
 
@@ -540,12 +548,6 @@ class HogehogeSettingTab extends PluginSettingTab {
 }
 ```
 
-
-```ad-question
-title: ここでのpluginとsuper
-pluginはプロパティの上書きっぽいのにsuperを呼び出している点がわからない。コンストラクタの有無がよくわからない。
-```
-
 `display()`メソッドについては次のようになっています。`display()`は設定タブの画面上に表示されるテキストや処理などを担当しています。
 
 ```ts
@@ -872,6 +874,20 @@ manifeset.jsonですが、これもプラグインのコード配布に必要な
 たとえば、途中ででてきた｢オブジェクトの分割代入｣ですが、`main.ts`でも`main.js`でもまったく同じ用に書かれていることがわかります。したがってTypeScriptの特殊な書き方ではなくJavaScriptで存在する書き方ということがわかります。
 
 ![](/images/obsidian-plugin-dev_2/img_obpldev-2_26.jpg)
+
+### コーディングとソースコード解析用リソース
+ソースコードを読み解いたりコーディングするのには以下4つのドキュメントがおすすめです。
+
+JavaScritp用リソース
+https://jsprimer.net
+
+https://ja.javascript.info
+
+TypeScript用リソース
+https://typescript-jp.gitbook.io/deep-dive/
+
+https://book.yyts.org
+
 
 # 終わり
 

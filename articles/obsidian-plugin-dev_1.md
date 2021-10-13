@@ -272,9 +272,9 @@ Readmeを軽く目を透したら、次はフォルダ構造を見てみます�
 `main.ts` | プラグインのメインプログラムファイルでソースコード
 `manifest.json` | プラグインのメタ情報(作者やバージョン情報などを記載)
 `package.json` | nodeモジュールの依存やnpmのscriptなどを記載
-`rollup.config.js` | `main.ts`(Typescript)を`main.js`(Javascript)にコンパイルするための設定ファイル
+`rollup.config.js` | [Rollup](https://rollupjs.org/guide/en/)用の設定ファイル
 `styles.css` | プラグイン用のスタイル(カスタムCSSと考えれば良い)
-`tsconfig.json` | Typescriptのconfigファイル
+`tsconfig.json` | `main.ts`(Typescript)を`main.js`(Javascript)にコンパイルするための設定ファイル
 `versions.json` | プラグインのバージョン情報
 
 各ファイルについての概要は上の表のようになります。
