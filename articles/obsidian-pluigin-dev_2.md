@@ -6,7 +6,7 @@ topics: ["typescript", "obsidian", "npm", "プラグイン"]
 published: true
 date: 2021-10-05
 aliases: [ゼロから始めるObsidianプラグイン開発-02]
-url: "https://zenn.dev/estra/articles/obsidian-dev-plugin_2"
+url: "https://zenn.dev/estra/articles/obsidian-pluigin-dev_2"
 tags: " #type/zenn #obsidian/plugin "
 ---
 

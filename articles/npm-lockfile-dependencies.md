@@ -5,22 +5,27 @@ type: "tech"
 topics: [npm, node, json]
 published: true
 date: 2021-10-19
-url: "https://zenn.dev/estra/articles/npm-lockfile&dependencies"
-aliases: [npmの依存関係とv7のロックファイルについて調べてみた]
+url: "https://zenn.dev/estra/articles/npm-lockfile-dependencies"
+aliases: [記事_npmの依存関係とv7のロックファイル]
 tags: " #node/npm #type/zenn  "
 ---
 
  
 # はじめに
-以下のURLにてnpmやTypeScriptを使ったプラグイン開発に関する記事を書いた際にnpmに関するわからなかったこと、主に｢依存関係とpackage-lock.json｣について調べてみました。
+以下のURLにてnpmやTypeScriptを使ったプラグイン開発に関する記事を書いた際にnpmに関するわからなかったこと、主に｢npmの依存関係と`package-lock.json`｣について調べてみました。
 
-https://zenn.dev/estra/articles/obsidian-dev-plugin_1
+https://zenn.dev/estra/articles/obsidian-plugin-dev_1
 
 :::message
-記載している情報は完全に正確、網羅しているわけではなく、自分のアウトプットとしての記事として作成している点をご了承ください。
+記載している情報は完全に正確、網羅しているわけではなく、自分のアウトプットとして作成している点をご了承ください。
 :::
 
-# Overview
+## そもそも
+Obsidianのプラグイン開発においてGithubのリポジトリからcloneしたリポジトリで手動でビルドする必要があり、`npm i`で必要なパッケージが`node_modules`というディレクトリにインストールされるということは知っていたが、`node_moduels`ディレクトリになぜこんなにも多くのパッケージがインストールされているのか疑問だった。`package.json`ファイルのdependenciesの項目に記載されているパッケージが動作に必要でdevDependenciesは開発に必要なパッケージであるということはわかったが、その2つのセクションに書いていないパッケージが`node_modules`に入っており意味がわからないというのが調査の発端。
+
+またnpmもかなり漠然と使ってたため、良い機会なので概念や目的も色々と調べてみた。
+
+# 要点
 
 『依存関係(dependencies)』とは
 プログラム内で外部ライブラリを使っていて、それが無いと動かないという状態を依存関係という。npmを導入する理由で最も多いのはこの依存関係を管理するためとのこと。
@@ -28,15 +33,11 @@ https://zenn.dev/estra/articles/obsidian-dev-plugin_1
 - プロジェクトルートにある`pacakge.json`のdependenciesに記載されているパッケージがインストールされる(場合によってはdevDependenciesも)。
 - インストールされるdependenciesに記載されているパッケージが持つ各`package.json`ファイルのdependenciesに記載されているパッケージが更にインストールされる。そして、すべての依存しているパッケージがインストールされる。
 - `package-lock.json`にはインストールされたすべてのパッケージの正確なバージョン情報が記載されており、このファイルを使えば異なるマシンで異なる時間にパッケージのインストールをしても正確に同じ環境を作ることができる。
-- npmにはバージョンがあり、使用しているバージョンの`package-lock.json`構造について知る必要があり、npm v7では`package`オブジェクトであり、`dependencies`オブジェクトは無視されるため気にかける必要はない。
+- npmにはバージョンがあり、使用しているバージョンの`package-lock.json`構造について知る必要があり、npm v7では`package`オブジェクトが読み取られ、`dependencies`オブジェクトは無視されるため気にかける必要はない。
 
 
 # npmの依存関係
 
-## そもそも
-Obsidianのプラグイン開発においてGithubのリポジトリからcloneしたリポジトリで手動でビルドする必要があり、`npm i`で必要なパッケージが`node_modules`というディレクトリにインストールされるということは知っていたが、`node_moduels`ディレクトリになぜこんなにも多くのパッケージがインストールされているのか疑問だった。`package.json`ファイルのdependenciesの項目に記載されているパッケージが動作に必要でdevDependenciesは開発に必要なパッケージであるということはわかったが、その2つのセクションに書いていないパッケージが`node_modules`に入っており意味がわからないというのが調査の発端。
-
-npmというものを漠然と使ってたため、良い機会なので色々と調べてみた。
 
 ## npm iでインストールされるパッケージ
 `npm i`でインストールするといっても色々とパターンがあるのでそれぞれ試してみた。
@@ -48,9 +49,9 @@ npmというものを漠然と使ってたため、良い機会なので色々�
 - パターン3: package.jsonを用意してから`npm i パッケージ名`
 	- パターン2と同様に`node_modules`ディレクトリに知らないパッケージがインストールされた。
 
-どのパターンでもプロジェクトの`package.json`に記載されていない多くのパッケージがインストールされていた。ググってて記事を漁って見てもあまり良くわからなかったところ、以下のYoutubeの動画をみたら一発で理解することができた。
+どのパターンでもプロジェクトの`package.json`に記載されていない多くのパッケージがインストールされていた。ググって記事を漁ってみてもあまりよく分からなかったところ、以下のYoutubeの動画をみたら一発で理解することができた(npmの全貌についてもかなりわかり易く解説されていた)。
 
-@[P3aKRdUyr0s]
+@[youtube](P3aKRdUyr0s)
 
 6:00~の｢Dealing with npm package dependencies｣のところを参照。
 
@@ -259,9 +260,12 @@ node_modules/yargs/node_modules/strip-ansi
 使用コマンド
 - [npm ls](https://docs.npmjs.com/cli/v7/commands/npm-ls)
 	- 依存関係をツリー構造で表示してくれるコマンド。オプション`-a`をつけることで完全なツリー構造表示になる。
-	- dedupedは重複しているパッケージを示す。
+	- 出力が多すぎるため途中のバージョン変更において`-a`オプションをつけないとすべてを表示しない仕様に変更された。
+	- ~~dedupedは重複しているパッケージを示す~~
+	- dedupedは[重複排除](https://www.fujitsu.com/jp/products/computing/storage/lib-f/tech/de-duplication/)されたパッケージを示す。
 - [npm explain](https://docs.npmjs.com/cli/v7/commands/npm-explain)
-	- `npm ls -a`ではルートという上層から見た構造表示であったが、このコマンドではパッケージを指定することでそのパッケージが逆にどのパッケージから必要とされているかを階層表示してくれる。
+	- `npm ls -a`ではルートという上層から見た構造表示であったが、このコマンドではパッケージを指定することでそのパッケージが逆になぜツリーに含まれているか、どのパッケージから必要とされているかを階層表示してくれる。
+	- 重複でインストールされているバージョンの異なるパッケージについてそれぞれのバージョンがどのパッケージのdependenciesに記載されているかをルートまでさかのぼってそれぞれを表示する。
 
 ちなみにcowsayパッケージの`package.json`ファイルは以下
 
@@ -291,7 +295,11 @@ https://npm.anvaka.com/#/
 
 ![](/images/npm-dependencies/img_npmdependencies_2.jpg)
 
-Chalkの依存関係は比較的少ないのでかなりわかりやすい。
+chalkの依存関係は比較的少ないのでかなりわかりやすい。
+
+![](/images/npm-dependencies/img_npmdependencies_3.jpg)
+
+一方、cowsayは33個ものnodeが存在しており依存がより複雑になっていることがわかる。
 
 # ロックファイル
 
@@ -301,7 +309,7 @@ Chalkの依存関係は比較的少ないのでかなりわかりやすい。
 
 ## ロックファイルの目的
 
-ということで、npm v7で使用される`package-lock.json`ファイルの目的と主要なフィールドについて公式ドキュメントから調べてみた。
+ということで、npm v7で使用される`package-lock.json`ファイルの目的について公式ドキュメントから調べてみた。
 
 https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json
 
@@ -311,16 +319,68 @@ https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json
 >
 > -   同一の依存関係を正確にインストールできることを保証するために依存ツリーを単一の表現として記述する
 > -   `node_modules`についてディレクトリそのものをコミットする必要なく、推移的な状態を確認することを可能にする
-> -   ソースの読みやすい差分コントロールによってツリー変更を見やすくする
+> -   ソースの読みやすい差分コントロールによってツリー変更の可読性を向上させる
 > -   過去にインストールされたパッケージについて繰り返される冗長なメタデータ解決を省略することでインストールプロセスを最適化する
 >   - npm v7においてロックファイルはパッケージツリーの完全な全体図を得るための十分な情報を含んでおり、`package.json`ファイルを読む必要を減らした結果、パフォーマンスが大幅に向上する
 
 :::message
 ロックファイルの大きな目的は`package-lock.json`ファイルにすべての推移的な依存関係を含ませることで、異なる時間に異なるマシンを使ったとしてもまったく同一の依存関係を再現したインストールを保証してくれることにある。
-参考: - [# Lockfile とは?このファイルのコミットって必要？ [Beginner's Series to Node.js 9/26]](https://youtu.be/7XQU0Obs_wk)
+参考: [Lockfile とは?このファイルのコミットって必要？ [Beginner's Series to Node.js 9/26]](https://youtu.be/7XQU0Obs_wk)
 :::
 
+## pacakge.jsonだけではだめな理由
+そもそものpackage.jsonではなぜ正確な依存関係をインストールできないのか。
+
+それはセマンティックバージョニング([Semantice Versioning](https://semver.org/lang/ja/): semver)と呼ばれるバージョン管理番号の指定方法と関連がある。
+
+:::message
+セマンティックバージョニング(Semantic Versinoing)とは、最もポピュラーなプロジェクトの固有バージョン方法であり、この方法を使うことでソフトウェアの変更追跡を容易ににしバージョンをクリーンでシンプルに保つことができる。
+参考: [Semantic Versioning | Developer Experience Knowledge Base](https://developerexperience.io/practices/semantic-versioning)
+:::
+
+セマンティックバージョニングでは`x.y.z`という方法でバージョン番号を付ける(x,y,zは整数)。それぞれの数字には意味があり、次のように使う。
+
+-   x: **メジャーバージョン**  
+    API変更等、非後方互換
+-   y: **マイナーバージョン**  
+    新規機能実装、フレームワークや機能向上、後方互換
+-   z: **パッチバージョン**  
+    バグフィクス、メンテンスリリース、後方互換
+
+このセマンティックバージョニングを使ってソフトウェアのバージョン管理を行うのが一般的であり、`package.json`ではこの番号をdependenciesやdevDepenendenciesにパッケージ名と共に記述する。しかし、このバージョン指定の方法によって正確な依存関係をインストールすることができなくなっている。例えば、先程のchalkのパッケージ内に含まれる`package.json`のdependenceisでは以下のようにセマンティックバージョニングのバージョン番号の頭にキャレット`^`と呼ばれる記号がついている。
+
+```json:chalkのpackage.jsonのdependencies
+"dependencies": {
+	"ansi-styles": "^4.1.0",
+	"supports-color": "^7.1.0"
+},
+```
+
+このキャレットがついたバージョン番号は｢一番左側にある、ゼロではないバージョンは変えず、それ以下のバージョンが有る場合には許容してインストールする｣ことを意味している。つまり、ansi-stylesというパッケージについては｢`4.1.0以上4.2.0未満`の最新バージョンをインストールする｣というバージョンの範囲を指定していることになる。したがって`npm i`ではこの範囲でのansi-stylesの最新バージョンをインストールする。
+
+ある時間にインストールしたansi-sytlesのバージョンが`4.1.1`であったとしても、ソフトウェアの開発は時間と共に進みansi-stylesというパッケージのバージョンは進むので、別の時間インストールすると`4.1.7`というバージョンがインストールされることがある。このバージョンの範囲指定での最新を入れるので他の人が同じ`package.json`ファイルを使ってインストールしても異なるバージョンのパッケージ群が入ってしまう可能性が大きい。より複雑なプロジェクトになれば依存先はかなり多いため各パッケージのバージョン更新が短い間にいくつもあるかもしれない。
+
+といことで、実際に開発の環境でインストールしたパッケージの正確なバージョン番号というものが必要になってくるわけだ。
+
+参考
+https://zenn.dev/luvmini511/articles/56bf98f0d398a5
+
+
+そもそも、`dependencies`は**バージョン範囲**を指定するものであると公式ドキュメントに書いてある。これを知らなかったため、なぜ`npm i`で異なるバージョンを入れてしまうのかが分からなかった。といことで、公式ドキュメントを参考にして`dependencies`と`devDependencies`についてもそれぞれ明確にしておくと以下のような違いがある。
+
+- `dependencies`
+	- dependencies(依存関係)はパッケージ名を**バージョン範囲**にマップするシンプルなオブジェクトで指定される。バージョン範囲は一つ以上のスペースで区切られる記述子を持つ文字列で記述できる。dependenciesはtarballまたはgit URLでも指定することができる。
+	- チルダやキャレットによるバージョン範囲の記法があるため紛らわしい。
+	- [The semver parser for node](https://github.com/npm/node-semver#versions)に範囲の記述方法のすべてが記載されている。
+- `devDependencies`
+	- そのパッケージを開発･ビルドするための外部ツールやフレームワークなど、ただプログラムを実行して使いたいユーザーには必要ないパッケージ。
+	- この項目にリストされているパッケージはこれが記載されている`pakcage.json`ファイルがルートにある状態で`npm install`まはた`npm link`コマンドを実行したとき。
+
+https://docs.npmjs.com/cli/v7/configuring-npm/package-json#main
+
 ## package-lock.jsonの構造
+
+主要なフィールドについて同様に公式ドキュメントから抜粋して調べてみた。npm v5/v6からこのロックファイルの構造は変わったようだ。ドキュメントを読んでいると以前のバージョンでは`package.json`と`package-lock.json`の両方を読んでいたようだが、いまや`pakage-lock.json`が完全な依存ツリーの情報を持つようになったのでパフォーマンスが向上したとのこと。
 
 - `name`: パッケージの名前
 	`package.json`のnameと一致する
@@ -330,61 +390,131 @@ https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json
 	- バージョン番号がない: npm v5以前の古いshrinkwarpファイルであることを示す
 	- `1`: npm v5またはv6で使用されているロックファイルであることを示す
 	- `2`: npm v7によって使用されているロックファイルであることを示し、v1のロックファイルへの後方互換性を持っている
-	- `3`: npm v7によって使用されているロックファイルであることを示すが、後方互換性はない。`node_modules/.package-lock.json`の隠しロックファイルに使用されており、将来的なnpmで使用される可能性が高い。
+	- `3`: npm v7によって使用されているロックファイルであることを示すが、後方互換性はない。`node_modules/.package-lock.json`の隠しロックファイルに使用され、npm v6のサポートが終了しだい将来的なnpmのバージョンで使用される可能性が高い。
 - `requires`: 公式ドキュメントに記載なし(ブール値)
 - `package`: パッケージの情報を含むオブジェクトへのパッケージロケーションをマッピングするオブジェクト
 	- ルートプロジェクトは`""`というキーでリストされており、他のパッケージはルートプロジェクトフォルダからの相対パスで記載される。
-	- `version`: `package.json`に記載されているバージョンと一致する。
+	- `version`: 実際にインストールされたパッケージ内部の`package.json`に記載されているバージョンと一致する。
 	- `resolved`: パッケージの実際のロケーション。
 		- npmレジストリから取得されている場合にはtarballへのURL
 		- git依存の場合にはコミットハッシュ付きgitのフルURL
-	- `integrity` : このロケーションに解凍された依存パッケージに対するSRI(サブリソース完全性: [Standard Subresource Integrity](https://w3c.github.io/webappsec/specs/subresourceintegrity/)))として使われる文字列(sha512またはsha1で暗号化されたハッシュ値)
+	- `integrity` : このロケーションに解凍された依存パッケージに対するSRI(サブリソース完全性: [Standard Subresource Integrity](https://w3c.github.io/webappsec/specs/subresourceintegrity/))として使われる文字列(sha512またはsha1で暗号化されたハッシュ値)
 	- `bin`, `license`, `engines`, `dependenceis`, `optionalDependnecies`: `package.json`に記載されているフィールドから転記。
 - `dependencies`: `lockfileVersion: 1`を使用しているnpmのバージョンをサポートするレガシーデータ。npm v7では`pacakge`セクションが存在すればこのセクションを完全に無視するが、npm v6とv7のスイッチングをサポートするためにデータを保持している。なので基本的にv7を使っていれば中身は無視してよい。
 
 
-```json:package-lock.jsonファイルの中身
+```json:package-lock.jsonファイルの中身(chalk単体インストール)
 {
-    "name": "ProjectName",
-	"version": "1.0.0",
-    "lockfileVersion": 2,
-    "requires": true,
-    "package": {
-        "": { // こいつがルートプロジェクト
-            "dependencies": {
-                "cowsey": "^1.5.0"
-            }
-        },
-        // 以下インストールしたパッケージをアルファベット順ですべて記載
-        "node_modules/ansi-regex": {
-            "version": "3.0.0",
-            "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-3.0.0.tgz",
-            "integrity": "sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=",
-            "engines": {
-                "node": ">=4"
-            }
-        },
-        // 中略
-        "node_modules/yargs/node_modules/strip-ansi": {
-            "version": "6.0.1",
-            "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz",
-            "integrity": "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==",
-            "dependencies": {
-            "ansi-regex": "^5.0.1"
-            },
-            "engines": {
-            "node": ">=8"
-            }
+  "name": "ProjectName",
+  "version": "1.0.0",
+  "lockfileVersion": 2,
+  "requires": true,
+  "package": {
+      "": { // こいつがルートプロジェクト
+        "name": "ProjectName",
+        "version": "1.0.0",
+        "license": "ISC",
+        "dependencies": {
+          "chalk": "^4.1.2"
         }
-    },
-    "dependencies": {
-		// npm v7ではこのセクションは基本的に無視するので省略
-    }
+      },
+      // 以下インストールしたパッケージをアルファベット順ですべて記載
+      "node_modules/ansi-styles": {
+        "version": "4.3.0", // これが実際にインストールされたパッケージのバージョン
+        "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.3.0.tgz",
+        "integrity": "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==",
+        "dependencies": {
+          "color-convert": "^2.0.1"
+        },
+        "engines": {
+          "node": ">=8"
+        },
+        "funding": {
+          "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+        }
+      },
+      // 中略
+      "node_modules/supports-color": {
+        "version": "7.2.0",
+        "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz",
+        "integrity": "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==",
+        "dependencies": {
+          "has-flag": "^4.0.0"
+        },
+        "engines": {
+          "node": ">=8"
+        }
+      },
+  "dependencies": {
+  // npm v7ではこのセクションは基本的に無視するので省略
+  // "package"と同じ様に依存ツリーについて記述されている
+  }
 }
 ```
 
+## 隠しロックファイルについて
+
+npm v7においては、`node_modules/.package-lock.json`という隠しロックファイルが使用されており、node_moduldesフォルダに対して繰り返される処理を避けるようにしているとのこと。このファイルには依存ツリーに関する情報が含まれており、次の条件が満たされている場合には`node_modules`フォルダの階層全体を読み取る代わりに使用される。
+
+この隠しロックファイルは古いバージョンのnpmからは無視されるようになっているので現在の通常ロックファイルにあるような後方互換性は含まない。よってnpm v5/v6はこのファイルを無視する。現時点では`lockfileVersion`は2になっている。
+
+```json:.package-lock.jsonファイルの中身
+{
+  "name": "ProjectName",
+  "version": "1.0.0",
+  "lockfileVersion": 2,
+  "package": {
+    "node_modules/ansi-styles": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.3.0.tgz",
+      "integrity": "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==",
+      "dependencies": {
+        "color-convert": "^2.0.1"
+      },
+      "engines": {
+        "node": ">=8"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    // 中略
+    "node_modules/supports-color": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz",
+      "integrity": "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==",
+      "dependencies": {
+        "has-flag": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    }            
+  }
+}
+```
+
+`pakcage-lock.json`との違いはnpm v5/v6用のフィールドとしてあった"dependencies"がなくなっているのとルートプロジェクトを示す""がなくなっている以外は同じ。
+
+参考: 
+https://nitayneeman.com/posts/catching-up-with-package-lockfile-changes-in-npm-v7/
 
 # メモ
 
 - npmについて調べるには使用しているバージョンのnpmについての情報が必要でありバージョンが変更されたら公式ドキュメントを再び読む必要がある。
 - Youtubeの英語版の動画にはかなり分かりやすくクオリティの高いものがあるのでドキュメントだけではなく動画も調べる価値がある。
+
+
+# 追記
+
+## npm v8について
+というかいつの間にnpm CLI v8がリリースされていました。メジャーバージョンが上がったので破壊的変更があったのではないでしょうか。ドキュメントはまだないみたいですね。追って確認したいと思います。
+
+https://github.blog/changelog/2021-10-07-npm-cli-upgraded-to-version-8/
+
+https://github.com/npm/rfcs/issues/445
+
+
+## 勘違いしていたこと
+今回の記事を書いた後に気づいたことや、勘違いしていたことが多々あったのでそれについて別の記事にまとめました。
+https://zenn.dev/estra/articles/npm-about-dependencsies

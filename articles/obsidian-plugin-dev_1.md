@@ -6,7 +6,7 @@ topics: ["typescript", "obsidian", "npm", "プラグイン" ]
 published: true
 date: 2021-09-25
 alias: [ゼロから始めるObsidianプラグイン開発-01]
-url: "https://zenn.dev/estra/articles/obsidian-dev-plugin_1"
+url: "https://zenn.dev/estra/articles/obsidian-plugin-dev_1"
 tags: " #type/zenn #obsidian/plugin "
 ---
 
@@ -66,6 +66,10 @@ https://gohugo.io
 ちなみにtypescriptで書く処理部分よりも環境やらの方が開発の最初ではハードルとなっていました。
 
 なので、最初はそこまで恐れる必要はないと思います。作るのと平行に調べながらやっていきましょう。
+
+使用する技術はいわゆるweb技術と呼ばれる領域のものです。英語ですが以下の動画でそれぞれがどのように関連しているかわかり易く説明されています。使用する技術スタック(HTML/CSS/SASS/JavaScript/Git/npmなど)についてなんとなく雰囲気を掴むことができます。興味がる人は見てみると良いと思います。
+
+@[youtube](ysEN5RaKOlA)
 
 
 ## 具体的ステップアップ
