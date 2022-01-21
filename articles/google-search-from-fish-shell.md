@@ -6,8 +6,8 @@ topics: [fish, shell, macOS, 初心者]
 published: true
 date: 2022-01-16
 url: "https://zenn.dev/estra/articles/google-search-from-fish-shell"
-aliases: [fish shellからgoogle検索する関数の作成]
-tags: " #shell/fish  "
+aliases: [記事_fish shellからgoogle検索する関数の作成]
+tags: " #shell/fish #google  "
 ---
 
 ## モチベーション
@@ -20,7 +20,8 @@ fishでのこういったスクリプトについての情報はあまり多く�
 
 https://s10i.me/whitenote/post/40
 
-ただ検索できるようにするだけだとそのままになってしまうので、google検索で使える**英語検索**と**画像検索**、**完全一致検索**などのコマンドオプションを追加しました。この記事を読めば**fish関数でのオプション処理の基本**が分かるように解説しています。
+ただ検索できるようにするだけだとそのままになってしまうので、google検索で使える**英語検索**と**画像検索**、**完全一致検索**、**個人最適化検索無効化**などのコマンドオプションを追加しました。この記事を読めば**fish関数でのオプション処理の基本**が関数の実装を通して分かるように解説しています。
+
 ## スクリプト
 
 実際のスクリプト`ggl.fish`は以下のgistで公開しています。
@@ -29,10 +30,24 @@ https://s10i.me/whitenote/post/40
 @[gist](https://gist.github.com/yo-goto/7acfa712006488466d73ff42b9d952cc)
 :::
 
-## 参考資料
-先に使用するfishの文法とコマンドについての参考資料をあげておきます。
+:::message
+gistのスニペットからオープンなプロジェクトとして、リポジトリを開きました。プラグインマネージャーのfisherを使ってインストールできます。gistから進化させたので是非使ってみてください。
 
-fishの文法
+https://github.com/yo-goto/ggl.fish
+
+![ggl-logo](https://user-images.githubusercontent.com/50942816/152551047-464d7181-7c50-4a72-abc4-aea7e1aaff9d.png)
+
+```shell
+$ fisher install yo-goto/ggl.fish
+```
+
+:::
+
+
+## 参考資料
+先に使用するfishの文法と機能とコマンドについての参考資料をあげておきます。
+
+fishの文法と機能
 - [コマンド置換](https://fishshell.com/docs/current/language.html?highlight=pipe#command-substitution)
 - [引数のハンドリング](https://fishshell.com/docs/current/language.html#argument-handling) 
 - [セミコロンによるコマンドの分割](https://fishshell.com/docs/current/tutorial.html#separating-commands-semicolon)
@@ -68,7 +83,7 @@ code ggl.fish
 
 fish言語での関数作成は、`function 関数名; 処理内容; end`で作成することができます。この場合ファイル名と同じ`ggl`という名前の関数を作成します。ちなみに、fishではセミコロン`;`を使うことで、複数のコマンドを一行で書くことできます(これは他のシェルも同じだそうです)。
 
-例えば、`function`コマンドで関数を定義する際にも簡単な内容であれば`function ll; ls -lh $argv; end`というようにワンラインで書くことができます。
+例えば、`function`コマンドで関数を定義する際にも簡単な内容であれば`function ll; ls -l $argv; end`というようにワンラインで書くことができます。
 
 fishドキュメントの各コマンドのページのSynopsisの項目には、そのコマンドの使い方が記載されていますが、このセミコロンを使ってワンラインで記載されている場合があります。例えば、fishの`function`コマンドのSynopsisは次の通りです。
 
@@ -80,7 +95,7 @@ function NAME [OPTIONS]; BODY; end
 
 ```fish
 function ll
-    ls -lh $argv
+    ls -l $argv
 end
 ```
 
@@ -99,7 +114,7 @@ fishの関数は単一コマンドにように呼ぶことができるコマン�
 
 Fishがインストールされていれば、macOSに元々入っているBSD系のコマンド以外にビルトインと呼ばれるコマンドが使えるようになります。`builtin -n`ですべてのビルトインコマンドを確認できます。`function`コマンドのそのビルトインの一つです。これらのコマンドを集合させてfish関数を作成します。
 
-fishでは、関数を使った自作コマンドの引数は`argv`という名前の変数へ格納されます。引数は複数個入力でき、その際に`argv`にすべて格納されますが、この`argv`はリスト変数(list variable)であり、関数へ渡されたすべての引数を含みます。要素へのアクセスには`$argv[1]`などインデックスを指定することでできます(ただし、インデックスは1から始まります)。
+fishでは、関数を使った自作コマンドの引数は`$argv`という変数へ格納されます。引数は複数個入力でき、その際に`$argv`にすべて格納されますが、この`$argv`はリスト変数(list variable)であり、関数へ渡されたすべての引数を含みます。要素へのアクセスには`$argv[1]`などインデックスを指定することでできます(ただし、インデックスは1から始まります)。
 
 ```shell
 $ function myfunc
@@ -124,8 +139,7 @@ function mybetterfunc
         return 0
     end
 
-    # -s または --second オプションが与えられた場合、二番目の引数をプリントする
-    # 一番目と三番目は出力しない
+    # -s または --second オプションが与えられた場合、二番目の引数を出力する
     if set -q _flag_second
         echo $argv[2]
     else
@@ -419,17 +433,17 @@ $ ggl -th
 ggl: Mutually exclusive flags 'h/help' and `t/test` seen
 ```
 
-あとは、追加で完全一致検索のオプション(`p/perfect`)もつけておきます。googleでの完全一致(exact match)は引用符(`""`)で単語を囲んで検索することで実現します。
+あとは、追加で完全一致検索のオプション(`p/perfect`)と個人最適化検索無効のオプション(`n/nonperson`)もつけておきます。googleでの完全一致(exact match)は引用符(`""`)で単語を囲んで検索することで実現します。Personalizedサーチを無効にするにはパラメータ`pws=0`をクエリに連結します。
 
 ```fish
 set -q _flag_english; and set _flag_english "lr=lang_en"
 set -q _flag_image; and set _flag_image "tbm=isch"
-
+set -q _flag_nonperson; ande set _flag_nonperson "pws=0"
 # 完全一致のオプションがあれば、｢"｣ をエンコーディングした文字列｢%22｣で文字列を囲む
 set -q _flag_perfect; and set _flag_perfect "%22"
 and set encoding (string join "" $_flag_perfect $encoding $_flag_perfect)
 
-set -l searchURL (string join "&" (string join "" $baseURL $encoding) $_flag_english $_flag_image) 
+set -l searchURL (string join "&" (string join "" $baseURL $encoding) $_flag_english $_flag_image $_flag_nonperson)
 ```
 
 これで、最初の`ggl`コマンドが完成しました。
@@ -441,4 +455,15 @@ set -l searchURL (string join "&" (string join "" $baseURL $encoding) $_flag_eng
 ## おわり
 
 コマンドラインからgoogle検索したいというモチベーションで、fish言語について調べて実装してみました。fish言語の取っ掛かりとしてかなりよかったと思います。今回は、説明用に小さく色々書いてみたのでよい復習となりました。これから、fishを使って色々つくってみようと思います。
+
+## 追記
+
+gistから更に改造したコードをGithubのリポジトリでプロジェクトとして公開しました。[fisher](https://github.com/jorgebucaran/fisher)を使ってインストールできますので、使ってみてください。
+
+https://github.com/yo-goto/ggl.fish
+
+```shell
+fisher install yo-goto/ggl.fish
+```
+
 

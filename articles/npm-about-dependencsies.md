@@ -277,7 +277,7 @@ cows@1.0.0 /Users/userName/Projects/Cows
       └── strip-ansi@6.0.1
 ```
 
-strip-ansiについてls出力してみると上の様に表示される。strip-ansiといパッケージが出現しているのは6箇所あるが、dedupedとついた箇所が2つある。これはその2箇所にインストールされるはずだったstrip-ansiパッケージは実際には取り除かれているということを意味している。
+strip-ansiについてls出力してみると上の様に表示される。strip-ansiというパッケージが出現しているのは6箇所あるが、dedupedとついた箇所が2つある。これはその2箇所にインストールされるはずだったstrip-ansiパッケージは実際には取り除かれているということを意味している。
 
 逆にstrip-ansiがどこにインストールされているかを`npm expalin`で調べる。explainコマンドは指定パッケージのインストール原因となる依存関係をボトムアップにプロジェクトルートまで駆け上がって表示してくれる。
 
@@ -419,7 +419,7 @@ node_moduleフォルダの構造について説明する前にここで一度用
 	- `package.json`の`devDependencies`
 - Primary dependencies: Direct dependencies
 	- プロジェクトルートの`package.json`ファイルから要求される依存パッケージ
-- Secondary dependencies: Indirect dependenceis
+- Secondary dependencies: Indirect dependencies
 	- Primary(Direct) dependenciesまたは他のSecondary(Indirect)から呼ばれる間接的な依存パッケージ
 	- node_moduelsフォルダに含まれる大多数がこちらに属する
 	- 別名
@@ -469,7 +469,9 @@ PrimaryとSecondaryで考えるとパッケージの配置について理解し�
 
 `npm install`にオプション`--timing`を付けるとインストールログをみることができる。
 
+:::details npm installのログ
 @[gist](https://gist.github.com/yo-goto/8bcb8047d9fb1103590662ab386e47ee)
+:::
 
 npmレジストリからパッケージをfetchする順番がみることができるが、順番としてはまずはPrimaryであるcowsayが一番最初。そのつぎにSecondary(Indirect) dependenciesをfetchするがまずはcowsayのdependenciesであるget-sidin、string-width、strip-final-newline、yargsの4つをfetchしている。
 
@@ -581,6 +583,11 @@ npm v2ではSecondaryはPrimaryのパッケージディレクトリにすべて�
  これによってインストールされるXを一つ減らすことできた。この重複したパッケージを削除することをdedupeといい。巻き上げ(hoisting)とこれに伴う自動的な重複排除(deduplicaition)がnpm v3で実装された。
  
  例えばchalkのような単純なパッケージを単体でインストールした際には同じようにすべてのパッケージがFlatに配置される。
+ 
+ :::message
+chalkはv5.0.0で依存するパッケージをすべてバンドルしたので、このバージョン以降`npm ls -a`しても`chalk@5.0.0`としか表示されないので注意。
+\- [Release v5.0.0 · chalk/chalk](https://github.com/chalk/chalk/releases/tag/v5.0.0)
+:::
  
 ```shell
 .
