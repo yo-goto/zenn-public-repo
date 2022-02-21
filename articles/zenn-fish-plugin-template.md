@@ -61,11 +61,15 @@ fisher install yo-goto/fish-plugin-template
 
 ## プラグイン構造
 
+内部的に使用する関数がいくつかあるので簡易的に説明します。
+
 - `fish-plugin-template` : インタラクティブユースケース用関数(`__fish-plugin-template_interactive`)のインターフェイスと対象ディレクトリやファイルが引数として指定された場合に場合に処理する関数である`__fish-plugin-template_make_template`に条件指定とデバッグ用フラグを渡す
 - `__fish-plugin-template_make_template` : 親の関数から指定された条件をもとにディレクトリとファイルを作成する。条件の中に｢テンプレートを追加する｣があればテンプレート追加の関数(`__fish-plugin-template_write_template_$template`)を検索してファイルのベースとなる名前とデバッグ用フラグを渡す。
 - `__fish-plugin-template_write_template_functions` : `functions`ディレクトリにあるファイルへのテンプレート挿入関数。ここに記載された`function`のテンプレートを指定されたプラグイン名のファイルに対して挿入する。
 - `__fish-plugin-template_interactive` : `fish-plugin-template`に引数を指定しない場合に起動するインタラクティブな質問でテンプレートを展開していく関数。質問の答えから内部で`__fish-plugin-template_make_template`を呼び出し、条件を与える。
 
+
+↓ 簡易的な制御の流れ (関数名が長いので`fish-plugin-template`の部分を`fpt`と略しています)
 
 ```mermaid
 graph TD
@@ -96,9 +100,9 @@ function fish-plugin-template
         -- $argv
     or return 1
     
-    set --local version_fish_project_template "v0.3.0"
+    set --local version_fish_plugin_template "v0.3.1"
 
-    # template directories & files for the proejct 
+    # template directories & files for the project 
     set --local list_create_dir "functions" "completions" "conf.d" 
     set --local list_create_dir_test "tests"
     set --local list_create_files "README" "CHANGELOG" "LICENSE"
@@ -109,7 +113,7 @@ function fish-plugin-template
     set --local target_second_file_name $argv[2]
 
     if set -q _flag_version
-        echo "fish-plugin-template:" $version_fish_project_template
+        echo "fish-plugin-template:" $version_fish_plugin_template
         return
     else if set -q _flag_help
         __fish-plugin-template_help
@@ -117,7 +121,7 @@ function fish-plugin-template
     else if set -q _flag_project
         # create README CHANGELOG LICENSE
         for i in (seq 1 (count $list_create_files))
-            __fish-proejct-template_make_template 'root' "$list_create_files[$i]" '.md' --create_file $_flag_add_template $_flag_debug
+            __fish-plugin-template_make_template 'root' "$list_create_files[$i]" '.md' --create_file $_flag_add_template $_flag_debug
         end
         return
     else if test -n "$target_first"
@@ -126,7 +130,7 @@ function fish-plugin-template
             # for list_create_files
             if contains $target_first $list_create_files
                 # --argument-names 'directory' 'base_name' 'extension' '_flag_create_file' '_flag_add_template' '_flag_debug'
-                __fish-proejct-template_make_template "root" "$target_first" ".md" --create_file $_flag_add_template $_flag_debug
+                __fish-plugin-template_make_template "root" "$target_first" ".md" --create_file $_flag_add_template $_flag_debug
                 return
             end
 
@@ -134,14 +138,14 @@ function fish-plugin-template
                 # for list_create_dir
                 if contains $target_first $list_create_dir
                     # --argument-names 'directory' 'base_name' 'extension' '_flag_create_file' '_flag_add_template' '_flag_debug'
-                    __fish-proejct-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
+                    __fish-plugin-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
                     return
                 end
 
                 # for list_create_dir_test
                 if contains $target_first $list_create_dir_test
                     # --argument-names 'directory' 'base_name' 'extension' '_flag_create_file' '_flag_add_template' '_flag_debug'
-                    __fish-proejct-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
+                    __fish-plugin-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
                     return
                 end
             else
@@ -166,17 +170,16 @@ end
 
 何も引数を指定しなれれば、`__fish-plugin-template_interactive $_flag_debug`を起動し、コマンドの引数として指定したものが定義したローカルの変数`list_all`に要素として存在していれば、指定したものを条件としてディレクトリ及びファイルの作成を行います。`-a`オプションがその際に指定されていれば、テンプレートも追加します。
 
-変数`list_all`に引数指定したものが存在するかどうかは[containsビルトインコマンド](https://fishshell.com/docs/current/cmds/contains.html)を使います。このコマンドで第一引数である`target_first`が`list_all`にあれば`contains $target_first $list_all`で0が返り次の処理が行えます。指定したものが、どの種類のリストにあるかさらに`contains`で判定し、その分岐によって次の処理として呼び出す`__fish-proejct-template_make_template`に条件を流します。
+変数`list_all`に引数指定したものが存在するかどうかは[containsビルトインコマンド](https://fishshell.com/docs/current/cmds/contains.html)を使います。このコマンドで第一引数である`target_first`が`list_all`にあれば`contains $target_first $list_all`で0が返り次の処理が行えます。指定したものが、どの種類のリストにあるかさらに`contains`で判定し、その分岐によって次の処理として呼び出す`__fish-plugin-template_make_template`に条件を流します。
 
 大まかな流れとしてはこのようになります。今回は、関数間の条件の受け渡しとRedirectionを使ったファイルへのデータ出力をメインに解説してきます。
 
 
 ## 関数への条件とデバッグフラグの渡し方
 
-[functionビルトインコマンド](https://fishshell.com/docs/current/cmds/function.html)のオプションとして、引数に名前をつけることのできる`--argument-names`というのがありますが、これはオプションをパースするビルトインコマンドである`argparse`と組み合わせると意図しない挙動になります。例えば、次の2つの関数の結果は異なります。
+[functionビルトインコマンド](https://fishshell.com/docs/current/cmds/function.html)のオプションとして、引数に名前をつけることのできる`--argument-names`というのがありますが、これはオプションをパースするビルトインコマンドである`argparse`と組み合わせると意図しない挙動になる可能性があります。
 
-
-```shell
+```shell:argparseのみを使用する場合
 function argtest-argparse
     argparse 'd/debug' -- $argv
     or return 1
@@ -196,7 +199,7 @@ function argtest-argparse
 end
 ```
 
-まず、`--argument-names`オプション無しで`argparse`を使った場合、オプション引数である`-d`が`$argv`から除去されて、次のように期待する`argv[2]`に2が正しく入ります。
+上記のように`argtest-argparse`関数を定義します。この関数のように`--argument-names`オプション無しで`argparse`を使った場合、オプション引数である`-d`が`$argv`から除去されて、次のように期待する`argv[2]`に2が正しく入ります。
 
 ```shell
 $ argtest-argparse 1 -d 2 3
@@ -209,10 +212,10 @@ argv[3] : 3
 _flag_debug:  -d
 ```
 
-一方、`--argument-names`オプションを使用した場合↓
+一方、問題である`--argument-names`オプションを併用した場合↓
 
 
-```shell
+```shell:--argument-namesオプションを併用した場合
 function argtest-argparse-arguemnts-names \
     --argument-names 'one' 'two' 'three'
     argparse 'd/debug' -- $argv
@@ -229,7 +232,7 @@ function argtest-argparse-arguemnts-names \
 end
 ```
 
-次のように、リストである`$argv`の二番目の要素`$argv[2]`にオプション引数`-d`が入ってしまっています。これによって、期待する引数の対応関係が一つずつずれてしまっています。
+この`argtest-argparse-arguments-names`を実行すると、次のようにリストである`$argv`の二番目の要素`$argv[2]`にオプション引数`-d`が入ってしまっています。これによって、`argparse`だけの場合から期待する引数の対応関係が一つずつずれてしまっています。`$argv`は`argparse -- $argv`によってオプション引数が除去されているため、`$argv[1], $argv[2], $argv[3]`には期待どおりに引数が入っていますが、`--argument-names`オプションで名前を付けた変数(`one, two, three`)はずれてしまい、`twe`に`-d`オプションフラグが入ってしまっています。
 
 ```shell
 $ argtest-argparse-arguemnts-names 1 -d 2 3
@@ -242,12 +245,11 @@ argv[3] : 3
 _flag_debug:  -d
 ```
 
-このような問題を回避するため、以下の例のように基本的に`--argment-names`オプションの使用を避けて、コメントで引数の名前のみを書いて、`set -l one $argv[1]`のようにしてリストである`$argv`の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
+渡す引数の順番をしっかり意識していれば特に問題はないのですが、どの変数に何が入っているのかという混乱のもとにはなりますし、オプションについては順番を気にせずに使えたほうが便利なので、以下の例のように`--argment-names`オプションの使用を避けて、コメントで引数の名前のみを書いて、`set -l one $argv[1]`のようにしてリストである`$argv`の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
 
-これで`argparse`やオプション引数の能力を発揮させることができます。この関数に引数を渡す場合には、実引数のみ正しい順番で入れるように意識すれば、オプションの順番は自由にすることができます。
+これでオプション引数の順番は気にせずに、普通の引数の順番だけを考慮すればよくなります。
 
-```shell
-# このようなfunctionの使い方をすると便利
+```shell:このようなfunctionの使い方がおすすめ
 function argtest-argparse-ok
     # --argument-names 'one' 'two' 'three'
     argparse 'd/debug' -- $argv
@@ -276,9 +278,9 @@ function argtest-argparse-ok
 end
 ```
 
-また、上の例で見たように、`-d`オプションフラグをこの関数に渡した場合、内部的に生成されるフラグ変数である`_flag_debug`はそのまま`-d`となります。これによって、別のヘルパー関数にそのままデバッグフラグを連鎖させることができます。
+また、上の例で見たように、`-d`と`--debug`のオプションフラグをこの関数に渡した場合、内部的に生成されるフラグ変数である`_flag_debug`に格納される値はそのまま`-d`や`--debug`となります。これによって、内部で呼び出す別のヘルパー関数にそのままデバッグフラグを連鎖させることができます。
 
-```shell
+```shell:argtest-argparse-okのヘルパー関数
 function __argtest-argparse-ok_helper
     # --argument-names 'one' 'two' 'three'
     argparse 'd/debug' -- $argv
@@ -314,12 +316,12 @@ debug ok: debug flag→ -d
 
 ```shell:functions/fish-plugin-template.fish
 # --argument-names 'directory' 'base_name' 'extension' '_flag_create_file' '_flag_add_template' '_flag_debug'
-__fish-proejct-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
+__fish-plugin-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
 ```
 
 これによって、受け渡された条件の一部と、debugオプションフラグはさらに先で呼び出す関数に対して渡されます。
 
-```shell:functions/__fish-proejct-template_make_template.fish
+```shell:functions/__fish-plugin-template_make_template.fish
 if functions --query __fish-plugin-template_write_template_override_$template
     # --argument-names 'plugin' 'bool_debug'
     __fish-plugin-template_write_template_override_$template $base_name $_flag_debug
@@ -336,7 +338,7 @@ end
 
 現時点では、`functions`、`completions`、`REAEMD`、`LICENSE`用のテンプレート関数を用意しているので、それらの名前がsuffixされた関数名が`functions --query __fish-plugin-template_write_template_$template`の`$template`のところにそれぞれの名前が入ることで検索されます。関数が見つかった場合にのみ各ファイルに対して対応する関数が起動し、テンプレートの文章を書き込みます。
 
-また、上記の処理を見ると分かると思うのですが、`__fish-plugin-template_write_template_override_$template`という関数を最初に探すので、ユーザーが独自定義したその名前の関数があればそちらを優先的に使用するようにしています。これによって、プラグインの使用者の好きなテンプレートをそれぞれ定義できるようにしています。
+また、上記の`functions/__fish-plugin-template_make_template.fish`の処理を見ると分かると思うのですが、`__fish-plugin-template_write_template_override_$template`という関数を最初に探すので、ユーザーが独自定義したその名前の関数があればそちらを優先的に使用するようにしています。これによって、プラグインの使用者の好きなテンプレートをそれぞれ定義できるようにしています。
 
 ## 指定した条件からテンプレートを挿入する
 
@@ -403,10 +405,10 @@ function __fish-plugin-template_write_template_functions
 end
 ```
 
-この`__fish-plugin-template_write_template_functions`は上で説明した次の`__fish-project-template_make_template`関数から起動されて、条件として、プラグインの名前とデバッグフラグのみが渡されます。
+この`__fish-plugin-template_write_template_functions`は上で説明した次の`__fish-plugin-template_make_template`関数から起動されて、条件として、プラグインの名前とデバッグフラグのみが渡されます。
 
 
-```shell:functions/__fish-proejct-template_make_template.fish
+```shell:functions/__fish-plugin-template_make_template.fish
 if functions --query __fish-plugin-template_write_template_override_$template
     # --argument-names 'plugin' 'bool_debug'
     __fish-plugin-template_write_template_override_$template $base_name $_flag_debug
