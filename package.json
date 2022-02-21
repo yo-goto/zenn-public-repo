@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/yo-goto/Zenn-repo#readme",
   "dependencies": {
-    "zenn-cli": "^0.1.106"
+    "zenn-cli": "^0.1.107"
   }
 }
