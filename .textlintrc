@@ -1,0 +1,37 @@
+{
+  "plugin": {
+    "@textlint/markdown": {
+      "extensions": [".md"]
+    }
+  },
+  "rules": {
+    "preset-ja-technical-writing": {
+        "no-exclamation-question-mark": {
+        "allowFullWidthExclamation": true,
+        "allowFullWidthQuestion": true
+      },
+      "no-doubled-joshi": {
+         "strict": false,
+         "allow": ["か"]
+      }
+    },
+    "preset-ja-spacing": {
+      "ja-space-between-half-and-full-width": {
+        "space": "always",
+        "exceptPunctuation": true
+      },
+      "ja-space-around-code": {
+        "before": true,
+        "after": true
+      }
+    },
+    "ja-technical-writing/ja-no-mixed-period": {
+      "allowPeriodMarks": [":"]
+    },
+    "ja-technical-writing/sentence-length": false,
+    "spellcheck-tech-word": true,
+    "@proofdict/proofdict": {
+      "dictURL": "https://yo-goto.github.io/proof-dictionary/"
+    }
+  }
+}
