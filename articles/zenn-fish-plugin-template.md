@@ -12,9 +12,9 @@ tags: " #shell/fish #type/zenn  "
 
 ## モチベーション
 
-[前回の記事](https://zenn.dev/estra/articles/zenn-source-fish-plugin)では、プラグイン開発用ディレクトリにある複数のfishファイルを一気にsoruceするプラグインの開発について解説しました。
+[前回の記事](https://zenn.dev/estra/articles/zenn-source-fish-plugin)では、プラグイン開発用ディレクトリにある複数の fish ファイルを一気に `soruce` するプラグインの開発について解説しました。
 
-そろそろfish shell scriptに慣れてきたのですが、色々作ってみたい欲求に駆られ、更に2つほど作成してみました。その中で、プラグインの構造や公開に必要なファイル郡がテンプレート化してきたので、高速に開発できるようにそれらのプラグインテンプレートをディレクトリに展開するプラグインを開発してみました。今回、解説する`fish-plugin-template`を使えば、5秒でfishプラグインを開発開始できます笑。
+プラグインを開発することで、そろそろ fish shell script に慣れてました。プラグインの構造や公開に必要なファイル郡がテンプレート化してきたので、高速に開発できるようにそれらのプラグインテンプレートをディレクトリに展開するプラグインを開発してみました。今回、解説する `fish-plugin-template` を使えば、５秒で fish プラグインの開発をスタートできます笑。
 
 https://github.com/yo-goto/fish-plugin-template
 
@@ -25,7 +25,7 @@ fisher install yo-goto/fish-plugin-template
 ```
 
 ## ディレクトリ構造
-今回のディレクトリ構造はこんな感じです。関数の数がすこし多いのでメインとなる`fish-plugin-template.fish`から分離させて別個で定義しています。ファイル数が多いので、前回解説した[source-fish](https://github.com/yo-goto/source-fish)を使って開発しました。
+今回のディレクトリ構造はこんな感じです。関数の数がすこし多いのでメインとなる `fish-plugin-template.fish` から分離させて別個で定義しています。ファイル数が多いので、前回解説した[source-fish](https://github.com/yo-goto/source-fish)を使って開発しました。
 
 ```shell
 ❯ tree
@@ -45,31 +45,25 @@ fisher install yo-goto/fish-plugin-template
 │   ├── __fish-plugin-template_write_template_completions.fish
 │   ├── __fish-plugin-template_write_template_functions.fish
 │   └── fish-plugin-template.fish
-├── testcase
 └── tests
     ├── __fish-plugin-template_write_template_override_README.fish
     ├── __fish-plugin-template_write_template_override_functions.fish
-    ├── argtest.fish
-    ├── can-return.fish
-    ├── mitecho.fish
-    ├── mytest.fish
-    ├── second.fish
-    └── test.md
+    └── argtest.fish
 ```
 
-こんな感じで、必要なファイル(`README.md`, `LICENSE.md`, `CHANGELOG.md`)をディレクトリのトップレベルに、fish shell pluginの本体になる`functions`、`completions`、`conf.d`ディレクトリと、それぞれプラグイン名が付いたfishファイルをカレントディレクトリに展開するプログラムを作成します。
+こんな感じで、必要なファイル(`README.md`, `LICENSE.md`, `CHANGELOG.md`)をディレクトリのトップレベルに、fish shell plugin の本体になる `functions`、`completions`、`conf.d` ディレクトリと、それぞれプラグイン名が付いた fish ファイルをカレントディレクトリに展開するプログラムを作成します。
 
 ## プラグイン構造
 
 内部的に使用する関数がいくつかあるので簡易的に説明します。
 
-- `fish-plugin-template` : インタラクティブユースケース用関数(`__fish-plugin-template_interactive`)のインターフェイスと対象ディレクトリやファイルが引数として指定された場合に場合に処理する関数である`__fish-plugin-template_make_template`に条件指定とデバッグ用フラグを渡す
-- `__fish-plugin-template_make_template` : 親の関数から指定された条件をもとにディレクトリとファイルを作成する。条件の中に｢テンプレートを追加する｣があればテンプレート追加の関数(`__fish-plugin-template_write_template_$template`)を検索してファイルのベースとなる名前とデバッグ用フラグを渡す。
-- `__fish-plugin-template_write_template_functions` : `functions`ディレクトリにあるファイルへのテンプレート挿入関数。ここに記載された`function`のテンプレートを指定されたプラグイン名のファイルに対して挿入する。
-- `__fish-plugin-template_interactive` : `fish-plugin-template`に引数を指定しない場合に起動するインタラクティブな質問でテンプレートを展開していく関数。質問の答えから内部で`__fish-plugin-template_make_template`を呼び出し、条件を与える。
+- `fish-plugin-template` : インタラクティブユースケース用関数(`__fish-plugin-template_interactive`)のインタフェースと対象ディレクトリやファイルが引数として指定された場合に場合には、処理する関数である `__fish-plugin-template_make_template` へと条件指定とデバッグ用フラグを渡す
+- `__fish-plugin-template_make_template` : 親の関数から指定された条件をもとにディレクトリとファイルを作成する。条件の中に「テンプレートを追加する」があればテンプレート追加の関数(`__fish-plugin-template_write_template_$template`)を検索してファイルのベースになる名前とデバッグ用フラグを渡す。
+- `__fish-plugin-template_write_template_functions` : `functions` ディレクトリにあるファイルへのテンプレート挿入関数。ここに記載された `function` のテンプレートを指定されたプラグイン名のファイルに対して挿入する。
+- `__fish-plugin-template_interactive` : `fish-plugin-template` に引数を指定しない場合に起動するインタラクティブな質問でテンプレートを展開していく関数。質問の答えから内部で `__fish-plugin-template_make_template` を呼び出し、条件を与える。
 
 
-↓ 簡易的な制御の流れ (関数名が長いので`fish-plugin-template`の部分を`fpt`と略しています)
+↓ 簡易的な制御の流れ (関数名が長いので `fish-plugin-template` の部分を `fpt` と略しています)
 
 ```mermaid
 graph TD
@@ -87,8 +81,7 @@ graph TD
     id0 --> |no arguments|id6
 ```
 
-
-今回はファイルが多いのでインターフェイスになる部分を紹介します。前回と同じように、オプション処理はifを使い、ヘルパー関数に分岐させて、中枢となる処理は特定の関数`__fish-plugin-template_make_template`にまとめるようにしています。
+今回はファイルが多いのでインタフェースになる部分と中枢の処理についてのみを紹介します。前回の記事の場合と同じく、オプション処理は if を使い、ヘルパー関数に分岐させて、中枢となる処理は特定の関数 `__fish-plugin-template_make_template` へとまとめるようにしています。
 
 :::details fish-plugin-template.fish
 ```shell:functions/fish-plugin-template.fish
@@ -168,16 +161,15 @@ end
 ```
 :::
 
-何も引数を指定しなれれば、`__fish-plugin-template_interactive $_flag_debug`を起動し、コマンドの引数として指定したものが定義したローカルの変数`list_all`に要素として存在していれば、指定したものを条件としてディレクトリ及びファイルの作成を行います。`-a`オプションがその際に指定されていれば、テンプレートも追加します。
+何も引数を指定しなれれば、`__fish-plugin-template_interactive $_flag_debug` を起動し、コマンドの引数として指定したものが定義したローカルの変数 `list_all` に要素として存在していれば、指定したものを条件としてディレクトリ及びファイルを作成します。`-a` オプションがその際に指定されていれば、テンプレートも追加します。
 
-変数`list_all`に引数指定したものが存在するかどうかは[containsビルトインコマンド](https://fishshell.com/docs/current/cmds/contains.html)を使います。このコマンドで第一引数である`target_first`が`list_all`にあれば`contains $target_first $list_all`で0が返り次の処理が行えます。指定したものが、どの種類のリストにあるかさらに`contains`で判定し、その分岐によって次の処理として呼び出す`__fish-plugin-template_make_template`に条件を流します。
+変数 `list_all` に引数指定したものが存在するかどうかは[containsビルトインコマンド](https://fishshell.com/docs/current/cmds/contains.html)を使います。このコマンドで第一引数である `target_first` が `list_all` にあれば `contains $target_first $list_all` で 0 が返り次の処理が行えます。指定したものが、どの種類のリストにあるかさらに `contains` で判定し、その分岐によって次の処理として呼び出す `__fish-plugin-template_make_template` に条件を流します。
 
-大まかな流れとしてはこのようになります。今回は、関数間の条件の受け渡しとRedirectionを使ったファイルへのデータ出力をメインに解説してきます。
+大まかな流れとしてはこのようになります。今回は、関数間の条件の受け渡しと Redirection を使ったファイルへのデータ出力をメインに解説してきます。
 
+## 関数間の引数やデバッグフラグの受け渡し
 
-## 関数への条件とデバッグフラグの渡し方
-
-[functionビルトインコマンド](https://fishshell.com/docs/current/cmds/function.html)のオプションとして、引数に名前をつけることのできる`--argument-names`というのがありますが、これはオプションをパースするビルトインコマンドである`argparse`と組み合わせると意図しない挙動になる可能性があります。
+[functionビルトインコマンド](https://fishshell.com/docs/current/cmds/function.html)のオプションとして、引数に名前をつけることのできる `--argument-names` というのがありますが、これはオプションをパースするビルトインコマンドである `argparse` と組み合わせることで意図しない挙動になる可能性があります。
 
 ```shell:argparseのみを使用する場合
 function argtest-argparse
@@ -199,7 +191,7 @@ function argtest-argparse
 end
 ```
 
-上記のように`argtest-argparse`関数を定義します。この関数のように`--argument-names`オプション無しで`argparse`を使った場合、オプション引数である`-d`が`$argv`から除去されて、次のように期待する`argv[2]`に2が正しく入ります。
+上記のように `argtest-argparse` 関数を定義します。この関数のように `--argument-names` オプション無しで `argparse` を使った場合、オプション引数である `-d` が `$argv` から除去されて、次のように期待する `argv[2]` に 2 が正しく入ります。
 
 ```shell
 $ argtest-argparse 1 -d 2 3
@@ -212,7 +204,7 @@ argv[3] : 3
 _flag_debug:  -d
 ```
 
-一方、問題である`--argument-names`オプションを併用した場合↓
+↓ 一方、問題である `--argument-names` オプションを併用した場合。
 
 
 ```shell:--argument-namesオプションを併用した場合
@@ -232,7 +224,7 @@ function argtest-argparse-arguemnts-names \
 end
 ```
 
-この`argtest-argparse-arguments-names`を実行すると、次のようにリストである`$argv`の二番目の要素`$argv[2]`にオプション引数`-d`が入ってしまっています。これによって、`argparse`だけの場合から期待する引数の対応関係が一つずつずれてしまっています。`$argv`は`argparse -- $argv`によってオプション引数が除去されているため、`$argv[1], $argv[2], $argv[3]`には期待どおりに引数が入っていますが、`--argument-names`オプションで名前を付けた変数(`one, two, three`)はずれてしまい、`twe`に`-d`オプションフラグが入ってしまっています。
+この `argtest-argparse-arguments-names` を実行すると、次のようにリストである `$argv` の 2 番目の要素 `$argv[2]` にオプション引数 `-d` が入ってしまっています。これによって、`argparse` だけの場合から期待する引数の対応関係が 1 つずつずれてしまっています。`$argv` は `argparse -- $argv` によってオプション引数が除去されているため、`$argv[1], $argv[2], $argv[3]` には期待どおりに引数が入っていますが、`--argument-names` オプションで名前を付けた変数(`one, two, three`)はずれてしまい、`twe` に `-d` オプションフラグが入ってしまっています。
 
 ```shell
 $ argtest-argparse-arguemnts-names 1 -d 2 3
@@ -245,9 +237,9 @@ argv[3] : 3
 _flag_debug:  -d
 ```
 
-渡す引数の順番をしっかり意識していれば特に問題はないのですが、どの変数に何が入っているのかという混乱のもとにはなりますし、オプションについては順番を気にせずに使えたほうが便利なので、以下の例のように`--argment-names`オプションの使用を避けて、コメントで引数の名前のみを書いて、`set -l one $argv[1]`のようにしてリストである`$argv`の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
+渡す引数の順番をしっかり意識していれば特に問題はないのですが、どの変数に何が入っているのかという混乱のもとにはなりますし、オプションについては順番を気にせず使えたほうが便利です。以下の例のように `--argment-names` オプションの使用を避け、コメントで引数の名前のみを書き、`set -l one $argv[1]` のようにしてリストである `$argv` の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
 
-これでオプション引数の順番は気にせずに、普通の引数の順番だけを考慮すればよくなります。
+これでオプション引数の順番を気にすることなく、普通の引数の順番だけを考慮すればよくなります。
 
 ```shell:このようなfunctionの使い方がおすすめ
 function argtest-argparse-ok
@@ -278,7 +270,7 @@ function argtest-argparse-ok
 end
 ```
 
-また、上の例で見たように、`-d`と`--debug`のオプションフラグをこの関数に渡した場合、内部的に生成されるフラグ変数である`_flag_debug`に格納される値はそのまま`-d`や`--debug`となります。これによって、内部で呼び出す別のヘルパー関数にそのままデバッグフラグを連鎖させることができます。
+また、上の例で見たように、`-d` と `--debug` のオプションフラグをこの関数に渡した場合、内部的に生成されるフラグ変数である `_flag_debug` に格納される値はそのまま `-d` や `--debug` となります。これによって、内部で呼び出す別のヘルパー関数にそのままデバッグフラグを連鎖させることができます。
 
 ```shell:argtest-argparse-okのヘルパー関数
 function __argtest-argparse-ok_helper
@@ -295,7 +287,7 @@ function __argtest-argparse-ok_helper
 end
 ```
 
-上記のヘルパー関数を定義した後に、上の`argtest-argparse-ok`に3つの引数を渡してみると、次のように各関数でデバッグを連鎖的に行います。
+上記のヘルパー関数を定義した後に、上の `argtest-argparse-ok` に 3 つの引数を渡してみると、次のように各関数でデバッグを連鎖的に行います。
 
 ```shell
 $ argtest-argparse-ok 1 -d 2 3
@@ -312,18 +304,19 @@ _flag_debug:  -d
 debug ok: debug flag→ -d
 ```
 
-このように関数定義をすることで、デバッグや条件の受け渡しの方法が楽になります。実際に、この方法で、`fish-plugin-template`内で条件を渡しています。
+このように関数定義をすることで、デバッグや条件の受け渡しの方法が楽になります。実際に、この方法で、`fish-plugin-template` 内で条件を渡しています。
+また、テンプレートをファイルへ追加するオプションとして設けた `-a, --add_template` フラグもフラグ変数 `_flag_add_template` を使用して `fish-plugin-template` から次の `__fish-plutin-template_make_template` 関数へと送られます。これらのオプションを指定しない場合にはそもそも `fish-plugin-template` の内部でフラグ変数が生成されないので、`__fish-plutin-template_make_template` へは両方とも送られることはありません。
 
 ```shell:functions/fish-plugin-template.fish
 # --argument-names 'directory' 'base_name' 'extension' '_flag_create_file' '_flag_add_template' '_flag_debug'
 __fish-plugin-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
 ```
 
-これによって、受け渡された条件の一部と、debugオプションフラグはさらに先で呼び出す関数に対して渡されます。
+これによって、受け渡された条件の一部と、debug オプションフラグはさらに先で呼び出す関数に対して渡されます。
 
 ```shell:functions/__fish-plugin-template_make_template.fish
 if functions --query __fish-plugin-template_write_template_override_$template
-    # --argument-names 'plugin' 'bool_debug'
+    # --argument-names 'plugin' '_flag_debug'
     __fish-plugin-template_write_template_override_$template $base_name $_flag_debug
 else if functions --query __fish-plugin-template_write_template_$template
     set -q _flag_debug; and echo $ce"Debug point: [C-2]"$cn
@@ -334,17 +327,19 @@ end
 
 ## 関数を検索する
 
-今回は、テンプレート用の関数が、ファイルごとに必要なので、上記のように与えられた条件から一致するような処理を行う関数を検索する必要があります。この場合に役立つのが、[functionsビルトインコマンド](https://fishshell.com/docs/current/cmds/functions.html)(`function`ではないので注意)の`--query`オプションです。このオプションは指定した名前の関数があるかどうかをテストします。
+今回は、テンプレート用の関数が、ファイルごとに必要なので、上記のように与えられた条件から一致するような処理を行う関数を検索する必要があります。この場合に役立つのが、[functionsビルトインコマンド](https://fishshell.com/docs/current/cmds/functions.html)(`function` ではないので注意)の `--query` オプションです。このオプションは指定した名前の関数があるかどうかをテストします。
 
-現時点では、`functions`、`completions`、`REAEMD`、`LICENSE`用のテンプレート関数を用意しているので、それらの名前がsuffixされた関数名が`functions --query __fish-plugin-template_write_template_$template`の`$template`のところにそれぞれの名前が入ることで検索されます。関数が見つかった場合にのみ各ファイルに対して対応する関数が起動し、テンプレートの文章を書き込みます。
+現時点では、`functions`、`completions`、`REAEMD`、`LICENSE` 用のテンプレート関数を用意しているので、それらの名前を suffix された関数名が `functions --query __fish-plugin-template_write_template_$template` の `$template` のところにそれぞれの名前が入ることで検索されます。関数が見つかった場合にのみ各ファイルに対して対応する関数が起動し、テンプレートの文章を書き込みます。
 
-また、上記の`functions/__fish-plugin-template_make_template.fish`の処理を見ると分かると思うのですが、`__fish-plugin-template_write_template_override_$template`という関数を最初に探すので、ユーザーが独自定義したその名前の関数があればそちらを優先的に使用するようにしています。これによって、プラグインの使用者の好きなテンプレートをそれぞれ定義できるようにしています。
+また、上記の `functions/__fish-plugin-template_make_template.fish` の処理を見ると分かりますが、`__fish-plugin-template_write_template_override_$template` という関数を最初に探すので、ユーザーが独自定義したその名前の関数があればそちらを優先的に使用するようにしています。これによって、プラグインの使用者の好きなテンプレートをそれぞれ定義できるようにしています。
 
 ## 指定した条件からテンプレートを挿入する
 
-以上、説明したような処理の流れで、条件を`fish-plugin-template`関数からテンプレート作成用の関数にストリームさせ、`printf`ビルトインコマンドと[I/O Redirection](https://fishshell.com/docs/current/language.html#input-output-redirection)を使用して、条件一致したファイル名に対してテンプレートを書き込みます。
+以上、説明したような処理の流れで、条件を `fish-plugin-template` 関数からテンプレート作成用の関数にストリームさせ、`printf` ビルトインコマンドと[I/O Redirection](https://fishshell.com/docs/current/language.html#input-output-redirection)を使用して、条件一致したファイル名に対してテンプレートを書き込みます。
 
-Redirectionは`>, <`などの記号とともにInputやOutput先を指定することでデータを書きこんだり、読み込んだりすることができます。今回使用する`入力データ>>対象ファイル`では対象ファイルに対して入力データを追加することができます。
+https://www.wikiwand.com/ja/%E3%83%AA%E3%83%80%E3%82%A4%E3%83%AC%E3%82%AF%E3%83%88_(CLI)
+
+Redirection は `>, <` などの記号とともに Input や Output 先を指定することでデータを書きこんだり、読み込んだりできます。今回使用する `データ>>対象ファイル` では対象ファイルに対してデータを追加で書き込みできます。
 
 ```shell:functions/__fish-plugin-template_write_template_functions
 function __fish-plugin-template_write_template_functions 
@@ -405,12 +400,12 @@ function __fish-plugin-template_write_template_functions
 end
 ```
 
-この`__fish-plugin-template_write_template_functions`は上で説明した次の`__fish-plugin-template_make_template`関数から起動されて、条件として、プラグインの名前とデバッグフラグのみが渡されます。
+この `__fish-plugin-template_write_template_functions` は上で説明した次の `__fish-plugin-template_make_template` 関数から起動されて、条件として、プラグインの名前とデバッグフラグのみが渡されます。
 
 
 ```shell:functions/__fish-plugin-template_make_template.fish
 if functions --query __fish-plugin-template_write_template_override_$template
-    # --argument-names 'plugin' 'bool_debug'
+    # --argument-names 'plugin' '_flag_debug'
     __fish-plugin-template_write_template_override_$template $base_name $_flag_debug
 else if functions --query __fish-plugin-template_write_template_$template
     set -q _flag_debug; and echo $ce"Debug point: [C-2]"$cn
@@ -419,11 +414,13 @@ else if functions --query __fish-plugin-template_write_template_$template
 end
 ```
 
-渡されたプラグイン名は変数`plugin`に格納されて、ファイルパスを作成し、テンプレートの関数名の部分などにも展開されます。`"   " >> "$filepath"`の部分でOutput redirectionとして作成したfilepathのファイルに対してテンプレートが挿入されます。挿入がうまく行けば、`builtin printf`コマンドの[終了ステータス](https://fishshell.com/docs/current/language.html#the-status-variable)が0となるはずなので、`test`ビルトインで条件判定して、成功していた場合と失敗していた場合のコメントをコマンドライン上に出力して処理を終えます。
+渡されたプラグイン名は変数 `plugin` に格納されて、ファイルパスを作成し、テンプレートの関数名の部分などにも展開されます。`"   " >> "$filepath"` の部分で Output redirection として作成した filepath のファイルに対してテンプレートが挿入されます。挿入がうまく行けば、`builtin printf` コマンドの[終了ステータス](https://fishshell.com/docs/current/language.html#the-status-variable)が 0 となるはずなので、`test` ビルトインで条件判定して、成功していた場合と失敗していた場合のコメントをコマンドライン上に出力して処理を終えます。
 
-ビルトインの[printf](https://fishshell.com/docs/current/cmds/printf.html)はフォーマット指定子と出力する文字列を指定してコマンドライン上にプリントしますが、Redirectionした場合にはコマンドライン上には出力されません。また、`\`を使うことでコマンドを改行することができます。これと`%s\n`というフォーマット指定子によって、`printf`に指定した文字列の見た目のままファイルにテンプレートを展開させることができます。テンプレート内の`\$`などの記号は`$`をエスケープしています。エスケープしないと`$`の後につづく変数名が存在している場合に展開されてしまうので、それを防ぐためにエスケープしています。
+ビルトインの[printf](https://fishshell.com/docs/current/cmds/printf.html)はフォーマット指定子と出力する文字列を指定してコマンドライン上にプリントしますが、Redirection した場合はコマンドライン上には出力されません。
 
-現時点で用意したテンプレートは`functions`については次のようなものとなります。関数名などはテンプレートの展開時に置き換えられます。
+また、`\` を使うことでコマンドを改行できます。これと `%s\n` というフォーマット指定子によって、`printf` に指定した文字列の見た目のままファイルにテンプレートを展開させることができます。テンプレート内の `\$` などの記号は `$` をエスケープしています。エスケープしないと `$` の後につづく変数名が存在している場合に展開されてしまうので、それを防ぐためにエスケープしています。
+
+現時点で用意したテンプレートは `functions` については次のようなものとなります。関数名などはテンプレートの展開時に置き換えられます。
 
 ```shell
 # generated function template from fish-plugin
@@ -462,7 +459,7 @@ end
 
 ## 使い方
 
-基本的な使い方は、テンプレートを展開したいディレクトリで`fish-plugin-template`または定義ずみエイリアスの`fpt`コマンドを引数なしで入力します(引数ありでも使えます)。引数なしで実行した場合には、`__fish-plugin-template_interactive`関数が起動して、質問に答えることでテンプレートを用意してきます。
+基本的な使い方は、テンプレートを展開したいディレクトリで `fish-plugin-template` または定義ずみエイリアスの `fpt` コマンドを引数なしで入力します(引数ありでも使えます)。引数なしで実行した場合には、`__fish-plugin-template_interactive` 関数が起動して、質問に答えることでテンプレートを用意してきます。
 
 ```console
 ❯ fpt
@@ -488,7 +485,7 @@ Make a full template in this directory? [Y/n]: y
 -->added template: ./LICENSE.md
 ```
 
-`-p, --project`オプションで、README, CHANGELOG, LICENSEを作成し、`-a, --add_template`オプションを組み合わせることでテンプレートを同時に展開します。
+`-p, --project` オプションで、README, CHANGELOG, LICENSE を作成し、`-a, --add_template` オプションを組み合わせることでテンプレートを同時に展開します。
 
 ```console
 ❯ fpt -pa
@@ -499,7 +496,7 @@ Make a full template in this directory? [Y/n]: y
 -->added template: ./LICENSE.md
 ```
 
-第一引数に対象ディレクトリ、第二引数にプラグインの名前を渡すことで、その名前のファイルを作成します。これも`-a, --add_template`オプションフラグを組み合わせて、作成と同時にテンプレートを展開できます。
+第一引数に対象ディレクトリ、第二引数にプラグインの名前を渡すことで、その名前のファイルを作成します。これも `-a, --add_template` オプションフラグを組み合わせて、作成と同時にテンプレートを展開できます。
 
 ```console
 ❯ fpt functions my-new-plugin -a
@@ -508,5 +505,5 @@ Make a full template in this directory? [Y/n]: y
 -->added template: ./functions/my-new-plugin.fish
 ```
 
-ということで、解説は終わりになります。プラグイン開発→zennで解説でかなり`fish`の基礎が身についてきました。興味がある方はこのプラグインや`soruce-fish`を使ってプラグイン開発を行ってみてください。
+ということで、解説は終わりになります。興味がある方はこのプラグインや `soruce-fish` を使ってプラグイン開発してみてください。
 
