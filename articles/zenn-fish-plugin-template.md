@@ -224,7 +224,7 @@ function argtest-argparse-arguemnts-names \
 end
 ```
 
-この `argtest-argparse-arguments-names` を実行すると、次のようにリストである `$argv` の 2 番目の要素 `$argv[2]` にオプション引数 `-d` が入ってしまっています。これによって、`argparse` だけの場合から期待する引数の対応関係が 1 つずつずれてしまっています。`$argv` は `argparse -- $argv` によってオプション引数が除去されているため、`$argv[1], $argv[2], $argv[3]` には期待どおりに引数が入っていますが、`--argument-names` オプションで名前を付けた変数(`one, two, three`)はずれてしまい、`twe` に `-d` オプションフラグが入ってしまっています。
+この `argtest-argparse-arguments-names` を実行すると、次のようになります。
 
 ```shell
 $ argtest-argparse-arguemnts-names 1 -d 2 3
@@ -237,16 +237,19 @@ argv[3] : 3
 _flag_debug:  -d
 ```
 
+出力結果を見ると、`argparse` だけの場合から期待する引数の対応関係が１つずつずれてしまっています。具体的には、`$argv` は `argparse -- $argv` によってオプション引数が除去されているため、`$argv[1], $argv[2], $argv[3]` には期待どおりに引数が入っていますが、`--argument-names` オプションで名前を付けた変数(`one, two, three`)はずれてしまい、`twe` に `-d` オプションフラグが入ってしまっています。
+
 渡す引数の順番をしっかり意識していれば特に問題はないのですが、どの変数に何が入っているのかという混乱のもとにはなりますし、オプションについては順番を気にせず使えたほうが便利です。以下の例のように `--argment-names` オプションの使用を避け、コメントで引数の名前のみを書き、`set -l one $argv[1]` のようにしてリストである `$argv` の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
 
 これでオプション引数の順番を気にすることなく、普通の引数の順番だけを考慮すればよくなります。
 
 ```shell:このようなfunctionの使い方がおすすめ
 function argtest-argparse-ok
-    # --argument-names 'one' 'two' 'three'
+    # argument names: 'one' 'two' 'three'
     argparse 'd/debug' -- $argv
     or return 1
 
+    # --argument-names オプションを使用する代わりにローカル変数で対応付けする
     set -l one $argv[1]; 
     set -l two $argv[2]; 
     set -l three $argv[3]; 
@@ -287,7 +290,7 @@ function __argtest-argparse-ok_helper
 end
 ```
 
-上記のヘルパー関数を定義した後に、上の `argtest-argparse-ok` に 3 つの引数を渡してみると、次のように各関数でデバッグを連鎖的に行います。
+上記のヘルパー関数を定義した後に、上の `argtest-argparse-ok` に ３つの引数を渡してみると、次のように各関数でデバッグを連鎖的に行います。
 
 ```shell
 $ argtest-argparse-ok 1 -d 2 3
@@ -312,7 +315,7 @@ debug ok: debug flag→ -d
 __fish-plugin-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
 ```
 
-これによって、受け渡された条件の一部と、debug オプションフラグはさらに先で呼び出す関数に対して渡されます。
+これによって、呼び出し元から渡された条件の一部と、debug オプションフラグはさらに先で呼び出す関数に対して渡されます。
 
 ```shell:functions/__fish-plugin-template_make_template.fish
 if functions --query __fish-plugin-template_write_template_override_$template
@@ -322,6 +325,50 @@ else if functions --query __fish-plugin-template_write_template_$template
     set -q _flag_debug; and echo $ce"Debug point: [C-2]"$cn
     # --argument-names 'plugin' '_flag_debug'
     __fish-plugin-template_write_template_$template $base_name $_flag_debug
+end
+```
+
+連鎖させたいオプション定義(今回の場合は `d/debug` や `a/add_template`)を各関数の `argparse` コマンドにて同じように定義することでこのようなことが可能になります。
+
+```shell
+function fish-plugin-template
+    # argument names: 'target_first' 'target_second_file_name'
+    argparse 'a/add_template' 'd/debug' -- $argv
+    or return 1
+
+    set -l target_first $argv[1]
+    set -l target_second_file_name $argv[2]
+
+    # 略
+        __fish-plugin-template_make_template "$target_first" "$target_second_file_name" ".fish" --create_file $_flag_add_template $_flag_debug
+    # 略
+end
+
+function __fish-plugin-template_make_template
+    # argument names: 'directory' 'base_name' 'extension' '_flag_create_file' '_flag_add_template' '_flag_debug'
+    argparse 'c/create_file' 'a/add_template' 'd/debug' -- $argv
+    or return 1
+
+    set -l directory $argv[1]
+    set -l base_name $argv[2]
+    set -l extension $argv[3]
+
+    # 略
+    set template $base_name
+    # 略
+    if set -q _flag_add_template
+        __fish-plugin-template_write_template_$template $base_name $_flag_debug
+    end
+    # 略
+end
+
+function __fish-plugin-template_write_template_functions
+    # argument names: 'plugin' '_flag_debug'
+    argparse 'd/debug' -- $argv
+    or return 1
+
+    set -l plugin $argv[1]
+    # 略
 end
 ```
 
