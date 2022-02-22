@@ -1,4 +1,6 @@
-node_modules
+# general
 .DS_Store
 
-package-lock.json
+# folder
+node_modules/
+.cache/
