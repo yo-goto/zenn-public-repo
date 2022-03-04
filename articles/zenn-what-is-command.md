@@ -157,7 +157,7 @@ External command(外部コマンド)は、コマンドラインから Builtin �
 ```md
 External command: コマンドラインシェルから名前で呼び出せるプログラムすべて(`PATH` 環境変数に登録されているディレクトリに配置されたコマンドサーチの対象となるプログラム)
 ├── Included command: OS 同梱のコマンド
-│   ├── UNIX commmand: UNIX の仕様に記載されているコマンド(macOS や Linux などの UNIX-like OS で見られる)
+│   ├── UNIX command: UNIX の仕様に記載されているコマンド(macOS や Linux などの UNIX-like OS で見られる)
 │   │   ├── BSD実装: macOS などの BSD 系の実装
 │   │   └── GNU実装: 多数の Linux ディストリビューションで見られる GNU の実装(いわゆる Linux コマンド)
 │   └── その他(大多数)
@@ -294,9 +294,15 @@ https://github.com/file/file
 
 [外部コマンド](https://www.wikiwand.com/ja/%E5%A4%96%E9%83%A8%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89)の実体は実行可能([executable](https://www.wikiwand.com/ja/%E5%AE%9F%E8%A1%8C%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB))なバイナリファイルや shell script ファイルであることが分かりました。
 
-もちろんそういったファイルのすべてが Exteranl command として認識されているわけではありません。あるプログラムをインストールして、ファイルパスを指定せずに  shell から External commmand として呼び出せるようにするにはコマンド検索用の[環境変数](https://www.wikiwand.com/en/Environment_variable)に登録する必要があります。
+もちろんそういったファイルのすべてが Exteranl command として認識されているわけではありません。あるプログラムをインストールして、ファイルパスを指定せずに  shell から External command として呼び出せるようにするにはコマンド検索用の[環境変数](https://www.wikiwand.com/en/Environment_variable)に登録する必要があります。
+
+> Every program on your computer can be used as a command in fish. **If the program file is located in one of the PATH directories, you can just type the name of the program to use it**. Otherwise the whole filename, including the directory (like /home/me/code/checkers/checkers or ../checkers) is required.
+- [The fish language — fish-shell 3.3.1 documentation](https://fishshell.com/docs/current/language.html) より引用
 
 シェルでは、`PATH` という環境変数に External command の配置されている各ディレクトリのパスが格納されています。シェルはこの環境変数を見て、コマンドラインから入力されたコマンドを検索し、呼び出しています。
+
+> $PATH is an environment variable **containing the directories that fish searches for commands**. Unlike other shells, $PATH is a list, not a colon-delimited string.
+- [Tutorial — fish-shell 3.3.1 documentation](https://fishshell.com/docs/current/tutorial.html#path) より引用
 
 OS に元々同梱されていない新しい外部コマンドをターミナルなどから使えるようにするにはこの `PATH` にそのコマンドがある場所(ディレクトリパス)を追加する、いわゆる「**パスを通す**」ことが必要となります。他のシェルでは、この `PATH` はコロンで区切られたものとなっていますが、fish の `PATH` はリストになっています。
 
@@ -588,7 +594,7 @@ https://stackoverflow.com/questions/35337601/why-is-there-a-usr-local-opt-direct
 実際に `/usr/bin` 内を調べるとそのようなコマンドは 55 個存在していることがわかりました。結果を一部抜粋すると Python2 系のプログラムが該当しました。
 
 ```shell
-# commmand -a を使って /usr/bin 内の外部コマンドとして呼び出せるコマンド名についてすべての場所を表示し、grepでフィルターして fileでテストした後に更にgrepでフィルター
+# command -a を使って /usr/bin 内の外部コマンドとして呼び出せるコマンド名についてすべての場所を表示し、grepでフィルターして fileでテストした後に更にgrepでフィルター
 ❯ file -h (command -a (ls /usr/bin) | grep "/usr") | grep "symbolic" | count
 55
 ❯ file -h (command -a (ls /usr/bin) | grep "/usr") | grep "symbolic"

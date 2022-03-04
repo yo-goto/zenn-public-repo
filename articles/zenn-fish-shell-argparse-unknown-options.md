@@ -1,12 +1,12 @@
 ---
-title: "fishのargparseで未定義オプションを透過させるラッパー関数を作成する"
+title: "fishのargparseで未定義オプションを透過させるラッパー関数の作成"
 emoji: "🦖"
 type: "tech"
 topics: [fish, shell, deno, homebrew]
 published: true
 date: 2022-03-04
 url: "https://zenn.dev/estra/articles/zenn-fish-shell-argparse-unknown-options"
-aliases: [記事_fishのargparseで未定義オプションを透過させるラッパー関数を作成する]
+aliases: [記事_fishのargparseで未定義オプションを透過させるラッパー関数の作成]
 tags: " #shell/fish #type/zenn  "
 ---
 
@@ -15,19 +15,21 @@ tags: " #shell/fish #type/zenn  "
 
 https://deno.land
 
-ただ、Deno CLI の `deno run` コマンドで実行した TypeScript のデバッグに `console.log` の出力をリダイレクションを使って適当なファイルに出力すると、[ANSI escape code](https://www.wikiwand.com/en/ANSI_escape_code) という制御コードが一緒に出力されてしまい見づらかったので、これを取り除く処理をラッパー関数内に噛ませることで、きれいに出力できるようにしたい思います。
+ただ、Deno CLI の `deno run` コマンドを実行する際に、TypeScript や JavaScript のデバッグとして `console.log` の出力をリダイレクションを使って適当なファイルに出力すると、[ANSI escape code](https://www.wikiwand.com/en/ANSI_escape_code) という制御コードが一緒に出力されて結果がまともに見られなくなる場合があります。
 
-というわけで、Deno CLI のコマンドである `deno run` のラッパーを作成しつつ、fish shell の `argparse` の `--igonre-unknown` というオプションを使ったラッパーを作成します。ある程度、一般化できるかなと思い、今回はコマンドのラッパー関数を作成し、ラップ元にそのコマンド自体のオプションを渡すということをや解説していきます。
+この ANSI escape code を取り除く処理をラッパー関数内に噛ませることで、きれいに出力できるようにしたい思います。
+
+というわけで、Deno CLI のコマンドである `deno run` のラッパーとなる fish function を作成しながら、`argparse` ビルトインコマンドの `--igonre-unknown` オプションによってラップ元にそのコマンド自体のオプションを渡す方法について解説していきます。
 
 # やりたいこと
 
-コマンドのラッパーにしたいので、やりたいこととしてはシンプルに次の三点です。
+やりたいこととしてはシンプルに次の三点です。
 
-- ラップ元の `deno run` コマンドの補完(completion)の引き継ぎ
-- ラップ元の `deno run` のオプションを使用できるようにする
-- `deno run` で出力される結果から ANSI escape code を取り除くような処理をかませる
+- [1]ラップ元の `deno run` のオプションを使用できるようにする
+- [2]ラップ元の `deno run` コマンドの補完(completion)の引き継ぎ
+- [3]`deno run` で出力される結果から ANSI escape code を取り除くような処理をかませる
 
-割と簡単に作成できます。`alias` を使えば早いのですが、ちょっとしたオプション分岐も付けたいので通常の `function` と `argparse` ビルトインコマンドを使用してラッパーを作成します(`fisher` や `git` を使ってプラグイン的に開発した方が管理もしやすいです)。
+[1]については `alias` ビルトインコマンドを使えば早いのですが、[2]ラップ元の補完を継承させて、[3]の処理をオプションで噛ませたいので、通常の `function` と `argparse` ビルトインコマンドを使用してラッパーを作成します(`fisher` や `git` を使ってプラグイン的に開発した方が管理もしやすいです)。
 
 # 基本構造
 通常のプラグイン作成と同じようにつくります(`fish-plugin-template` を使用してプロジェクト内に次の３つのディレクトリとテンプレートを展開しても OK)。
@@ -159,6 +161,7 @@ console.log({ array });
 補完の引き継ぎは、`completions` ディレクトリにある関数名と同一名のファイル `deno-run-out.fish` というファイルに以下を書けば終了です。これだけで、`deno run` の補完が引き継がれます。
 
 ```shell:completions/deno-run-out.fish
+# complete -c 新規コマンド -w 継承元のコマンド
 # deno run の補完の設定を deno-run-out に引き継ぐ
 complete -c deno-run-out -w "deno run"
 ```
@@ -178,7 +181,7 @@ complete -c deno-run-out -s s -l stdout -f -d "Strip ANSI escape code for stdout
 https://qiita.com/nil2/items/128363097ac031653ea1#commandline
 
 :::message
-ちなみにですが、Deno CLI における `deno run` コマンドの補完がどこに入っているかというと、自分の環境では M1 mac に Homebrew を使って deno をインストールしたため、次の場所に格納されています。
+ちなみにですが、Deno CLI における `deno run` コマンドの補完がどこに入っているかというと、自分の環境では M1 mac に Homebrew を使って deno をインストールしたため、次の場所に格納されています。  
 
 ```shell
 ❯ greadlink -f (which deno)
@@ -209,13 +212,14 @@ https://qiita.com/nil2/items/128363097ac031653ea1#commandline
 ```
 
 - `greadlink -f (which deno)` : `deno` コマンドの配置されているディレクトリからシンボリックリンク先の絶対パスを取得 (`greadlink` コマンドは `brew install coreutils` でインストールできます)
-- `exa TARGET --tree -a` : `TARGET` のディレクトリ内のすべてのファイルについてツリー状に表示 (`exa` コマンドは `brew install exa` でインストールできます)
+- `exa TARGET --tree -a` : `TARGET` のディレクトリ内のすべてのファイルについてツリー状に表示 (`exa` コマンドは `brew install exa` でインストールできます)  
 
-`deno.fish` という completion 用の fish ファイルに `deno` コマンドのすべての補完が配置されていますね。これは、deno の開発チームから提供された fish completion のようです(内部的には[generate in clap_complete::generator](https://docs.rs/clap_complete/latest/clap_complete/generator/fn.generate.html)を使用したコマンド `deno completions fish` で補完スクリプトを自動生成してるみたいです)。ちなみにこのファイルは `/opt/homebrew/share/fish/vendor_completions.d/deno.fish` からシンボリックリンクされています。
+
+`deno.fish` という completion 用の fish ファイルに `deno` コマンドのすべての補完が配置されていますね。これは、deno の開発チームから提供された fish completion のようです(内部的には Rust の [clap_complete::generator](https://docs.rs/clap_complete/latest/clap_complete/generator/fn.generate.html) というモジュールを使用したコマンド `deno completions fish` で補完スクリプトを自動生成してるみたいです)。ちなみにこのファイルは `/opt/homebrew/share/fish/vendor_completions.d/deno.fish` からシンボリックリンクされています。
 
 ```shell
 # homebrew を使ってインストールした外部コマンド(vender)から提供されている fish 用補完スクリプトの配置場所(実際にはシンボリックリンク)
-# ファイル末尾に @ がついていのはすべてシンボリックリンク
+# ファイル末尾に @ がついているのはすべてシンボリックリンク
 ❯ exa -F /opt/homebrew/share/fish/vendor_completions.d/
 bat.fish@   deno.fish@  fd.fish@  pipenv.fish@
 brew.fish@  exa.fish@   gh.fish@  starship.fish@
@@ -231,7 +235,7 @@ brew.fish@  exa.fish@   gh.fish@  starship.fish@
 /opt/homebrew/Cellar/starship/1.3.0/share/fish/vendor_completions.d/starship.fish
 ```
 
-fish shell の completion については、[`$fish_complete_path` という特殊なリスト変数内に登録されていディレクトリ](https://fishshell.com/docs/current/completions.html?highlight=complete_path#where-to-put-completions)の中を fish は自動的に検索しロードしています。実際に見てみると、`/opt/homebrew/share/fish/vendor_completions.d/` が登録されていることがわかります。
+fish shell の completion については、[`$fish_complete_path` という特殊なリスト変数](https://fishshell.com/docs/current/completions.html?highlight=complete_path#where-to-put-completions)内に登録されているディレクトリの中を fish が自動的に検索・ロードしています。変数を実際に見てみると、`/opt/homebrew/share/fish/vendor_completions.d/` が登録されていることがわかります。  
 
 ```shell
 ❯ printf '%s\n' $fish_complete_path
@@ -427,16 +431,16 @@ end
 
 これで、リダイレクションしてもうまくログを残せるようになりました。(たぶん、もっといい方法があるというか `console` のメソッドそのものの使い方で制御コードが入らないようにできる気がします)
 
-`fihser` を使ってローカルインストールしたらコマンドとして使用できるようになります。
+プロジェクトフォルダのトップレベルで `fishser` を使ってローカルインストールしたらコマンドとして使用できるようになります。
 
 ```shell
-$ fishe install $PWD
+$ fisher install $PWD
 ```
 
-実際にリダイレクションで使用してみます。
+実際に `-s` オプションを使ってリダイレクションしてみます。
 
 ```shell
-❯ derun --allow-read --allow-write read_write_test.ts > tests/new_console_test.log
+❯ derun -s ./tests/console_test.ts > ./tests/new_console_test.log
 ```
 
 中身を見ると、ANSI escape code が取り除かれています。
@@ -462,6 +466,12 @@ $ fishe install $PWD
     0, 1, 2, 3,
     4, 5, 6, 7
   ] }
+```
+
+もちろん、`--allow-read --allow-write` パーミッションフラグとも併用できます。
+
+```shell
+❯ derun -s --allow-read --allow-write ./tests/read_write_test.ts > ./tests/read_write_test.log
 ```
 
 あとは、同じ方法で色々微調整したりします。
