@@ -330,6 +330,10 @@ fish shell ではパスを通すには `fish_add_path` という function を使
 ❯ fish_add_path /opt/homebrew/bin/
 ```
 
+パスの通し方と `PATH` 環境変数については以下の記事でかなり詳細に調べたので興味のある方は確認してください。
+
+https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer
+
 このようにしてユーザーが追加したパスは `fish_user_paths` という[fishの特殊変数](https://fishshell.com/docs/current/language.html#special-variables)から確認できます。
 
 ```shell
@@ -337,7 +341,22 @@ fish shell ではパスを通すには `fish_add_path` という function を使
 /Users/roshi/.deno/bin /Users/roshi/.nodebrew/current/bin /opt/homebrew/bin
 ```
 
-上記以外のパスはマシン購入時に最初から登録されているものがほとんどです。ただ `/usr/local/bin` のディレクトリは `sudo mkdir` を使って自分で作成した記憶があります。基本的に外部からインストールした追加の外部コマンドはこの `/usr/local/bin` に入れます(自分は、M1 mac の環境で、 hombrew を使っているのでほとんどこのディレクトリにはコマンドが入っていません)。 
+上記以外のパスはマシン購入時に最初から登録されているものがほとんどです。
+
+`PATH` は環境変数ですが、環境変通とはそもそも環境(親プロセス)から継承されることによって fish shell のセッションにてグローバル変数として保持されます。継承元は、たいていは terminal だったりします。
+
+親プロセスのどこかで、`/etc/paths` ファイルが読み込まれており、ここに fish 起動時の最初から登録されているパスが記載されています。
+
+```shell
+❯ cat /etc/paths
+/usr/local/bin
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+```
+
+これらのディレクトリには以下のように外部コマンドが分類されて配置されています。
 
 - `/usr/local/bin` : 自分で追加インストールした外部コマンドを配置する(後述しますが、Intel 製 mac なら homebrew でインストールしたパッケージのシンボリックリンクが配置されるはずです)
 - `/usr/bin` : UNIX command の多くや、ユーザーが使用するほとんどの OS 同梱の外部コマンドが配置されている(自分の環境では、1102 個のプログラムが配置されている)

@@ -158,7 +158,7 @@ brew is /opt/homebrew/bin/brew
 
 さらに今度は指定したコマンドのマニュアルを閲覧するコマンドである `man` コマンドを `type` してます。
 
-```console
+```shell
 ❯ type man
 man is a function with definition
 # Defined in /opt/homebrew/Cellar/fish/3.3.1/share/fish/functions/man.fish @ line 6

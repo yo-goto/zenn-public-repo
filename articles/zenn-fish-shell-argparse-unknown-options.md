@@ -215,7 +215,19 @@ https://qiita.com/nil2/items/128363097ac031653ea1#commandline
 - `exa TARGET --tree -a` : `TARGET` のディレクトリ内のすべてのファイルについてツリー状に表示 (`exa` コマンドは `brew install exa` でインストールできます)  
 
 
-`deno.fish` という completion 用の fish ファイルに `deno` コマンドのすべての補完が配置されていますね。これは、deno の開発チームから提供された fish completion のようです(内部的には Rust の [clap_complete::generator](https://docs.rs/clap_complete/latest/clap_complete/generator/fn.generate.html) というモジュールを使用したコマンド `deno completions fish` で補完スクリプトを自動生成してるみたいです)。ちなみにこのファイルは `/opt/homebrew/share/fish/vendor_completions.d/deno.fish` からシンボリックリンクされています。
+`deno.fish` という completion 用の fish ファイルに `deno` コマンドのすべての補完が配置されていますね。これは、deno の開発チームから提供された fish completion のようです(内部的には Rust の [clap_complete::generator](https://docs.rs/clap_complete/latest/clap_complete/generator/fn.generate.html) というモジュールを使用したコマンド `deno completions fish` で補完スクリプトを自動生成してるみたいです)。
+
+>Built into the Deno CLI is support to generate shell completion information for the CLI itself. By using `deno completions <shell>`, the Deno CLI will output to stdout the completions. Current shells that are supported:
+>
+>- bash
+>- elvish
+>- fish
+>- powershell
+>- zsh
+
+- [Deno Manual: Set up your environment](https://deno.land/manual@v1.19.2/getting_started/setup_your_environment#shell-completions) より引用
+
+ちなみにこのファイルは `/opt/homebrew/share/fish/vendor_completions.d/deno.fish` からシンボリックリンクされています。
 
 ```shell
 # homebrew を使ってインストールした外部コマンド(vender)から提供されている fish 用補完スクリプトの配置場所(実際にはシンボリックリンク)
@@ -485,3 +497,9 @@ $ fisher install $PWD
 
 `gsed 's/\x1b\[[0-9;]*m//g'` 自体になにかエイリアスを定義して使うとかが楽そうですね。
 
+
+# 追記
+
+別の解決方法が見つかったのでそちらについて記事を書きました。
+
+https://zenn.dev/estra/articles/deno-no-color-fish-override-variable

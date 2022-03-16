@@ -17,9 +17,9 @@ tags: " #shell/fish/syntax  #deno/environment   "
 https://zenn.dev/estra/articles/zenn-fish-shell-argparse-unknown-options
 
 # VAR=VAL ステートメント
-`VAR=VAL` のシンタックスは他のシェルで使われているらしいですが、fish v3.1 から fish でも利用できるようになっています。
+`VAR=VAL` のシンタックスは他のシェルで使われているらしいですが、fish では v3.1 から利用できるようになっています。
 
-ただし、使い方としては、コマンドの前で宣言して一時的に変数を上書きできるというものになります。
+使い方としては、**コマンドの前で宣言して一時的に変数を上書きできる**というものになります。
 
 https://fishshell.com/docs/current/language.html#overriding-variables-for-a-single-command
 
@@ -31,7 +31,7 @@ https://fishshell.com/docs/current/language.html#overriding-variables-for-a-sing
 gagaga
 ```
 
-この `VAR=VAL` シンタックスで上書きした変数は環境変数としてエクスポートされた状態になります。
+この `VAR=VAL` ステートメントで上書きした変数は環境変数としてエクスポートされた状態になります。
 
 ```shell
 # ローカルスコープでエクスポートされていることがわかる
@@ -42,7 +42,7 @@ $hoge[1]: |fugafuga|
 # 何も表示されない
 ```
 
-変数を `set -S` で見ると分かりますが、エクスポートされる際にはスコープはローカルになります。
+変数を `set -S` で確認してみると分かりますが、`VAR=VAL` ステートメントによって上書きエクスポートされる際にはローカルスコープとなります。
 
 ```shell
 # グローバルスコープでセット
@@ -63,7 +63,7 @@ $hoge: set in global scope, unexported, with 1 elements
 $hoge[1]: |bar|
 ```
 
-これによって、**外部コマンド等に継承させる環境変数を一時的に上書きできます**。例えば、`VAR=VAL` シンタックスとブレース展開と組み合わせることによって、子プロセスで bash を立ち上げる際に継承させる `PATH` を `/usr/sbin:/sbin:/usr/bin:/bin` にできます。
+これによって、**外部コマンドに継承させる環境変数を一時的に上書きできます**。例えば、`VAR=VAL` のステートメントと[ブレース展開](https://fishshell.com/docs/current/language.html#brace-expansion)を組み合わせることによって、子プロセスで bash を立ち上げる際に継承させる `PATH` を `/usr/sbin:/sbin:/usr/bin:/bin` にできます。
 
 ```shell
 ❯ PATH={/usr,}/{s,}bin bash
@@ -76,11 +76,11 @@ bash-3.2$ printenv PATH
 bash-3.2$
 ```
 
-環境変数を一時的に上書きすることで、環境を一々汚さずに外部コマンドの実行が可能となります。
+このように環境変数を一時的に上書きすることで、環境を一々汚さずに外部コマンドの実行が可能となります。
 
 # Deno の環境変数 NO_COLOR
 
-それでは、Deno の話になりますが、Deno はいくつかの環境変数を用意しており、その中に `NO_COLOR` という環境変数があります。
+それでは Deno の話になりますが、Deno はいくつかの環境変数を用意しており、その中に `NO_COLOR` という環境変数があります。
 
 https://deno.land/manual@v1.19.3/getting_started/setup_your_environment#environment-variables
 
@@ -123,7 +123,7 @@ console.log(Deno.noColor);
 
 https://zenn.dev/estra/articles/zenn-fish-shell-argparse-unknown-options
 
-ラッパー関数の作成は少し大げさでしたので、今回は fish の環境変数の一時的な上書きで ANSI color code を stdout(標準出力)に送信しないように設定することでリダイレクトなどでちゃんと表示できるようにしてあげます。
+このようなラッパー関数の作成は少し大げさでしたので、今回は環境変数の一時的な上書きで ANSI color code を stdout(標準出力) に送信しないように Deno CLI に伝えてあげることでリダイレクトした際にちゃんと表示できるようにしてあげます。
 
 ```shell
 ❯ NO_COLOR= deno run tests/console_test.ts
@@ -133,7 +133,7 @@ https://zenn.dev/estra/articles/zenn-fish-shell-argparse-unknown-options
 
 ![](/images/deno-no-color-fish-override-variable/deno-run-no-ansi-color.jpg)
 
-`NO_COLOR` 環境変数は存在さえしていれば値自体はなんでもよいのですが(`NO_COLOR=true` などでも OK)、`VAR=VAL` 値が空でも機能するので上記のコードで色無し出力が可能です。
+`NO_COLOR` 環境変数は存在さえしていれば値自体はなんでもよいのですが(`NO_COLOR=true` などでも OK)、`VAR=VAL` のステートメントは値が空でも機能するので上記のコードで色無し出力が可能です。
 
 実際に値なしの状態を調べてみても上書きでエクスポートできていますね。
 
@@ -146,9 +146,11 @@ $NO_COLOR[1]: ||
 
 細かい挙動のカスタマイズはできませんが、ラッパー関数を作成するよりよっぽど楽なのでこちらの方がよいですね。
 
-ちなみに、最近の CLI ツールで出力されるようになっていることが多い ANSI color code については [no-color.org](https://no-color.org/) というサイトでデファクトスタンダードな情報を知れるらしいです。
+ちなみに、最近の CLI ツールで出力されるようになっていることが多い ANSI color code については no-color.org というサイトでデファクトスタンダードな情報を知れるらしいです。
 
-`NO_COLOR` 環境変数が利用して色無しで出力できるツールなどが確認できます。
+https://no-color.org/
+
+Deno CLI のように `NO_COLOR` 環境変数を利用して色無しで出力できるライブラリやツールなどが確認できます。
 
 ![](/images/deno-no-color-fish-override-variable/no_color_org.jpg)
 
