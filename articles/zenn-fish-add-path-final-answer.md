@@ -639,15 +639,16 @@ set -x VOLTA_HOME $HOME/.volta
 コマンドラインからやる場合でも、スコープを明示しなかったり、エクスポートを明示しなかったりするパターンなどが紹介されていることもあるので混乱しないように注意してください。
 
 ```shell:コマンドライン
-# 以下すべて同じ意味(それぞれ一回のみ実行)
-❯ set -gx PATH $HOME/.deno/bin $PATH
-❯ set -x PATH $HOME/.deno/bin $PATH
-❯ set -g PATH $HOME/.deno/bin $PATH
-# PATH はグローバルスコープで最初から環境変数の状態にある
+# PATH は fish 起動時に環境から継承されており(すでに環境変数という状態になっている)、
+# グローバルスコープで保持されているため
+# 以下すべて同じ結果となる
 ❯ set PATH $HOME/.deno/bin $PATH
+❯ set -g PATH $HOME/.deno/bin $PATH
+❯ set -x PATH $HOME/.deno/bin $PATH
+❯ set -gx PATH $HOME/.deno/bin $PATH
 ```
 
-一時的にパスを通すような必要がないなら、`fish_add_path` を一貫して使うようにした方が混乱せずにすむと思います。
+一時的にパスを通すようなケースを行わない場合には、`fish_add_path` を一貫して使うようにした方が混乱せずに済みます。
 
 ## 環境変数についての余談
 
