@@ -29,7 +29,6 @@
       "allowPeriodMarks": [":"]
     },
     "ja-technical-writing/sentence-length": false,
-    "spellcheck-tech-word": true,
     "@proofdict/proofdict": {
       "dictURL": "https://yo-goto.github.io/proof-dictionary/"
     }
