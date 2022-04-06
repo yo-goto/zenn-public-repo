@@ -20,7 +20,7 @@ tags: [" #deno #JavaScript/WebAPI/Fetch #type/zenn  "]
 
 https://deno.land/manual@v1.20.4/runtime/web_platform_apis#fetch-api
 
-モダンな JavaScript/TypeScript のランタイムである Deno では web 互換な Web API を使うことができます。Web API である Fetch API を使い勝手をそのままに使えるようになっています。
+モダンな JavaScript/TypeScript のランタイムである Deno では web 互換な API を使うことができます。Web API である Fetch API を使い勝手をそのままに使えるようになっています。
 
 Fetch API 以外にも web 互換な API が多くあり、以下の公式ブログポストでどれくらい互換性があるのかについての説明がなされています。
 
@@ -39,23 +39,23 @@ deno 1.20.4
 :::
 
 ## 使い方
-Deno では絶対ファイルパスのみをサポートしているので、`fetch("./some.json")` のような相対パスによる `fetch` は機能しません。
+Deno では絶対ファイル URL のみをサポートしているので、`fetch("./some.json")` のような相対パスによる `fetch` は機能しません。
 
-なので、こちらも webAPI である URL API の `URL()` コンストラクタと `import.meta` を使用することで、絶対ファイルパスを作成します。
+なので、こちらも webAPI である URL API の `URL()` コンストラクタと `import.meta` を使用することで、絶対ファイル URL を作成します。
 
 https://doc.deno.land/deno/stable/~/ImportMeta
 https://doc.deno.land/deno/stable/~/URL
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import.meta
 https://developer.mozilla.org/ja/docs/Web/API/URL
 
-`URL()` コンストラクタの第一引数に相対パス、第二引数にベース URL となるものを入れてパスを構築できます。
+`URL()` コンストラクタの第一引数に相対パス、第二引数にベース URL となるものを入れて URL を構築できます。
 
-`import.meta.url` によってこのモジュールの URL が取得できます。
+`import.meta.url` によってこのモジュールの絶対ファイル URL が取得できます。
 
 ```js
 // このファイルの場所から相対パス
-const relativeUrl = "./testTextFile/textForFetch.txt";
-const localUrl = new URL(relativeUrl, import.meta.url).toString();
+const relativePath = "./testTextFile/textForFetch.txt";
+const localUrl = new URL(relativePath, import.meta.url).toString();
 ```
 
 これによって、`localUrl` に `file:///Users/roshi/Development/Testing/understanding-async/deno-async/testTextFile/textForFetch.txt` のような `file:` で始まる絶対ファイル URL を得ることができます。
@@ -73,25 +73,25 @@ In laboris aliquip pariatur aliqua officia veniam quis aliquip. Dolor eu magna r
 あとは `fetch()` メソッドの第一引数に URL 文字列を渡して、Promise チェーンで逐次的に処理を行います。
 
 ```js
-const relativeUrl = "./testTextFile/textForFetch.txt";
-const localUrl = new URL(relativeUrl, import.meta.url).toString();
+const relativePath = "./testTextFile/textForFetch.txt";
+const localUrl = new URL(relativePath, import.meta.url).toString();
 
 console.log("sync process 1");
 
 fetch(localUrl)
-  .then(response => {
+  .then((response) => {
     if (!response.ok) {
       throw new Error("Error");
     }
     console.log(`got data from "${localUrl}"`);
     return response.text();
   })
-  .then(data => {
+  .then((data) => {
     console.log(data);
   })
-  .catch(error => {
+  .catch((error) => {
     console.error(error.message);
-  })
+  });
 
 console.log("sync process 2");
 ```
@@ -110,9 +110,14 @@ In laboris aliquip pariatur aliqua officia veniam quis aliquip. Dolor eu magna r
 
 ```
 
+
 無事に `fetch` でファイル取得をできました。
 
-非同期処理や Promise チェーンの基礎については azu さんの『JavaScript Primer
+ファイルの読み取り自体は `fetch` メソッド以外 `Deno.readTextFile` などのランタイム API を使う方法などもありますが、今回は `fetch` の使い方を紹介しました。
+
+https://qiita.com/access3151fq/items/48e17d1363de39d01ad1
+
+ちなみに、非同期処理や Promise チェーンの基礎については azu さんの『JavaScript Primer
 迷わないための入門書』が大変分かりやすくおすすめです。
 
 https://jsprimer.net/basic/async/
