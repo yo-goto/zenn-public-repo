@@ -60,7 +60,7 @@ const localUrl = new URL(relativePath, import.meta.url).toString();
 
 これによって、`localUrl` に `file:///Users/roshi/Development/Testing/understanding-async/deno-async/testTextFile/textForFetch.txt` のような `file:` で始まる絶対ファイル URL を得ることができます。
 
-`toString()` を使用して文字列化をしている理由は、Deno の `fetch()` の引数として URL オブジェクトを入れると Deno のリンターに「URL オブジェクトは非推奨なので文字列またはなどを使用しろ」と注意されるためです。
+`toString()` を使用して文字列化をしている理由は、Deno の `fetch()` の引数として URL オブジェクトを入れると Deno のリンターに「URL オブジェクトは非推奨なので文字列または `Request` を使用しろ」と注意されるためです。
 
 あとは、相対パスで指定した場所に適当なテキストファイルなど用意しておきます。
 
