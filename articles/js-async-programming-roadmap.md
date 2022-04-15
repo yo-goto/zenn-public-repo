@@ -64,7 +64,7 @@ https://jsprimer.net/basic/statement-expression/
 
 https://jsprimer.net/basic/function-declaration/
 
-以上が理解できているなら、まず「非同期処理の基礎」を一から学ぶために "JavaScript Primer" の次の項目を読みすすめましょう(ただし、いきなりすべて理解しようとするのは困難なのである程度の理解度で最後まで進めていき、細かい点については後から参照していく形がよいと思います)。"JavaScript Primer" では、「JavaScript の非同期処理の歴史的な発展」が俯瞰でき、エラーファーストコールバック → Promiose → async/await というように順を追って非同期処理の必要な知識が一通り学習できます。
+以上が理解できているなら、まず「非同期処理の基礎」を一から学ぶために "JavaScript Primer" の次の項目を読みすすめましょう(ただし、いきなりすべて理解しようとするのは困難なのである程度の理解度で最後まで進めていき、細かい点については後から参照していく形がよいと思います)。"JavaScript Primer" では、「JavaScript の非同期処理の歴史的な発展」が俯瞰でき、エラーファーストコールバック → Promise → async/await というように順を追って非同期処理の必要な知識が一通り学習できます。
 
 https://jsprimer.net/basic/async/
 
