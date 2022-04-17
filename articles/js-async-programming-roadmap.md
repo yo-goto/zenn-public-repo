@@ -28,7 +28,18 @@ JavaScript の非同期処理を学習してみて「ある程度自信を持っ
   - ランタイムの補足を追加
   - 「環境」と「非同期処理の仕組み」に関してのまとめを追記
   - Web Workers についての記述を追加
+- 2022-04-17
+  - 「お知らせ」の項目を追加
+  - 「追記: 非同期処理機能の俯瞰」の項目を追加
+  - 内容の微修正
 :::
+
+## お知らせ
+非同期処理の学習ロードマップなどと銘打って記事を書いたからには、自分も具体的な非同期処理についての解説やアウトプットをすべきだと考えたので、主に Promise チェーンについての解説をするために Zenn の Book として「**イベントループとプロミスチェーンで学ぶJavaScriptの非同期処理**」を公開しました。
+
+自分のアウトプットを兼ねており、内容としては記事と同質なので無料公開しています。興味があれば読んでみてください!
+
+https://zenn.dev/estra/books/js-async-promise-chain-event-loop
 
 ## 非同期処理の感想
 まず非同期処理について学んでみて、「かなり難しく、学習に時間がかかる」という印象を受けました。イメージとしては**学習前予想時の３倍**は難しいです。
@@ -244,7 +255,7 @@ Promise の静的メソッドと `await` 式を組み合わせる例として、
 
 https://developers.google.com/web/fundamentals/primers/async-functions#%E4%BE%8B_%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E3%81%AE%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%9F%E3%83%B3%E3%82%B0
 
-非同期処理のループなどを構築する際に、Promsie チェーンでは複雑になってしまうコード("スマート"な書き方のコード)を、Async function 内では `while` ループや `for` ループといった"シンプルで読みやすい平凡な書き方"へと持ち込めるようになります。
+非同期処理のループなどを構築する際に、Promise チェーンでは複雑になってしまうコード("スマート"な書き方のコード)を、Async function 内では `while` ループや `for` ループといった"シンプルで読みやすい平凡な書き方"へと持ち込めるようになります。
 
 逆に、コールバック関数に Async function を使う時は注意する必要があったり、どのタイミングでどれを await させるかなどの難しさも分かってきますが。
 
@@ -259,7 +270,7 @@ https://qiita.com/uhyo/items/0e2e9eaa30ec2ff05260
 実際は紹介していないもっと多くのリソースからも学習しているので自分の中での最短はこんな感じのイメージになりました。次の記事からは学びで得た具体的な知見をいくつか絞って書いていこうかなと思います。記事を書いている途中で加速的に理解が進んだり、理解するために欠けていたピースがハマるので非常にオススメです。
 
 ## 追記: ECMAScriptのみに注目しても理解できない
-JavaScript における非同期処理の仕組みを理解しようと思って、非同期処理のための「ECMAScript」の言語機能だけを見ていても理解できません。
+実は、非同期処理のための「ECMAScript」の言語機能だけを見ていても、JavaScript における非同期処理の仕組みは理解できません。
 
 :::message
 実はこの記事を書いてから違和感があり、再度調べ直した結果として理解できました😇
@@ -301,19 +312,19 @@ Chrome では以下のような複数のプロセスが作成されます。
 
 また、`fetch(url)` もネットワークの接続をしてデータを取得しているのに**メインスレッドをブロッキングしないでバックグラウンドで行うことができる**のは、「現実のデータ取得処理」がメインスレッドで行われていないからです。`fetch(url)` そのものの処理が環境の別スレッドで並列(parallel)に行われてる一方で、`fetch(url).then(cb)` の `cb` コールバックについて「非同期処理=非同期的なタイミングで実行される処理=コールバック」として考えるなら、たしかにコールバック関数の処理という非同期処理そのものは並行(concurrent)に処理されています。
 
-実際、JavaScript の非同期処理でよく語られるシングルスレッドは現実のブラウザ環境(Chrome)では「Renderer Process の Main thread」のことであり、`fetch()` メソッドのネットワーク接続やリクエストなどの処理を行っているのは「Browser process 上の Network thread」です。
+実際、JavaScript の非同期処理でよく語られるシングルスレッドは現実のブラウザ環境(Chrome)では「Renderer Process の Main thread」のことであり、`fetch()` メソッドのネットワーク接続やリクエストなどの処理を行っているのは「Browser process の Network thread」です。
 
 `await` 式の前後や Promise チェーンのコールバック自体は確かに「非同期処理=非同期的なタイミングで実行される処理」であり、シングルスレッドで並行(concurrent)に処理されていますが、それを Micortask queue や Macrotask queue へと追加するための処理自体は並列(parallel)でマルチスレッドで起きています。
 
 「並列(parallel)処理と並行(concurrent)処理が同時に起きている」、「シングルスレッドであり、マルチスレッドである」という文字にすると頭が混乱するような話ですが、**対立する概念が同居して「非同期処理」の仕組みを実現している**と考えないとつじつまが合わないので、こうなります。
 
-この結論に至る参考として次の文献がメインとして参考になりました。
+この結論に至った経緯として、次の文献がメインとして参考になりました。
 
 https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-ui-developers
 
-そして Event Loop と Call Stack を理解するための動画として紹介した「What the heck is the event loop anyway?」では「**Web APIs が実質的にスレッドである**」ということが実は語られていました。この動画では「ブラウザ環境」のことについても語られているので、Promsie チェーンなどが理解できた後も何度見返してもよいと思います。
+そして Event Loop と Call Stack を理解するための動画として紹介した「What the heck is the event loop anyway?」では「**一度に複数のことができるのはブラウザがランタイム以上のものであるからで、ブラウザから提供される Web APIs は実質的にスレッドである**」ということが実は語られていました。この動画では「ブラウザ環境」のことについても語られているので、Promise チェーンなどが理解できた後も何度見返してもよいと思います。
 
->Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. The reason we can do things concurrently is that the browser is more than just the Runtime. So, remember this diagram, the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in.
+>Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. **The reason we can do things concurrently is that the browser is more than just the Runtime**. So, remember this diagram, **the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads**, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in.
 >(以下の書き起こしページから引用)
 
 https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html
@@ -324,6 +335,8 @@ https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-a
 それぞれ公式サイトでの文言。
 - [Deno is a simple, modern and secure runtime for JavaScript and TypeScript that uses V8 and is built in Rust.](https://deno.land)
 - [Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.](https://nodejs.org/en/)
+
+また、引用の "we shall APIs" はおそらく書き起こしの間違いで、実際の動画では "Web APIs" と言っています。
 :::
 
 ↓ 書き起こしが実際の言葉と若干違っているので動画で確認すると 11:48 のところです。
@@ -333,10 +346,10 @@ https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-a
 
 結局の所、非同期処理の仕組みを理解するには「Promise や async/await といった言語機能の概念とその使い方」だけでなく「**API を提供する環境**」のことを知ることが必要だった、という訳です。
 
-本来時間のかかるインターネットを介したデータ取得(`fetch()`)や I/O (`Deno.readFile()` や `fsPromise.readFile()`)などの処理は基本的に環境が API として用意してくれています。もちろんすべての API が時間のかかる処理ではなく、例えば、`console.log()` や `URL()` なども Web API なので環境の提供する機能ですが、通信や I/O に比べてすぐに処理が終了するので、非同期ではなく同期的なものとなっています。
+本来時間のかかるインターネットを介したデータ取得(`fetch()`)や I/O (`Deno.readFile()` や `fsPromise.readFile()`)などの処理は基本的に環境が API として用意してくれています。もちろんすべての API が時間のかかる処理ではなく、例えば、`URL()` なども Web API なので環境の提供する機能ですが、通信や I/O に比べてすぐに処理が終了するので、非同期ではなく同期的なものとなっています。
 
 :::message
-"blocking" の用語のところで紹介しましたが、Node や Deno の環境では長時間かかる処理の完了を待って、あえてメインスレッドの Event Loop をブロッキングする同期 API (Synchronous APIs) を提供しています。Node なら `fs.readFileSync()`、Deno なら `Deno.readFileSync()` などが該当します。用途としては、「スニペット程度のコードだからわざわざ非同期処理にするまでもない」というときや、他の何らかの理由であえて非同期処理にしたくない状況などで使用したりします。
+"blocking" の用語のところで紹介しましたが、Node や Deno の環境では時間のかかる処理の完了を待って、あえてメインスレッドの Event Loop をブロッキングする同期 API (Synchronous APIs) を提供しています。Node なら `fs.readFileSync()`、Deno なら `Deno.readFileSync()` などが該当します。用途としては、「スニペット程度のコードだからわざわざ非同期処理にするまでもない」というときや、他の何らかの理由であえて非同期処理にしたくない状況などで使用したりします。
 
 >The synchronous APIs perform all operations synchronously, **blocking the event loop until the operation completes or fails**.
 > ([File system | Node.js v17.9.0 Documentation](https://nodejs.org/api/fs.html#synchronous-api) より引用)
@@ -345,6 +358,28 @@ https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-a
 API を介して時間のかかる処理は環境へ委任されますが、もし環境が API として用意していないような時間がかかるタスク(CPU-intensitve でメインスレッドを長時間専有してしまうような処理)を自分で定義した同期関数などで行う場合は、Web Workers でメインスレッドから分離した別スレッドを作成して、そのスレッドで並列(parallel)に処理を走らせることで**メインスレッドの Event Loop をブロッキングせずに済ませる**ことができます。もちろんこれも Web API です。
 
 https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
+
+## 追記: 非同期処理機能の俯瞰
+ECMAScript に取り入れられた非同期処理に関するものとして async/await の前に **Generator** という機能がありました。現時点で「非同期処理」の説明に Generator が使われていることはほとんど見かけませんが、async/await の機能の前にこれが導入されていたということを認識しておくといいかもしれません。
+
+ここまで来て、色々な非同期処理の知識を得たと思いますが、ECMAScript の「非同期処理」の俯瞰を行うために Electron のコアエンジニアである Shelley Vohr 氏が JSConf EU で行った講演動画である「Asynchrony: Under the Hood」を見ておくといいと思います。
+
+@[youtube](SrNQS8J67zc)
+
+Philip Roberts 氏の動画よりも新しいので、ECMAScript の機能として新しく追加された Promise のためのキューである Microtask queue が入った状態の Event loop の話をしています。ですが、最初にこれを見ても多分理解できないと思うので、やはり「What the heck is the event loop anyway?」から視聴するのをオススメします。
+
+以下の項目に触れているため、「非同期処理」の全体を俯瞰できます。
+
+- Callback hell
+- Promise chain
+- Generator
+- async/await
+
+最後には、Callback hell → Promise chain → async/await の変形がみれるので async/await と Promise チェーンの書き換えが分からない人は見るといいかもしれません。
+
+とは言っても非同期処理機能の歴史的な発展については azu 氏の JavaScript Primer でもかなり分かりやすく解説されているので、こちらを理解した上で視聴するのをオススメします。
+
+https://jsprimer.net/basic/async/#sync-processing
 
 ## 参考文献とツールのまとめ
 
@@ -370,4 +405,7 @@ https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
 - [Inside look at modern web browser (part 2) - Chrome Developers](https://developer.chrome.com/blog/inside-browser-part2/)
 - [Angular Basics: Introduction to Processes, Threads—Web UI](https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-ui-developers)
 - [What the heck is the event loop anyway? | Philip Roberts | JSConf EU - YouTube](https://www.youtube.com/watch?v=8aGhZQkoFbQ&t=804s)
+
+現代の非同期処理の機能を俯瞰するためのリソース。
+- [Asynchrony: Under the Hood - Shelley Vohr - JSConf EU - YouTube](https://www.youtube.com/watch?v=SrNQS8J67zc)
 

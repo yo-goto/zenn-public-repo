@@ -10,6 +10,14 @@ aliases: [記事_PromiseチェーンとEvent Loopで学ぶ非同期処理]
 tags: [" #JavaScript/async #type/zenn  "]
 ---
 
+# 追記: Book化します
+
+:::message
+内容的に追記していくことが多く、文章の量もまだ増える予定なので記事ではなく本(Book)の方が内容としては向いていると思われるので、Book の方で実験的にだしてみました。こちらの記事はしばらくしたらクローズするので注意してください。
+:::
+
+https://zenn.dev/estra/books/js-async-promise-chain-event-loop
+
 # はじめに
 https://zenn.dev/estra/articles/js-async-programming-roadmap
 
