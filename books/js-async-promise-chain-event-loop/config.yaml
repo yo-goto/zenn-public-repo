@@ -1,0 +1,6 @@
+title: "イベントループとプロミスチェーンで学ぶJavaScriptの非同期処理"
+summary: "Event loop で Promise chain がどのように動くかを学ぶことによって JavaScript の非同期処理に制御の流れを掴めるようになるためのポイントを解説します。"
+topics: ["JavaScript", "非同期処理", "Promise"]
+published: false
+price: 0
+shortcut: "epasync"
