@@ -3,7 +3,7 @@ title: "PromiseチェーンとEvent Loopで学ぶ非同期処理"
 emoji: "🔗"
 type: "tech"
 topics: [javascript, 非同期処理]
-published: true
+published: false
 date: 2022-04-09
 url: "https://zenn.dev/estra/articles/js-async-programming-promise-chain-event-loop"
 aliases: [記事_PromiseチェーンとEvent Loopで学ぶ非同期処理]
@@ -79,7 +79,7 @@ undefined
 true
 ```
 
-Promise インスタンスの作成は `new Promise(executor)` が基本形です。コールバックとして引数に渡す `executor` 自信は引数を２つ受け取ります。次のコードでは、`executor` がコールバック関数であることに注目するため、あえて Promise コンストラクタの外で定義してみますと次のようになります。
+Promise インスタンスの作成は `new Promise(executor)` が基本形です。コールバックとして引数に渡す `executor` 自身は引数を２つ受け取ります。次のコードでは、`executor` がコールバック関数であることに注目するため、あえて Promise コンストラクタの外で定義してみますと次のようになります。
 
 基本的に Promise の解説では `setTimeout()` を使っていくのが割と一般的だと思いますが、`setTimeout()` 関数は **Web API** であることを意識して**ここではあえて使わずに説明してきます**。
 
@@ -250,15 +250,15 @@ const promise = new Promise((_, rej) => {
 
 `new Promise(executor)` の `Promise()` コンストラクタの引数として渡した `executor` 関数ですが、このコールバック関数は「**同期的に**」実行されます。
 
-```js:ZennSample/executorIsSync.js
-console.log("<1> Sync process");
+```js:executorIsSync.js
+console.log("[1] Sync process");
 
 const promise = new Promise(resolve => {
-  console.log("<2> これは同期的に実行されます");
+  console.log("[2] これは同期的に実行されます");
   resolve("解決値");
 });
 
-console.log("<3> Sync process");
+console.log("[3] Sync process");
 ```
 
 ちなみに「非同期処理」について考える時には、必ず同期処理と一緒に考えないと意味がないので、同期的に実行される `console.log()` で囲んでいます。
@@ -266,41 +266,41 @@ console.log("<3> Sync process");
 これを実行すると次のように出力されます。
 
 ```sh
-❯ deno run ZennSample/executorIsSync.js
-<1> Sync process
-<2> これは同期的に実行されます
-<3> Sync process
+❯ deno run executorIsSync.js
+[1] Sync process
+[2] これは同期的に実行されます
+[3] Sync process
 ```
 
 Promise は「**非同期処理の結果**を表現するビルトインオブジェクト」ですが、このように Promise コンストラクタに渡すコールバック関数は「**同期的に**」実行されます。つまり、完全に上から下へ行を移動するように実行されています。
 
 今度は、上のコードに少し追加したものを考えてみます。「非同期処理」である Promise チェーンです。
 
-```js:ZennSample/thenCallbackIsAsync.js
+```js:thenCallbackIsAsync.js
 // thenCallbackIsAsync.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const promise = new Promise(resolve => {
-  console.log("<2> This line is Synchronously executed");
+  console.log("[2] This line is Synchronously executed");
   resolve("Resolved!");
 });
 
 promise.then(value => {
-  console.log("<4> This line is Asynchronously executed");
+  console.log("[4] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 
-console.log("<3> Sync process");
+console.log("[3] Sync process");
 ```
 
 さて、結果はコードに書いてあるのでもう分かっていると思いますが、これを実行すると次のような出力になります。
 
 ```sh
-❯ deno run ZennSample/thenCallbackIsAsync.js
-<1> Sync process
-<2> This line is Synchronously executed
-<3> Sync process
-<4> This line is Asynchronously executed
+❯ deno run thenCallbackIsAsync.js
+[1] Sync process
+[2] This line is Synchronously executed
+[3] Sync process
+[4] This line is Asynchronously executed
 Resolved value:  Resolved!
 ```
 
@@ -312,9 +312,9 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 
 しかし、Microtask queue にあるこのコールバック関数はすぐに実行されません。Event Loop ではまず Call stack が完全に空になるまで同期的に実行が続きます。
 
-コードの行をまた下に行くと、`console.log` に出会うので同期的にそれを実行します。この実行が終わった時点で Call stack に積むものは何もなく完全に空の状態になったので、Event Loop が次のステップへと移行して Microtask qeueu に存在しているマイクロタスクをすべて実行します。
+コードの行をまた下に行くと、`console.log` に出会うので同期的にそれを実行します。この実行が終わった時点で Call stack に積むものは何もなく完全に空の状態になったので、Event Loop が次のステップへと移行して Microtask queue に存在しているマイクロタスクをすべて実行します。
 
-マイクロタスクは現在 1 つあるので直ちにそれを実行します。それによって、"<4> This line is Asynchronously executed" がログに出力されて、その後に "Resolved value:  Resolved!" がログに出力されます。
+マイクロタスクは現在 1 つあるので直ちにそれを実行します。それによって、"[4] This line is Asynchronously executed" がログに出力されて、その後に "Resolved value:  Resolved!" がログに出力されます。
 
 実際にどのようにマイクロタスクが動くかを JS Visualizer 9000 で可視化してみたので以下のページから確認してみてください。
 
@@ -334,92 +334,92 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 
 ここまで `new Promise(executor)` で Promise インスタンスを作成してきました。今度は Promise インスタンスを返す関数をアロー関数式を使用して定義して先程のコードを改造してみます。これで Promise インスタンスを何回も作成できるようになります。また引数を渡せるようにしてその引数で Promise を解決するようにします。
 
-```js:ZennSample/returnPromiseByFunc.js
-console.log("<1> Sync process");
+```js:returnPromiseByFunc.js
+console.log("[1] Sync process");
 
 const returnPromise = (resolveValue) => {
   return new Promise(resolve => {
-    console.log("<2> This line is Synchronously executed");
+    console.log("[2] This line is Synchronously executed");
     resolve(resolveValue);
   });
 };
 
 returnPromise("Resolved by function").then(value => {
-  console.log("<4> This line is Asynchronously executed");
+  console.log("[4] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 
-console.log("<3> Sync process");
+console.log("[3] Sync process");
 ```
 
 これは前のコードではそのまま Promise インスタンスを作成していたのを Promise インスタンスを返す関数に置き換えただけなので実行結果は以前と同じになります(解決値だけ違う)。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFunc.js
-<1> Sync process
-<2> This line is Synchronously executed
-<3> Sync process
-<4> This line is Asynchronously executed
+❯ deno run returnPromiseByFunc.js
+[1] Sync process
+[2] This line is Synchronously executed
+[3] Sync process
+[4] This line is Asynchronously executed
 Resolved value:  Resolved by function
 ```
 
 具体的には `returnPromise()` 関数は同期的に実行されて、内部の `Promise()` コンストラクタの引数であるコールバック関数もそのまま同期的に実行されます。
 
-さて、それではこの `returnPromise()` 関数を使用して複数の Promise インスタンスを作成してみます。`reutrnPromise()` 関数は何度も起動させたいので、`<2>` 番目に出力される行を書き換えて引数で指定できるようにします。テンプレートリテラルで表現します。
+さて、それではこの `returnPromise()` 関数を使用して複数の Promise インスタンスを作成してみます。`reutrnPromise()` 関数は何度も起動させたいので、`[2]` 番目に出力される行を書き換えて引数で指定できるようにします。テンプレートリテラルで表現します。
 
-```js:ZennSample/returnPromiseByFuncArg.js
+```js:returnPromiseByFuncArg.js
 // returnPromiseByFuncArg.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is Synchronously executed`);
+    console.log(`[${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("First Promise", 2).then((value) => {
-  console.log("<4> This line is Asynchronously executed");
+  console.log("[4] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 
-console.log("<3> Sync process");
+console.log("[3] Sync process");
 ```
 
 テンプレートリテラルで書き換えただけなので実行結果は同じになります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg.js
-<1> Sync process
-<2> This line is Synchronously executed
-<3> Sync process
-<4> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg.js
+[1] Sync process
+[2] This line is Synchronously executed
+[3] Sync process
+[4] This line is Asynchronously executed
 Resolved value:  First Promise
 ```
 
 それでは準備ができたのでが実際に複数の Promise インスタンスを作成してみて実行の順番がどうなるかを見てみます。`<>` で囲まれた文字の順番がどのように出力されるか、ここからは自分で出力の順番を予想してみてください。
 
-```js:ZennSample/returnPromiseByFuncArg2.js
+```js:returnPromiseByFuncArg2.js
 // returnPromiseByFuncArg2.js
-console.log("<A> Sync process");
+console.log("[A] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is Synchronously executed`);
+    console.log(`[${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("First Promise", "B").then((value) => {
-  console.log("<C> This line is Asynchronously executed");
+  console.log("[C] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 returnPromise("First Promise", "D").then((value) => {
-  console.log("<E> This line is Asynchronously executed");
+  console.log("[E] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 
-console.log("<F> Sync process");
+console.log("[F] Sync process");
 ```
 
 実行順番がどうなるか分かりましたか?
@@ -428,14 +428,14 @@ console.log("<F> Sync process");
 答えは、「A → B → D → F → C → E」となります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2.js
-<A> Sync process
-<B> This line is Synchronously executed
-<D> This line is Synchronously executed
-<F> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2.js
+[A] Sync process
+[B] This line is Synchronously executed
+[D] This line is Synchronously executed
+[F] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
-<E> This line is Asynchronously executed
+[E] This line is Asynchronously executed
 Resolved value:  First Promise
 ```
 :::
@@ -452,16 +452,16 @@ Resolved value:  First Promise
 
 また同じように `returnPromise("First Promise", "D")` で返ってくる Promise インスタンスはもすでに履行状態なので、直ちに `then()` メソッドの引数であるコールバック関数が Microtask queue へと送られます。もちろんこのコールバックもまだ同期処理が残っているため、まだ実行されません。
 
-最後の同期処理である `console.log("<F> Sync process");` が次に実行されます。
+最後の同期処理である `console.log("[F] Sync process");` が次に実行されます。
 
 ここまでで出力されるログは次のようになっていることを確認してください。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2.js
-<A> Sync process
-<B> This line is Synchronously executed
-<D> This line is Synchronously executed
-<F> Sync process
+❯ deno run returnPromiseByFuncArg2.js
+[A] Sync process
+[B] This line is Synchronously executed
+[D] This line is Synchronously executed
+[F] Sync process
 
 # ...この先はどうなる?
 ```
@@ -471,12 +471,12 @@ Resolved value:  First Promise
 Microtask queue はキューなので一番古いタスク(先に入れられたタスク)から実行していきます。最初にキューへと追加されたのは `returnPromise("First Promise", "B").then()` のコールバック関数です。従って、出力の続きは次のようになります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2.js
-<A> Sync process
-<B> This line is Synchronously executed
-<D> This line is Synchronously executed
-<F> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2.js
+[A] Sync process
+[B] This line is Synchronously executed
+[D] This line is Synchronously executed
+[F] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
 
 # ...この先はどうなる?
@@ -485,14 +485,14 @@ Resolved value:  First Promise
 そして、次にキューに追加されたのは `returnPromise("First Promise", "D").then()` のコールバック関数でした。従ってそのコールバック関数が実行されることで結局出力は次のようになります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2.js
-<A> Sync process
-<B> This line is Synchronously executed
-<D> This line is Synchronously executed
-<F> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2.js
+[A] Sync process
+[B] This line is Synchronously executed
+[D] This line is Synchronously executed
+[F] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
-<E> This line is Asynchronously executed
+[E] This line is Asynchronously executed
 Resolved value:  First Promise
 ```
 
@@ -500,25 +500,25 @@ Resolved value:  First Promise
 
 ```js
 // doubleThenCallback.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is Synchronously executed`);
+    console.log(`[${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("First Promise", "2").then((value) => {
-  console.log("<5> This line is Asynchronously executed");
+  console.log("[5] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 returnPromise("First Promise", "3").then((value) => {
-  console.log("<6> This line is Asynchronously executed");
+  console.log("[6] This line is Asynchronously executed");
   console.log("Resolved value: ", value);
 });
 
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 ↓ JS Visuzalizer 9000 で実際に可視化してみたので確認してくみてください。
@@ -531,50 +531,50 @@ console.log("<4> Sync process");
 
 ```js
 // returnPromiseByFuncArg2AddChain.js
-console.log("<A> Sync process");
+console.log("[A] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is Synchronously executed`);
+    console.log(`[${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("First Promise", "B")
   .then((value) => {
-    console.log("<C> This line is Asynchronously executed");
+    console.log("[C] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
   })
   .then(() => {
-    console.log("<D> This line is Asynchronously executed");
+    console.log("[D] This line is Asynchronously executed");
   });
 returnPromise("First Promise", "E")
   .then((value) => {
-    console.log("<F> This line is Asynchronously executed");
+    console.log("[F] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
   })
   .then(() => {
-    console.log("<G> This line is Asynchronously executed");
+    console.log("[G] This line is Asynchronously executed");
   });
 
-console.log("<H> Sync process");
+console.log("[H] Sync process");
 ```
 
 :::details 答え
 答えは、「A → B → E → H → C → F → D → G」となります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2AddChain.js
-<A> Sync process
-<B> This line is Synchronously executed
-<E> This line is Synchronously executed
-<H> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2AddChain.js
+[A] Sync process
+[B] This line is Synchronously executed
+[E] This line is Synchronously executed
+[H] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
-<F> This line is Asynchronously executed
+[F] This line is Asynchronously executed
 Resolved value:  First Promise
-<D> This line is Asynchronously executed
-<G> This line is Asynchronously executed
+[D] This line is Asynchronously executed
+[G] This line is Asynchronously executed
 ```
 :::
 
@@ -583,16 +583,16 @@ Resolved value:  First Promise
 準備としてコールバック関数などを省略してコードを簡略化してみます。
 
 ```js
-console.log("<A> Sync process");
+console.log("[A] Sync process");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("First Promise", "B").then(cb1).then(cb2);
 returnPromise("First Promise", "E").then(cb3).then(cb4);
-console.log("<H> Sync process");
+console.log("[H] Sync process");
 ```
 
 前のコードと考え方は同じです。まずは Event Loop の最初のステップである「同期処理の実行」が行われます。
 
-- (1) `console.log("<A> Sync process")` が同期処理される
+- (1) `console.log("[A] Sync process")` が同期処理される
 - (2) `returnPromise("First Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fullfilled)状態になるので、`returnPromise("First Promise", "B").then(cb)` のコードバック関数 `cb` が直ちに Microtask queue へと送られます。
 
 さて、ここまでは前のコードと同じですね。
@@ -620,25 +620,25 @@ Promise インスタンスは基本的に待機(pending)状態から始まりま
 そして、そのまま次の処理へと進みます。次の行は `returnPromise("First Promise", "E").then(cb1).then(cb2)` なので、まったく同じことが置きます。
 
 ```js
-console.log("<A> Sync process");
+console.log("[A] Sync process");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("First Promise", "B").then(cb1).then(cb2);
 returnPromise("First Promise", "E").then(cb3).then(cb4);
-console.log("<H> Sync process");
+console.log("[H] Sync process");
 ```
 
 1. `returnPromise("First Promise", "E")` が同期的に実行されて直ちに履行(Fullfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちに Microtask queue へと送られます
 2. `then(cb3)` で返ってくる別の Promise インスタンスはまだ待機(pending)状態なので `then(cb4)` のコールバック関数 `cb4` はまだキューへ送られずにそのまま待機となります
-3. 次の処理に進み、`console.log("<H> Sync process")` が実行されます
+3. 次の処理に進み、`console.log("[H] Sync process")` が実行されます
 
 これで Event Loop の最初のステップである「同期処理の実行」が終わりました。出力はこの時点で次のようになっています。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2AddChain.js
-<A> Sync process
-<B> This line is Synchronously executed
-<E> This line is Synchronously executed
-<H> Sync process
+❯ deno run returnPromiseByFuncArg2AddChain.js
+[A] Sync process
+[B] This line is Synchronously executed
+[E] This line is Synchronously executed
+[H] Sync process
 
 # ...この先はどうなる?
 ```
@@ -652,14 +652,14 @@ Event Loop の最初のステップである「同期処理の実行」の次は
 この時点での出力はこのようになっています。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2AddChain.js
-<A> Sync process
-<B> This line is Synchronously executed
-<E> This line is Synchronously executed
-<H> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2AddChain.js
+[A] Sync process
+[B] This line is Synchronously executed
+[E] This line is Synchronously executed
+[H] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
-<F> This line is Asynchronously executed
+[F] This line is Asynchronously executed
 Resolved value:  First Promise
 
 # ...この先はどうなる?
@@ -670,17 +670,17 @@ Resolved value:  First Promise
 従って、最終的な出力は次のようになります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2AddChain.js
-<A> Sync process
-<B> This line is Synchronously executed
-<E> This line is Synchronously executed
-<H> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2AddChain.js
+[A] Sync process
+[B] This line is Synchronously executed
+[E] This line is Synchronously executed
+[H] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
-<F> This line is Asynchronously executed
+[F] This line is Asynchronously executed
 Resolved value:  First Promise
-<D> This line is Asynchronously executed
-<G> This line is Asynchronously executed
+[D] This line is Asynchronously executed
+[G] This line is Asynchronously executed
 ```
 
 言葉で説明すると非常に長くなってしまいましたがこのような結果となります。
@@ -698,84 +698,84 @@ then()` メソッドの引数のコールバックには入力として前の `t
 
 ```js
 // returnPromiseByFuncArg2AddChainValue.js
-console.log("<A> Sync process");
+console.log("[A] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is Synchronously executed`);
+    console.log(`[${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("First Promise", "B")
   .then((value1) => {
-    console.log("<C> This line is Asynchronously executed");
+    console.log("[C] This line is Asynchronously executed");
     console.log("Resolved value: ", value1);
     return "Resolved value passing to the next then callback";
   })
   .then((value2) => {
-    console.log("<D> This line is Asynchronously executed");
+    console.log("[D] This line is Asynchronously executed");
     console.log("Resolved value: ", value2);
     return "Resolved value passing to the next then callback";
   })
   .then((value3) => {
-    console.log("<E> This line is Asynchronously executed");
+    console.log("[E] This line is Asynchronously executed");
     console.log("Resolved value: ", value3);
     // return "Resolved value passing to the next then callback";
   })
   .then((value4) => {
-    console.log("<F> This line is Asynchronously executed");
+    console.log("[F] This line is Asynchronously executed");
     console.log("Resolved value: ", value4);
   });
 returnPromise("First Promise", "G")
   .then((value1) => {
-    console.log("<H> This line is Asynchronously executed");
+    console.log("[H] This line is Asynchronously executed");
     console.log("Resolved value: ", value1);
     return "Resolved value passing to the next then callback";
   })
   .then((value2) => {
-    console.log("<I> This line is Asynchronously executed");
+    console.log("[I] This line is Asynchronously executed");
     console.log("Resolved value: ", value2);
     return "Resolved value passing to the next then callback";
   })
   .then((value3) => {
-    console.log("<J> This line is Asynchronously executed");
+    console.log("[J] This line is Asynchronously executed");
     console.log("Resolved value: ", value3);
     // return "Resolved value passing to the next then callback";
   })
   .then((value4) => {
-    console.log("<K> This line is Asynchronously executed");
+    console.log("[K] This line is Asynchronously executed");
     console.log("Resolved value: ", value4);
     return "Resolved value passing to the next then callback";
   });
 
-console.log("<L> Sync process");
+console.log("[L] Sync process");
 ```
 
 :::details 答え
 答えは、「A → B → G → L → C → H → D → I → E → J → F → K」となります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseByFuncArg2AddChainValue.js
-<A> Sync process
-<B> This line is Synchronously executed
-<G> This line is Synchronously executed
-<L> Sync process
-<C> This line is Asynchronously executed
+❯ deno run returnPromiseByFuncArg2AddChainValue.js
+[A] Sync process
+[B] This line is Synchronously executed
+[G] This line is Synchronously executed
+[L] Sync process
+[C] This line is Asynchronously executed
 Resolved value:  First Promise
-<H> This line is Asynchronously executed
+[H] This line is Asynchronously executed
 Resolved value:  First Promise
-<D> This line is Asynchronously executed
+[D] This line is Asynchronously executed
 Resolved value:  Resolved value passing to the next then callback
-<I> This line is Asynchronously executed
+[I] This line is Asynchronously executed
 Resolved value:  Resolved value passing to the next then callback
-<E> This line is Asynchronously executed
+[E] This line is Asynchronously executed
 Resolved value:  Resolved value passing to the next then callback
-<J> This line is Asynchronously executed
+[J] This line is Asynchronously executed
 Resolved value:  Resolved value passing to the next then callback
-<F> This line is Asynchronously executed
+[F] This line is Asynchronously executed
 Resolved value:  undefined
-<K> This line is Asynchronously executed
+[K] This line is Asynchronously executed
 Resolved value:  undefined
 ```
 
@@ -787,7 +787,7 @@ console.log("<A-1> Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is Synchronously executed`);
+    console.log(`[${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
@@ -854,11 +854,11 @@ console.log("<L-4> Sync process");
 
 ```js
 // returnPromiseFromThenCallback.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is (A)Synchronously executed`);
+    console.log(`[${order}] This line is (A)Synchronously executed`);
     // 非同期で実行される場合もあるのでテキストを変更した
     resolve(resolvedValue);
   });
@@ -866,18 +866,18 @@ const returnPromise = (resolvedValue, order) => {
 
 returnPromise("1st Promise", "2")
   .then((value) => {
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("2nd Promise", "6");
     // resolve される値は "2nd Promise" で、これが次の then() のコールバック関数の入力として渡される
   })
   .then((value) => {
-    console.log("<9> This line is Asynchronously executed");
+    console.log("[9] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
   });
 returnPromise("3rd Promise", "3")
   .then((value) => {
-    console.log("<7> This line is Asynchronously executed");
+    console.log("[7] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("4th Promise", "8");
     // resolve される値は "5th Promise" で、これが次の then() のコールバック関数の入力として渡される
@@ -887,7 +887,7 @@ returnPromise("3rd Promise", "3")
     console.log("Resolved value: ", value);
   });
   
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 今まで必ず同期処理として呼ばれていた `returnPromise()` 関数ですが、今回は `then()` メソッドのコールバックで呼び出しているものもあるのでそれらは非同期的に実行されます。従って出力されるテキストを一部変更しました。
@@ -895,18 +895,18 @@ console.log("<4> Sync process");
 これを実行すると、次のような出力になります。
 
 ```sh
-❯ deno run ZennSample/returnPromiseFromThenCallback.js
-<1> Sync process
-<2> This line is (A)Synchronously executed
-<3> This line is (A)Synchronously executed
-<4> Sync process
-<5> This line is Asynchronously executed
+❯ deno run returnPromiseFromThenCallback.js
+[1] Sync process
+[2] This line is (A)Synchronously executed
+[3] This line is (A)Synchronously executed
+[4] Sync process
+[5] This line is Asynchronously executed
 Resolved value:  1st Promise
-<6> This line is (A)Synchronously executed
-<7> This line is Asynchronously executed
+[6] This line is (A)Synchronously executed
+[7] This line is Asynchronously executed
 Resolved value:  3rd Promise
-<8> This line is (A)Synchronously executed
-<9> This line is Asynchronously executed
+[8] This line is (A)Synchronously executed
+[9] This line is Asynchronously executed
 Resolved value:  2nd Promise
 <10> This line is Asynchronously executed
 Resolved value:  4th Promise
@@ -923,24 +923,24 @@ Promise インスタンスを `then()` メソッドのコールバック関数�
 
 ```js
 // promiseNest.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is (A)Synchronously executed`);
+    console.log(`[${order}] This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "2")
   .then((value) => {
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("2nd Promise", "6")
       .then((value) => {
-        console.log("<9> This line is Asynchronously executed");
+        console.log("[9] This line is Asynchronously executed");
         console.log("Resolved value: ", value);
-        return "from <9> callback";
+        return "from [9] callback";
       });
   })
   .then((value) => {
@@ -949,7 +949,7 @@ returnPromise("1st Promise", "2")
   });
 returnPromise("3rd Promise", "3")
   .then((value) => {
-    console.log("<7> This line is Asynchronously executed");
+    console.log("[7] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("4th Promise", "8")
       .then((value) => {
@@ -963,25 +963,25 @@ returnPromise("3rd Promise", "3")
     console.log("Resolved value: ", value);
   });
 
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 基本的には今までの流れと代りません。また圧縮して書いてみます。
 
 ```js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("1st Promise", "2").then(cb1).then(cb2);
 returnPromise("3rd Promise", "3").then(cb3).then(cb4);
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 今までと同じところまで流れを書いてみます。
 1. 「同期処理を実行する」
-  1. `console.log("<1> Sync process")` が同期処理される
+  1. `console.log("[1] Sync process")` が同期処理される
   2. `returnPromise("1st Promise", "2")` が同期処理されて `then(cb1)` のコールバック `cb1` が直ちに Microtask queue へと送られる
   3. `returnPromise("3rd Promise", "3")` が同期処理されて `then(cb3)` のコールバック `cb3` が直ちに Microtask queue へと送られる
-  4. `console.log("<4> Sync process")` が同期処理される
+  4. `console.log("[4] Sync process")` が同期処理される
   5. Event Loop の次のステップへ移行
 2. 「Macrotask queue の Macrotask を実行する」
   6.  何も無いので Event Loop の次のステップへ
@@ -1001,7 +1001,7 @@ returnPromise("1st Promise", "2")
   .then((value) => {
     // これが cb1 
     // 上から下に実行されていく
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
 
     return returnPromise("2nd Promise", "6").then(callbackNext);
@@ -1033,7 +1033,7 @@ returnPromise("3rd Promise", "3")
   .then((value) => {
     // これが cb3 
     // 上から下に実行されていく
-    console.log("<7> This line is Asynchronously executed");
+    console.log("[7] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
 
     return returnPromise("4th Promise", "8").then(callbackNext2);
@@ -1054,14 +1054,14 @@ returnPromise("3rd Promise", "3")
 returnPromise("1st Promise", "2")
   .then((value) => {
     // cb1
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("2nd Promise", "6")
       .then((value) => {
         // callbackNext
-        console.log("<9> This line is Asynchronously executed");
+        console.log("[9] This line is Asynchronously executed");
         console.log("Resolved value: ", value);
-        return "from <9> callback";
+        return "from [9] callback";
       });
   })
   .then((value) => {
@@ -1071,7 +1071,7 @@ returnPromise("1st Promise", "2")
   });
 ```
 
-`callbackNext` が実行されると `cb1` コールバック内において結局、`"from <9> callback"` という文字列で解決された Promise インスタンスが結局 `return` されたことになります。つまり、`return Promsie.resolve("from <9> callback")` と同じです。
+`callbackNext` が実行されると `cb1` コールバック内において結局、`"from [9] callback"` という文字列で解決された Promise インスタンスが結局 `return` されたことになります。つまり、`return Promsie.resolve("from [9] callback")` と同じです。
 
 次のように書きましたが、`then()` メソッドのコールバック関数内で待機状態の Promsie が解決されて履行(Fullfilled)状態になったので、その `then()` メソッドから返ってくる Promise インスタンスも解決されて履行状態となります。
 
@@ -1092,23 +1092,23 @@ returnPromise("1st Promise", "2")
 そして、同じように、`cb2`、`cb4` の順番で実行されて終わります。出力は次のようになります。
 
 ```js
-❯ deno run ZennSample/promiseNest.js
-<1> Sync process
-<2> This line is (A)Synchronously executed
-<3> This line is (A)Synchronously executed
-<4> Sync process
-<5> This line is Asynchronously executed
+❯ deno run promiseNest.js
+[1] Sync process
+[2] This line is (A)Synchronously executed
+[3] This line is (A)Synchronously executed
+[4] Sync process
+[5] This line is Asynchronously executed
 Resolved value:  1st Promise
-<6> This line is (A)Synchronously executed
-<7> This line is Asynchronously executed
+[6] This line is (A)Synchronously executed
+[7] This line is Asynchronously executed
 Resolved value:  3rd Promise
-<8> This line is (A)Synchronously executed
-<9> This line is Asynchronously executed
+[8] This line is (A)Synchronously executed
+[9] This line is Asynchronously executed
 Resolved value:  2nd Promise
 <10> This line is Asynchronously executed
 Resolved value:  4th Promise
 <11> This line is Asynchronously executed
-Resolved value:  from <9> callback
+Resolved value:  from [9] callback
 <12> This line is Asynchronously executed
 Resolved value:  from <10> callback
 ```
@@ -1123,30 +1123,30 @@ Resolved value:  from <10> callback
 実際にネストを解消してみます。
 
 ```diff js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is (A)Synchronously executed`);
+    console.log(`[${order}] This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "2")
   .then((value) => {
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("2nd Promise", "6")
 -     .then((value) => {
--       console.log("<9> This line is Asynchronously executed");
+-       console.log("[9] This line is Asynchronously executed");
 -       console.log("Resolved value: ", value);
--       return "from <9> callback";
+-       return "from [9] callback";
 -     });
   })
 + .then((value) => {
-+   console.log("<9> This line is Asynchronously executed");
++   console.log("[9] This line is Asynchronously executed");
 +   console.log("Resolved value: ", value);
-+   return "from <9> callback";
++   return "from [9] callback";
 + })
   .then((value) => {
     console.log("<11> This line is Asynchronously executed");
@@ -1154,7 +1154,7 @@ returnPromise("1st Promise", "2")
   });
 returnPromise("3rd Promise", "3")
   .then((value) => {
-    console.log("<7> This line is Asynchronously executed");
+    console.log("[7] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("4th Promise", "8")
 -     .then((value) => {
@@ -1173,32 +1173,32 @@ returnPromise("3rd Promise", "3")
     console.log("Resolved value: ", value);
   });
 
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 結果はこのようになり、ネストした状態のものよりも圧倒的に見やすく、流れが分かりなりました。
 
 ```js
 // promiseNestShallow.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is (A)Synchronously executed`);
+    console.log(`[${order}] This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "2")
   .then((value) => {
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("2nd Promise", "6")
   })
   .then((value) => {
-    console.log("<9> This line is Asynchronously executed");
+    console.log("[9] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
-    return "from <9> callback";
+    return "from [9] callback";
   })
   .then((value) => {
     console.log("<11> This line is Asynchronously executed");
@@ -1206,7 +1206,7 @@ returnPromise("1st Promise", "2")
   });
 returnPromise("3rd Promise", "3")
   .then((value) => {
-    console.log("<7> This line is Asynchronously executed");
+    console.log("[7] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     return returnPromise("4th Promise", "8")
   })
@@ -1220,29 +1220,29 @@ returnPromise("3rd Promise", "3")
     console.log("Resolved value: ", value);
   });
 
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 出力結果は全く同じになります。
 
 ```sh
-❯ deno run ZennSample/promiseNestShallow.js
-<1> Sync process
-<2> This line is (A)Synchronously executed
-<3> This line is (A)Synchronously executed
-<4> Sync process
-<5> This line is Asynchronously executed
+❯ deno run promiseNestShallow.js
+[1] Sync process
+[2] This line is (A)Synchronously executed
+[3] This line is (A)Synchronously executed
+[4] Sync process
+[5] This line is Asynchronously executed
 Resolved value:  1st Promise
-<6> This line is (A)Synchronously executed
-<7> This line is Asynchronously executed
+[6] This line is (A)Synchronously executed
+[7] This line is Asynchronously executed
 Resolved value:  3rd Promise
-<8> This line is (A)Synchronously executed
-<9> This line is Asynchronously executed
+[8] This line is (A)Synchronously executed
+[9] This line is Asynchronously executed
 Resolved value:  2nd Promise
 <10> This line is Asynchronously executed
 Resolved value:  4th Promise
 <11> This line is Asynchronously executed
-Resolved value:  from <9> callback
+Resolved value:  from [9] callback
 <12> This line is Asynchronously executed
 Resolved value:  from <10> callback
 ```
@@ -1264,30 +1264,30 @@ Promise チェーンはこのようにネストさせずに流れを見やすく
 
 ```js
 // promiseShouldBeReturned.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is (A)Synchronously executed`);
+    console.log(`[${order}] This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "2")
   .then((value) => {
-    console.log("<5> This line is Asynchronously executed");
+    console.log("[5] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     // return しない場合は副作用となり値が渡らず解決されるまえに次に行ってしまう
     returnPromise("2nd Promise", "6")
   })
   .then((value) => {
     // この value は undefined となる
-    console.log("<9> This line is Asynchronously executed");
+    console.log("[9] This line is Asynchronously executed");
     console.log("Resolved value: ", value); // undefined が表示される
   });
 returnPromise("3rd Promise", "3")
   .then((value) => {
-    console.log("<7> This line is Asynchronously executed");
+    console.log("[7] This line is Asynchronously executed");
     console.log("Resolved value: ", value);
     // Promise インスタンスについては必ず return するようにする
     return returnPromise("4th Promise", "8")
@@ -1297,24 +1297,24 @@ returnPromise("3rd Promise", "3")
     console.log("Resolved value: ", value);
   });
 
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 これを実行すると次の出力を得ます。`undefined` となっているところに注目してください。
 
 ```sh
-❯ deno run ZennSample/promiseShouldBeReturned.js
-<1> Sync process
-<2> This line is (A)Synchronously executed
-<3> This line is (A)Synchronously executed
-<4> Sync process
-<5> This line is Asynchronously executed
+❯ deno run promiseShouldBeReturned.js
+[1] Sync process
+[2] This line is (A)Synchronously executed
+[3] This line is (A)Synchronously executed
+[4] Sync process
+[5] This line is Asynchronously executed
 Resolved value:  1st Promise
-<6> This line is (A)Synchronously executed
-<7> This line is Asynchronously executed
+[6] This line is (A)Synchronously executed
+[7] This line is Asynchronously executed
 Resolved value:  3rd Promise
-<8> This line is (A)Synchronously executed
-<9> This line is Asynchronously executed
+[8] This line is (A)Synchronously executed
+[9] This line is Asynchronously executed
 Resolved value:  undefined
 <10> This line is Asynchronously executed
 Resolved value:  4th Promise
@@ -1341,11 +1341,11 @@ a => a + 100;
 
 ```js
 // promiseShouldBeReturned.js
-console.log("<1> Sync process");
+console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`<${order}> This line is (A)Synchronously executed`);
+    console.log(`[${order}] This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
@@ -1362,7 +1362,7 @@ returnPromise("3rd Promise", "3")
   })
   .then((value) => console.log("Resolved value: ", value));
 
-console.log("<4> Sync process");
+console.log("[4] Sync process");
 ```
 
 `.then((value) => console.log("Resolved value: ", value));` については、`console.log()` の返り値は `undefined` となるので、次の `then()` メソッドのコールバックに値を渡す必要がなければやっても大丈夫です。
