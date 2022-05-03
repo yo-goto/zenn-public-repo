@@ -129,7 +129,7 @@ console.log("[H] Sync process");
 :::message alert
 Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
 
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/epasync-event-loop) のチャプターを確認してください。
+詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
 :::
 
 最初の Task(Macrotask) の実行が終わり、Event loop は次のステップ「Microtask queue にあるすべての Microtask の実行」(ステップ４)を行います。
@@ -273,7 +273,7 @@ const promise = new Promise((_, rej) => {
 :::message alert
 Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
 
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/epasync-event-loop) のチャプターを確認してください。
+詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
 :::
 
 最初の Task(Macrotask) の実行が終わり、Event loop は次のステップ「Microtask queue にあるすべての Microtask の実行」(ステップ４)を行います。

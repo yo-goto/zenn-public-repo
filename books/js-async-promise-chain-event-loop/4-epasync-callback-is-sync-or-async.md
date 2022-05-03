@@ -74,7 +74,7 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 :::message alert
 Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
 
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/epasync-event-loop) のチャプターを確認してください。
+詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
 :::
 
 マイクロタスクは現在１つあるので直ちにそれを実行します。それによって、"[4]This line is Asynchronously executed" がログに出力されて、その後に "Resolved value:  Resolved!" がログに出力されます。

@@ -119,7 +119,7 @@ Resolved value:  2nd Promise
 :::message alert
 Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
 
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/epasync-event-loop) のチャプターを確認してください。
+詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
 :::
 
 `executor` 関数内ですぐに `resolve()` が呼び出されるので Promise インスタンスは直ちに履行(Fullfilled)状態へと移行します。`returnPromise("1st Promise", "B")` でここまでは同期的に実行されていることに注意してください。
@@ -149,7 +149,7 @@ Event loop のステップ１はステップ２と同質のものであり、「
 :::message alert
 Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
 
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/epasync-event-loop) のチャプターを確認してください。
+詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
 :::
 
 最初の Task(Macrotask) の実行が終わり、Event loop は次のステップ「Microtask queue にあるすべての Microtask の実行」(ステップ４)を行います。

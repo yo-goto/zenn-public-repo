@@ -4,7 +4,7 @@ title: "Event loop は内部にネストしたループがある[作成中]"
 
 `setTimeout` とマクロタスクが分かったところで、Event loop には実はネストがあることを確認したいと思います。
 
-Event loop の詳細については[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/epasync-event-loop) のチャプターに記載しましたが、ブラウザ環境における Event loop の疑似コードは以下のようになっていました。
+Event loop の詳細については[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターに記載しましたが、ブラウザ環境における Event loop の疑似コードは以下のようになっていました。
 
 ```js
 while (eventLoop.waitForTask()) {
