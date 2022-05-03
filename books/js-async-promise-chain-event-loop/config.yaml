@@ -10,3 +10,18 @@ summary: "JavaScript の非同期処理は非常に難しく、学習そのも�
 topics: ["JavaScript", "非同期処理", "Promise"]
 published: true
 price: 0
+chapters:
+  - 1.epasync-begin
+  - 2.epasync-event-loop
+  - a-epasync-promise-basic-consept
+  - 3.epasync-promise-constructor-executor-func
+  - 4.epasync-callback-is-sync-or-async
+  - 5.epasync-multiple-promises
+  - 6.epasync-then-always-return-new-promise
+  - 7.epasync-pass-value-to-the-next-chain
+  - 8.epasync-return-promise-in-then-callback
+  - 9.epasync-dont-next-promise-chain
+  - 10.epasync-dont-use-side-effect
+  - 11.epasync-omit-return-by-arrow-shortcut
+  - 12.epasync-wrapping-macrotask
+  - 13.epasync-loop-is-nested
