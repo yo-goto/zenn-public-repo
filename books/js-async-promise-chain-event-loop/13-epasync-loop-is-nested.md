@@ -1,101 +1,90 @@
 ---
-title: "Event loop は内部にネストしたループがある[作成中]"
+title: "イベントループは内部にネストしたループがある"
 ---
 
-`setTimeout` とマクロタスクが分かったところで、Event loop には実はネストがあることを確認したいと思います。
+`setTimeout` とマクロタスクが分かったところで、イベントループには実はネストがあることを再確認しましょう。
 
-Event loop の詳細については[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターに記載しましたが、ブラウザ環境における Event loop の疑似コードは以下のようになっていました。
+『それぞれのイベントループ』のチャプターですでに色々なイベントループを見ましたので、**もう環境に囚われることはありません**。V8 のデフォルトイベントループで十分です。
 
-```js
-while (eventLoop.waitForTask()) {
-  const taskQueue = eventLoop.selectTaskQueue()
-  if (taskQueue.hasNextTask()) {
-    taskQueue.processNextTask()
+大切なことは、「**単一タスクが処理されたら、すべてのマイクロタスクを処理する**」です。V8 エンジンのイベントループの疑似コードを確認します。
+
+```js:V8エンジンのデフォルトイベントループ
+while (tasksAreWaiting()) {
+  queue = getNextQueue();
+  task = queue.pop();
+  execute(task);
+
+  while (micortaskQueue.hasTasks()) {
+    doMicrotask();
   }
-
-  const microtaskQueue = eventLoop.microTaskQueue
-  while (microtaskQueue.hasNextMicrotask()) {
-    microtaskQueue.processNextMicrotask()
-  }
-
-  if (shouldRender()) {
-    applyScrollResizeAndCSS()
-    runAnimationFrames()
-    render()
-  }
-}
-```
-
-正直、レンダリングまでは考慮したくないのでとりあえずレンダリングの部分を省略します(Deno でもレンダリングのステップはないので)。
-
-```js
-while (eventLoop.waitForTask()) {
-  const taskQueue = eventLoop.selectTaskQueue()
-  if (taskQueue.hasNextTask()) {
-    taskQueue.processNextTask()
-  }
-
-  const microtaskQueue = eventLoop.microTaskQueue
-  while (microtaskQueue.hasNextMicrotask()) {
-    microtaskQueue.processNextMicrotask()
-  }
-  // レンダリングの部分を省略
 }
 ```
 
 見て分かるように `while` ループ内部にもう１つ `while` ループが存在していますね。
 
-Event loop 自体は最初の大きなループですが、内部のネストされているループは Microtask queue を完全に空にするまで実行するためのループです。
+イベントループ全体の１サイクルは単一タスクを処理するための大きなループですが、内部のネストされているループはマイクロタスクを完全に空にするまで実行するためのループです。これを理解していないと次のコードの実行順番がわかりません。
 
-Event loop の1回のループにおいて Task(Macrotask) と Microtask の処理には次のような違いがあります。
-
-- Task(Macrotask) は一個のみが処理
-- Microtask はすべて処理される(キューが完全に空になるまで)
-
-これを理解していないと次のコードの実行順番がわかりません。
+上の疑似コードを参考に実行予測してみてください。
 
 ```js
 // realitySettimeout.js
-// Event loop においてループがネストしていることを知らないと実行順序が分からない
-console.log("[1] Sync process");
+// イベントループにおいてループがネストしていることを知らないと実行順序が分からない
+console.log("[A] 🦖 MAINLINE: Start");
 
 setTimeout(() => {
-  console.log("[3] setTimeout[0ms] finished");
+  console.log("[B] ⏰ TIMERS: setTimeout callback");
   Promise.resolve("1st Promise")
     .then(value => {
-      console.log("[4] Resolved value:", value);
+      console.log("[C] 👦 MICRO: Resolved value:", value);
     })
     .then(() => {
-      console.log("[5] Next chain");
+      console.log("[D] 👦 MICRO: Next chain");
     })
-}, 0);
+});
 setTimeout(() => {
-  console.log("[6] setTimeout[1000ms] finished");
+  console.log("[E] ⏰ TIMERS: setTimeout callback");
   Promise.resolve("2nd Promise")
     .then((value) => {
-      console.log("[7] Resolved value:", value);
+      console.log("[F] 👦 MICRO: Resolved value:", value);
     })
     .then(() => {
-      console.log("[8] Next chain");
+      console.log("[G] 👦 MICRO: Next chain");
     });
-}, 0);
+});
 
-console.log("[2] Sync process");
+console.log("[H] 🦖 MAINLINE: End");
 ```
 
-実際に実行すると次の出力を得ます。
+イベントループの疑似コードが理解できていると出力結果が予測できます。
 
-```sh
+:::details 答え
+答えは、「A → H → B → C → D → E → F → G」となります。
+
+```sh:数字付きで出力
+# V8, Node, Deno ですべて同じ結果
 ❯ deno run realitySettimeout.js
-[1] Sync process
-[2] Sync process
-[3] setTimeout[0ms] finished
-[4] Resolved value: 1st Promise
-[5] Next chain
-[6] setTimeout[1000ms] finished
-[7] Resolved value: 2nd Promise
-[8] Next chain
+[A-1] 🦖 MAINLINE: Start
+[H-2] 🦖 MAINLINE: End
+[B-3] ⏰ TIMERS: setTimeout callback
+[C-4] 👦 MICRO: Resolved value: 1st Promise
+[D-5] 👦 MICRO: Next chain
+[E-6] ⏰ TIMERS: setTimeout callback
+[F-7] 👦 MICRO: Resolved value: 2nd Promise
+[G-8] 👦 MICRO: Next chain
 ```
+:::
+
+どうなるか考えてみましょう。
+
+スクリプト評価による最初のタスクが実行されます。コールスタックにグローバルコンテキストが作成されてすべての同期処理が処理されます。`console.log()` → `setTimeout()` → `setTimeout()` → `console.log()` というように API 呼び出しが行われていきます。
+
+これらの同期処理が終わり、グローバルコンテキストがポップして破棄されると、マイクロタスクキューにあるすべてのマイクロタスクを処理します。ですが、同期処理が終わった時点でマイクロタスクキューにマイクロタスクが無いので、タスクを処理します。遅延時間０でタスクを発行するように `setTimeout()` を介して環境に伝えていたので、ほぼノータイムでタスクキューにタスクが２つ順番にキューされています。というわけでタイマー用タスクキューの先頭にあるタスクを１つ処理します。登録していたコールバック関数内の処理が開始されます。`console.log()` が実行されたら、すぐに `Promise.resolve().then()` に出会うので、直ちにマイクロタスクが発行されます。コールバック関数内の同期処理がすべて完了し、コールバック関数が作成していた関数実行コンテキストがコールスタックからポップして破棄されます。
+
+コールスタックが空になったのでマイクロタスクチェックポイントとなります。マイクロタスクキューにあるすべてのマイクロタスクが実行されます。マイクロタスクがコールスタックに積まれて実行されます。これによって、`Promise.resolve().then()` で返ってくる Promsie インスタンスは直ちに履行状態になるので、再びマイクロタスクキューへ直ちにマイクロタスクが発行されます。
+
+そしてマイクロタスクがマイクロタスクキューにある限り処理されるので、これまたマイクロタスクがコールスタックに積まれて処理されます。すべてのマイクロタスクがなくなったので、再びタイマー用タスクキューの先頭にあるタスクを処理します。コールバックがコールスタックに置かれてコールバック関数内の同期処理がすべて行われます。また同じく、`Promise.reoslve().then()` で直ちにマイクロタスクが発行されます。同期処理がすべて終わり実行コンテキストがポップして破棄されコールスタックが空になります。再びマイクロタスクのチェックポイントでマイクロタスクキューにあるマイクロタスクをすべて処理します。これまたすぐに `Promise.resolve().then()` で返ってくる Promise インスタンスが履行状態になるので、直ちにマイクロタスクが発行されます。そして生成されたマイクロタスクが処理しつくされます。この時点で、タスクキューとマイクロタスクキューにはなにもなくなり、待機状態のタスクどもがなくなったのでプログラムが終了します。
+
+かなり説明が長くなりましたね😅
 
 実際にはこのような書き方はめったに見ないと思います。というのもこのコードのやりたいこととしては、「特定の時間が経過したらあるタスクを実行して、そのタスクが完了したら所定のタスクを実行する」というものなので、それなら前のチャプターで見たように Promise で `setTimeout()` をラップして Promise チェーンにすればよいので(上のコードでは `setTimeout()` の第二引数に遅延時間を指定していないため、`0` が指定された場合と同じように扱われます)。
 
@@ -146,197 +135,62 @@ console.log("[2] Sync process");
 [8] Next chain
 ```
 
-今度のコードはもっと難しいです。
+イベントループにマイクロタスクを処理するためのループがあることが理解できたと思います。今度のコードはもっと難しいです。実行予測してみてください。
 
 ```js
 // realitySettimeout-nested.js
-// Event loop においてループがネストしていることを知らないと実行順序が分からない
-// ネストさせたので確実にわからないと解けない
-console.log("[1] Sync process");
+console.log("[A] 🦖 MAINLINE: Start");
 
 setTimeout(() => {
-  console.log("[3] setTimeout[0ms] finished");
+  console.log("[B] ⏰ TIMRES: setTimeout[0ms]");
+
   Promise.resolve("1st Promise")
-    .then((value) => {
-      console.log("[4] Resolved value:", value);
-    })
-    .then(() => {
-      console.log("[5] Next chain");
-    });
+    .then((value) => console.log("[C] 👦 MICRO: Resolved value:", value))
+    .then(() => console.log("[D] 👦 MICRO: Next chain"));
 
   setTimeout(() => {
-    console.log("[9] setTimeout[0ms] finished");
+    console.log("[E] ⏰ TIMRES: setTimeout[0ms]");
+
     Promise.resolve("2nd Promise")
-      .then((value) => {
-        console.log("[10] Resolved value:", value);
-      })
-      .then(() => {
-        console.log("[11] Next chain");
-      });
+      .then((value) => console.log("[F] 👦 MICRO: Resolved value:", value))
+      .then(() => console.log("[H] 👦 MICRO: Next chain"));
   });
 });
+
 setTimeout(() => {
-  console.log("[6] setTimeout[1000ms] finished");
+  console.log("[I] ⏰ TIMERS: setTimeout");
+
   Promise.resolve("3rd Promise")
-    .then((value) => {
-      console.log("[7] Resolved value:", value);
-    })
-    .then(() => {
-      console.log("[8] Next chain");
-    });
+    .then((value) => console.log("[J] 👦 MICRO: Resolved value:", value))
+    .then(() => console.log("[K] 👦 MICRO: Next chain"));
 });
 
-console.log("[2] Sync process");
+Promise.resolve().then(() => console.log("[L] 👦 MICRO: then"));
+
+console.log("[M] 🦖 MAINLINE: End");
 ```
 
-実際に実行すると次の出力を得ます。
+ここまでくればほぼイベントループのモデルが頭に完成しつつあると思いますので、きっと分かるはずです。
 
+:::details 答え
+答えは、「A → M → L → B → C → D → I → J → K → E → F → H」となります。
+もちろん V8, Node, Deno ですべて同じ結果となります。
 ```sh
 ❯ deno run realitySettimeout-nested.js
-[1] Sync process
-[2] Sync process
-[3] setTimeout[0ms] finished
-[4] Resolved value: 1st Promise
-[5] Next chain
-[6] setTimeout[1000ms] finished
-[7] Resolved value: 3rd Promise
-[8] Next chain
-[9] setTimeout[0ms] finished
-[10] Resolved value: 2nd Promise
-[11] Next chain
+[A-1] 🦖 MAINLINE: Start
+[M-2] 🦖 MAINLINE: End
+[L-3] 👦 MICRO: then
+[B-4] ⏰ TIMRES: setTimeout[0ms]
+[C-5] 👦 MICRO: Resolved value: 1st Promise
+[D-6] 👦 MICRO: Next chain
+[I-7] ⏰ TIMERS: setTimeout
+[J-8] 👦 MICRO: Resolved value: 3rd Promise
+[K-9] 👦 MICRO: Next chain
+[E-10] ⏰ TIMRES: setTimeout[0ms]
+[F-11] 👦 MICRO: Resolved value: 2nd Promise
+[H-12] 👦 MICRO: Next chain
 ```
+:::
 
-それでは、トップレベルに Promise チェーンを配置してみました。どうなるでしょうか?
+説明は上でやったものとほぼ同じになるので省略します。
 
-```js
-// realitySettimeout-nestedPlus.js
-console.log("[A-1] Sync process");
-
-setTimeout(() => {
-  console.log("[B-4] setTimeout[0ms] finished");
-  Promise.resolve("1st Promise")
-    .then((value) => {
-      console.log("[C-5] Resolved value:", value);
-    })
-    .then(() => {
-      console.log("[D-6] Next chain");
-    });
-
-  setTimeout(() => {
-    console.log("[E-10] setTimeout[0ms] finished");
-    Promise.resolve("2nd Promise")
-      .then((value) => {
-        console.log("[F-11] Resolved value:", value);
-      })
-      .then(() => {
-        console.log("[G-12] Next chain");
-      });
-  });
-});
-setTimeout(() => {
-  console.log("[H-7] setTimeout[1000ms] finished");
-  Promise.resolve("3rd Promise")
-    .then((value) => {
-      console.log("[I-8] Resolved value:", value);
-    })
-    .then(() => {
-      console.log("[J-9] Next chain");
-    });
-});
-// トップレベルに Promsei チェーンを追加
-Promise.resolve("4th Promise")
-  .then((value) => console.log("[K-3]", value));
-
-console.log("[L-2] Sync process");
-```
-
-出力は次のようになります。
-
-```sh
-❯ deno run realitySettimeout-nestedPlus.js
-[A-1] Sync process
-[L-2] Sync process
-[K-3] 4th Promise
-[B-4] setTimeout[0ms] finished
-[C-5] Resolved value: 1st Promise
-[D-6] Next chain
-[H-7] setTimeout[1000ms] finished
-[I-8] Resolved value: 3rd Promise
-[J-9] Next chain
-[E-10] setTimeout[0ms] finished
-[F-11] Resolved value: 2nd Promise
-[G-12] Next chain
-```
-
-Event loop のステップにおいて、最初は「スクリプトの評価」が Task として扱われるので、コードを上から下に順番に評価し同期処理をすべて実行します。そして Event loop は次のステップへと移行して、Microtask queue が完全に空になるまで実行します。
-
-
-
-
-
-
-次は更に難しいです。
-
-```js
-// realitySettimeout-nestedPlus.js
-console.log("[A-1] Sync process");
-
-setTimeout(() => {
-  console.log("[B-4] setTimeout[0ms] finished");
-  Promise.resolve("1st Promise")
-    .then((value) => {
-      console.log("[C-6] Resolved value:", value);
-    })
-    .then(() => {
-      console.log("[D-7] Next chain");
-    });
-  console.log("[E-5]");
-
-  setTimeout(() => {
-    console.log("[F-12] setTimeout[0ms] finished");
-    Promise.resolve("2nd Promise")
-      .then((value) => {
-        console.log("[G-13] Resolved value:", value);
-      })
-      .then(() => {
-        console.log("[H-14] Next chain");
-      });
-  });
-});
-setTimeout(() => {
-  console.log("[I-8] setTimeout[1000ms] finished");
-  Promise.resolve("3rd Promise")
-    .then((value) => {
-      console.log("[J-10] Resolved value:", value);
-    })
-    .then(() => {
-      console.log("[K-11] Next chain");
-    });
-  console.log("[L-9]");
-});
-Promise.resolve()
-  .then(() => console.log("[M-3]"));
-
-
-console.log("[N-2] Sync process");
-```
-
-これを出力すると次のようになります。
-
-```sh
-❯ deno run realitySettimeout-nestedPlus.js
-[A-1] Sync process
-[N-2] Sync process
-[M-3]
-[B-4] setTimeout[0ms] finished
-[E-5]
-[C-6] Resolved value: 1st Promise
-[D-7] Next chain
-[I-8] setTimeout[1000ms] finished
-[L-9]
-[J-10] Resolved value: 3rd Promise
-[K-11] Next chain
-[F-12] setTimeout[0ms] finished
-[G-13] Resolved value: 2nd Promise
-[H-14] Next chain
-```

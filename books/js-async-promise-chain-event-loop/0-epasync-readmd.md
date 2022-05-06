@@ -1,15 +1,24 @@
-title: "イベントループとプロミスチェーンで学ぶJavaScriptの非同期処理"
-summary: "JavaScript の非同期処理は非常に難しく、学習そのものにハードルがあります。
-\n\n
-そして、難しさの本質は「制御の流れ」が掴みづらいことにあります。
-\n\n
-この本では非同期処理の理解するために必要な概念であり仕組みでもある Event loop において Promise chain の処理がどのように動くかを実際にクイズ形式で学ぶことによって非同期処理の「制御の流れ」を掴めるように訓練します。
-\n\n
-本としての体裁は取っていますが、自分自身のアウトプットを兼ねているため、この本は無料公開となっています。現時点で内容としては未完成なので、頻繁に追記修正がある点に注意してください。
-"
-topics: ["JavaScript", "Node", "Deno", "非同期処理", "Promise"]
-published: true
-price: 0
+---
+title: "EPAsync book 管理ノート"
+type: []
+---
+# 管理用ノート
+
+タスク
+- `config.yml` ファイルでチャプター管理した方が良さそう
+  - 内容を後で差し替えたり、追加したりする時に管理しづらい。
+- yamlデータを各データに記載する
+
+追加内容
+- レンダリングパイプライン
+- タスク詳細
+- 擬似コードnodeなど
+- 実行コンテキスト
+- Promise の状態の詳細
+
+## チャプター管理
+
+```yaml
 chapters:
   - 1-epasync-begin # はじめに
   - f-epasync-asyncronous-apis # 非同期APIと環境
@@ -31,4 +40,5 @@ chapters:
   - 11-epasync-omit-return-by-arrow-shortcut # アロー関数で return を省略する
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
+```
 

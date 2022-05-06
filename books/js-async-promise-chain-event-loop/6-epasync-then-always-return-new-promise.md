@@ -83,12 +83,15 @@ console.log("[H] Sync process");
 Promise チェーンにおいて、各 `then()` メソッドにおいて返ってくる Promise インスタンスはそれぞれ別のモノであるということを意識してください。
 
 # Promise インスタンスの状態
-急に話は代わりますが、Promise インスタンスというものはそれぞれ「状態」を持ってましたね。
+急に話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
 
-- 待機(pending)状態
-- 不変(Setteled)状態: a.k.a 決定状態
-  - 履行(Fullfilled)状態
-  - 拒否(Rejected)状態
+- Pending(待機状態)
+- Fullfilled(履行状態)
+- Rejected(拒否状態)
+
+:::message
+Promise の状態などの基本概念については、チャプター『Promise の基本概念』を参照してください。
+:::
 
 `Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise チェーンでは `then()` メソッドで返ってくる Promise インスタンスの状態が待機(pending)状態から履行(Fullfilled)状態へと変わった時点で次の `then()` メソッドで登録したコールバックが Microtask queue へと送られます。
 
@@ -123,8 +126,6 @@ console.log("[H] Sync process");
 
 # ...この先はどうなる?
 ```
-
-~~Event Loop の最初のステップである「スクリプトの評価」の次は「Macrotask queue にある Macrotask の実行」を行います。しかし、Macrotask を作成するような処理は行っていないので Macrotask queue にタスクは存在していません。従って、Event Loop は再び次のステップへと移行します。~~
 
 :::message alert
 Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。

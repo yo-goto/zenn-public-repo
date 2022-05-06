@@ -13,7 +13,6 @@ TypeScript についてはオープンソースで公開されている『サバ
 
 https://typescriptbook.jp/reference/promise-async-await
 
-
 ## Promise の型注釈
 Promise の型注釈を理解する上ではジェネリクスの概念と型引数・型変数を理解する必要があります。
 

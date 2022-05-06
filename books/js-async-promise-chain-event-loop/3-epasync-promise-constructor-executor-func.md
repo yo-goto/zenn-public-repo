@@ -197,7 +197,7 @@ const promise = new Promise((_, rej) => {
 
 ```js
 // executorBothEmit.js
-// resolve も reject も引数として渡さいないで省略
+// resolve も reject も引数として渡さないで省略する
 const promise = new Promise(() => {
   console.log("hello zenn");
 });

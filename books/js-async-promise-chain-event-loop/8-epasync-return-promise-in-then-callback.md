@@ -1,5 +1,5 @@
 ---
-title: "thenコールバックでPromiseインスタンスを返す"
+title: "then コールバックで Promise インスタンスを返す"
 ---
 
 今のコードでは `then()` メソッドのコールバックにおいて `return` して返却したのは `"Resolved value passing to the next then callback"` という文字列でした。

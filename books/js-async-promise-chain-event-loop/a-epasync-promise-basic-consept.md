@@ -53,11 +53,11 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 
 `resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promsie インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap ができないため単純に Rejected 状態に遷移します。
 
-詳細については次の記事を参考にしてみてください。詳細については将来的にチャプターを追加するかもしれません。
+:::message
+Unrapping については『resolve と reject の使い方』で解説しています。そちらを参照してください。
+:::
 
-https://www.saurabhmisra.dev/promises-in-javascript-resolved-promise-fates
-
-難しいですが、Fate の概念は他の文章を読むときに役立つかもしれません。または、`Promise.fullfill()` というメソッドが存在せずに `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。
+難しいですが、Fate の概念は他の文章を読むときに役立ちます。または、`Promise.fullfill()` というメソッドが存在せずに `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。
 
 あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。
 
