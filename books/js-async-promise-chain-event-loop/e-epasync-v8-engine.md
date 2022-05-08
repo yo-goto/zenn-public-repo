@@ -18,7 +18,7 @@ https://source.chromium.org/chromium/chromium/src/+/main:v8/
 
 V8 は **Google が提供するオープンソースの JavaScript エンジン**であり、C++ で書かれており、基本的に Chrome で利用されています。
 
-重要なこととして、V8 エンジンは JavaScript の標準化された言語機能の仕様である **ECMAScript を実装しています**。他の環境ではこの JavaScript エンジンを埋め込んだ上で API などを提供することでその環境において JavaScript を実行できるようにしています。その他には、V8 は WebAssembly エンジンとしても利用することができます。
+重要なこととして、V8 エンジンは JavaScript の標準化された言語機能の仕様である **ECMAScript を実装しています**。他の環境ではこの JavaScript エンジンを埋め込んだ上で API などを提供することでその環境において JavaScript を実行できるようにしています。その他には、V8 は WebAssembly エンジンとしても利用できます。
 
 ## V8 の役割
 
@@ -54,7 +54,7 @@ https://engineering.mercari.com/blog/entry/20220128-3a0922eaa4/
 
 # V8 エンジンを使ってみる
 
-V8 エンジンをスタンドアロンで利用できればほぼ素の ECMAScript の機能を利用できます。つまり、環境の提供する API に惑わされずことなく ECMAScript のことだけを考える事ができます。
+V8 エンジンをスタンドアロンで利用できればほぼ素の ECMAScript の機能を利用できます。つまり、環境の提供する API に惑わされることなく ECMAScript のことだけを考える事ができます。
 
 ## jsvu
 そして、実際 V8 エンジンはスタンドアロンで利用できます。次の GoogleChromeLabs が提供している jsuv(JavaScript engine Version Updater) でローカルに簡単にインストールでき、ソースからコンパイルすることなく利用できます。
@@ -69,10 +69,6 @@ $ npm install -g jsvu
 ```
 
 インストールできたらパスを通します。
-
-:::message
-mac64arm の環境 fish シェルでのインストールです。
-:::
 
 パスを通すために先にディレクトリ `~/.jsvu` を作成しておきます。
 
@@ -93,7 +89,7 @@ https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer
 
 bash の場合は `~/.bashrc` などのファイルに次のコードを記載してパスを通してください。
 
-```sh:$HOME/.bashrc
+```sh:.bashrc
 export PATH="${HOME}/.jsvu:${PATH}"
 ```
 
@@ -255,15 +251,14 @@ setTimeout(() => {
 Promise.resolve()
   .then(() => {
     console.log("👦 [3] MICRO: then callback")
-    // 4th Task
-    setTimeout(() => console.log("⏰ [12] TIMRES: 3rd"))
+    setTimeout(() => console.log("⏰ [12] TIMRES: 3rd")) // 4th Task
   });
 
 console.log("🦖 [2] MAINLINE: End");
 // 1st Task ->
 ```
 
-このようなコードでも、V8 のデフォルトイベントループでは「単一タスクの後にすべてのマイクロタスクを処理する」というルールがみたされているので次のよう予想通りの結果が得られます。
+このようなコードでも、V8 のデフォルトイベントループでは「単一タスクの後にすべてのマイクロタスクを処理する」というルールがみたされているので次の様に予想通りの結果が得られます。
 
 ```sh
 ❯ v8 v8EventLoop.js

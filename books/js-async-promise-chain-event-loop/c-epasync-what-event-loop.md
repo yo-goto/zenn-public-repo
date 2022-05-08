@@ -125,9 +125,15 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#event_loop
 :::
 
 ## ブラウザ環境のイベントループ
+
 ここで、レンダリングを含めたブラウザ環境でのイベントループを知るために、『Further Adventures of the Event Loop』の内容を主に参考にして考えてみます。
 
 ブラウザ環境において、HTML ファイルに次のようなスクリプトがあった場合、ブラウザはスクリプトをパースして評価し、同期処理の部分は最初のタスク(Task)として実行されます。
+
+:::message alert
+「最初のタスク」といっても本当に最初ではありませんので注意してください。スクリプトの実行を考える上での「最初のタスク」となります。
+:::
+
 
 ```html
 <script>
@@ -550,7 +556,7 @@ while (tasksAreWaiting()) {
     execute(task);
 
     // １つの Task を処理したら、すべての Micotasks を処理する
-    while (promiseQueue.hasTasks()) {
+    while (microTaskQueue.hasTasks()) {
       doPromiseTask();
     }
   }
@@ -634,11 +640,11 @@ while (tasksAreWaiting()) {
       while (nextTickQueue.hasTasks()) {
         doNextTickTask();
       }
-      while (promiseQueue.hasTasks()) {
+      while (microTaskQueue.hasTasks()) {
         doPromiseTask();
       }
     } while (nextTickQueue.hasTasks());
-    // promiseQueue から来たマイクロタスクが process.nextTick を使用して新しいマイクロタスクを作成した場合も完全に空になるまで処理する
+    // microTaskQueue から来たマイクロタスクが process.nextTick を使用して新しいマイクロタスクを作成した場合も完全に空になるまで処理する
   }
 }
 ```
