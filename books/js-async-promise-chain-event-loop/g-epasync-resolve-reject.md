@@ -227,7 +227,6 @@ promise2
 
 `resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "Unwrapping" と言います。この Unwrapping の能力は `Promise.reoslve()` や `new Prommise(executor)` に Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Excutor 関数に渡す `reject()` 関数にはありません。
 
-
 ```js
 // resolveWithPromise.js
 const promise1 = new Promise((resolve, reject) => {

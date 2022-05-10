@@ -81,11 +81,11 @@ V8 エンジンのブログポストで見られるこの図が非同期処理�
 
 Chrome ブラウザ環境のイベントループの実装については実はほとんど情報がありません。Chrome ブラウザで利用されている JavaScript エンジンである V8 はデフォルトのイベントループを提供していますが、基本的に外部からプラグインして実装するようになっています。
 
-Chrome ブラウザ環境では Livevent というライブラリが実際のイベントループの実装に使われているようです。
+Chrome ブラウザ環境では Libevent というライブラリが実際のイベントループの実装に使われているようです。
 
 https://libevent.org
 
-イベントループはブラウザ環境(Chrome) の文脈ではメッセージループ(Message loop)と呼ばれることがあり、Message loop はレンダリングエンジンである Blink (Chrome の場合)が実装して、それをイベントループとしている、という情報もあるのですが、Livevent との情報をあわせると、Task queues から単一のタスクキューを選択して Task のスケジューリングをするのが Blink で、実際のイベントループは Libevent が使用されていると考えられます。要するに協調して動作しているわけです。
+イベントループはブラウザ環境(Chrome) の文脈ではメッセージループ(Message loop)と呼ばれることがあり、Message loop はレンダリングエンジンである Blink (Chrome の場合)が実装して、それをイベントループとしている、という情報もあるのですが、Libevent との情報をあわせると、Task queues から単一のタスクキューを選択して Task のスケジューリングをするのが Blink で、実際のイベントループは Libevent が使用されていると考えられます。要するに協調して動作しているわけです。
 
 https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit
 

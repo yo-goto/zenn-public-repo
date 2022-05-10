@@ -9,15 +9,15 @@ title: "イベントループの概要と注意点"
 # イベントループの各ステップ
 Promise チェーンの解説に入る前に、まずはイベントループの各ステップについて説明しておきます。
 
-ただし、このループはブラウザ環境の場合であることに注意してください。実装はそれぞれ違いまし、ブラウザ環境である UI Rendering のステップなどは Node や Deno ではありません。Node のイベントループにあるいくつかのフェーズはもちろんブラウザ環境にはありません。
+ただし、このループはブラウザ環境の場合であることに注意してください。実装はそれぞれ違いますし、ブラウザ環境である UI Rendering のステップなどは Node や Deno ではありません。Node のイベントループにあるいくつかのフェーズはもちろんブラウザ環境にはありません。
 
 ある程度の抽象度でイベントループを理解したら**各環境でのループの実装について調べる必要があります**(これについては『それぞれのイベントループ』のチャプターで詳しく解説しています)。
 
 :::message
 Chrome などのブラウザ環境と Node.js や Deno の環境では JavaScript エンジンとして同じ V8 エンジンを採用してますが、イベントループの実装はそれぞれ違います。それぞれのイベントループを実装するために利用されているライブラリは以下のものとなります。
 
-- [Livevent](https://libevent.org) (Chrome): an event notification library
-- [Livuv](https://libuv.org) (Node.js) : a multi-platform support library with a focus on asynchronous I/O
+- [Libevent](https://libevent.org) (Chrome): an event notification library
+- [Libuv](https://libuv.org) (Node.js) : a multi-platform support library with a focus on asynchronous I/O
 - [Tokio](https://tokio.rs) (Deno) : an asynchronous Rust runtime 
 
 V8 エンジンが担当しているのは、Heap と Call Stack です。V8 のソースコードには setTimeout や DOM、HTTP request といった Web APIs は含まれていません。
@@ -44,7 +44,7 @@ https://www.jsv9000.app
 
 ４つのステップと言いましたが、最初のステップは実質２番目のステップであり、「スクリプトの評価」自体が最初のタスクになっています。
 
-実は JS Visualizer を使っている内はこれを理解できませんでしたので、Even loop は次の擬似コードで理解したほうがよいです。
+実は JS Visualizer を使っている内はこれを理解できませんでしたので、イベントループは次の擬似コードで理解したほうがよいです。
 
 # イベントループへの誤解
 
@@ -104,7 +104,7 @@ https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-bey
 >Per its source field, each task is defined as coming from a specific task source. For each event loop, every task source must be associated with a specific task queue.
 >([task source | HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#task-source)より引用)
 
-例えば、`setTimeout()` API のコールバックとマウスクリックから発火されるイベントからのコールバックはそれぞれべつの Task soruce からくるタスクであり、それぞれのタスクは別々のタスクキューへと送られます。
+例えば、`setTimeout()` API のコールバックとマウスクリックから発火されるイベントからのコールバックはそれぞれべつの Task source から来るタスクであり、それぞれのタスクは別々のタスクキューへと送られます。
 
 このようにタスク(マクロタスク)はそれぞれ分離した供給源が複数個あります。そして重要なこととして、タスクキューには２つの制約があります。
 
@@ -117,7 +117,7 @@ https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-bey
 
 複数個のタスクキューがあるため、どれを選ぶかということが重要になってきますが、User agent が自由に選択します。従って、開発者側が正確なタイミングで特定の実行することはできません。
 
-ブラウザ環境はユーザー入力などのパフォーマンスに敏感なタスクを優先的に処理しようとしてイベントループ内にある複数のタスクキューから関連するキューを選びだし、その中にあるタスクをを処理します。つまり、`setTimeout()` で登録しておいたコールバックの処理よりもマウスクリックなどの操作のほうが優先度の高い場合があり、`setTimeout()` で登録したコールバックが処理されるのが遅延することがあります。
+ブラウザ環境はユーザー入力などのパフォーマンスに敏感なタスクを優先的に処理しようとしてイベントループ内にある複数のタスクキューから関連するキューを選びだし、その中にあるタスクを処理します。つまり、`setTimeout()` で登録しておいたコールバックの処理よりもマウスクリックなどの操作のほうが優先度の高い場合があり、`setTimeout()` で登録したコールバックが処理されるのが遅延することがあります。
 
 # イベントループのステップ１とステップ２は実質的に同じ
 
@@ -139,7 +139,7 @@ Promise.resolve('promise resloved').then(res => console.log(res))
 
 本来ならタスクが先に実行されるべきなのに、マイクロタスクが先に実行されているため、これによってステップ２の「単一のタスクの実行」がスキップされているように思えてしまいます。
 
-最初、自分はこのこのに気付いてさえいなかったのですが、よくよく考えるとおかしいと感じて調査した結果、どうやらステップ１の「スクリプトの評価」自体がタスク(Task)として行われているらしいという結論に至りました。現時点で情報が不正確なのが申し訳無いですが、なにせイベントループの学習ソースとなる記事が少ないので「どうやらそうらしい」という結論になってしまいました。
+最初、自分はこの事実にさえ気付いてさえいなかったのですが、よくよく考えるとおかしいと感じて調査した結果、どうやらステップ１の「スクリプトの評価」自体がタスク(Task)として行われているらしいという結論に至りました。現時点で情報が不正確なのが申し訳無いですが、なにせイベントループの学習ソースとなる記事が少ないので「どうやらそうらしい」という結論になってしまいました。
 
 :::message
 JavaScript の非同期処理の学習はこういう感じで ECMAScript の言語機能だけでなく、環境の実装や「**謎**」を解いていく必要があるので、本当に難しいです。JavaScript 自体の学習だけでは永遠に非同期処理が分かりません。
