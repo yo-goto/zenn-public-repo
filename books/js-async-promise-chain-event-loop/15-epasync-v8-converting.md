@@ -1,5 +1,5 @@
 ---
-title: "V8 エンジンによる async/await の内部変換[作成中]"
+title: "V8 エンジンによる async/await の内部変換"
 ---
 
 # このチャプターについて
