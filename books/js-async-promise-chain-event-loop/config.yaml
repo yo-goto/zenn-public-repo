@@ -23,7 +23,7 @@ chapters:
   - a-epasync-promise-basic-consept # Promise の基本概念
   - 3-epasync-promise-constructor-executor-func # Promise コンストラクタと Executor 関数
   - 4-epasync-callback-is-sync-or-async # コールバック関数の同期実行と非同期実行
-  - g-epasync-resolve-reject # resolve と reject の使い方
+  - g-epasync-resolve-reject # resolve 関数と reject 関数の使い方
   - h-epasync-catch-finally # catch メソッドと finally メソッド
   - 5-epasync-multiple-promises # 複数の Promise を走らせる
   - 6-epasync-then-always-return-new-promise # then メソッドは常に新しい Promise を返す

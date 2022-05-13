@@ -920,7 +920,7 @@ Promise インスタンス以外で resolve を試みるとマイクロタスク
 ある Promise インスタンスのコンストラクタで `resolve()` 関数や `Promise.resolve()` の引数として、Promise インスタンスを渡すと **Unwrapping** という現象がおき、引数として渡した Promise インスタンスの状態や履行値、拒否理由などを自身の状態と値として同化できます。
 
 :::message
-Unwrapping については『resolve と reject の使い方』のチャプターで解説しました。
+Unwrapping については『resolve 関数と reject 関数の使い方』のチャプターで解説しました。
 :::
 
 ただし、この `Promise.resolve()` と `resolve()` の２つには注意すべき違いがあります。
@@ -1342,6 +1342,13 @@ console.log("🦖 [2] MAINLINE: End");
 https://github.com/tc39/ecma262/pull/1250
 
 2017 年時点での async/await の仕様では、１つの await 式に２つの追加の Promise インスタンスと少なくとも３つのマイクロタスクが必要だったため非常に無駄が多かったですが、ECMAScript の仕様自体が最適化されたため、それを実装する**他の JavaScript エンジンでも同様に async/await の高速化をできるようになった**そうです。
+
+:::message alert
+V8 のブログ記事を見て node の version 8 から version 10 に更新すると async/await の挙動が変わるというのが最初紹介されていますが。これはバグが治ったというだけで、その時点での仕様では正しいのですが、この最適化がマージされたことによって再び version 8 と同じ挙動(実行順番)となりました。自分もこれを読んだときは最初混乱しました。ブログ記事は構成が微妙で最後まで読まないとちゃんと理解できないようになっていますので注意してください。省略した `throwaway` Promise についてもそうです。参照する場合は最後までしっかり読まないと誤解するので気をつけてください。
+
+参考: 
+[node.js - JS Promise's inconsistent execution order between nodejs versions - Stack Overflow](https://stackoverflow.com/questions/62032674/js-promises-inconsistent-execution-order-between-nodejs-versions)
+:::
 
 このように、async/await のオーバーヘッド(余計な Promise インスタンスとマイクロタスクの生成)を削減し最適化したことで async/await は高速化し、async stack trace による Debuggability(デバッグのしやすさ) の向上も伴って、async/await の機能は手書きの Promise に勝るようになったとのことです。
 

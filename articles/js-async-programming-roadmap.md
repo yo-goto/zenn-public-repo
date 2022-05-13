@@ -21,6 +21,9 @@ JavaScript の非同期処理を学習してみて「ある程度自信を持っ
 
 :::details ChangeLog
 大きな変更のみをトラッキングしています。
+- 2022/05/21
+  - 構成を修正
+  - 「V8 エンジンから考える」の項目を追加
 - 2022/04/30
   - 「イベントループの共通性質」の項目を追加
   - 「ロードマップのまとめ」の項目を追加
@@ -45,9 +48,11 @@ JavaScript の非同期処理を学習してみて「ある程度自信を持っ
 # アウトプット
 非同期処理の学習ロードマップなどと銘打って記事を書いたからには、自分も具体的な非同期処理についての解説やアウトプットをすべきだと考えたので、主に Promise チェーンについての解説をするために Zenn の Book として「**イベントループとプロミスチェーンで学ぶJavaScriptの非同期処理**」を公開しました。
 
-自分のアウトプットを兼ねており、内容としては記事と同質なので無料公開しています。現時点では未完成なので追記修正が頻繁にありますが、興味があれば読んでみてください。
+自分のアウトプットを兼ねており、内容としては記事と同質なので無料公開しています。~~現時点では未完成なので追記修正が頻繁にありますが~~、興味があれば読んでみてください。
 
 https://zenn.dev/estra/books/js-async-promise-chain-event-loop
+
+追記: 内容的にも収録したいチャプターはすべて盛り込めたので、全体として完成しました。この記事で書いた内容に基づいてより詳細に解説しています。
 
 # 雑感
 
@@ -205,12 +210,16 @@ https://html.spec.whatwg.org/multipage/webappapis.html#task-queue
 とにかく、JavaScript Visualizer 9000 は非同期処理を理解するまで長い付き合いになったので非常にオススメです。これが無かったら非同期処理を理解できなかったかもしれません。
 
 :::message alert
-JavaScript Visualizer 9000 を使って可視化することによって、マイクロタスクやマクロタスクが Call stack と Event Loop でどう動くかを予測できるようになりますが、JavaScript Visualizer 9000 では Web APIs の要素が無いため、実はもう一歩踏み込む必要があります。
+JavaScript Visualizer 9000 を使って可視化することによって、マイクロタスクやマクロタスクが Call stack と Event Loop でどう動くかを予測できるようになりますが、JavaScript Visualizer 9000 ではいくつかの要素が欠けている、または実装ミスと考えられる部分がありますので注意してください。
+
+例えば、Web APIs の要素が無いため、Web API による並列的作業についてや、タスクキューとの関係性、複数のタスクキューが存在していることに気づけ無い可能性が高いです。
 
 なぜ **Web APIs** の要素を省いたのかはわかりません。実はこれが省略されているために、Visualizer 9000 で複数の `setTimeout()` 関数を色々な delay 時間を指定して実行してマクロタスクの動きを見ると「キュー」と思えない挙動に見えてしまうことに気づきました。基本的な流れを理解するのには問題ないですが、注意してください。
 
 Visualizer 9000 では簡単にコードが共有できるので実際に以下のリンクから実行して挙動を見てみてください↓
-[manySetTimeout.js](https://www.jsv9000.app/?code=Ly8gbWFueVNldFRpbWVvdXQuanMKc2V0VGltZW91dChmdW5jdGlvbiBiKCkgewogIGNvbnNvbGUubG9nKCJiOiBhZnRlciA1MDBtcyIpOwp9LCA1MDApOwpzZXRUaW1lb3V0KGZ1bmN0aW9uIGMoKSB7CiAgY29uc29sZS5sb2coImM6IGFmdGVyIDBtcyIpOwp9LCAwKTsKc2V0VGltZW91dChmdW5jdGlvbiBhKCkgewogIGNvbnNvbGUubG9nKCJhOiBhZnRlciAxMDAwbXMiKTsKfSwgMTAwMCk7CnNldFRpbWVvdXQoZnVuY3Rpb24gZCgpIHsKICBjb25zb2xlLmxvZygiZDogYWZ0ZXIgMTAwbXMiKTsKfSwgMTAwKTsKCmZ1bmN0aW9uIGQoKSB7CiAgY29uc29sZS5sb2coImQ6IHN5bmMgZnVuY3Rpb24gZXhlY3V0ZWQgaW1tZWRpYXRlbHkiKTsKfQoKZCgpOwo%3D)
+- [manySetTimeout.js](https://www.jsv9000.app/?code=Ly8gbWFueVNldFRpbWVvdXQuanMKc2V0VGltZW91dChmdW5jdGlvbiBiKCkgewogIGNvbnNvbGUubG9nKCJiOiBhZnRlciA1MDBtcyIpOwp9LCA1MDApOwpzZXRUaW1lb3V0KGZ1bmN0aW9uIGMoKSB7CiAgY29uc29sZS5sb2coImM6IGFmdGVyIDBtcyIpOwp9LCAwKTsKc2V0VGltZW91dChmdW5jdGlvbiBhKCkgewogIGNvbnNvbGUubG9nKCJhOiBhZnRlciAxMDAwbXMiKTsKfSwgMTAwMCk7CnNldFRpbWVvdXQoZnVuY3Rpb24gZCgpIHsKICBjb25zb2xlLmxvZygiZDogYWZ0ZXIgMTAwbXMiKTsKfSwgMTAwKTsKCmZ1bmN0aW9uIGQoKSB7CiAgY29uc29sZS5sb2coImQ6IHN5bmMgZnVuY3Rpb24gZXhlY3V0ZWQgaW1tZWRpYXRlbHkiKTsKfQoKZCgpOwo%3D)
+
+更に、スクリプトの評価によるコールスタック上へのグローバルコンテキストのプッシュとポップが可視化されていないため、最初のマイクロタスク・タスクの実行タイミングを誤解する可能性があります。細かいことについては Book の方に記載しています。
 :::
 
 ## Promise チェーンの構築のアンチパターンを学ぶ
@@ -570,6 +579,27 @@ while (true) {
 }
 ```
 
+次の動画は『Further Adventures of the Event Loop』の別の場所での講演の動画です。JSCnof の短い時間で語られていた内容がより詳しく語られており、「API の機能を提供する環境について学ぶ」の項目で記載したような内容について冒頭で説明されているので頭が整理されます。視聴回数も非常に少なく、あまり知られていない動画ですが、**この動画はかなりおすすめです**。
+
+@[youtube](2qDNgBgKsXI)
+
+この動画では、Rendering pipeline の直前に実行する別のタスクのためのキューとして Animation Frame callback queue というもの存在しており、そのキューにアニメーション用のタスクを発火する `requestAnimationFrame` という API があることが理解できます。これによって、ブラウザ環境でのレンダリングとフレームを考慮したイベントループの仕組みと、それぞれのタスクが遂行されるタイミングについて細かく理解できます。
+
+関連して、次の Mdn の記事を読んでおくことで、実行コンテキストと Call stack への理解が深まります。特に Global exectution context を理解することで最初のマイクロタスク実行のタイミングについて納得できます。これらの記事を読んでみて、個人的には、**マイクロタスクよりもタスクの方が理解の上で重要である**と感じました。
+
+https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide
+
+https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth
+
+ブラウザのイベントループについては次の記事も理解に役立ちます。
+https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-beyond-settimeout/
+
+JSConf.Asia 2018 での Jake Archibald 氏の講演動画である『In The Loop』ではレンダリングの話とアニメーションの話がより詳細に語られています。他の動画とは違った Event loop のイメージ(メンタルモデル)を使うので難易度が高いです。『Further Adventures of the Event Loop』を視聴してメンタルモデルがずらされないようにしてから見るのをおすすめします。
+
+@[youtube](cCOL7MC4Pl0)
+
+平均 16.7 ミリ秒(60 fps) の間に 1 回起きるレンダリング更新を考慮した上でタスクやアニメーション用のタスクをどうやって制御するか、Task(`setTimeout()`), Microtask(`queueMicrotask()`), animationTask(`requestAnimationFrame()`) でそれぞれ無限ループを作成したときになにがおこるかなどが理解できます。
+
 ブラウザ環境については分かりましたが、Node 環境ではどうなるでしょうか?
 
 『Further Adventures of the Event Loop』』では、さらにブラウザ環境から node のイベントループへと移行して解説してくれるのでどのようにそれぞれ異なるかという点がクリアになります。
@@ -599,30 +629,7 @@ while (tasksAreWaiting()) {
 }
 ```
 
-実際にはこのコードでは Node のイベントループを理解しきれないので、あとから情報を補う必要があります。
-
-次の動画は『Further Adventures of the Event Loop』の別の場所での講演の動画です。JSCnof の短い時間で語られていた内容がより詳しく語られており、「API の機能を提供する環境について学ぶ」の項目で記載したような内容について冒頭で説明されているので頭が整理されます。視聴回数も非常に少なく、あまり知られていない動画ですが、**この動画はかなりおすすめです**。
-
-@[youtube](2qDNgBgKsXI)
-
-この動画では、Rendering pipeline の直前に実行する別のタスクのためのキューとして Animation Frame callback queue というもの存在しており、そのキューにアニメーション用のタスクを発火する `requestAnimationFrame` という API があることが理解できます。これによって、ブラウザ環境でのレンダリングとフレームを考慮したイベントループの仕組みと、それぞれのタスクが遂行されるタイミングについて細かく理解できます。
-
-関連して、次の Mdn の記事を読んでおくことで、実行コンテキストと Call stack への理解が深まります。特に Global exectution context を理解することで最初のマイクロタスク実行のタイミングについて納得できます。これらの記事を読んでみて、個人的には、**マイクロタスクよりもタスクの方が理解の上で重要である**と感じました。
-
-https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide
-
-https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth
-
-ブラウザのイベントループについては次の記事も理解に役立ちます。
-https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-beyond-settimeout/
-
-JSConf.Asia 2018 での Jake Archibald 氏の講演動画である『In The Loop』ではレンダリングの話とアニメーションの話がより詳細に語られています。他の動画とは違った Event loop のイメージ(メンタルモデル)を使うので難易度が高いです。『Further Adventures of the Event Loop』を視聴してメンタルモデルがずらされないようにしてから見るのをおすすめします。
-
-@[youtube](cCOL7MC4Pl0)
-
-平均 16.7 ミリ秒(60 fps) の間に 1 回起きるレンダリング更新を考慮した上でタスクやアニメーション用のタスクをどうやって制御するか、Task(`setTimeout()`), Microtask(`queueMicrotask()`), animationTask(`requestAnimationFrame()`) でそれぞれ無限ループを作成したときになにがおこるかなどが理解できます。
-
-Node の Event loop については、『Further Adventures of the Event Loop』では少し情報が不足しており、より解像度をあげるために次の動画がおすすめです。
+実際にはこのコードでは Node のイベントループを理解しきれないので、より解像度をあげるために次の動画がおすすめです。
 
 @[youtube](PNa9OMajw9w)
 
@@ -813,7 +820,7 @@ Node については以上になります。
 
 Rust で書かれたイベントループの最初の tick はリポジトリ上では次の場所にあります。
 
-https://github.com/denoland/deno/blob/main/core/runtime.rs#L842-L990
+https://github.com/denoland/deno/blob/68bf43fca7990d4e623b66243c2840ca7f0c3628/core/runtime.rs#L840-L1001
 
 Dynamic import やら、色々新しい処理が含まれており、なかなか理解できません。加えて色々な変更が頻繁に起こるそうで、ドキュメントの整備はまだ難しいらしいです。Deno についてはドキュメントが公開されるまでは、細かい部分については実装をみてなんとか理解するしかないという感じになりそうです。
 ## イベントループの共通性質 (追記)
@@ -833,9 +840,13 @@ Dynamic import やら、色々新しい処理が含まれており、なかな�
 
 というのも Node や Deno の環境ではブラウザの実行モデルに可能な限り近づこうとしていることが issue などでよみとれます。そして、重要なこととして Chromium, Node, Deno はどれも JavaScript の V8 エンジンを搭載しています。
 
-V8 エンジン自体はイベントループを実装しませんが、**マイクロタスクキューを所有しています**。
+V8 エンジン自体は~~イベントループを実装しませんが~~、**マイクロタスクキューを所有しています**。
 
 https://v8docs.nodesource.com/node-16.13/db/d08/classv8_1_1_microtask_queue.html
+
+:::message alert
+V8 エンジンはイベントループを実装しないと以前に書いていましたが、正確には違いましたので修正いたします。詳細については追記の「V8 エンジンから考える」を見てください。
+:::
 
 Node や Deno はイベントループをそれぞれ異なるライブラリ(Libuv, Tokio)を使って実装していますが、**マイクロタスクのチェックポイント**(マイクロタスクをいつ実行するか)については V8 を埋め込む側(Node や Deno)が決めることができます。それゆえに Node では `nextTickQueue` にあるマイクロタスクを完全に処理してから `microTaskQueue` にあるマイクロタスクを処理するように調整しており、v10 と v11 でマイクロタスクのチェックポイントを変更してブラウザにより近いイベントループ(whatwg の仕様)に変更できています。
 
@@ -883,6 +894,80 @@ https://nodejs.org/api/timers.html#timers-promises-api
 マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる(というか、もうなってる?)ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
 :::
 
+## V8 エンジンから考える (追記)
+V8 エンジンはイベントループを実装しないと以前に書いていましたが、正確には違いましたので追記修正いたします。
+
+V8 エンジンは**実はデフォルトのイベントループを保有しており**、マイクロタスクキュー１つと少なくともタスクキューを１つ所有しています。レンダリングや phase などが無いので、最もシンプルなものとして次の疑似コードが V8 エンジンのデフォルトイベントループとして考えられます。
+
+```js:V8エンジンのデフォルトイベントループ
+while (tasksAreWaiting()) {
+  // すくなくても１つ以上のタスクキューから(環境定義のルールで)１つのタスクキューを選ぶ
+  queue = getNextQueue();
+  // 単一タスクを処理する
+  task = queue.pop();
+  execute(task);
+
+  // １つのマイクロタスクキューにあるすべてのマイクロタスクを処理する
+  while (micortaskQueue.hasTasks()) {
+    doMicrotask();
+  }
+}
+```
+
+タスクキューが実際にいくつあろうがどれか１つを選択することには違いないので `getNextQueue()` で単一のタスクキューを選び取ります。ということで、8 エンジンなどの JavaScript エンジンから考えることでイベントループの本質的な部分についても理解できます。
+
+V8 を実際に環境に埋め込む際には V8 の API を使用してマイクロタスクのチェックポイントや複数のタスクキューを定めます。Node、Deno、Chrome などの実行環境では Libuv, Tokio, Libevent と Blink などのライブラリによって非同期 I/O やレンダリングの機構、複数タスクキューのスケジューリングなどの仕組みを挿入して環境独自のイベントループを実装しています。
+
+ちなみに V8 エンジンでのコードテストは [jsvu](https://github.com/GoogleChromeLabs/jsvu) で V8 を**ローカルインストールすることでテストできるのでイベントループが存在しており、このようになっていることを確認できます**。
+
+また、async/await についても V8 エンジンが内部的に変換しているコードを考えることで挙動について簡単に理解できます。
+
+```js:シンプルな非同期関数
+async function foo(v) {
+  const w = await v;
+  return w;
+}
+```
+
+V8 エンジンは上の非同期関数を内部的に以下のようなコードへと変換しています。
+
+```js:V8エンジンによる変換コード
+// 途中で一時停止できる関数として resumable (再開可能) のマーキング
+resumable function foo(v) {
+  implicit_promise = createPromise(); 
+  // (0) 非同期関数の返り値となる Promise インスタンスを作成
+  
+  // (1) v が Promise インスタンスでないならラッピングする
+  promise = promiseResolve(v);
+  // (2) 非同期関数 foo を再開またはスローするハンドラのアタッチ
+  performPromiseThen(
+    promise,
+    res => resume(«foo», res),
+    err => throw(«foo», err));
+
+  // (3) 非同期関数 foo を一時停止して implicit_promise を呼び出し元へと返す
+  w = suspend(«foo», implicit_promise); 
+  // (4) w = のところから非同期関数の処理再開となる
+
+  // (5) 非同期関数で return していた値である w で最終的に implict_promise を解決する
+  resolvePromise(implicit_promise, w);
+}
+
+// 内部で使う関数
+function promiseResolve(v) {
+  // v が Promise ならそのまま返す
+  if (v is Promise) return v; 
+  // v が Promise でないならラッピングして返す
+  promise = createPromise(); 
+  resolvePromise(promise, v);
+  return promise;
+}
+```
+
+詳細については、次の記事で書きました。
+
+https://zenn.dev/estra/articles/asyncawait-v8-converting
+
 # ロードマップのまとめ
 
 ロードマップのまとめ。
@@ -893,6 +978,7 @@ https://nodejs.org/api/timers.html#timers-promises-api
 - (4) 非同期 API を提供する環境について学ぶ
 - (5) (イベントループの解像度を上げて、各環境での振る舞いについて学ぶ)
 - (6) イベントループの本質的な部分を捉える
+- (7) V8 エンジンからイベントループや async/await の挙動を考える
 
 後半の (4) からは単純に自分の学習時系列になっているだけなので注意してください。
 

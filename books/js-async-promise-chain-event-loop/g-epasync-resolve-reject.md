@@ -1,5 +1,5 @@
 ---
-title: "resolve と reject の使い方"
+title: "resolve 関数と reject 関数の使い方"
 ---
 
 # このチャプターについて

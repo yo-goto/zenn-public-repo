@@ -70,7 +70,7 @@ Async function 内部で何も `return` しなくても、必ず Promise イン�
 
 # await 式
 
-非同期関数では内部で `await` 式を使って非同期処理などを待つことができます。この「待つ」ですが、非常に混乱させるワードなので注意してください。
+非同期関数では内部で `await` 式を使って「**非同期処理の完了を待つ**」ことができます。この「待つ」ですが、非常に混乱させるワードなので注意してください。
 
 例えば、お馴染みの非同期 API `fetch()` は Promise インスタンスを返してきましたね。`fetch()` は引数に渡した URL からデータを取得してくれます。ですが、ネットワーキングでリクエストを投げてレスポンスを受け取るまでには時間がかかります。通常は、こんな時間のかかる処理をメインスレッドで行っていたら無駄な待ち時間が発生してしまいますね。というわけで、データ取得は API を介してその作業を委任された環境(environment)がバックグラウンドで行ってくれます。
 
@@ -78,7 +78,16 @@ Async function 内部で何も `return` しなくても、必ず Promise イン�
 環境と非同期 API についての話は『非同期 API と環境』のチャプターで解説したので、詳しくはそちらを参照してください。
 :::
 
-とはいえ、`const response = await fetch(url)` の場合は非同期処理の完了を待つというよりも、環境に委任した並列作業を待つという感じになるので、「非同期処理を待つ」とは少し違った印象を受けるのが自然ですね。ただし、`const data = await fetch(url).then(() => response.text())` というような場合は Promise チェーンで最終的に返ってくる Promise インスタンスが解決されるの待つので、明らかに「非同期処理を待つ」と言えます。
+とはいえ、`const response = await fetch(url)` の場合は非同期処理の完了を待つというよりも、環境に委任した並列作業を待つという感じになるので、「非同期処理を待つ」とは少し違った印象を受けるのが自然ですね。ただし、`const text = await fetch(url).then((res) => res.text())` というような場合は Promise チェーンで最終的に返ってくる Promise インスタンスが解決されるの待つので、明らかに「非同期処理を待つ」と言えます。
+
+```js
+async function test(url) {
+  const response = await fetch(url);
+  // 環境に委任した並列作業の完了を待つ
+  const text = await fetch(url).then(res => res.text());
+  // 環境に委任した並列作業の完了後にメインスレッドでデータと共に通知させた非同期のコールバック関数の完了を待つ
+}
+```
 
 非同期処理を待つのか、非同期 API の完了を待つのかで印象がかなり変わってくるため、非同期の学習ではここで勘違いや混乱が起きることが多いです(個人的にはそうでした)。
 
@@ -257,7 +266,7 @@ async function empty() {}
   .then(data => console.log(data)); // undefined が出力される
 ```
 
-この場合、非同期関数からは同期的に履行状態の Promise インスタンスが返ってくるので、チェインされた `then()` メソッドのコールバック関数が直ちにマイクロタスクキューへとマイクロタスクとして発行されます。
+この場合、非同期関数からは同期的に履行状態の Promise インスタンスが返ってくるので、チェーンされた `then()` メソッドのコールバック関数が直ちにマイクロタスクキューへとマイクロタスクとして発行されます。
 
 非同期関数内で `return` された値が返り値の Promise インスタンスの解決値となります。返り値と非同期関数から返ってくる Promise インスタンスの状態、そのインスタンスが持つ値についての基本的な関係は以下となります。
 
@@ -271,7 +280,7 @@ async function empty() {}
 
 何も `return` しない場合には、非同期関数から返ってくる Promise インスタンスは同期的に `undefined` で履行されます(なぜこうなるのかは次のチャプターで説明します)。
 
-永遠に Pending 状態の Promise インスタンスを `return` した場合などは今までの Promise チェーンと同じように、次の `then()` メソッドのコールバックなどを実行できません(`then()` メソッドはチェインしている Promise インスタンスの状態が遷移した時に一度だけ実行されるから、永遠に Pending 状態なら絶対に実行されない)。
+永遠に Pending 状態の Promise インスタンスを `return` した場合などは今までの Promise チェーンと同じように、次の `then()` メソッドのコールバックなどを実行できません(`then()` メソッドはチェーンしている Promise インスタンスの状態が遷移した時に一度だけ実行されるから、永遠に Pending 状態なら絶対に実行されない)。
 
 ```js
 (async function pendingPromise() {
@@ -307,7 +316,7 @@ const myPromise = new Promise(resolve => {
 
 上のコードでは、明示的にコンストラクタで作成された Promise インスタンスである `myPromise` を非同期関数内で await 式で評価して履行値である `42` という数値を取り出しています。そして、インクリメントをして `return` で返却しています。
 
-非同期関数から返ってくるのは Promise インスタンスなので、チェインされた `then()` メソッドのコールバック関数の入力として値を取り出すことができます(これは『then メソッドのコールバックで非同期処理』のチャプターでみましたね)。従って、上のコードでコメントしてあるようにインクリメントした値である `43` という数値を出力できます。
+非同期関数から返ってくるのは Promise インスタンスなので、チェーンされた `then()` メソッドのコールバック関数の入力として値を取り出すことができます(これは『then メソッドのコールバックで非同期処理』のチャプターでみましたね)。従って、上のコードでコメントしてあるようにインクリメントした値である `43` という数値を出力できます。
 
 もちろん、Rejected 状態の Promise インスタンスを評価することも可能です。ただし、Rejected 状態の Promise インスタンスを await 式で評価した場合は非同期関数内のそれ以降の処理はスキップされます。
 
@@ -323,7 +332,7 @@ const myPromise = new Promise(resolve => {
   .finally(() => console.log("最後に実行される"));
 ```
 
-この場合 async function から返ってくる Promise インスタンス自体が拒否状態となります。従って、チェインしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドによって例外として補足されてコールバックが実行されます。
+この場合 async function から返ってくる Promise インスタンス自体が拒否状態となります。従って、チェーンしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドによって例外として補足されてコールバックが実行されます。
 
 V8 で実行すると以下の出力を得ます。
 
@@ -356,13 +365,64 @@ V8 で実行すると以下の出力を得ます。
 最後に実行される
 ```
 
-見てきたように、await 式は基本的には Promise インスタンスを評価するものですが、Promise インスタンスでない単なる値も評価できてしまいます(そのようなことをする意味自体はあまりない)。
+非同期関数(async function)では古典的な例外補足の方法として try/catch/finally を使用できます。
+
+```js
+// awaitRejectPromise-kai.js
+(async function increment() {
+  let value = "defalut value";
+  try {
+    value = await Promise.reject("reason");
+    console.log("😭 これは実行されない");
+  } catch (err) {
+    console.log("👹 実行される:", err);
+  } finally {
+    console.log("🦄 最後に実行される");
+  }
+  return value;
+})()
+  .then((data) => console.log("😅 これは実行される:", data))
+  .catch((err) => console.log("😭 実行されない", err))
+  .finally(() => console.log("🦄 最後に実行される"));
+```
+
+このようにした場合、try/catch で例外補足するため、非同期関数から返ってくる Promise インスタンスは履行状態となります。したがって、チェーンしている `then()` メソッドのコールバックは実行でき、逆に `catch()` メソッドのコールバックは実行されません。
+
+```sh
+❯ v8 awaitRejectPromise-kai.js
+👹 実行される: reason
+🦄 最後に実行される
+😅 これは実行される: defalut value
+🦄 最後に実行される
+```
+
+非同期関数内で try/catch/finally を使えば、今までのようにチェーンする必要はなくなるので、チェーン部分はなくしても良いでしょう。
+
+```js
+(async function increment() {
+  let value = "defalut value";
+  try {
+    value = await Promise.reject("reason");
+    console.log("😭 これは実行されない");
+  } catch (err) {
+    console.log("👹 実行される:", err);
+  } finally {
+    console.log("🦄 最後に実行される");
+  }
+  return value;
+})();
+```
+
+## await 式は Promise インスタンスでないのものも評価できる
+
+ここまで見てきたように、await 式は基本的には Promise インスタンスを評価するものですが、Promise インスタンスでない単なる値も評価できてしまいます(そのようなことをする意味自体はあまりない)。
 
 そのような場合に何が起きるかというと、await 式で評価する値を一旦 Promise インスタンスでラッピングしてから、値を取り出します。実はこれによって無駄なマイクロタスクと Promise インスタンスが生成されるので、本当にやる意味がないです。
 
 ```js
 (async function increment() {
-  let value = await 42; // 一旦 Promise インスタンスでラッピングされて履行値 42 がとりだされる
+  let value = await 42; 
+  // 一旦 Promise インスタンスでラッピングされて履行値 42 がとりだされる
   value++; 
   return value;
 })()
