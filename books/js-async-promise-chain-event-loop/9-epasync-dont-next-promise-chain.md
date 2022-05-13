@@ -101,9 +101,9 @@ returnPromise("1st Promise", "2")
   .then(cb2);
 ```
 
-さて、ここが混乱しやすいところですが、Promsie チェーンにおいて `then()` メソッドのコールバック関数内で、`return` によって Promise インスタンスを返した場合はその解決値(resolve された値)が次の `then()` メソッドのコールバック関数の引数として渡されます。
+さて、ここが混乱しやすいところですが、Promise チェーンにおいて `then()` メソッドのコールバック関数内で、`return` によって Promise インスタンスを返した場合はその解決値(resolve された値)が次の `then()` メソッドのコールバック関数の引数として渡されます。
 
-いまコールバック関数内で `return` しているのは `returnPromise("2nd Promise", "6")` ではなく、`returnPromise("2nd Promise", "6").then(callbackNext)` なので、`then(callbackNext)` で返される Promsie インスタンスの resolve した値が `then(cb2)` のコールバック関数 `cb2` の引数として渡されるはずです。
+いまコールバック関数内で `return` しているのは `returnPromise("2nd Promise", "6")` ではなく、`returnPromise("2nd Promise", "6").then(callbackNext)` なので、`then(callbackNext)` で返される Promise インスタンスの resolve した値が `then(cb2)` のコールバック関数 `cb2` の引数として渡されるはずです。
 
 ですが、今の時点では `callbackNext` はキューへ送られていて実行されていないので、`then(callbackNext)` か返される Promise インスタンスは待機(pending)状態です。つまり、待機状態の Promise インスタンスを返してしまっています。
 
@@ -162,9 +162,9 @@ returnPromise("1st Promise", "2")
   });
 ```
 
-`callbackNext` が実行されると `cb1` コールバック内において結局、`"from [9] callback"` という文字列で解決された Promise インスタンスが結局 `return` されたことになります。つまり、`return Promsie.resolve("from [9] callback")` と同じです。
+`callbackNext` が実行されると `cb1` コールバック内において結局、`"from [9] callback"` という文字列で解決された Promise インスタンスが結局 `return` されたことになります。つまり、`return Promise.resolve("from [9] callback")` と同じです。
 
-次のように書きましたが、`then()` メソッドのコールバック関数内で待機状態の Promsie が解決されて履行(Fullfilled)状態になったので、その `then()` メソッドから返ってくる Promise インスタンスも解決されて履行状態となります。
+次のように書きましたが、`then()` メソッドのコールバック関数内で待機状態の Promise が解決されて履行(Fullfilled)状態になったので、その `then()` メソッドから返ってくる Promise インスタンスも解決されて履行状態となります。
 
 >`then()` メソッドのコールバック関数内で待機状態の Promise インスタンスを返した場合はそれが解決されない限り、その `then()` メソッドから返ってくる Promise インスタンスも待機状態のままとなります。
 
@@ -204,7 +204,7 @@ Resolved value:  from [9] callback
 Resolved value:  from [10] callback
 ```
 
-分かりにくいですが、結局普通の Promsie チェーンと同じ出力の順番になります。JS Visuzalizer で可視化してみたので実際にそうなることを確認してみてください。
+分かりにくいですが、結局普通の Promise チェーンと同じ出力の順番になります。JS Visuzalizer で可視化してみたので実際にそうなることを確認してみてください。
 
 - [promiseNest.js - JS Visuzalizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZU5lc3QuanMKY29uc29sZS5sb2coJ1sxXSBTeW5jIHByb2Nlc3MnKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIpID0%2BIHsKICByZXR1cm4gbmV3IFByb21pc2UoKHJlc29sdmUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKGBbJHtvcmRlcn1dIFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pOwp9OwoKcmV0dXJuUHJvbWlzZSgnMXN0IFByb21pc2UnLCAnMicpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygnWzVdIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCcpOwogICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICByZXR1cm4gcmV0dXJuUHJvbWlzZSgnMm5kIFByb21pc2UnLCAnNicpCiAgICAgIC50aGVuKCh2YWx1ZSkgPT4gewogICAgICAgIGNvbnNvbGUubG9nKCdbOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICAgICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICAgICAgcmV0dXJuICdmcm9tIFs5XSBjYWxsYmFjayc7CiAgICAgIH0pOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygnWzExXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQnKTsKICAgIGNvbnNvbGUubG9nKCdSZXNvbHZlZCB2YWx1ZTogJywgdmFsdWUpOwogIH0pOwpyZXR1cm5Qcm9taXNlKCczcmQgUHJvbWlzZScsICczJykKICAudGhlbigodmFsdWUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKCdbN10gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICBjb25zb2xlLmxvZygnUmVzb2x2ZWQgdmFsdWU6ICcsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCc0dGggUHJvbWlzZScsICc4JykKICAgICAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICAgICAgY29uc29sZS5sb2coJ1sxMF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICAgICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICAgICAgcmV0dXJuICdmcm9tIFsxMF0gY2FsbGJhY2snOwogICAgICB9KTsKICB9KQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coJ1sxMl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICBjb25zb2xlLmxvZygnUmVzb2x2ZWQgdmFsdWU6ICcsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCdbNF0gU3luYyBwcm9jZXNzJyk7)
 

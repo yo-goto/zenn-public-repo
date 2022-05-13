@@ -8,7 +8,7 @@ title: "Promise コンストラクタと Executor 関数"
 Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript の一部ではなくブラウザやランタイムの環境が提供する機能)の処理の結果として返されるパターンが多いですが、Promise そのものはビルトインオブジェクトであり、ECMAScript (JavaScript の言語コア) の一部であることを忘れないようにしてください。
 
 # Promise コンストラクタ
-コード上では `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promsie オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
+コード上では `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise
 
@@ -25,11 +25,11 @@ undefined
 true
 ```
 
-以降、各 Promise オブジェクトについて、コンストラクタ関数から作成されることや、関数やメソッドから返ってくるということを意識するために "Promsie インスタンス" という言葉を多用していきます。
+以降、各 Promise オブジェクトについて、コンストラクタ関数から作成されることや、関数やメソッドから返ってくるということを意識するために "Promise インスタンス" という言葉を多用していきます。
 
 Promise インスタンスの作成は `new Promise(executor)` が基本形です。コールバックとして引数に渡す `executor` 自身は引数を２つ受け取ります。次のコードでは、`executor` がコールバック関数であることに注目するため、あえて Promise コンストラクタの外で定義してみますと次のようになります。
 
-基本的に Promise の解説では `setTimeout()` を使っていくのが割と一般的だと思いますが、`setTimeout()` 関数は **Web API** であることを意識して**ここではあえて使わずに説明してきます**(ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します)。
+基本的に非同期処理の解説では `setTimeout()` を使っていくのが割と一般的だと思いますが、`setTimeout()` 関数は **Web API** であることを意識して**最初はあえて使わずに説明してきます**(ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します)。
 
 ```js
 function executor(resolve, reject) {
@@ -149,7 +149,7 @@ const promise = new Promise(res => {
 
 `executor` 関数の引数である `res` 関数と静的メソッドである `Promise.resolve()` は別物であることに注目してください。この `Promise.resolve()` は最も文字数が少なく書けるので、Promise オブジェクトの初期化やテストコードを書く際に活用できる便利なショートカットとして覚えてください。実際に Promise オブジェクトを作成する際には `new Promise(excutor)` が基本となります。
 
-さて、`executor` 関数の引数は２つありました。`resolve` (`res`) と `reject` です。`reject` 第二引数で省略できたので上記のように短く書くために無視してきましたが、これでは不公平なので `reject` についても省略形で書けるようにします。次のコードでは、`executor` 関数の中で `reject()` 関数のみを書いて Promsie インスタンスを拒否状態にしています。
+さて、`executor` 関数の引数は２つありました。`resolve` (`res`) と `reject` です。`reject` 第二引数で省略できたので上記のように短く書くために無視してきましたが、これでは不公平なので `reject` についても省略形で書けるようにします。次のコードでは、`executor` 関数の中で `reject()` 関数のみを書いて Promise インスタンスを拒否状態にしています。
 
 ```js
 const promise = new Promise((resolve, reject) => {

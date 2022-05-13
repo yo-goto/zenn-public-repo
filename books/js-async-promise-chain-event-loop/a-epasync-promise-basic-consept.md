@@ -51,7 +51,7 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 
 動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` メソッドの挙動が `reject()` に比べて複雑で、再帰性が関与してくるからです。
 
-`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promsie インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap ができないため単純に Rejected 状態に遷移します。
+`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promise インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap ができないため単純に Rejected 状態に遷移します。
 
 :::message
 Unwrapping については『resolve と reject の使い方』で解説しています。そちらを参照してください。

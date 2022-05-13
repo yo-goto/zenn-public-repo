@@ -141,7 +141,7 @@ Macrotask(マクロタスク)については大分後で解説するのでここ
 
 先にキューへと送られた `cb1` が実行されます。`then(cb1)` で登録したコールバック `cb1` の実行が完了したので `then(cb1)` で返ってくる Promise インスタンスが履行(Fullfilled)状態へと移行します。Promise インスタンスの状態が履行状態へと移行したことで、さらに `then(cb1).then(cb2)` で登録していたコールバック関数  `cb2` が直ちに Microtask queue へと送られます。
 
-続いて次に Microtask queue 内にあるマイクロタスクが実行されます。`cb1` の後には `cb3` が順番としてキューに送られていたので `cb3` が直ちに実行されます。`cb1` のときと同じように `then(cb3)` で返ってくる Promsie インスタンスの状態が待機(pending)状態から履行(Fullfilled)状態へと移行します。`then(cb3)` で返ってくる Promise インスタンスの状態が履行(Fullfilled)状態へと変わったことで、後続の `then(cb4)` で登録していたコールバック関数 `cb4` が直ちに Microtask queue へと送られます。
+続いて次に Microtask queue 内にあるマイクロタスクが実行されます。`cb1` の後には `cb3` が順番としてキューに送られていたので `cb3` が直ちに実行されます。`cb1` のときと同じように `then(cb3)` で返ってくる Promise インスタンスの状態が待機(pending)状態から履行(Fullfilled)状態へと移行します。`then(cb3)` で返ってくる Promise インスタンスの状態が履行(Fullfilled)状態へと変わったことで、後続の `then(cb4)` で登録していたコールバック関数 `cb4` が直ちに Microtask queue へと送られます。
 
 この時点での出力はこのようになっています。
 
@@ -208,7 +208,7 @@ console.log("[Rejcted status]", Promise.reject("Rejected"))
 # ...
 ```
 
-では、次の `Promise.resolve()` ですが、これは以下のように `new Promsie()` で作成するのと等価なものでした。
+では、次の `Promise.resolve()` ですが、これは以下のように `new Promise()` で作成するのと等価なものでした。
 
 ```js
 const promise = Promise.resolve("Promise履行時の値");

@@ -46,7 +46,7 @@ function noPureOp(input) {
 
 - (1) 文字列や数値などの通常の値を `return` する
   - 直ちに次の `then()` メソッドのコールバックが Microtask queue へと追加されて、コールバック関数の引数には `return` した値が渡される
-- (2) Promsie インスタンスを `return` する
+- (2) Promise インスタンスを `return` する
   - 待機状態ならそれが解決してから次の `then()` メソッドのコールバックが Microtask queue へと追加され、`resolve` した値がコールバック関数の引数に渡される
   - 履行状態なら直ちに次の `then()` メソッドのコールバックが Microtask queue へと追加され、`resolve` した値がコールバック関数の引数に渡される
 - (3) 何も `return` しない
@@ -232,8 +232,8 @@ Resolved value:  undefined
 ```
 :::
 
-最後の出力である `Resovled value` のところが `undefined` になっているので、値 `"2nd Promsie"` が繋げていないことがわかります。
-実行順番については、基本的に Promise インスタンスを返すような処理は `return` しないと順番を保証できないのですが、今回の場合は `returnPromise("2nd Promise", "[E]", "[F]");` が完了してから、次の `then()` メソッドのコールバックが実行されていますね。その理由としては、Microtask を供給する Promsie が少ないからたまたまそうなっているだけです。実際の動きを Visualizer で確認してみてください。
+最後の出力である `Resovled value` のところが `undefined` になっているので、値 `"2nd Promise"` が繋げていないことがわかります。
+実行順番については、基本的に Promise インスタンスを返すような処理は `return` しないと順番を保証できないのですが、今回の場合は `returnPromise("2nd Promise", "[E]", "[F]");` が完了してから、次の `then()` メソッドのコールバックが実行されていますね。その理由としては、Microtask を供給する Promise が少ないからたまたまそうなっているだけです。実際の動きを Visualizer で確認してみてください。
 
 - [promiseShouldBeReturnedNest.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LmpzCmNvbnNvbGUubG9nKCJbQS0xXSBTeW5jIHByb2Nlc3MiKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIsIG5leHRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgY29uc29sZS5sb2coYCR7b3JkZXJ9IFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgJHtuZXh0T3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICByZXR1cm4gdmFsdWU7CiAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0QtNV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCIybmQgUHJvbWlzZSIsICJbRS02XSIsICJbRi03XSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ctOF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSC0zXSBTeW5jIHByb2Nlc3MiKTs%3D)
 
@@ -299,7 +299,7 @@ Resolved value:  undefined
 
 - [promiseShouldBeReturnedNest-3rd.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LTNyZC5qcwpjb25zb2xlLmxvZygiW0EtMV0gU3luYyBwcm9jZXNzIik7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyLCBzZWNvbmRPcmRlciwgdGhpcmRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgICBjb25zb2xlLmxvZyhgJHtvcmRlcn0gVGhpcyBsaW5lIGlzIChBKVN5bmNocm9ub3VzbHkgZXhlY3V0ZWRgKTsKICAgICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7c2Vjb25kT3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICAgIHJldHVybiB2YWx1ZTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7dGhpcmRPcmRlcn0gQWRkaXRpb25hbCBuZXN0ZWQgY2hhaW5gKTsKICAgICAgcmV0dXJuIHZhbHVlOwogICAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIsICJbRC01XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0UtNl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVyblByb21pc2UoIjJuZCBQcm9taXNlIiwgIltGLTddIiwgIltHLThdIiwgIltILTEwXSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ktOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbTi0zXSBTeW5jIHByb2Nlc3MiKTsK)
 
-とにかく、Promsie インスタンスを返すような処理は Promise チェーンにおいて、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
+とにかく、Promise インスタンスを返すような処理は Promise チェーンにおいて、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
 
 ```js
 // promiseShouldBeReturnedNest-3rdReturn.js
@@ -387,9 +387,9 @@ console.log("[3] Sync process");
 ```
 
 # Promise チェーンの目的
-もうすこし一般化して考えてみます。Promsie チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
+もうすこし一般化して考えてみます。Promise チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
 
-今まで `then()` メソッドのコールバックで同期処理をして、また次の `then()` メソッドのコールバックをしていたため、そもそも、今までの Promise チェーンは本質的にあまり意味の無い行為でした。例えば、チャプター７「Promise チェーンで値を繋ぐ」で見た次のコードですが、本来このように無駄にチェーンを長くする必用など基本的にはありません。
+今まで `then()` メソッドのコールバックで同期処理をして、また次の `then()` メソッドのコールバックをしていたため、そもそも、今までの Promise チェーンは本質的にあまり意味の無い行為でした。例えば、『Promise チェーンで値を繋ぐ』のチャプターで見た次のコードですが、本来このように無駄にチェーンを長くする必用など基本的にはありません。
 
 ```js
 // chainValueName.js
@@ -454,7 +454,7 @@ Promsire チェーンを利用する用途は基本的には、「非同期処�
 
 ## 非同期処理を逐次的に行う
 
->Promsie チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
+>Promise チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
 
 このように言いましたが、`chainValueName-kai.js` で見たように同期処理なら１つの `then()` メソッドのコールバック関数内にすべて書いてしまえばそれですべて順番に行えます。
 
@@ -520,7 +520,7 @@ doAsyncTask()
   });
 ```
 
-これで、非同期処理 A が終わってから次の非同期処理 B を行い、そして B が終わってから次の非同期処理 C を行い、C が終わってからコンソールに出力できています。さらに、Promsie チェーンにおいて値を繋いでいることがわかります。
+これで、非同期処理 A が終わってから次の非同期処理 B を行い、そして B が終わってから次の非同期処理 C を行い、C が終わってからコンソールに出力できています。さらに、Promise チェーンにおいて値を繋いでいることがわかります。
 
 `return` をつけることで確実にそれぞれの非同期処理が完了してから次にいくことができています。
 
@@ -611,7 +611,7 @@ doAsyncTask()
   });
 ```
 
-結論はもう言ってしまったのですが、Promsie チェーンのもう 1 つの用途である「Proimse インスタンスから解決値を取り出して処理する」について解説します。この項目については「非同期処理を逐次的に行う」の項目とかぶる部分があります。
+結論はもう言ってしまったのですが、Promise チェーンのもう 1 つの用途である「Proimse インスタンスから解決値を取り出して処理する」について解説します。この項目については「非同期処理を逐次的に行う」の項目とかぶる部分があります。
 
 あまり非同期 API の話はこの本の都合上まだやりたくないのですが(未来のチャプターでしっかり話したいので)非同期処理を逐次的に行う例として `fetch()` メソッドを利用して例をあげます。
 
@@ -693,7 +693,7 @@ fetch(localUrl)
 
 `response.text()` は Promise インスタンスを返します。そして実際に解決されれる値、つまりテキストデータの文字列に対して何か処理を行ったり、コンソールに表示させたりするためには、一度 Promise チェーンで次の `then()` メソッドのコールバックへ渡しすために `return` する必要があります。
 
-これは、`response.json()` なども同じで Promise インスタンスを返すような処理については Promsie チェーンで値を繋いでから何かします。
+これは、`response.json()` なども同じで Promise インスタンスを返すような処理については Promise チェーンで値を繋いでから何かします。
 
 ところで、チャプター９の「Promise チェーンはネストさせない」で Promise チェーンのネストは基本的にはアンチパターンであると言いましたが、ネストが深くならないなら、別にやっても問題は無いです。ただネストを行う場合にはエラーハンドリングに気をつけましょう。
 

@@ -1,122 +1,18 @@
 ---
-title: "V8エンジンによる内部変換コードでasync/awaitの挙動を理解する"
-emoji: "👻"
-type: "tech"
-topics: [V8, ECMAScript, JavaScript, 非同期処理, promise]
-published: true
-date: 2022-05-08
-url: "https://zenn.dev/estra/articles/asyncawait-v8-converting"
-aliases: [記事_V8エンジンによる変換コードでasync/awaitの挙動を理解する]
-tags: [" #V8 #JavaScript/async  "]
----
+title: "V8 エンジンによる async/await の内部変換[作成中]"
+----
 
-# はじめに
+# このチャプターについて
+このチャプターでは、V8 エンジンによる async/await の内部変換コードから async/await の舞台裏を探索し、その挙動について理解するための解説を行います。
 
-:::details ChageLog
-- 2022-05-11
-  - 全体的に微修正
-  - PromiseReactionJob が抜けていたので追加
-  - 「await Promise.reject(new Error("reason")) の場合」の項目を追加
-- 2022-05-10
-  - 一部表現のおかしいところがあったので修正
-  - 「Promise インスタンスで resolve するということ」の項目を追加
-:::
+仕様を直接見るよりも、V8 エンジンでどうなっているかを見た方が分かりやすいので V8 からアプローチします。前のチャプターで見たとおり、async/await では若干謎の挙動が存在しています。V8 エンジンの内部変換コードを見ることでその謎は解決できます。
 
-JavaScript の「非同期処理」ってやっぱりかなり難しくないですか？
+このチャプターの内容は基本的にはこちらの記事と同じ内容となるので、すでに読まれた方はスキップしてもらって構いません。
 
-自分も色々試行錯誤しましたが、結局「完全に理解した🤓」→「やっぱり何も分からん😭」っていう無限ループの中で泥臭く理解を深めていくしかないようです。
-
-さて、非同期処理の制御をある程度予測できるようになるには、非同期 API を提供する環境のことやイベントループ、マイクロタスクなどの仕組みについて理解する必要があります。
-
-そして環境に埋め込まれた **JavaScript Engine** のことも理解する必要があります。
-
-今回の記事では、JavaScript Engine の１つである V8 が内部で変換するコードから async/await の挙動を理解するための解説を試みたいと思います。V8 エンジンからアプローチすることで async/await の分かりづらい挙動を掌握して非同期処理を打倒します。
-
-:::message alert
-**注意: async/await に Promise の知識は必要か?**
-
-async/await の前に Promise の基礎と Promise チェーンを理解しておくのをおすすめします(できればイベントループも)。
-
-async/await は Promise の機能を代替するのではなく、Promise ベースの非同期処理の利便性を向上させるものです。async/await 自体が **Promise というシステム自体に基づいた拡張的な機能**なので、Promise 自体を理解できていないと雰囲気で使うしかなくなってしまいます。
-
-具体的に言えば、非同期関数(async function)自体が **Promise インスタンスを返す**ので Promise チェーンができますし、await 式自体も基本的には **Promise インスタンスを評価して解決値を取り出す**というものだからです。
-
-その他にも、**Promise Combinator** と呼ばれる `Promise.all()`、`Promise.race()`、`Promise.any()`、`Promise.allSettled()` は Promise の静的メソッドであり、これらを使うことで**複数の Promise 処理を合成**できますが、これも async/await が Promise を扱っていることを理解できてないと `await Promise.all([promise1, promise2])` などの処理が分からなくなります。
-
-モダンな非同期 API の仕組みとして一般化しつつある **Promise-based API** についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか**が分からなくなります。TypeScript において非同期処理を扱うにも **Promise の型注釈**ができなければ型安全なコードは書けないので、Promise の知識が必要です。
-:::
-
-今回の記事は Zenn の Book の方で公開している『イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理』で収録する予定の前記事となります。非同期処理の理解に欠かすことのできない Promise チェーンとイベントループについて解説しているので興味がある方は是非確認してみてください。この記事を理解する上でも役立つと思います。
-
-https://zenn.dev/estra/books/js-async-promise-chain-event-loop
-
-# 参考文献
-今回記事を書くにあたって参照したメインテーマに関する文献になります。
-
-https://zenn.dev/uhyo/articles/return-await-promise
-
-https://zenn.dev/azukiazusa/articles/difference-between-return-and-return-await
-
-https://v8.dev/blog/fast-async#await-under-the-hood
-
-# V8 エンジンとは
-
-まずは V8 エンジンが何かを確認しておきましょう。
-
-https://v8.dev
-
->V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone**, or can be embedded into any C++ application.
->(上記公式ページより引用)
-
-V8 は Google が提供するオープンソースの JavaScript エンジンかつ WebAssembly エンジンでもあります。つまり、**ECMAScript と WebAssembly を実装しています**。V8 自体は C++ で書かれており、主に Chrome ブラウザ(正確には Chrome のオープンソース部分である Chromium)で利用されています。
-
-JavaScript Engine は他にもいくつかあります。他の JavaScript エンジンとブラウザ環境との関係性は『サバイバル TypeScript』で分かりやすい図と共に解説されているので参考にしてください。
-https://typescriptbook.jp/overview/ecmascript#ecmascript%E3%81%A8%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E3%81%AE%E9%96%A2%E4%BF%82%E6%80%A7
-
-V8 の凄いところは、Chrome だけでなく、Node, Deno といったランタイム環境やクロスプラットフォームのデスクトップアプリケーションを開発するための Electron などで利用されている JavaScript Engine であるということです。
-
-JavaScript の実行環境において JavaScript Engine である V8 が担当している役割は以下のように様々です。
-
-- JavaScript コードをコンパイルして実行: コンパイラ
-- 関数呼び出しの特定順序で実行できるようにする: コールスタック
-- オブジェクトのメモリアロケーションの管理: メモリヒープ
-- 使用されなくなったオブジェクトのメモリ解放: ガベージコレクタ
-- JavaScript におけるすべてのデータ型、演算子、オブジェクト、関数の提供
-
-参考文献
-https://hackernoon.com/javascript-v8-engine-explained-3f940148d4ef
-
-V8 自体は JavaScript Engine なので DOM については一切感知しませんし、Web API も(ごく一部を覗いて)提供しませんので、それらは V8 を埋め込む環境によって実装されて提供される必要があります。**V8 はデフォルトのイベントループとタスクキュー/マイクロタスクキューを保有しています**が、環境は独自のイベントループを実装し、複数のタスクキューを設けて、マイクロタスクのチェックポイント(いつマイクロタスクを処理するか)を定めることができます。
-
-:::message
-Chrome では Libevent とレンダリングエンジン Blink、Node では Libuv, Deno では Tokio などのライブラリによって非同期 I/O の仕組みなどを挿入しつつ独自のイベントループを実装しています。
-
-とは言っても、イベントループ自体はブラウザ環境では HTML 仕様に従い、Node や Deno も可能な限りブラウザ環境に近づくように実装されていますので、本質的な部分は共通しています。
-:::
-
-V8 エンジンは GoogleChromeLabs が提供する jsvu(**JavaScript engine Version Updater**)を使ってインストールでき、ソースからビルドすることなく利用できます。V8 エンジンはローカル環境においてスタンドアロンで実行できるため、ECMAScript の実装について簡単にローカルでテストできます。
-
-https://github.com/GoogleChromeLabs/jsvu
-
-:::message
-V8 の他にも SpiderMonkey などのサポートされている JavaScript Engine をまとめてインストールできます。
-:::
-
-V8 を単独で使うことにより、Chrome, Node, Deno による環境実装の API や独自のイベントループ、タスクキューの優先度などを気にすることなく、ECMAScript についての実装のみを考えることができます。この記事内で使用する v8 のバージョンは次のものとなります。
-
-```sh
-❯ v8
-V8 version 10.3.125
-d8>
-```
-
-`v8` コマンド単体をシェルで実行すると、d8 という REPL が立ち上がります。`v8` コマンドでスクリプト名を引数にすることで Node や Deno のように JavaScript ファイルを実行できます。
+https://zenn.dev/estra/articles/asyncawait-v8-converting
 
 # V8 エンジンによる内部変換コード
-
-さて、V8 エンジンについての予備知識を頭に入れたところで本題に入りましよう。
-
-V8 開発チームの Maya Lekova 氏と Benedikt Meurer 氏によるプレゼン動画『Holding on to your Performance Promises』と、それに基づく V8 エンジン公式サイトのブログ記事『Faster async functions and promises』を元にして async/await の V8 エンジンでの内部変換コードを見ていきます。
+さて、このチャプターでは V8 開発チームの Maya Lekova 氏と Benedikt Meurer 氏によるプレゼン動画『Holding on to your Performance Promises』と、それに基づく V8 エンジン公式サイトのブログ記事『Faster async functions and promises』を元にして async/await の V8 エンジンでの内部変換コードを見ていきます。
 
 ブログ記事だけだと分かりづらい部分があると感じたので、動画も一緒に視聴することをおすすめします。平易な英語なので比較的聞きやすいと思います。
 
@@ -129,7 +25,7 @@ https://v8.dev/blog/fast-async#await-under-the-hood
 
 https://github.com/tc39/ecma262/pull/1250
 
-今回の記事ではそれらを全部すっ飛ばして結論としての変換コードから見ていきますので、注意してください。細かい部分については元々の動画とブログを参考にしてください。
+このチャプターではそれらを全部すっ飛ばして結論としての変換コードから見ていきますので、注意してください。細かい部分については元々の動画とブログを参考にしてください。
 :::
 
 では結論として、V8 エンジンでは次のような async/await を内部的に変換しています。
@@ -249,10 +145,6 @@ function promiseResolve(v) {
   w = suspend(«foo», implicit_promise); 
 ```
 
-:::message
-Promise の理解が必要だと繰り返し述べているのは、変換コードを見て分かるように async/await 自体が内部的にも Promise の処理をベースにしているからです。Promise の State や resolve の概念、`then()` メソッドによる chaining 無しだと async/await は理解できません。
-:::
-
 別のプレゼンの前資料である次のドキュメントから借用したコードで考えると次のようにもできます。
 
 [Zero-cost async stack traces - Google ドキュメント](https://docs.google.com/document/d/13Sy_kBIJGP0XT34V1CV3nkWya4TwYx9L3Yv45LdGB6Q/)
@@ -272,12 +164,6 @@ const .promise = @promiseResolve(x);
 `peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。
 
 この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で非同期関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。`then()` メソッドのようにマイクロタスクが発行されるので、Promise チェーンで考えれば理解できるはずです。
-
-:::message
-Generator で考えやすい人はそちらで考えるといいと思います。僕は Generator には詳しくないので、頭の中にある Promise チェーンとイベントループをベースモデルにして理解しています。
-
-もし、Generator で詳細に解説できる方がいれば、是非記事を書いて教えてください(僕自身が読んで理解したいです)。
-:::
 
 ## await 式が２個ある場合
 
@@ -380,7 +266,7 @@ console.log("🦖 [2] MAINLINE: End");
 ```
 
 :::message
-jsvu でインストールした `v8` コマンドに引数としてスクリプト名を渡すことでローカル実行できます。V8 エンジンでは Web API である `queueMicrotask()` は提供されないので、代わりに `Promise.resolve().then()` でマイクロタスクを発行しています。
+V8 エンジンでは Web API である `queueMicrotask()` は提供されないので、代わりに `Promise.resolve().then()` でマイクロタスクを発行しています。
 
 通常 `Promise.resolve().then()` は `queueMicrotask()` よりもオーバーヘッドがあるので、マイクロタスクを発行するだけなら、`queueMicrotask()` を使用します。
 :::
@@ -441,10 +327,6 @@ console.log("🦖 [2] MAINLINE: End");
 スクリプト評価による同期処理がすべて終わり、コールスタックからグローバルコンテキストがポップして破棄されることで、コールスタックが空になるので、マイクロタスクのチェックポイントとなります。マイクロタスクキューの先頭にあるものから順番にすべて処理されていきます。
 
 ３番目にマイクロタスクキューへ送られたコールバック `() => console.log("👦 [5] <3-Sync> MICRO: then")` が実行された時点で、元々の `Promise.reoslve().then()` で返ってくる Promise インスタンスが履行状態となるので、`Promise.resolve().then().then()` のコールバックがマイクロタスクキューに送られて直ちにコールスタックへと積まれて実行されます。
-
-:::message
-マイクロタスクとコールスタックについて説明すると長くなるので、詳細については『イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理』を参照してください。
-:::
 
 ということで、実行結果は次のようになります。
 
@@ -1035,7 +917,13 @@ Promise インスタンス以外で resolve を試みるとマイクロタスク
 
 ### Promise インスタンスで resolve するということ
 
-ある Promise インスタンスのコンストラクタで `resolve()` 関数や `Promise.resolve()` の引数として、Promise インスタンスを渡すと **Unwrapping** という現象がおき、引数として渡した Promise インスタンスの状態や履行値、拒否理由などを自身の状態と値として同化できます。ただし、この `Promise.resolve()` と `resolve()` の２つには注意すべき違いがあります。
+ある Promise インスタンスのコンストラクタで `resolve()` 関数や `Promise.resolve()` の引数として、Promise インスタンスを渡すと **Unwrapping** という現象がおき、引数として渡した Promise インスタンスの状態や履行値、拒否理由などを自身の状態と値として同化できます。
+
+:::message
+Unwrapping については『resolve と reject の使い方』のチャプターで解説しました。
+:::
+
+ただし、この `Promise.resolve()` と `resolve()` の２つには注意すべき違いがあります。
 
 上で見たようにまずは `resolve()` 関数に Promise インスタンスを渡した場合は注意が必要です。次のようなコードで Promise インスタンスで resolve を試みることでコードの実行順番が直感的に予測しずらくなります。
 
@@ -1262,13 +1150,7 @@ console.log("🦖 [3] MAINLINE: End");
 👻 [8] <5-Async> MICRO: then after async function: 43
 ```
 
-ここまで、実行予測を正確にする必要はそんなに無いとは思いますが、V8 エンジンによる内部変換コードで考えれば原理を理解するのに役立つことが分かったと思います。
-
 ## await Promise.reject(new Error("reason")) の場合
-
-:::message
-非同期例外について記載していなかったので、追記しておきました。
-:::
 
 await 式で Rejected 状態の Promise インスタンスを評価すると、例外が throw されます。
 
@@ -1325,7 +1207,11 @@ Promise.resolve()
 console.log("🦖 [2] MAINLINE: End");
 ```
 
-Rejected 状態の Promise インスタンスにチェインされている `then()` メソッドの**コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
+Rejected 状態の Promise インスタンスにチェーンされている `then()` メソッドの**コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
+
+:::message
+『catch メソッドと finally メソッド』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise チェーンの実行となります。
+:::
 
 ```sh
 ❯ v8 promiseRejectionR.js
@@ -1360,7 +1246,7 @@ Rejected 状態の Promise インスタンスにチェインされている `the
   .finally(() => console.log("これは実行される"));
 ```
 
-上のようなコードの場合、try/catch で例外は補足されており、非同期関数自体から返ってくる Promise インスタンスは履行状態となるため、チェインした `then()` メソッドのコールバックは実行されて、`catch()` メソッドのコールバックは実行されないことに注意してください。
+上のようなコードの場合、try/catch で例外は補足されており、非同期関数自体から返ってくる Promise インスタンスは履行状態となるため、チェーンした `then()` メソッドのコールバックは実行されて、`catch()` メソッドのコールバックは実行されないことに注意してください。
 
 V8 の内部変換で考えてみるとこんな感じでしょうか。
 
@@ -1428,7 +1314,7 @@ Promise.resolve()
 console.log("🦖 [2] MAINLINE: End");
 ```
 
-今回は、非同期関数内の try/catch によって例外補足されているため、非同期関数から返ってくる Promise インスタンス自体は Fullfilled であり、チェインされた `then()` メソッドのコールバックも実行されます。`catch()` メソッドのコールバックは実行されませんが、マイクロタスクは発行されるので注意してください。
+今回は、非同期関数内の try/catch によって例外補足されているため、非同期関数から返ってくる Promise インスタンス自体は Fullfilled であり、チェーンされた `then()` メソッドのコールバックも実行されます。`catch()` メソッドのコールバックは実行されませんが、マイクロタスクは発行されるので注意してください。
 
 実際に実行すると次の出力を得ます。
 
@@ -1449,7 +1335,6 @@ console.log("🦖 [2] MAINLINE: End");
 ```
 
 # async/await の最適化
-
 以上、async/await の挙動について、V8 エンジンの内部変換コードから解説を試みてみました。
 
 最初に述べたよう ECMAScript の仕様自体が async/await の最適化(かつては V8 において `--harmony-await-optimization` というフラグで使用されていた機能)をマージしました。
@@ -1472,8 +1357,11 @@ https://github.com/tc39/ecma262/pull/1250
 >([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用)
 
 # まとめ
+V8 の舞台裏を見ることで async/await の挙動が理解できたと思います。
 
-async/await を理解できるようになるには、Promise とイベントループ、マイクロタスクの知識が必要不可欠です。await 式によって非同期関数内の実行フローが分割され制御が行ったり来たりしますが、それは Promise チェーンでの連鎖的なマイクロタスク発行による逐次実行と同じです。非同期関数では処理再開を告げるマイクロタスクとして `PromiseReactionJob` がコールスタックに積まれ、非同期関数の関数実行コンテキストが再びプッシュされてコールスタックのトップになることで実行再開となります。
+もちろん async/await を理解できるようになるには、今までの知識として Promise とイベントループ、マイクロタスクの概念が必要不可欠です。ここまで学習してきたことによって async/await が理解できるようになったことを忘れないでください。
+
+await 式によって非同期関数内の実行フローが分割され制御が行ったり来たりしますが、それは Promise チェーンでの連鎖的なマイクロタスク発行による逐次実行と同じです。非同期関数では処理再開を告げるマイクロタスクとして `PromiseReactionJob` がコールスタックに積まれ、非同期関数の関数実行コンテキストが再びプッシュされてコールスタックのトップになることで実行再開となります。
 
 非同期処理の本質的な部分は**イベントループにおけるタスクとマイクロタスクの処理**です。
 
@@ -1481,15 +1369,9 @@ Promise チェーンも async/await も本質的には**イベントループに
 
 V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています。
 
-ここまで見てきたように ECMAScript の仕様だけではなく、V8 エンジンで何が起きているかを知ることで理解できることがあったり、パフォーマンス上でいいことがありそうです。
+:::message
+とりあえず、ここでこの本の内容を終わりたいと思います。
 
-V8 のドキュメントでは ECMAScript の新機能の解説などが載っているので、V８ のドキュメントも参考に色々学習してみるのもよさそうです👇
-
-https://v8.dev/features/promise-combinators
-
-https://v8.dev/features/top-level-await
-
-ECMAScript の仕様の読み方なども載っていて面白いです。
-
-https://v8.dev/blog/understanding-ecmascript-part-1
+次は TypeScript の型注釈で会いましょう。
+:::
 

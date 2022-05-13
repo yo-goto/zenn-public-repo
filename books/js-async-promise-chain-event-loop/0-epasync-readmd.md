@@ -31,6 +31,7 @@ chapters:
   - 3-epasync-promise-constructor-executor-func # Promise コンストラクタと Executor 関数
   - 4-epasync-callback-is-sync-or-async # コールバック関数の同期実行と非同期実行
   - g-epasync-resolve-reject # resolve と reject の使い方
+  - h-epasync-catch-finally # catch メソッドと finally メソッド
   - 5-epasync-multiple-promises # 複数の Promise を走らせる
   - 6-epasync-then-always-return-new-promise # then メソッドは常に新しい Promise を返す
   - 7-epasync-pass-value-to-the-next-chain # Promise チェーンで値を繋ぐ
@@ -40,5 +41,7 @@ chapters:
   - 11-epasync-omit-return-by-arrow-shortcut # アロー関数で return を省略する
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
+  - 14-epasync-chain-to-async-await # Promise チェーンから async/await へ
+  - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
 ```
 
