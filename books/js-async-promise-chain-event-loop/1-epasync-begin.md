@@ -98,7 +98,7 @@ ECMAScript や HTML Living standard, Node.js などで同じものを表す場�
 - 2022-05-14
   - 新チャプター追加
     - ch「catch メソッドと finally メソッド」を追加
-    - ch「Promise チェーンから async/await へ」を追加
+    - ch「Promise チェーンから非同期関数へ」を追加
     - ch「V8 エンジンによる async/await の内部変換」を追加
 - 2022-05-06
   - 新チャプターを追加

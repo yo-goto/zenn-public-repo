@@ -41,7 +41,7 @@ chapters:
   - 11-epasync-omit-return-by-arrow-shortcut # アロー関数で return を省略する
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
-  - 14-epasync-chain-to-async-await # Promise チェーンから async/await へ
+  - 14-epasync-chain-to-async-await # Promise チェーンから非同期関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
 ```
 
