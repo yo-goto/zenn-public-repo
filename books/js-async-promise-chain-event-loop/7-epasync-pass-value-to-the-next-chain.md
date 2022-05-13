@@ -160,7 +160,6 @@ console.log("[L-4] Sync process");
 # チェーンの最後まで値を繋ぐ
 Promise チェーンで「値を繋ぐ」ことが理解しづらい場合には次のコードを考えてみます。このコードでは、`returnPromise()` 関数の第一引数として渡した文字列 `"1st Promise"` を Promise チェーンにおいて `then()` メソッドのコールバックで毎回 `return` することがで最後まで値を繋げています。
 
-
 ```js
 // chainValue.js
 console.log("[1] Sync process");
