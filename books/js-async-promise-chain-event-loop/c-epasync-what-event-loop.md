@@ -24,16 +24,24 @@ https://html.spec.whatwg.org/multipage/webappapis.html#spin-the-event-loop
 ブラウザ環境と各ランタイム環境での捉え方が異なる部分は、マイクロタスクのところではなく、タスクキューのプライオリティの振り分け方であると考えられます。何をタスク(マクロタスク)として扱っているかを見極めることが重要になります。そして、それぞれの環境が提供する非同期 API がタスクを発行するものかマイクロタスクを発行するものか(Promise を返す)を見極めます。
 
 :::message
-代表的なランタイム環境である Node では Promise を返す API ではなく、タスクベースのコールバックスタイルの API をベースに開発してしまったことから、それぞれのタスクの優先度を振り分けて処理するために Phase というタスクキューの選択サイクルの仕組みを導入したと考えられます。
+Node 環境では Promise が入る前にタスクを発行するコールバックベース(イベントベース)の API を基本として開発したこともあって、それらから発行されるタスクを仕分ける複数のタスクキューにプライオリティを設けるために Phase 概念を導入したと考えられます(個人的な推測です)。
 
-Node の反省点を踏まえた Deno ではブラウザ互換の `setTimetout()` や `setInterval()` といった Timers 機能以外は全て Promise を返す非同期 API をベースに開発したこともあり、Node の Phase に相当するものは Timers のみとなっています。そして、Node でも Promise を返す非同期 API が徐々に提供されるようになってきています。
+Deno 環境ではタイマー以外は Promise based な API を基本としたために Node の Phase に相当するものは実質 Timers のみとなっています(これについては Discord のヘルプでコミッターに聞きました)。
 
-ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが示唆されており、`FileReader.readAsText()` などの Web API もイベントベースなので、より新しい **Promise-based API** として `Blob.text()` などが登場してきています。
+ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが示唆されています。
 
 >**理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。
 >([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
 
-結局のところ、マイクロタスクがどのように処理されるかがますます重要なポジションとなっていることが伺えます。
+`FileReader.readAsText()` などの Web API もイベントベースなので、より新しい Promise-based API として `Blob.text()` などが登場してきています。
+
+https://developer.mozilla.org/ja/docs/Web/API/Blob/text
+
+実は Node でも Promise-based な API を提供しはじめており、Promise based な Timer API (Promise インスタンスを返す `setTimeout()`, `setImmediate()`, `setInterval()`) なども存在しています。
+
+https://nodejs.org/api/timers.html#timers-promises-api
+
+マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる(というか、もうなってる?)ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
 :::
 
 「**単一タスク(Task)が実行された後にすべてのマイクロタスク(Microtask)を処理する**」という共通性質は理解の上で非常に重要ですが、これよりももっと実用的にマイクロタスクを捉えることができるものがあります。
@@ -319,6 +327,9 @@ requestAnimationFrame(() => {
 ```
 
 実はこの Web API 用に "Animation Frame Callback Queue" というタスクキューが存在しています。このタスクキューに送られるタスクはアニメーションタスクなどと呼ばれることもあります。rAF のコールバックがタスクとなることは HTML 仕様では明確に述べられていませんが、W3C ワーキンググループの古い仕様で読み取れる部分があります。いずれにせよ便宜的にタスクとして考えます。
+
+https://404forest.com/2017/07/18/how-javascript-actually-works-eventloop-and-uirendering/
+https://github.com/whatwg/html/issues/2637
 
 このアニメーションタスクはタスクでありマイクロタスクではありません。イベントループの一周において、その時点で Animation Frame Callback Queue にある分のタスクすべてを処理します。処理された rAF のアニメーションタスクから更にアニメーションタスクが生み出されてしまった場合は、次のループで処理されることに注意してください。
 
@@ -707,27 +718,6 @@ while (tasksAreWaiting()) {
 ```
 
 ただし、Node 互換モードがあるので、そのモードを使用する際には、Node の nextTickQueue などポリフィルを使って使用できることに注意してください。
-
-:::message
-Node 環境では Promise が入る前にタスクを発行するコールバックベース(イベントベース)の API を基本として開発したこともあって、それらから発行されるタスクを仕分ける複数のタスクキューにプライオリティを設けるために Phase 概念を導入したと考えられます(個人的な推測です)。
-
-Deno 環境ではタイマー以外は Promise based な API を基本としたために Node の Phase に相当するものは実質 Timers のみとなっています(これについては Discord のヘルプでコミッターに聞きました)。
-
-ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが示唆されています。
-
->**理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。
->([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
-
-`FileReader.readAsText()` などの Web API もイベントベースなので、より新しい Promise-based API として `Blob.text()` などが登場してきています。
-
-https://developer.mozilla.org/ja/docs/Web/API/Blob/text
-
-実は Node でも Promise-based な API を提供しはじめており、Promise based な Timer API (Promise インスタンスを返す `setTimeout()`, `setImmediate()`, `setInterval()`) なども存在しています。
-
-https://nodejs.org/api/timers.html#timers-promises-api
-
-マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる(というか、もうなってる?)ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
-:::
 
 # 非同期処理を考える上でのイベントループ
 

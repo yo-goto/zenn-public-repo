@@ -15,6 +15,10 @@ https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates
 
 不安な場合にはオリジナルを参照してじっくり考えてみてください。
 
+:::message alert
+`then()` メソッドを持つ Promise ライクなオブジェクト "Thenable" については混乱をさけるために意図的に省いています。
+:::
+
 ## State
 Promise インスタンスには次の３つの状態(**State**)があり、それぞれに排他的となっています(同時に１つの状態しか取りえないようになっています)。
 

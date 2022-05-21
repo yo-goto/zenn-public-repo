@@ -43,7 +43,7 @@ async/await は Promise の機能を代替するのではなく、Promise ベー
 
 その他にも、**Promise Combinator** と呼ばれる `Promise.all()`、`Promise.race()`、`Promise.any()`、`Promise.allSettled()` は Promise の静的メソッドであり、これらを使うことで**複数の Promise 処理を合成**できますが、これも async/await が Promise を扱っていることを理解できてないと `await Promise.all([promise1, promise2])` などの処理が分からなくなります。
 
-モダンな非同期 API の仕組みとして一般化しつつある **Promise-based API** についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか**が分からなくなります。TypeScript において非同期処理を扱うにも **Promise の型注釈**ができなければ型安全なコードは書けないので、Promise の知識が必要です。
+モダンな非同期 API の仕組みとして一般化しつつある **Promise-based API** についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか**が分からなくなります。TypeScript において非同期処理を扱うにも **Promise の型注釈**ができなければ[型安全なコードは書けないので](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop#async-%E9%96%A2%E6%95%B0%E3%81%AE%E6%84%8F%E5%91%B3)、Promise の知識が必要です。
 :::
 
 今回の記事は Zenn の Book の方で公開している『イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理』で収録する予定の前記事となります。非同期処理の理解に欠かすことのできない Promise チェーンとイベントループについて解説しているので興味がある方は是非確認してみてください。この記事を理解する上でも役立つと思います。
@@ -1117,9 +1117,9 @@ Promise.resolve(Promise.resolve("U"))
 
 ### どっちを使うべき?
 
-さらにスタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`)の方が詳細に情報が表示されます。
+スタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`)の方が詳細に情報が表示されます。
 
-こちらについては、azukiazusa さんの記事で解説されています。
+これについては、azukiazusa さんの記事で解説されています。
 
 https://zenn.dev/azukiazusa/articles/difference-between-return-and-return-await#%E3%82%B9%E3%82%BF%E3%83%83%E3%82%AF%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B9%E3%81%AE%E5%87%BA%E5%8A%9B
 
@@ -1188,7 +1188,7 @@ function promiseResolve(v) {
 }
 ```
 
-変換の原理自体は既に分かったので上のように上のように変換コードで一々考える必要もありません。単純にマイクロタスクがいくつ発生するかで考えます。
+変換の原理自体は既に分かったので、上のように変換コードで一々考える必要もありません。単純にマイクロタスクがいくつ発生するかで考えます。
 
 ```js:fooW
 async function fooPrevious() {

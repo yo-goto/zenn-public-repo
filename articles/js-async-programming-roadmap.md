@@ -173,13 +173,13 @@ blocking の例として Node.js の同期 API (Synchronous API) についても
 追記:「What the heck is the event loop anyway?」は Event loop と非同期処理を理解するための**入り口となる動画**として非常に素晴らしいのですが、JSConf での他の関連する動画もこの動画と同じかそれ以上に視聴する価値があることに気づきました。この点については追記の項目で記載します。
 
 :::message
-Chrome などのブラウザ環境と Node.js や Deno の環境では JavaScript エンジンとして同じ V8 エンジンを採用してますが、Event Loop の実装はそれぞれ違います。それぞれの環境で Event loop を実装するのに使われているライブラリは以下のものとなります。
+Chrome などのブラウザ環境と Node.js や Deno の環境では JavaScript エンジンとして同じ V8 エンジンを採用してますが、イベントループの実装はそれぞれ違います。それぞれの環境でイベントループを実装するのに使われているライブラリは以下のものとなります。
 
 - [Libevent](https://libevent.org) (Chrome): an event notification library
 - [Libuv](https://libuv.org) (Node.js) : a multi-platform support library with a focus on asynchronous I/O
 - [Tokio](https://tokio.rs) (Deno) : an asynchronous Rust runtime 
 
-V8 エンジンが担当しているのは、Heap と Call Stack です。V8 のソースコードには setTimeout や DOM、HTTP request といった Web APIs は含まれていません。
+V8 エンジンが主に担当しているのは、Heap と Call Stack です。V8 のソースコードには setTimeout や DOM、HTTP request といった Web APIs は含まれていません(実は `setTimeout()` はタイマー機能のついていない Web API もどきが提供されています)。
 
 上記の動画で解説されているのは、ブラウザ環境での Event Loop です。Promise チェーンや async/await といった言語としての非同期処理を理解するレベルでの抽象化なら、Node.js でも Deno でも同じように考えて大丈夫です(もちろん開発レベルで必要なら I/O とかタイマーの振る舞いは違う可能性があるので具体的に知る必要はあると思いますが)。ただし、Web APIs の部分はブラウザ特有のものなので、Node.js や Deno ではそれに対応するものとして Runtime APIs で置き換えて考えます。
 :::
@@ -332,11 +332,6 @@ https://qiita.com/uhyo/items/0e2e9eaa30ec2ff05260
 
 ## API の機能を提供する環境について学ぶ (追記)
 実は、非同期処理のための「ECMAScript」の言語機能だけを見ていても、JavaScript における非同期処理の仕組みは理解できません。
-
-:::message
-実はこの記事を書いてから違和感があり、再度調べ直した結果として理解できました😇
-間違いがあれば指摘していただけると助かります。
-:::
 
 "JavaScript" の境界線がどこまでなのかははっきりしませんが、JavaScript は常に実行する環境があり、その**環境によって利用できる機能が異なる**ので、ECMAScript(JavaScript の言語コア)における非同期処理の機能を考えるよりも、「環境と結びついたものとしての JavaScript の非同期処理」、ひいては「環境そのもの」のことを考えないと非同期処理を理解できません。
 
@@ -622,7 +617,7 @@ while (tasksAreWaiting()) {
     while (nextTickQueue.hasTasks()) {
       doNextTickTask();
     }
-    while (promiseQueue.hasTasks()) {
+    while (microTaskQueue.hasTasks()) {
       doPromiseTask();
     }
   }
@@ -715,16 +710,16 @@ while (tasksAreWaiting()) {
       while (nextTickQueue.hasTasks()) {
         doNextTickTask();
       }
-      while (promiseQueue.hasTasks()) {
+      while (microTaskQueue.hasTasks()) {
         doPromiseTask();
       }
     } while (nextTickQueue.hasTasks());
-    // promiseQueue から来たマイクロタスクが process.nextTick を使用して新しいマイクロタスクを作成した場合も完全に空になるまで処理する
+    // microTaskQueue から来たマイクロタスクが process.nextTick を使用して新しいマイクロタスクを作成した場合も完全に空になるまで処理する
   }
 }
 ```
 
-`nextTickQueue` のループが `promiseQueue` のループを包んでいることがこれで理解できます。
+`nextTickQueue` のループが `microTaskQueue` のループを包んでいることがこれで理解できます。
 
 ![event loop 2](/images/js-async/img_node-event-loop-2.jpg)
 
@@ -914,9 +909,11 @@ while (tasksAreWaiting()) {
 }
 ```
 
-タスクキューが実際にいくつあろうがどれか１つを選択することには違いないので `getNextQueue()` で単一のタスクキューを選び取ります。ということで、8 エンジンなどの JavaScript エンジンから考えることでイベントループの本質的な部分についても理解できます。
+タスクキューが実際にいくつあろうがどれか１つを選択することには違いないので `getNextQueue()` で単一のタスクキューを選び取ります。
 
-V8 を実際に環境に埋め込む際には V8 の API を使用してマイクロタスクのチェックポイントや複数のタスクキューを定めます。Node、Deno、Chrome などの実行環境では Libuv, Tokio, Libevent と Blink などのライブラリによって非同期 I/O やレンダリングの機構、複数タスクキューのスケジューリングなどの仕組みを挿入して環境独自のイベントループを実装しています。
+ということで、V8 エンジンなどの JavaScript エンジンから考えることでイベントループの本質的な部分についても理解できます。
+
+V8 エンジンを実際に環境に埋め込む際には V8 の API を使用してマイクロタスクのチェックポイントや複数のタスクキューを定めます。Node、Deno、Chrome などの実行環境では Libuv, Tokio, Libevent と Blink などのライブラリによって非同期 I/O やレンダリングの機構、複数タスクキューのスケジューリングなどの仕組みを挿入して環境独自のイベントループを実装しています。
 
 ちなみに V8 エンジンでのコードテストは [jsvu](https://github.com/GoogleChromeLabs/jsvu) で V8 を**ローカルインストールすることでテストできるのでイベントループが存在しており、このようになっていることを確認できます**。
 

@@ -1005,9 +1005,9 @@ Promise.resolve(Promise.resolve("U"))
 
 ### どっちを使うべき?
 
-さらにスタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`)の方が詳細に情報が表示されます。
+スタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`)の方が詳細に情報が表示されます。
 
-こちらについては、azukiazusa さんの記事で解説されています。
+これについては、azukiazusa さんの記事で解説されています。
 
 https://zenn.dev/azukiazusa/articles/difference-between-return-and-return-await#%E3%82%B9%E3%82%BF%E3%83%83%E3%82%AF%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B9%E3%81%AE%E5%87%BA%E5%8A%9B
 
@@ -1076,7 +1076,7 @@ function promiseResolve(v) {
 }
 ```
 
-変換の原理自体は既に分かったので上のように上のように変換コードで一々考える必要もありません。単純にマイクロタスクがいくつ発生するかで考えます。
+変換の原理自体は既に分かったので、上のように変換コードで一々考える必要もありません。単純にマイクロタスクがいくつ発生するかで考えます。
 
 ```js:fooW
 async function fooPrevious() {
@@ -1363,7 +1363,7 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 >
 >([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用)
 
-# まとめ
+# async/await のまとめ
 V8 の舞台裏を見ることで async/await の挙動が理解できたと思います。
 
 もちろん async/await を理解できるようになるには、今までの知識として Promise とイベントループ、マイクロタスクの概念が必要不可欠です。ここまで学習してきたことによって async/await が理解できるようになったことを忘れないでください。
@@ -1372,13 +1372,7 @@ await 式によって非同期関数内の実行フローが分割され制御�
 
 非同期処理の本質的な部分は**イベントループにおけるタスクとマイクロタスクの処理**です。
 
-Promise チェーンも async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** でしょうか。
+Promise チェーンも async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** です。
 
 V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています。
-
-:::message
-とりあえず、ここでこの本の内容を終わりたいと思います。
-
-次は TypeScript の型注釈で会いましょう。
-:::
 

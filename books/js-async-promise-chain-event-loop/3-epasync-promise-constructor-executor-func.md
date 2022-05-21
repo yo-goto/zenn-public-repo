@@ -278,6 +278,14 @@ console.log(myFunc); // => [Function: myFunc]
 
 関数式で関数の定義をするメリットとしてははじめに言ったように `const` 宣言で **関数の上書きを出来ないようにしています**。
 
+:::messsage
+**関数式と関数宣言の使い分け**
+
+関数宣言では、`function` キーワードが頭にあるので見やすかったり、巻き上げ(hoisting)があることでファイル全体で定義した関数が使えるという利点があります。その一方、関数式は定義した行以降でしかその関数を使えず、他人が見て分かりづらい場合もありますが、グローバルスコープを汚染することなくコールバックなどで使いすてることなどができます。結局は両方を使い分けるのが良さそうです。
+
+参考: [When to use a function declaration vs. a function expression](https://www.freecodecamp.org/news/when-to-use-a-function-declarations-vs-a-function-expression-70f15152a0a0/)
+:::
+
 ではここでアロー関数を使って関数式を書き換えてみます。`function` キーワードを取り払って、`=>` をつけます。
 
 ```js
@@ -416,5 +424,5 @@ https://stackoverflow.com/questions/41085189/using-underscore-variable-with-arro
 
 https://qiita.com/suin/items/a44825d253d023e31e4d
 
-以降、Promise インスタンスを返す関数や async/await を使った非同期関数などが登場しますが、基本的にはこのアロー関数を使って定義していきます。
+以降、Promise インスタンスを返す関数や async/await を使った非同期関数などが登場しますが、このアロー関数を使って定義する場合があるので注意してください。
 
