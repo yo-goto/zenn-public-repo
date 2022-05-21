@@ -2,7 +2,14 @@
 title: "then コールバックで Promise インスタンスを返す"
 ---
 
-今のコードでは `then()` メソッドのコールバックにおいて `return` して返却したのは `"Resolved value passing to the next then callback"` という文字列でした。
+# このチャプターについて
+このチャプターは短いですが、Promise チェーンを理解する上で重要なので１つのチャプターとして独立させています。
+
+チャプターは飛びますが、『then メソッドのコールバックで非同期処理』のチャプターでも使う知識なので注意してください。
+
+# then コールバックで Promise インスタンスを返す
+
+前のチャプターのコードでは `then()` メソッドのコールバックにおいて `return` で返却していたのは `"Resolved value passing to the next then callback"` という文字列でした。
 
 `return` する値は、数値でも真偽値でも文字列での何でも良いのですが、Promise インスタンスを返した場合はどうなるでしょうか?
 

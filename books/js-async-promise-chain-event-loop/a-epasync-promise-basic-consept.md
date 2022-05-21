@@ -2,8 +2,13 @@
 title: "Promise の基本概念"
 ---
 
+# このチャプターについて
+このチャプターでは Promise の基本的な概念と用語を紹介しておきます。Promise の知識自体は他の解説やドキュメントなどで目にしていると思うので、簡単な説明自体は省いて、本質的な部分のみについて触れておきます。
+
+Promise のコードについての具体的な解説はチャプター『Promise コンストラクタと Executor 関数』で行います。
+
 # State と Fate
-ここでは Promise の基礎的な概念と用語を紹介しておきます。
+
 紹介する用語はこちらのドキュメントを参考にしています。以下で解説する用語は自分の解釈が混じっていますが、このドキュメント自体は Mdn のお墨付きなので信用してください(ES6 仕様のドラフトです)。
 
 https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md

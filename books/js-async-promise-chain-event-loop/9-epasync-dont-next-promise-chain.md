@@ -2,10 +2,13 @@
 title: "Promise チェーンはネストさせない"
 ---
 
+# このチャプターについて
+
 :::message alert
 このチャプターの内容は『イベントループの概要と注意点』のチャプターに基づいた古いものであり、イベントループの説明自体は間違っていませんが、分かりづらい部分があるので注意してください。
 :::
 
+このチャプターでは、Promise チェーンにおけるネストについて、アンチパターンとしての話と、原理的な話を行います。
 # Promise チェーンをネストしてみる
 前のチャプターでは、`then()` メソッドのコールバックにおいて、Promise インスタンスを `return` した場合は、「Promise インスタンスが `resolve` された値が次の `then()` メソッドのコールバック関数の引数として渡される」という話でした。
 
@@ -73,7 +76,7 @@ console.log("[4] Sync process");
   2. `returnPromise("1st Promise", "2")` が同期処理されて `then(cb1)` のコールバック `cb1` が直ちに Microtask queue へと送られる
   3. `returnPromise("3rd Promise", "3")` が同期処理されて `then(cb3)` のコールバック `cb3` が直ちに Microtask queue へと送られる
   4. `console.log("[4] Sync process")` が同期処理される
-  5. Event Loop の次のステップ3へ移行
+  5. Event Loop の次のステップ 3 へ移行
 2. 「Microtask queue のすべての Microtask を実行する」
   6. `cb1` が実行される
 

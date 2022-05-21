@@ -2,15 +2,19 @@
 title: "古い非同期 API を Promise でラップする"
 ---
 
-# タスク発行
+# このチャプターについて
 
-:::message
+ここまで Promise チェーンでのマイクロタスク発行による非同期処理を見てきました。「単一タスクを実行したら、すべてのマイクロタスクを処理する」というのがイベントループの重大ルールです。
+
+このチャプターでは、タスクによる非同期処理と、マイクロタスクをかませることで逐次処理やエラーハンドリングをやりやすくする "Promisification" という方法について解説しておきます。
+
+:::message alert
 『タスクキューとマイクロタスクキュー』のチャプターでタスクとマイクロタスクの関係については詳しく解説したので、タスクの詳細についてはそちらのチャプターを参照してください。
 :::
 
-ここまで Promise チェーンでのマイクロタスク発行による非同期処理を見てきましたが、イベントループではステップ２に「すべてのマイクロタスクの実行」がありました。マイクロタスクの基礎ができたのでここからようやくタスクの解説になります。
+# タスク発行
 
-最初に述べたように `setTimoue()` 関数は Web API の一部です。これを使わずに最初説明したのは、この関数に登録するコールバック関数がタスクキューへと追加されてしまうからです。
+この本の冒頭で述べたように `setTimoue()` 関数は Web API の一部です。これをなるべく使わずに最初説明したのは、この関数に登録するコールバック関数がタスクキューへと追加されてしまうからです。
 
 `setTimout(cb, delay)` の形で `cb` にはコールバック関数、`delay` には遅延時間をミリ秒が単位で指定することで、その時間が経ってからコールバック関数を実行できます。つまり、このコールバック関数は非同期的に実行されます。
 
@@ -42,7 +46,7 @@ console.log("[2] Sync process");
 [5] This line will be printed after 3000ms
 ```
 
-またもや可視化してみたので次のリンクから確認してください。
+Visualizer で可視化してみたので次のリンクから確認してください。
 
 - [setTimeout.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGltZW91dC5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzVdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMzAwMG1zIik7Cn0sIDMwMDApOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzRdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMjAwMG1zIik7Cn0sIDIwMDApOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzNdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMTAwMG1zIik7Cn0sIDEwMDApOwpjb25zb2xlLmxvZygiWzJdIFN5bmMgcHJvY2VzcyIpOwo%3D)
 
@@ -96,7 +100,7 @@ promiseTimer(1000)
 
 これで、特定時間が経過したら何かする、それが完了したらまた何かするというのがやりやすくなります。
 
-Visualizer で可視化してみました。確認してみてください。
+Visualizer で可視化したので、確認してみてください。
 
 - [promiseTimer.js - JS Visualizer](https://www.jsv9000.app/?code=Y29uc3QgcHJvbWlzZVRpbWVyID0gKGRlbGF5KSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBzZXRUaW1lb3V0KCgpID0%2BIHsKICAgICAgcmVzb2x2ZSgpOwogICAgfSwgZGVsYXkpOwp9KX07Cgpwcm9taXNlVGltZXIoMTAwMCkKICAudGhlbigoKSA9PiBjb25zb2xlLmxvZygiVGltZW91dCIpKQogIC50aGVuKCgpID0%2BIGNvbnNvbGUubG9nKCJOZXh0IGFjdGlvbiIpKQogIC50aGVuKCgpID0%2BIGNvbnNvbGUubG9nKCJOZXh0IGFjdGlvbiIpKQogIC5jYXRjaCgoZXJyKSA9PiBjb25zb2xlLmVycm9yKGVyci5tZXNzYWdlKSk7)
 
