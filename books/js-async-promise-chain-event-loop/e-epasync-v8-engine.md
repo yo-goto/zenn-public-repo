@@ -1,22 +1,19 @@
 ---
-title: "V8エンジン"
+title: "V8 エンジンについて"
 ---
 
 # このチャプターについて
 V8 エンジンは Chrome, Node, Deno のそれぞれの環境で利用されている JavaScript エンジンです。V8 について知っておくと理解できることがいくつかあります。
 
-このチャプターでは、その V8 エンジンについての基礎知識や、V8 エンジンをローカルで使う方法などについて解説します。
+このチャプターでは、V8 エンジンについての基礎知識や、V8 エンジンをローカルで使う方法などについて解説します。
 # V8エンジン
 
 まず V8 とは何かを確認しておきます。
 
-https://source.chromium.org/chromium/chromium/src/+/main:v8/
+https://v8.dev/
 
->V8 is Google's open source JavaScript engine.
->**V8 implements ECMAScript as specified in ECMA-262**.
->V8 is **written in C++** and is used in Google Chrome, the open source browser from Google.
->**V8 can run standalone, or can be embedded into any C++ application**.
->V8 Project page: https://v8.dev/docs
+>V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone, or can be embedded into any C++ application**.
+>(上記公式ページより引用)
 
 V8 は **Google が提供するオープンソースの JavaScript エンジン**であり、C++ で書かれており、基本的に Chrome で利用されています。
 

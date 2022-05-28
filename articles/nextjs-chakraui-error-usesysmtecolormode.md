@@ -2,12 +2,15 @@
 title: "Next.jsでChakraUIを使用しようとしたら useSystemColorMode のエラーが出たので解決"
 emoji: "🥷"
 type: "tech"
-topics: [nextjs, chakraui, javascript, react]
+topics: [ nextjs, chakraui, javascript, react ]
 published: true
 date: 2022-03-22
 url: "https://zenn.dev/estra/articles/nextjs-chakraui-error-usesysmtecolormode"
-aliases: [記事_Next.jsでChakraUIを使用しようとしたら useSystemColorMode のエラーが出たので解決]
-tags: [" #chakraUI #Framework/React/Next #type/zenn  "]
+aliases:
+  [
+    記事_Next.jsでChakraUIを使用しようとしたら useSystemColorMode のエラーが出たので解決
+  ]
+tags: [ " #chakraUI #React/Next #type/zenn  " ]
 ---
 
 # 問題

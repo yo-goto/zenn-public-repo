@@ -97,7 +97,7 @@ async function test(url) {
 さて、話を戻しますが、`fetch()` API は Promise-based な非同期 API であり、`fetch()` メソッドからは Promise インスタンスが処理の結果として返ってきます。そして、Promise チェーンを await する場合でも、結局は Promise チェーンから返ってくる Promise インスタンスを評価していますね。
 
 ```js
-const GOOGLE = "https://www.google.com";
+const githubApi = "https://api.github.com/zen";
 const fetchData = (url) => {
   return fetch(url)
     .then((response) => {
@@ -111,7 +111,7 @@ const fetchData = (url) => {
 
 console.log("[1] 🦖 MAINLINE: Start");
 
-fetchData(GOOGLE)
+fetchData(githubApi)
   .then((data) => {
     console.log("[4] 👦 MICRO: 取得データ", data);
   })
@@ -129,7 +129,7 @@ Promise チェーンも async/await もマイクロタスクを連鎖的に発�
 上記の Promise チェーンは async/await で書き直すことができます。
 
 ```js
-const GOOGLE = "https://www.google.com";
+const githubApi = "https://api.github.com/zen";
 const fetchData = async (url) => {
   const response = await fetch(url);
   if (!response.ok) throw new Error("Error");
@@ -140,7 +140,7 @@ const fetchData = async (url) => {
 
 console.log("[1] 🦖 MAINLINE: Start");
 
-fetchData(GOOGLE)
+fetchData(githubApi)
   .then((data) => {
     console.log("[4] 👦 MICRO: 取得データ", data);
   })
@@ -154,7 +154,7 @@ console.log("[2] 🦖 MAINLINE: End");
 async/await では try/catch が使用できるので、非同期関数内で例外を捕捉できるようにして、さらに後続のチェーンも全部書き直します。
 
 ```js
-const GOOGLE = "https://www.google.com";
+const githubApi = "https://api.github.com/zen";
 const fetchData = async (url) => {
   try {
     const response = await fetch(url);
@@ -171,7 +171,7 @@ console.log("[1] 🦖 MAINLINE: Start");
 
 // アロー関数かつ即時実行
 (async () => {
-  const data = await fetchData(GOOGLE);
+  const data = await fetchData(githubApi);
   console.log("[4] 👦 MICRO: 取得データ", data);
 })
 
@@ -181,7 +181,7 @@ console.log("[2] 🦖 MAINLINE: End");
 # Callback hell → Promise chain → async/await
 いきなり謎の変形をしてしまったのでより簡単で分かりやすい Promise チェーンから非同期関数への変形を見てみます。
 
-次の動画の 25:36 ~ のところから視聴してみてください。Callback hell → Promise chain → async/await の変形が視覚的に示されていて変形のイメージをつかめます。
+次の動画の 23:36 ~ のところから視聴してみてください。Callback hell → Promise chain → async/await の変形が視覚的に示されていて変形のイメージをつかめます。
 
 @[youtube](SrNQS8J67zc)
 
@@ -292,7 +292,7 @@ async function empty() {}
 
 ## await 式は Promise インスタンスを評価して値を取り出す
 
-await 式では「非同期処理を待つ」というよりも、「Promise インスタンスを評価して値を取り出す」という側面の方が重要です。
+await 式では「非同期処理の完了を待つ」というよりも、「**Promise インスタンスを評価して値を取り出す**」という側面の方が重要です。
 
 await 式による評価を意識するために次のコードを考えます。
 

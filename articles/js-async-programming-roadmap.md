@@ -190,7 +190,7 @@ http://latentflip.com/loupe/
 
 ![js loupe image](/images/js-async/img_loupe-js-async.jpg)
 
-Loupe では２種類ある非同期処理の種類の内の１つ(Macrotask: マクロタスク)しかサポートされていないので、次に Github 社のエンジニアである Andrew Dillon 氏が開発した "JavaScript Visualizer 9000" を使用して Promise 関連の非同期処理(Microtask: マイクロタスク)を理解するために使用します。
+Loupe では２種類ある非同期処理の種類の内の１つ(Task: タスク)しかサポートされていないので、次に Github 社のエンジニアである Andrew Dillon 氏が開発した "JavaScript Visualizer 9000" を使用して Promise 関連の非同期処理(Microtask: マイクロタスク)を理解するために使用します。
 
 https://www.jsv9000.app
 
@@ -210,11 +210,11 @@ https://html.spec.whatwg.org/multipage/webappapis.html#task-queue
 とにかく、JavaScript Visualizer 9000 は非同期処理を理解するまで長い付き合いになったので非常にオススメです。これが無かったら非同期処理を理解できなかったかもしれません。
 
 :::message alert
-JavaScript Visualizer 9000 を使って可視化することによって、マイクロタスクやマクロタスクが Call stack と Event Loop でどう動くかを予測できるようになりますが、JavaScript Visualizer 9000 ではいくつかの要素が欠けている、または実装ミスと考えられる部分がありますので注意してください。
+JavaScript Visualizer 9000 を使って可視化することによって、マイクロタスクやタスクが Call stack と Event Loop でどう動くかを予測できるようになりますが、JavaScript Visualizer 9000 ではいくつかの要素が欠けている、または実装ミスと考えられる部分がありますので注意してください。
 
 例えば、Web APIs の要素が無いため、Web API による並列的作業についてや、タスクキューとの関係性、複数のタスクキューが存在していることに気づけ無い可能性が高いです。
 
-なぜ **Web APIs** の要素を省いたのかはわかりません。実はこれが省略されているために、Visualizer 9000 で複数の `setTimeout()` 関数を色々な delay 時間を指定して実行してマクロタスクの動きを見ると「キュー」と思えない挙動に見えてしまうことに気づきました。基本的な流れを理解するのには問題ないですが、注意してください。
+なぜ **Web APIs** の要素を省いたのかはわかりません。実はこれが省略されているために、Visualizer 9000 で複数の `setTimeout()` 関数を色々な delay 時間を指定して実行してタスクの動きを見ると「キュー」と思えない挙動に見えてしまうことに気づきました。基本的な流れを理解するのには問題ないですが、注意してください。
 
 Visualizer 9000 では簡単にコードが共有できるので実際に以下のリンクから実行して挙動を見てみてください↓
 - [manySetTimeout.js](https://www.jsv9000.app/?code=Ly8gbWFueVNldFRpbWVvdXQuanMKc2V0VGltZW91dChmdW5jdGlvbiBiKCkgewogIGNvbnNvbGUubG9nKCJiOiBhZnRlciA1MDBtcyIpOwp9LCA1MDApOwpzZXRUaW1lb3V0KGZ1bmN0aW9uIGMoKSB7CiAgY29uc29sZS5sb2coImM6IGFmdGVyIDBtcyIpOwp9LCAwKTsKc2V0VGltZW91dChmdW5jdGlvbiBhKCkgewogIGNvbnNvbGUubG9nKCJhOiBhZnRlciAxMDAwbXMiKTsKfSwgMTAwMCk7CnNldFRpbWVvdXQoZnVuY3Rpb24gZCgpIHsKICBjb25zb2xlLmxvZygiZDogYWZ0ZXIgMTAwbXMiKTsKfSwgMTAwKTsKCmZ1bmN0aW9uIGQoKSB7CiAgY29uc29sZS5sb2coImQ6IHN5bmMgZnVuY3Rpb24gZXhlY3V0ZWQgaW1tZWRpYXRlbHkiKTsKfQoKZCgpOwo%3D)
@@ -276,7 +276,7 @@ https://okapies.hateblo.jp/entry/2020/12/13/154311
 
 更にこれによって async/await が Promise を代替するのではなく、Promise ベースの非同期処理の利便性を一部向上させる Promise というシステム自体に基づいた拡張的な機能であり、**Promise と一緒に使っていくもの**であるということが認識できると思います。
 
-そもそも、`await` 式は「右辺の Promise インスタンスが Settled 状態(Fullfilled または Rejected 状態)になるまで非同期処理の完了を待ち、Promise インスタンスの状態が変化したらその Promise インスタンスの**評価結果を値として返す**」ものなので、Promise を扱っていると認識してしないとやっすん氏の動画で紹介されたミス(マクロタスクを作成する `setTimeout` 関数を Promise でラップすることなくそのまま `await` してしまうなど)を犯してしまいます。
+そもそも、`await` 式は「右辺の Promise インスタンスが Settled 状態(Fullfilled または Rejected 状態)になるまで非同期処理の完了を待ち、Promise インスタンスの状態が変化したらその Promise インスタンスの**評価結果を値として返す**」ものなので、Promise を扱っていると認識してしないとやっすん氏の動画で紹介されたミス(タスクを作成する `setTimeout` 関数を Promise でラップすることなくそのまま `await` してしまうなど)を犯してしまいます。
 
 :::message
 `await` 式では非同期関数の内部で非同期処理の完了を待ちますが、その"待っている"というのは実際にすべての処理が止まっているわけではなく、非同期関数の呼び出し元に一旦制御が戻って別の処理を再開し、`await` で待っていた Promise インスタンスが解決した後に再び非同期関数に戻って `await` 式の後にある次の処理を再開するということを意味しています。

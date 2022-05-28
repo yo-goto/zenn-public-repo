@@ -8,8 +8,9 @@ title: "イベントループの概要と注意点"
 :::message alert
 **注意**
 
-**こちらのチャプターは以前に作成した古い内容です**。別のチャプターで新しい知見に基づいた解説を行っています。内容的に重複する部分がありますが、ここに記載されている内容も必要なのでこのままにしておきます。古い内容に対する訂正はほとんどないですが注意してください。
+**こちらのチャプターは以前に作成した古い内容です**。別のチャプターで更新された知見に基づいた解説を行っています。新しい内容は『それぞれのイベントループ』を中心とした周辺のチャプターに基づきます。
 
+内容的に重複する部分がありますが、ここに記載されている内容も必要なのでこのままにしておきます。古い内容に対する訂正はほとんどないですが注意してください。
 メッセージの項目に注意して読みすすめてください。
 :::
 
@@ -97,7 +98,7 @@ https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-bey
 
 - 最初のタスクは「**スクリプトの評価**」となる
 - **ループはネストしている**(イベントループの各ループにおいて、マクロタスクは一個の処理なのにマイクロタスクの処理は完全に終わるまで続く)
--タスクキューは複数あり、そこから１つのキューを選択してひとつのタスクを実行する
+- タスクキューは複数あり、そこから１つのキューを選択してひとつのタスクを実行する
 - レンダリングの更新は起きない場合もある(各ループで必ず更新されるわけではなく、60fps の平均 16.7 ミリ秒ごとに起こる)
 
 :::message alert
@@ -135,12 +136,12 @@ https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-bey
 JS Visualizer を使い始めた初期段階では次のコードが理解できなくなります。実際に実行してみてください。
 
 ```js
-// Macrotask vs Microtask 
+// Task(Macrotask) vs Microtask 
 setTimeout(() => console.log('timeout'), 0);
 Promise.resolve('promise resloved').then(res => console.log(res))
 ```
 
-- [Macrotask vs Microtask - JS Visualizer](https://www.jsv9000.app/?code=Ly8gTWFjcm90YXNrIHZzIE1pY3JvdGFzawpzZXRUaW1lb3V0KGZ1bmN0aW9uIGEoKSB7fSwgMCk7CgpQcm9taXNlLnJlc29sdmUoKS50aGVuKGZ1bmN0aW9uIGIoKSB7fSk7)
+- [Task vs Microtask - JS Visualizer](https://www.jsv9000.app/?code=Ly8gTWFjcm90YXNrIHZzIE1pY3JvdGFzawpzZXRUaW1lb3V0KGZ1bmN0aW9uIGEoKSB7fSwgMCk7CgpQcm9taXNlLnJlc29sdmUoKS50aGVuKGZ1bmN0aW9uIGIoKSB7fSk7)
 
 イベントループを４ステップで考えると、出力は "timeout" → "promise resolved" になるはずですが、実際はその逆で "promise resolved" → "timeout" になります。そしてこの実行順番はブラウザ環境と Node でも Deno でも同じになります。
 

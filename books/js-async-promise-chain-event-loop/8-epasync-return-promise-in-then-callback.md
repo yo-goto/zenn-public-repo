@@ -1,17 +1,15 @@
 ---
-title: "then コールバックで Promise インスタンスを返す"
+title: "then メソッドのコールバックで Promise インスタンスを返す"
 ---
 
 # このチャプターについて
-このチャプターは短いですが、Promise チェーンを理解する上で重要なので１つのチャプターとして独立させています。
+このチャプターは短いですが、Promise チェーンを理解する上で重要なので１つのチャプターとして独立させています。チャプターは飛びますが、『then メソッドのコールバックで非同期処理』のチャプターでも使う知識なので注意してください。
 
-チャプターは飛びますが、『then メソッドのコールバックで非同期処理』のチャプターでも使う知識なので注意してください。
-
-# then コールバックで Promise インスタンスを返す
+# then メソッドのコールバックで Promise インスタンスを返す
 
 前のチャプターのコードでは `then()` メソッドのコールバックにおいて `return` で返却していたのは `"Resolved value passing to the next then callback"` という文字列でした。
 
-`return` する値は、数値でも真偽値でも文字列での何でも良いのですが、Promise インスタンスを返した場合はどうなるでしょうか?
+`return` する値は、数値でも真偽値でも文字列での何でも良いのですが、Promise インスタンスを返した場合はどうなるでしょうか？
 
 答えは、「**その Promise インスタンスが `resolve` された値が次の `then()` メソッドのコールバック関数の引数として渡される**」です。実際に `then()` メソッドのコールバック関数において新しい Promise インスタンスを返してみます。今までのコードをまた流用します。
 
@@ -75,7 +73,7 @@ Resolved value:  2nd Promise
 Resolved value:  4th Promise
 ```
 
-Promise インスタンスを `then()` メソッドのコールバック関数内で `return` したの実行の順番がどうなるか不安になったかもしれませんが、今回の `returnPromise()` 関数の場合は、ただちに履行(Fullfilled)状態の Promise インスタンスが返ってくるので普通の値を返す場合とまったく同じになります。JS Visuzalizer 9000 で可視化したのでまた確認してみてください。
+Promise インスタンスを `then()` メソッドのコールバック関数内で `return` したの実行の順番がどうなるか不安になったかもしれませんが、今回の `returnPromise()` 関数の場合は、ただちに履行(Fullfilled)状態の Promise インスタンスが返ってくるので普通の値を返す場合とまったく同じになります。JS Visuzalizer で可視化したのでまた確認してみてください。
 
 - [returnPromiseFromThenCallback.js](https://www.jsv9000.app/?code=Ly8gcmV0dXJuUHJvbWlzZUZyb21UaGVuQ2FsbGJhY2suanMKY29uc29sZS5sb2coJ1sxXSBTeW5jIHByb2Nlc3MnKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIpID0%2BIHsKICByZXR1cm4gbmV3IFByb21pc2UoKHJlc29sdmUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKGBbJHtvcmRlcn1dIFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pOwp9OwoKcmV0dXJuUHJvbWlzZSgnMXN0IFByb21pc2UnLCAnMicpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygnWzVdIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCcpOwogICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICByZXR1cm4gcmV0dXJuUHJvbWlzZSgnMm5kIFByb21pc2UnLCAnNicpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygnWzldIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCcpOwogICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgfSk7CnJldHVyblByb21pc2UoJzNyZCBQcm9taXNlJywgJzMnKQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coJ1s3XSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQnKTsKICAgIGNvbnNvbGUubG9nKCdSZXNvbHZlZCB2YWx1ZTogJywgdmFsdWUpOwogICAgcmV0dXJuIHJldHVyblByb21pc2UoJzR0aCBQcm9taXNlJywgJzgnKTsKICB9KQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coJ1sxMF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICBjb25zb2xlLmxvZygnUmVzb2x2ZWQgdmFsdWU6ICcsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCdbNF0gU3luYyBwcm9jZXNzJyk7Cg%3D%3D)
 

@@ -85,11 +85,11 @@ console.log("[H] Sync process");
 ここでは「**`then()` メソッドは常に新しい Promise インスタンスを返す**」ということが重要です。
 
 - `returnPromise("1st Promise", "B")` によって返ってくる Promise インスタンスを promise1 とします
-- ``returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `proimse2` とします
+- `returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `proimse2` とします
 
-このふたつは全く別の Promise インスタンスとなります。
+この２つは**全く別の Promise インスタンス**となります。
 
-Promise チェーンにおいて、各 `then()` メソッドにおいて返ってくる Promise インスタンスはそれぞれ別のモノであるということを意識してください。
+Promise チェーンにおいて、各 `then()` メソッドにおいて返ってくる Promise インスタンスは**それぞれ別のモノ**であるということを意識してください。
 
 # Promise インスタンスの状態
 話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
@@ -99,7 +99,7 @@ Promise チェーンにおいて、各 `then()` メソッドにおいて返っ�
 - Rejected(拒否状態)
 
 :::message
-Promise の状態などの基本概念については、チャプター『Promise の基本概念』を参照してください。
+Promise の状態(State)と運命(Fate)などの基本概念については、チャプター『Promise の基本概念』を参照してください。
 :::
 
 `Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise チェーンでは `then()` メソッドで返ってくる Promise インスタンスの状態が待機(pending)状態から履行(Fullfilled)状態へと変わった時点で次の `then()` メソッドで登録したコールバックが Microtask queue へと送られます。
@@ -143,10 +143,6 @@ Event loop のステップ１はステップ２と同質のものであり、「
 :::
 
 最初の Task(Macrotask) の実行が終わり、Event loop は次のステップ「Microtask queue にあるすべての Microtask の実行」(ステップ４)を行います。
-
-:::message
-Macrotask(マクロタスク)については大分後で解説するのでここでは気にしないでください。
-:::
 
 先にキューへと送られた `cb1` が実行されます。`then(cb1)` で登録したコールバック `cb1` の実行が完了したので `then(cb1)` で返ってくる Promise インスタンスが履行(Fullfilled)状態へと移行します。Promise インスタンスの状態が履行状態へと移行したことで、さらに `then(cb1).then(cb2)` で登録していたコールバック関数  `cb2` が直ちに Microtask queue へと送られます。
 
