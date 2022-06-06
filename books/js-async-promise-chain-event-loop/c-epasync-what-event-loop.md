@@ -513,7 +513,7 @@ Node のイベントループについては以下の Node Interactive EUROPE �
 
 https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw
 
-この講演で紹介されているイベントループの全体像はは以下のようになっています。
+この講演で紹介されているイベントループの全体像は以下のようになっています。
 
 ![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*上記ページより引用*
 

@@ -66,61 +66,61 @@ function noPureOp(input) {
 次のコードの例では、Promise チェーンで値が繋がりません。
 
 ```js
-// promiseShouldBeReturned.js
-console.log("[1] Sync process");
+//  promiseShouldBeReturned-non.js
+console.log("🦖 [1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "[2]")
   .then((value) => {
-    console.log("[5] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [5] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
     // return しない場合は副作用となり値が渡らない
     returnPromise("2nd Promise", "[6]")
   })
   .then((value) => {
     // この value は undefined となる
-    console.log("[9] This line is Asynchronously executed");
-    console.log("Resolved value: ", value); // undefined が表示される
+    console.log("👦 [9] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value); // undefined が表示される
   });
 returnPromise("3rd Promise", "[3]")
   .then((value) => {
-    console.log("[7] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [7] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
     // Promise インスタンスについては必ず return するようにする
     return returnPromise("4th Promise", "[8]")
   })
   .then((value) => {
-    console.log("[10] This line is Asynchronously executed");
-    console.log("Resolved value: ", value); // 値が繋がるので 4th Promise と表示される
+    console.log("👦 [10] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value); // 値が繋がるので 4th Promise と表示される
   });
 
-console.log("[4] Sync process");
+console.log("🦖 [4] Sync process");
 ```
 
 これを実行すると次の出力を得ます。`undefined` となっているところに注目してください。
 
 ```sh
-❯ deno run promiseShouldBeReturned.js
-[1] Sync process
-[2] This line is (A)Synchronously executed
-[3] This line is (A)Synchronously executed
-[4] Sync process
-[5] This line is Asynchronously executed
-Resolved value:  1st Promise
-[6] This line is (A)Synchronously executed
-[7] This line is Asynchronously executed
-Resolved value:  3rd Promise
-[8] This line is (A)Synchronously executed
-[9] This line is Asynchronously executed
-Resolved value:  undefined
-[10] This line is Asynchronously executed
-Resolved value:  4th Promise
+❯ deno run promiseShouldBeReturned-non.js
+🦖 [1] Sync process
+👻 [2] This line is (A)Synchronously executed
+👻 [3] This line is (A)Synchronously executed
+🦖 [4] Sync process
+👦 [5] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👻 [6] This line is (A)Synchronously executed
+👦 [7] This line is Asynchronously executed
+👦 Resolved value:  3rd Promise
+👻 [8] This line is (A)Synchronously executed
+👦 [9] This line is Asynchronously executed
+👦 Resolved value:  undefined
+👦 [10] This line is Asynchronously executed
+👦 Resolved value:  4th Promise
 ```
 
 従って、値を正しく繋げたい場合には、副作用ではなく `return` をつけるようにしましょう。
@@ -129,33 +129,33 @@ Resolved value:  4th Promise
 
 ```js
 // promiseShouldBeReturnedAddThen-right.js
-console.log("[A] Sync process");
+console.log("🦖 [A] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "[B]")
   .then((value) => {
-    console.log("[C] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [C] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
     // return で正しいチェーンを作る
     return returnPromise("2nd Promise", "[D]")
       .then((value) => {
-        console.log("[E] This line is Asynchronously executed");
-        console.log("Resolved value: ", value);
+        console.log("👦 [E] This line is Asynchronously executed");
+        console.log("👦 Resolved value: ", value);
         return "Pass next value";
       });
   })
   .then((value) => {
-    console.log("[F] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [F] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
   });
 
-console.log("[G] Sync process");
+console.log("🦖 [G] Sync process");
 ```
 
 「then メソッドのコールバックで Promise インスタンスを返す」や「Promise チェーンはネストさせない」のチャプターでネストは経験したので正解できましたか?
@@ -165,16 +165,16 @@ console.log("[G] Sync process");
 
 ```sh:数字付きで出力
 ❯ deno run promiseShouldBeReturnedAddThen-right.js
-[A-1] Sync process
-[B-2] This line is (A)Synchronously executed
-[G-3] Sync process
-[C-4] This line is Asynchronously executed
-Resolved value:  1st Promise
-[D-5] This line is (A)Synchronously executed
-[E-6] This line is Asynchronously executed
-Resolved value:  2nd Promise
-[F-7] This line is Asynchronously executed
-Resolved value:  Pass next value
+🦖 [A-1] Sync process
+👻 [B-2] This line is (A)Synchronously executed
+🦖 [G-3] Sync process
+👦 [C-4] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👻 [D-5] This line is (A)Synchronously executed
+👦 [E-6] This line is Asynchronously executed
+👦 Resolved value:  2nd Promise
+👦 [F-7] This line is Asynchronously executed
+👦 Resolved value:  Pass next value
 ```
 :::
 
@@ -194,32 +194,32 @@ Promise インスタンスを返す処理は常に `return` するべきです�
 
 ```js
 // promiseShouldBeReturnedNest.js
-console.log("[A] Sync process");
+console.log("🦖 [A] Sync process");
 
 const returnPromise = (resolvedValue, order, nextOrder) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} This line is (A)Synchronously executed`);
     resolve(resolvedValue);
     // ↓ ここにチェーンを追加してみる
   }).then((value) => {
-    console.log(`${nextOrder} Additional nested chain`);
+    console.log(`👹 ${nextOrder} Additional nested chain`);
     return value;
   });
 };
 
 returnPromise("1st Promise", "[B]", "[C]")
   .then((value) => {
-    console.log("[D] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [D] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
     // ここで敢えて return しないとどういう実行順番になるか?
     returnPromise("2nd Promise", "[E]", "[F]");
   })
   .then((value) => {
-    console.log("[G] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [G] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
   });
 
-console.log("[H] Sync process");
+console.log("🦖 [H] Sync process");
 ```
 
 :::details 答え
@@ -227,17 +227,17 @@ console.log("[H] Sync process");
 
 数字付きで実際に出力してみるとこうなります。
 ```sh
-❯ deno run promiseShouldBeReturnedNest-wrong.js
-[A-1] Sync process
-[B-2] This line is (A)Synchronously executed
-[H-3] Sync process
-[C-4] Additional nested chain
-[D-5] This line is Asynchronously executed
-Resolved value:  1st Promise
-[E-6] This line is (A)Synchronously executed
-[F-8] Additional nested chain
-[G-7] This line is Asynchronously executed
-Resolved value:  undefined
+❯ deno run promiseShouldBeReturnedNest.js
+🦖 [A] Sync process
+👻 [B] This line is (A)Synchronously executed
+🦖 [H] Sync process
+👹 [C] Additional nested chain
+👦 [D] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👻 [E] This line is (A)Synchronously executed
+👹 [F] Additional nested chain
+👦 [G] This line is Asynchronously executed
+👦 Resolved value:  undefined
 ```
 :::
 
@@ -245,40 +245,42 @@ Resolved value:  undefined
 実行順番については、基本的に Promise インスタンスを返すような処理は `return` しないと順番を保証できないのですが、今回の場合は `returnPromise("2nd Promise", "[E]", "[F]");` が完了してから、次の `then()` メソッドのコールバックが実行されていますね。その理由としては、Microtask を供給する Promise が少ないからたまたまそうなっているだけです。実際の動きを Visualizer で確認してみてください。
 
 - [promiseShouldBeReturnedNest.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LmpzCmNvbnNvbGUubG9nKCJbQS0xXSBTeW5jIHByb2Nlc3MiKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIsIG5leHRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgY29uc29sZS5sb2coYCR7b3JkZXJ9IFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgJHtuZXh0T3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICByZXR1cm4gdmFsdWU7CiAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0QtNV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCIybmQgUHJvbWlzZSIsICJbRS02XSIsICJbRi03XSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ctOF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSC0zXSBTeW5jIHByb2Nlc3MiKTs%3D)
+- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
 
 Promise インスタンスを返すような処理を `return` しない場合に事項順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise チェーンを伸ばしています。実行順番を予想してみてください。
 
 ```js
 // promiseShouldBeReturnedNest-3rd.js
-console.log("[A] Sync process");
+console.log("🦖 [A] Sync process");
 
 const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
   return new Promise((resolve) => {
-      console.log(`${order} This line is (A)Synchronously executed`);
+      console.log(`👻 ${order} This line is (A)Synchronously executed`);
       resolve(resolvedValue);
     })
     .then((value) => {
-      console.log(`${secondOrder} Additional nested chain`);
+      console.log(`👹 ${secondOrder} Additional nested chain`);
       return value;
     })
     .then((value) => {
-      console.log(`${thirdOrder} Additional nested chain`);
+      console.log(`🦄 ${thirdOrder} Additional nested chain`);
       return value;
     });
 };
 
 returnPromise("1st Promise", "[B]", "[C]", "[D]")
   .then((value) => {
-    console.log("[E] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [E] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
     returnPromise("2nd Promise", "[F]", "[G]", "[H]");
   })
   .then((value) => {
-    console.log("[I] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [I] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
   });
 
-console.log("[N] Sync process");
+console.log("🦖 [N] Sync process");
+
 ```
 
 :::details 答え
@@ -287,18 +289,18 @@ console.log("[N] Sync process");
 数字付きで実際に出力してみるとこうなります。
 ```sh
 ❯ deno run promiseShouldBeReturnedNest-3rd.js
-[A-1] Sync process
-[B-2] This line is (A)Synchronously executed
-[N-3] Sync process
-[C-4] Additional nested chain
-[D-5] Additional nested chain
-[E-6] This line is Asynchronously executed
-Resolved value:  1st Promise
-[F-7] This line is (A)Synchronously executed
-[G-8] Additional nested chain
-[I-9] This line is Asynchronously executed
-Resolved value:  undefined
-[H-10] Additional nested chain
+🦖 [A-1] Sync process
+👻 [B-2] This line is (A)Synchronously executed
+🦖 [N-3] Sync process
+👹 [C-4] Additional nested chain
+🦄 [D-5] Additional nested chain
+👦 [E-6] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👻 [F-7] This line is (A)Synchronously executed
+👹 [G-8] Additional nested chain
+👦 [I-9] This line is Asynchronously executed
+👦 Resolved value:  undefined
+🦄 [H-10] Additional nested chain
 ```
 :::
 
@@ -307,59 +309,60 @@ Resolved value:  undefined
 言葉で説明するのが難しいので、実際に見てみてください。
 
 - [promiseShouldBeReturnedNest-3rd.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LTNyZC5qcwpjb25zb2xlLmxvZygiW0EtMV0gU3luYyBwcm9jZXNzIik7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyLCBzZWNvbmRPcmRlciwgdGhpcmRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgICBjb25zb2xlLmxvZyhgJHtvcmRlcn0gVGhpcyBsaW5lIGlzIChBKVN5bmNocm9ub3VzbHkgZXhlY3V0ZWRgKTsKICAgICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7c2Vjb25kT3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICAgIHJldHVybiB2YWx1ZTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7dGhpcmRPcmRlcn0gQWRkaXRpb25hbCBuZXN0ZWQgY2hhaW5gKTsKICAgICAgcmV0dXJuIHZhbHVlOwogICAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIsICJbRC01XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0UtNl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVyblByb21pc2UoIjJuZCBQcm9taXNlIiwgIltGLTddIiwgIltHLThdIiwgIltILTEwXSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ktOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbTi0zXSBTeW5jIHByb2Nlc3MiKTsK)
+- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
 
 とにかく、Promise インスタンスを返すような処理は Promise チェーンにおいて、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
 
 ```js
 // promiseShouldBeReturnedNest-3rdReturn.js
-console.log("[A-1] Sync process");
+console.log("🦖 [A] Sync process");
 
 const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   })
     .then((value) => {
-      console.log(`${secondOrder} Additional nested chain`);
+      console.log(`👹 ${secondOrder} Additional nested chain`);
       return value;
     })
     .then((value) => {
-      console.log(`${thirdOrder} Additional nested chain`);
+      console.log(`🦄 ${thirdOrder} Additional nested chain`);
       return value;
     });
 };
 
-returnPromise("1st Promise", "[B-2]", "[C-4]", "[D-5]")
+returnPromise("1st Promise", "[B]", "[C]", "[D]")
   .then((value) => {
-    console.log("[E-6] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [E-6] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
     // ちゃんと return する
-    return returnPromise("2nd Promise", "[F-7]", "[G-8]", "[H-9]");
+    return returnPromise("2nd Promise", "[F]", "[G]", "[H]");
   })
   .then((value) => {
-    console.log("[I-10] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [I] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
   });
 
-console.log("[N-3] Sync process");
+console.log("🦖 [N] Sync process");
 ```
 
 上のコードでは、しっかりと `return` するように変更しました。このコードの実行結果は以下のようになります。
 
 ```sh
 ❯ deno run promiseShouldBeReturnedNest-3rdReturn.js
-[A-1] Sync process
-[B-2] This line is (A)Synchronously executed
-[N-3] Sync process
-[C-4] Additional nested chain
-[D-5] Additional nested chain
-[E-6] This line is Asynchronously executed
-Resolved value:  1st Promise
-[F-7] This line is (A)Synchronously executed
-[G-8] Additional nested chain
-[H-9] Additional nested chain
-[I-10] This line is Asynchronously executed
-Resolved value:  2nd Promise
+🦖 [A-1] Sync process
+👻 [B-2] This line is (A)Synchronously executed
+🦖 [N-3] Sync process
+👹 [C-4] Additional nested chain
+🦄 [D-5] Additional nested chain
+👦 [E-6] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👻 [F-7] This line is (A)Synchronously executed
+👹 [G-8] Additional nested chain
+🦄 [H-9] Additional nested chain
+👦 [I-10] This line is Asynchronously executed
+👦 Resolved value:  2nd Promise
 ```
 
 しっかりと実行順番が制御できていますね。
@@ -402,64 +405,57 @@ console.log("[3] Sync process");
 
 ```js
 // chainValueName.js
-console.log("[1] Sync process");
+console.log("🦖 [1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 returnPromise("1st Promise", "[2]")
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
   });
 
-console.log("[3] Sync process");
+console.log("🦖 [3] Sync process");
 ```
 
 ↓ いらない Promise チェーンをなくしてみます。
 
 ```js
 // chainValueName-kai.js
-console.log("[1] Sync process");
+console.log("🦖 [1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
-returnPromise("1st Promise", "[2]")
-  .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
-    console.log("Resolved value: ", value); // 1st Promise
-    console.log("Resolved value: ", value); // 1st Promise
-    console.log("Resolved value: ", value); // 1st Promise
-  });
+returnPromise("1st Promise", "[2]").then((value) => {
+  console.log("👦 Resolved value: ", value); // 1st Promise
+  console.log("👦 Resolved value: ", value); // 1st Promise
+  console.log("👦 Resolved value: ", value); // 1st Promise
+  console.log("👦 Resolved value: ", value); // 1st Promise
+});
 
-console.log("[3] Sync process");
+console.log("🦖 [3] Sync process");
 ```
 
 Promsire チェーンを利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Proimse インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。
-
-:::message
-エラーハンドリングは非常に重要な事柄ではあるのですが、この本では非同期処理の制御の流れを掴むことを目的としているのでここまでほとんど扱いませんでした。
-
-制御の流れが分かったら、エラーの伝播やエラーをどこで補足するかという点について理解する必要もあると思うので将来的に記載することにしています。
-:::
 
 ## 非同期処理を逐次的に行う
 
@@ -597,6 +593,7 @@ doAsyncTask()
 そして、重要なこととして、`console.log()` で出力した実際のログには `Promise { <pending> }` という値が表されます。非同期処理 A, B, C はそもそも Promise インスタンスを返す非同期処理でした。実際に値を取り出して経過を見たり、追加で何かしらの処理を行うにはどうすればよいでしょうか?
 
 ## Proimse インスタンスから解決値を取り出して処理する
+
 結論としては、`then()` メソッドのコールバック内で Promise インスタンスを `reutrn` して次の `then()` メソッドのコールバックへ値を繋いでから、処理や出力を行います。上のコードで `console.log()` の位置をずらすことで Promise の解決値をログに出力して確認できます。
 
 ```js
@@ -605,6 +602,7 @@ doAsyncTask()
   .then(() => {
     const data = doSthAsyncA(path);
     return data;
+  })
   .then(data => {
     console.log(data); // ここでデータを見る
     const processedData_1st = doSthAsyncB(data);
