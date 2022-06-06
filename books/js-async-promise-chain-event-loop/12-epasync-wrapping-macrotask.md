@@ -20,35 +20,35 @@ title: "古い非同期 API を Promise でラップする"
 
 ```js
 // timeout.js
-console.log("[1] Sync process");
-
+console.log('🦖 [1] MAINILNE: Sync process');
 setTimeout(() => {
-  console.log("[5] This line will be printed after 3000ms");
-}, 3000); // 3000ミリ秒後に実行
+  console.log('⏰ [5] TIMERS: This line will be printed after 3000ms');
+}, 3000); // 3000ミリ秒後に実行したい(3000ミリ秒後にタスクキューへ発行)
 setTimeout(() => {
-  console.log("[4] This line will be printed after 2000ms");
-}, 2000); // 2000ミリ秒後に実行
+  console.log('⏰ [4] TIMERS: This line will be printed after 2000ms');
+}, 2000); // 2000ミリ秒後に実行したい(2000ミリ秒後にタスクキューへ発行)
 setTimeout(() => {
-  console.log("[3] This line will be printed after 1000ms");
-}, 1000); // 1000ミリ秒後に実行
-
-console.log("[2] Sync process");
+  console.log('⏰ [3] TIMERS: This line will be printed after 1000ms');
+}, 1000); // 1000ミリ秒後に実行したい(1000ミリ秒後にタスクキューへ発行)
+console.log('🦖 [2] MAINILNE: Sync process');
 ```
 
 実行すると次の出力を得ます。
 
 ```sh
 ❯ deno run timeout.js
-[1] Sync process
-[2] Sync process
-[3] This line will be printed after 1000ms
-[4] This line will be printed after 2000ms
-[5] This line will be printed after 3000ms
+🦖 [1] MAINILNE: Sync process
+🦖 [2] MAINILNE: Sync process
+⏰ [3] TIMERS: This line will be printed after 1000ms
+⏰ [4] TIMERS: This line will be printed after 2000ms
+⏰ [5] TIMERS: This line will be printed after 3000ms
 ```
 
 Visualizer で可視化してみたので次のリンクから確認してください。
 
 - [setTimeout.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGltZW91dC5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzVdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMzAwMG1zIik7Cn0sIDMwMDApOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzRdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMjAwMG1zIik7Cn0sIDIwMDApOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzNdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMTAwMG1zIik7Cn0sIDEwMDApOwpjb25zb2xlLmxvZygiWzJdIFN5bmMgcHJvY2VzcyIpOwo%3D)
+- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスク実行のタイミングについて誤解しないように注意してください
+- ⚠️ 注意: タスクキューへのタスクを入れるタイミングに実装ミスと思われる部分があるので注意してください(タイマーの指定時間が経過した順番にタスクキューへ入れられるはずのところが、タイマーの起動順番にタスクキューへと入れられてしまっています)
 
 タスクキューへと追加されるのが分かると思います。
 
@@ -103,6 +103,7 @@ promiseTimer(1000)
 Visualizer で可視化したので、確認してみてください。
 
 - [promiseTimer.js - JS Visualizer](https://www.jsv9000.app/?code=Y29uc3QgcHJvbWlzZVRpbWVyID0gKGRlbGF5KSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBzZXRUaW1lb3V0KCgpID0%2BIHsKICAgICAgcmVzb2x2ZSgpOwogICAgfSwgZGVsYXkpOwp9KX07Cgpwcm9taXNlVGltZXIoMTAwMCkKICAudGhlbigoKSA9PiBjb25zb2xlLmxvZygiVGltZW91dCIpKQogIC50aGVuKCgpID0%2BIGNvbnNvbGUubG9nKCJOZXh0IGFjdGlvbiIpKQogIC50aGVuKCgpID0%2BIGNvbnNvbGUubG9nKCJOZXh0IGFjdGlvbiIpKQogIC5jYXRjaCgoZXJyKSA9PiBjb25zb2xlLmVycm9yKGVyci5tZXNzYWdlKSk7)
+- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスク実行のタイミングについて誤解しないように注意してください
 
 はじめにタスクが発行されてタスクキューへと送られていますね。タスクキューからコールスタックへと送られて、`resolve()` が呼び出されます。それによって待機状態の Promoise が履行状態になるため、`.then()` メソッドのコールバックがマイクロタスクキューにマイクロタスクとして送られます。そしてマイクロタスクがコールスタックに積まれ実行されることで更にマイクロタスクが発生して、すべてのマイクロタスクが処理されてコールスタックが空になるとイベントループは終了します。
 

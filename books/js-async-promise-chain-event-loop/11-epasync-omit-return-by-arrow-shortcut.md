@@ -10,7 +10,7 @@ title: "アロー関数で return を省略する"
 
 # アロー関数で return を省略する
 
-アロー関数の省略形について、もう一度確認しておきます。アロー関数の省略は以下のようにでき、下の３つのコートはすべて等価となります。
+アロー関数の省略形について、もう一度確認しておきます。アロー関数の省略は以下のようにでき、下の３つのコードはすべて等価となります。
 
 ```js
 (a) => {
@@ -28,11 +28,11 @@ a => a + 100;
 
 ```js
 // promiseShouldBeReturned.js
-console.log("[1] Sync process");
+console.log("🦖 [1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} This line is (A)Synchronously executed`);
     resolve(resolvedValue);
   });
 };
@@ -40,81 +40,81 @@ const returnPromise = (resolvedValue, order) => {
 // アロー関数の省略形を使って return を省略する
 returnPromise("1st Promise", "[2]")
   .then(() => returnPromise("2nd Promise", "[6]"))
-  .then((value) => console.log("Resolved value: ", value));
+  .then((value) => console.log("👦 Resolved value: ", value));
 // 同じ意味
 returnPromise("3rd Promise", "[3]")
   .then(() => {
     // Promise インスタンスについては必ず return するようにする
-    return returnPromise("4th Promise", "[8]")
+    return returnPromise("4th Promise", "[8]");
   })
-  .then((value) => console.log("Resolved value: ", value));
+  .then((value) => console.log("👦 Resolved value: ", value));
 
-console.log("[4] Sync process");
+console.log("🦖 [4] Sync process");
 ```
 
-`.then((value) => console.log("Resolved value: ", value));` については、`console.log()` の返り値は `undefined` となるので、次の `then()` メソッドのコールバックに値を渡す必要がなければやっても大丈夫です。
+`.then((value) => console.log("👦 Resolved value: ", value));` については、`console.log()` の返り値は `undefined` となるので、次の `then()` メソッドのコールバックに値を渡す必要がなければやっても大丈夫です。
 
 値を繋ぐ際には、この「アロー関数の省略形」を意識しておくとよいです。次のコードは「Promise チェーンで値を繋ぐ」のチャプターの最後に見ましたが、ちょっと `console.log()` を抜いて改造してみます。
 
 ```js
 // chainValueName.js
-console.log("[1] Sync process");
+console.log("🦖 [1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 returnPromise("1st Promise", "[2]")
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("Resolved value: ", value); // 1st Promise
+    console.log("👦 Resolved value: ", value); // 1st Promise
   });
 
-console.log("[3] Sync process");
+console.log("🦖 [3] Sync process");
 ```
 
-↓ `then()` メソッドのコールバック関数内の `console.log()` をなくして値だけを繋いでみます。
+↓ このコードから `then()` メソッドのコールバック関数内の `console.log()` をなくして値だけを繋いでみます。
 
 ```js
 // chainValueNameArrow.js
-console.log("[1] Sync process");
+console.log("🦖 [1] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
-
 returnPromise("1st Promise", "[2]")
   .then((value) => value)
   .then((value) => value)
   .then((value) => value)
-  .then((value) => console.log("[last] Resolved value: ", value)); // 文字列 "1st Promise" を最後までつなげる
+  .then((value) => console.log("👦 [last] Resolved value: ", value));
+  // 文字列 "1st Promise" を最後までつなげる
 
-console.log("[3] Sync process");
+console.log("🦖 [3] Sync process");
 ```
 
 コード自体に特別な意味は無いですが、アロー関数の省略形でこのようなことができるということを意識するためにやっています。これを実行すると次の出力を得ます。値が最後まで連鎖できていることがわかります。
 
 ```sh
 ❯ deno run chainValueNameArrow.js
-[1] Sync process
-[2] This line is Synchronously executed
-[3] Sync process
-[last] Resolved value:  1st Promise
+🦖 [1] Sync process
+👻 [2] This line is Synchronously executed
+🦖 [3] Sync process
+👦 [last] Resolved value:  1st Promise
 ```
 

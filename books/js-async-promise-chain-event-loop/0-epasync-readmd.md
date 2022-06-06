@@ -46,5 +46,6 @@ chapters:
   - 14-epasync-chain-to-async-await # Promise チェーンから非同期関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
+  - x-epasync-epilogue # エピローグ
 ```
 

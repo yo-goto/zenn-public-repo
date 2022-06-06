@@ -98,44 +98,44 @@ console.log("[H] 🦖 MAINLINE: End");
 const wrappingPromise = (resolveValue, order, delayTime) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.log(`${order} setTimeout[${delayTime}ms] finished`);
+      console.log(`⏰ ${order} setTimeout[${delayTime}ms] finished`);
       resolve(resolveValue);
     }, delayTime);
   });
 };
 
-console.log("[1] Sync process");
+console.log("🦖 [1] MAINLINE: Sync process");
 
 wrappingPromise("1st Promise", "[3]", 1000)
   .then((value) => {
-    console.log("[4] Resolved value:", value);
+    console.log("👦 [4] Resolved value:", value);
   })
   .then(() => {
-    console.log("[5] Next chain");
+    console.log("👦 [5] Next chain");
   });
 wrappingPromise("2nd Promise", "[6]", 1000)
   .then((value) => {
-    console.log("[7] Resolved value:", value);
+    console.log("👦 [7] Resolved value:", value);
   })
   .then(() => {
-    console.log("[8] Next chain");
+    console.log("👦 [8] Next chain");
   });
 
-console.log("[2] Sync process");
+console.log("🦖 [2] MAINLINE: Sync process");
 ```
 
 これを実行すると以下の出力を得ます。
 
 ```sh
 ❯ deno run realitySettimout-normal.js
-[1] Sync process
-[2] Sync process
-[3] setTimeout[1000ms] finished
-[4] Resolved value: 1st Promise
-[5] Next chain
-[6] setTimeout[1000ms] finished
-[7] Resolved value: 2nd Promise
-[8] Next chain
+🦖 [1] MAINLINE: Sync process
+🦖 [2] MAINLINE: Sync process
+⏰ [3] setTimeout[1000ms] finished
+👦 [4] Resolved value: 1st Promise
+👦 [5] Next chain
+⏰ [6] setTimeout[1000ms] finished
+👦 [7] Resolved value: 2nd Promise
+👦 [8] Next chain
 ```
 
 イベントループにマイクロタスクを処理するためのループがあることが理解できたと思います。今度のコードはもっと難しいです。実行予測してみてください。

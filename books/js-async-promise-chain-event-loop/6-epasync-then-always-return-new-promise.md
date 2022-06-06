@@ -5,7 +5,7 @@ title: "then メソッドは常に新しい Promise を返す"
 # このチャプターについて
 
 :::message alert
-このチャプターの内容は『イベントループの概要と注意点』のチャプターに基づいた古いものであり、イベントループの説明自体は間違っていませんが、分かりづらい部分があるので注意してください。
+このチャプターでの古い内容に基づいた解説を新しい解説で置き換えました。実行コンテキストとマイクロタスクのチェックポイントを使って解説しています。
 :::
 
 このチャプターでは、Promise チェーンでの注意点である `then()` メソッドの特長について解説しておきます。
@@ -16,33 +16,33 @@ title: "then メソッドは常に新しい Promise を返す"
 
 ```js:returnPromiseByFuncArg2AddChain.js
 // returnPromiseByFuncArg2AddChain.js
-console.log("[A] Sync process");
+console.log("🦖 [A] Sync process");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is Synchronously executed`);
+    console.log(`👻 [${order}] This line is Synchronously executed`);
     resolve(resolvedValue);
   });
 };
 
-returnPromise("1st Promise", "[B]")
+returnPromise("1st Promise", "B")
   .then((value) => {
-    console.log("[C] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [C] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
   })
   .then(() => {
-    console.log("[D] This line is Asynchronously executed");
+    console.log("👦 [D] This line is Asynchronously executed");
   });
-returnPromise("2nd Promise", "[E]")
+returnPromise("2nd Promise", "E")
   .then((value) => {
-    console.log("[F] This line is Asynchronously executed");
-    console.log("Resolved value: ", value);
+    console.log("👦 [F] This line is Asynchronously executed");
+    console.log("👦 Resolved value: ", value);
   })
   .then(() => {
-    console.log("[G] This line is Asynchronously executed");
+  console.log("👦 [G] This line is Asynchronously executed");
   });
 
-console.log("[H] Sync process");
+console.log("🦖 [H] Sync process");
 ```
 
 :::details 答え
@@ -50,16 +50,16 @@ console.log("[H] Sync process");
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-[A] Sync process
-[B] This line is Synchronously executed
-[E] This line is Synchronously executed
-[H] Sync process
-[C] This line is Asynchronously executed
-Resolved value:  1st Promise
-[F] This line is Asynchronously executed
-Resolved value:  2nd Promise
-[D] This line is Asynchronously executed
-[G] This line is Asynchronously executed
+🦖 [A] Sync process
+👻 [B] This line is Synchronously executed
+👻 [E] This line is Synchronously executed
+🦖 [H] Sync process
+👦 [C] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👦 [F] This line is Asynchronously executed
+👦 Resolved value:  2nd Promise
+👦 [D] This line is Asynchronously executed
+👦 [G] This line is Asynchronously executed
 ```
 :::
 
@@ -68,21 +68,21 @@ Resolved value:  2nd Promise
 準備としてコールバック関数などを `cb1` というように省略表記をしてコードを圧縮して書くと次のようになります。
 
 ```js
-console.log("[A] Sync process");
+console.log("🦖 [A] Sync process");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("1st Promise", "B").then(cb1).then(cb2);
 returnPromise("2nd Promise", "E").then(cb3).then(cb4);
-console.log("[H] Sync process");
+console.log("🦖 [H] Sync process");
 ```
 
-前のコードと考え方は同じです。まずは Event Loop の最初のステップである「スクリプトの評価」で「同期処理の実行」が行われます。
+前のコードと考え方は同じです。まずはイベントループにおいて最初のタスクである「スクリプトの評価」で「すべての同期処理の実行」が行われます。コールスタックの一番下にグローバルコンテキストが積まれた状態で同期処理がどんどん行われていきます。
 
-- (1) `console.log("[A] Sync process")` が同期処理される
-- (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fullfilled)状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちに Microtask queue へと送られます。
+- (1) `console.log("🦖 [A] Sync process")` が同期処理される
+- (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fullfilled)状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちにマイクロタスクキューへと送られます。
 
 さて、ここまでは前のコードと同じですね。
 
-ここでは「**`then()` メソッドは常に新しい Promise インスタンスを返す**」ということが重要です。
+ここ重要なのは「**`then()` メソッドは常に新しい Promise インスタンスを返す**」ということです。
 
 - `returnPromise("1st Promise", "B")` によって返ってくる Promise インスタンスを promise1 とします
 - `returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `proimse2` とします
@@ -92,7 +92,7 @@ console.log("[H] Sync process");
 Promise チェーンにおいて、各 `then()` メソッドにおいて返ってくる Promise インスタンスは**それぞれ別のモノ**であるということを意識してください。
 
 # Promise インスタンスの状態
-話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
+ここで話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
 
 - Pending(待機状態)
 - Fullfilled(履行状態)
@@ -102,95 +102,94 @@ Promise チェーンにおいて、各 `then()` メソッドにおいて返っ�
 Promise の状態(State)と運命(Fate)などの基本概念については、チャプター『Promise の基本概念』を参照してください。
 :::
 
-`Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise チェーンでは `then()` メソッドで返ってくる Promise インスタンスの状態が待機(pending)状態から履行(Fullfilled)状態へと変わった時点で次の `then()` メソッドで登録したコールバックが Microtask queue へと送られます。
+`Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise チェーンでは `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
 
 そして、`then(cb)` で返ってくる Promise インスタンスが履行状態へと移行するのは登録されているコールバック `cb` が実行が完了した時点です。
 
-従って、`returnPromise("1st Promise", "B").then(cb1)` で返ってくる Promise インスタンスは Event Loop のこの時点では登録しているコールバック `cb1` が Microtask queue へと送られただけで処理は完了していませんので、まだ待機(pending)状態となります。
+従って、`returnPromise("1st Promise", "B").then(cb1)` で返ってくる Promise インスタンスはイベントループのこの時点で登録しているコールバック `cb1` がマイクロタスクキューへと送られただけで処理は完了していませんので、まだ待機状態となります。
 
-`then(cb1)` で返ってくる Promise インスタンスが待機状態なので、`returnPromise("1st Promise", "B").then(cb1).then(cb2)` で登録したコールバック `cb2` はまだ Microtask queue へと送られません。このまま待機させておきます。
+`then(cb1)` で返ってくる Promise インスタンスが待機状態なので、`returnPromise("1st Promise", "B").then(cb1).then(cb2)` で登録したコールバック `cb2` はまだマイクロタスクキューへと送られません。このまま待機させておきます。
 
 そして、そのまま次の処理へと進みます。次の行は `returnPromise("2nd Promise", "E").then(cb1).then(cb2)` なので、まったく同じことが置きます。
 
 ```js
-console.log("[A] Sync process");
+console.log("🦖 [A] Sync process");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("1st Promise", "B").then(cb1).then(cb2);
 returnPromise("2nd Promise", "E").then(cb3).then(cb4);
-console.log("[H] Sync process");
+console.log("🦖 [H] Sync process");
 ```
 
-1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行(Fullfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちに Microtask queue へと送られます
-2. `then(cb3)` で返ってくる別の Promise インスタンスはまだ待機(pending)状態なので `then(cb4)` のコールバック関数 `cb4` はまだキューへ送られずにそのまま待機となります
+1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行(Fullfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちにマイクロタスクキューへと送られます
+2. `then(cb3)` で返ってくる別の Promise インスタンスはまだ待機状態なので `then(cb4)` のコールバック関数 `cb4` はまだキューへ送られずにそのまま待機となります
 3. 次の処理に進み、`console.log("[H] Sync process")` が実行されます
 
-これで Event Loop の最初のステップである「スクリプトの評価」において「同期処理の実行」が終わりました。出力はこの時点で次のようになっています。
+これでイベントループにおいてコード実行の最初のタスクである「スクリプトの評価」における「すべて同期処理の実行」が終わりました。出力はこの時点で次のようになっています。
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-[A] Sync process
-[B] This line is Synchronously executed
-[E] This line is Synchronously executed
-[H] Sync process
+🦖 [A] Sync process
+👻 [B] This line is Synchronously executed
+👻 [E] This line is Synchronously executed
+🦖 [H] Sync process
 
 # ...この先はどうなる?
 ```
 
-:::message alert
-Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
-
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
+:::message
+**以前の解説**: 最初のタスクの実行が終わり、イベントループは次のステップに移行します。「マイクロタスクキューにあるすべてのマイクロタスクの実行」です。
 :::
 
-最初の Task(Macrotask) の実行が終わり、Event loop は次のステップ「Microtask queue にあるすべての Microtask の実行」(ステップ４)を行います。
+いつもどおり、すべての同期処理が終わったため、グローバルコンテキストがポップして、コールスタックが空になったので「マイクロタスクのチェックポイント」となります。別の言い方では「**単一タスクが完了したら、すべてのマイクロタスクを処理する**」です。というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
-先にキューへと送られた `cb1` が実行されます。`then(cb1)` で登録したコールバック `cb1` の実行が完了したので `then(cb1)` で返ってくる Promise インスタンスが履行(Fullfilled)状態へと移行します。Promise インスタンスの状態が履行状態へと移行したことで、さらに `then(cb1).then(cb2)` で登録していたコールバック関数  `cb2` が直ちに Microtask queue へと送られます。
+先にキューへと送られた `cb1` が実行されます。`then(cb1)` で登録したコールバック `cb1` の実行が完了したので `then(cb1)` で返ってくる Promise インスタンスが履行状態へと移行します。Promise インスタンスの状態が履行状態へと移行したことで、さらに `then(cb1).then(cb2)` で登録していたコールバック関数  `cb2` が直ちにマイクロタスクキューへと送られます。
 
-続いて次に Microtask queue 内にあるマイクロタスクが実行されます。`cb1` の後には `cb3` が順番としてキューに送られていたので `cb3` が直ちに実行されます。`cb1` のときと同じように `then(cb3)` で返ってくる Promise インスタンスの状態が待機(pending)状態から履行(Fullfilled)状態へと移行します。`then(cb3)` で返ってくる Promise インスタンスの状態が履行(Fullfilled)状態へと変わったことで、後続の `then(cb4)` で登録していたコールバック関数 `cb4` が直ちに Microtask queue へと送られます。
+続いて次にマイクロタスクキュー内にあるマイクロタスクが実行されます。`cb1` の後には `cb3` が順番としてキューに送られていたので `cb3` が直ちに実行されます。`cb1` のときと同じように `then(cb3)` で返ってくる Promise インスタンスの状態が待機状態から履行状態へと移行します。`then(cb3)` で返ってくる Promise インスタンスの状態が履行状態へと変わったことで、後続の `then(cb4)` で登録していたコールバック関数 `cb4` が直ちにマイクロタスクキューへと送られます。
 
 この時点での出力はこのようになっています。
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-[A] Sync process
-[B] This line is Synchronously executed
-[E] This line is Synchronously executed
-[H] Sync process
-[C] This line is Asynchronously executed
-Resolved value:  1st Promise
-[F] This line is Asynchronously executed
-Resolved value:  2nd Promise
+🦖 [A] Sync process
+👻 [B] This line is Synchronously executed
+👻 [E] This line is Synchronously executed
+🦖 [H] Sync process
+👦 [C] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👦 [F] This line is Asynchronously executed
+👦 Resolved value:  2nd Promise
 
 # ...この先はどうなる?
 ```
 
-この時点のステップは「Microtask queue にあるすべての Microtask の実行」であり、Microtask queue にマイクロタスクが存在し続ける限りそれらは実行されます。いまだに `cb2` と `cb4` が順番に Microtask queue に存在しているのでそれらも順番に実行されていきます。
+この時点のステップは「マイクロタスクキューにあるすべてのマイクロタスクの実行」であり、マイクロタスクキューにマイクロタスクが存在し続ける限りそれらは実行されます。いまだに `cb2` と `cb4` が順番にマイクロタスクキューに存在しているのでそれらも順番に実行されていきます。
 
 従って、最終的な出力は次のようになります。
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-[A] Sync process
-[B] This line is Synchronously executed
-[E] This line is Synchronously executed
-[H] Sync process
-[C] This line is Asynchronously executed
-Resolved value:  1st Promise
-[F] This line is Asynchronously executed
-Resolved value:  2nd Promise
-[D] This line is Asynchronously executed
-[G] This line is Asynchronously executed
+🦖 [A] Sync process
+👻 [B] This line is Synchronously executed
+👻 [E] This line is Synchronously executed
+🦖 [H] Sync process
+👦 [C] This line is Asynchronously executed
+👦 Resolved value:  1st Promise
+👦 [F] This line is Asynchronously executed
+👦 Resolved value:  2nd Promise
+👦 [D] This line is Asynchronously executed
+👦 [G] This line is Asynchronously executed
 ```
 
 言葉で説明すると非常に長くなってしまいましたがこのような結果となります。
 実際に JS Visualizer 9000 で可視化してみたので確認してみてください。
 
-- [returnPromiseByFuncArg2AddChain.js - JS Visualizer 9000](https://www.jsv9000.app/?code=Ly8gcmV0dXJuUHJvbWlzZUJ5RnVuY0FyZzJBZGRDaGFpbi5qcwpjb25zb2xlLmxvZygiW0FdIFN5bmMgcHJvY2VzcyIpOwpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyKSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgWyR7b3JkZXJ9XSBUaGlzIGxpbmUgaXMgU3luY2hyb25vdXNseSBleGVjdXRlZGApOwogICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICB9KTsKfTsKCnJldHVyblByb21pc2UoIjFzdCBQcm9taXNlIiwgIkIiKQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coIltDXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICAgIGNvbnNvbGUubG9nKCJSZXNvbHZlZCB2YWx1ZTogIiwgdmFsdWUpOwogIH0pCiAgLnRoZW4oKCkgPT4gewogICAgY29uc29sZS5sb2coIltEXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICB9KTsKcmV0dXJuUHJvbWlzZSgiMm5kIFByb21pc2UiLCAiRSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ZdIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCIpOwogICAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7CiAgfSkKICAudGhlbigoKSA9PiB7CiAgY29uc29sZS5sb2coIltHXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSF0gU3luYyBwcm9jZXNzIik7CgovLyBFbmQ%3D)
+- [returnPromiseByFuncArg2AddChain.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcmV0dXJuUHJvbWlzZUJ5RnVuY0FyZzJBZGRDaGFpbi5qcwpjb25zb2xlLmxvZygiW0FdIFN5bmMgcHJvY2VzcyIpOwpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyKSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgWyR7b3JkZXJ9XSBUaGlzIGxpbmUgaXMgU3luY2hyb25vdXNseSBleGVjdXRlZGApOwogICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICB9KTsKfTsKCnJldHVyblByb21pc2UoIjFzdCBQcm9taXNlIiwgIkIiKQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coIltDXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICAgIGNvbnNvbGUubG9nKCJSZXNvbHZlZCB2YWx1ZTogIiwgdmFsdWUpOwogIH0pCiAgLnRoZW4oKCkgPT4gewogICAgY29uc29sZS5sb2coIltEXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICB9KTsKcmV0dXJuUHJvbWlzZSgiMm5kIFByb21pc2UiLCAiRSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ZdIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCIpOwogICAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7CiAgfSkKICAudGhlbigoKSA9PiB7CiAgY29uc29sZS5sb2coIltHXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSF0gU3luYyBwcm9jZXNzIik7CgovLyBFbmQ%3D)
+- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
 # Promise の状態を確かめる
-実際に Promise インスタンスを `console.log()` でそのまま出力してみて状態がどのようになっているかを確認してみましょう。
+実際に Promise インスタンスを `console.log()` でそのまま出力してみて状態がどのようになっているかを確認してみます。
 
-次のコードでは、`console.log()` の引数として直接 Promise インスタンスを渡しています。どのような出力が得られるでしょうか?
+次のコードでは、`console.log()` の引数として直接 Promise インスタンスを渡しています。どのような出力が得られるでしょうか？
 
 ```js
 // consolePromise.js
@@ -213,11 +212,11 @@ console.log("[Rejcted status]", Promise.reject("Rejected"))
 # ...
 ```
 
-では、次の `Promise.resolve()` ですが、これは以下のように `new Promise()` で作成するのと等価なものでした。
+では、次の `Promise.resolve()` ですが、これは以下のように `new Promise()` で作成するのと大体は同じものでした。
 
 ```js
 const promise = Promise.resolve("Promise履行時の値");
-// この２つは等価
+// この２つは大体同じ
 const promise = new Promise(res => {
   res("Promise履行時の値");
 });
@@ -232,7 +231,7 @@ const promise = new Promise(res => {
 # ...
 ```
 
-３番目が肝心です。`then()` メソッドで返ってくる Promise インスタンスは `Promise.resolve()` で返ってくる Promise インスタンスとは別物であり、Promise チェーンにおいて前の Promise インスタンスが待機状態から履行状態に移行して初めてコールバック関数を Microtask queue へと送ります。そして、Microtask queue へと送られたコールバック関数が Call stack へと送られて実行が完了して初めてそのコールバックをキューに送った `then()` メソッドから返ってくる Promise インスタンスが履行状態へと移行します。
+３番目が肝心です。`then()` メソッドで返ってくる Promise インスタンスは `Promise.resolve()` で返ってくる Promise インスタンスとは別物であり、Promise チェーンにおいて前の Promise インスタンスが待機状態から履行状態に移行して初めてコールバック関数をマイクロタスクキューへと送ります。そして、マイクロタスクキューへと送られたコールバック関数が Call stack へと送られて実行が完了して初めてそのコールバックをキューに送った `then()` メソッドから返ってくる Promise インスタンスが履行状態へと移行します。
 
 `console.log("[Pending status]", Promise.resolve("Resolved but").then(callback))` は同期的に実行されますが、この時点において、`Promise.resolve()` 自体から返ってくる Promise インスタンスが履行状態であったとしても `Promise.resolve().then(callback)` から最終的に返ってくる Promise インスタンスは待機状態であり、出力される Promise インスタンスは待機状態のものとなります。
 
@@ -248,14 +247,15 @@ const promise = new Promise(res => {
 
 待機(Pending)状態の Promise インスタンスを出力すると、このように `Promise { <pending> }` が表示されます。履行(Fullfilled)状態の Promise インスタンスは `Promise { 解決された値 }` というように出力されていますね。
 
-`Promise.resolve().then(callback)` の `callback` ですが、現時点で Event loop のステップは「スクリプトの評価」で、同期処理をすべて完了していません。コールバックの中身は `value => console.log(value)` というものなので、コンソールへ出力がなされますが、Microtask queue へと送られるこのコールバックは Event loop の「スクリプトの評価」のステップが完了した後に実行されます。
+`Promise.resolve().then(callback)` の `callback` ですが、現時点ではイベントループのステップは「スクリプトの評価」で、同期処理をすべて完了していません。コールバックの中身は `value => console.log(value)` というものなので、コンソールへ出力がなされますが、マイクロタスクキューへと送られるこのコールバックはイベントループの「スクリプトの評価」のステップが完了した後に実行されます。
 
+つまり、グローバルコンテキストがコールスタックからポップして、コールスタックが空になった時にマイクロタスクのチェックポイントですから、その時点からマイクロタスクが処理されます。
 
-４番目では、`console.log("[Rejcted status]", Promise.reject("Rejected"))` が実行されます。`Promise.resject()` については、`Promise.resolve()` の時と同じです。「Promise コンストラクタと Executor 関数」のチャプターで説明したように以下の２つは等価でした。
+４番目では、`console.log("[Rejcted status]", Promise.reject("Rejected"))` が実行されます。`Promise.resject()` については、`Promise.resolve()` の時と同じです。「Promise コンストラクタと Executor 関数」のチャプターで説明したように以下の２つはほとんど同じでした。
 
 ```js
 const promise = Promise.reject("Promise拒否時の理由");
-// ２つは等価
+// ２つは大体同じ
 const promise = new Promise((_, rej) => {
   rej("Promise拒否時の理由");
 });
@@ -274,17 +274,13 @@ const promise = new Promise((_, rej) => {
 
 拒否(Rejected)状態の Promise インスタンスを出力すると `Promise { <rejected> 拒否された理由 }` が表示されます。今回の場合は、理由(reason)として "Rejected" という文字列を `Promise.reject()` の引数として渡しているのでこのような出力が得られました。
 
-これで、Event loop の最初のステップ「スクリプトの評価」が終わったので、~~次の「Macrotask の実行」のステップに移りますが、Macrotask は無いので、次のステップ「Microtask の実行」ステップに移行します。~~
+これで、イベントループの最初のステップ「スクリプトの評価」が終わりました。いつもどおり、すべての同期処理が終わったため、グローバルコンテキストがポップして、コールスタックが空になったので「マイクロタスクのチェックポイント」となります。別の言い方では「**単一タスクが完了したら、すべてのマイクロタスクを処理する**」です。というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
-:::message alert
-Event loop のステップ１はステップ２と同質のものであり、「スクリプトの評価」は実質的に Task(Macrotask) として扱われるので、これが終わると、Event loop は次のステップ３「すべての Microtask の実行」へと移行します。
-
-詳しくは、[Event loop の概要と注意点](https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/2-epasync-event-loop) のチャプターを確認してください。
+:::message
+**以前の解説**: 最初のタスクの実行が終わり、イベントループは次のステップに移行します。「マイクロタスクキューにあるすべてのマイクロタスクの実行」です。
 :::
 
-最初の Task(Macrotask) の実行が終わり、Event loop は次のステップ「Microtask queue にあるすべての Microtask の実行」(ステップ４)を行います。
-
-ここまで来て初めて３番目の出力の際に `then(cb)` でキューに送ったコールバック関数が Call stack へと送られて実行されます。従って、５番目の出力は次のようになります。
+ここまで来て初めて３番目の出力の際に `then(cb)` でキューに送ったコールバック関数がコールスタックへと送られて実行されます。従って、５番目の出力は次のようになります。
 
 ```sh
 ❯ deno run consolePromise.js
