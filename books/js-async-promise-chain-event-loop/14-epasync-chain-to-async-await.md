@@ -69,32 +69,157 @@ Async function 内部で何も `return` しなくても、必ず Promise イン�
 
 非同期関数では内部で `await` 式を使って「**非同期処理の完了を待つ**」ことができます。この「待つ」ですが、非常に混乱させるワードなので注意してください。
 
-例えば、お馴染みの非同期 API `fetch()` は Promise インスタンスを返してきましたね。`fetch()` は引数に渡した URL からデータを取得してくれます。ですが、ネットワーキングでリクエストを投げてレスポンスを受け取るまでには時間がかかります。通常は、こんな時間のかかる処理をメインスレッドで行っていたら無駄な待ち時間が発生してしまいますね。というわけで、データ取得は API を介してその作業を委任された環境(environment)がバックグラウンドで行ってくれます。
+そもそも「非同期処理の完了を待つ」という文言は単体だと非同期 API と非同期処理についての情報が抜け落ちてしまっているのでここでの「非同期処理」はカッコが必要です。
+
+結論としては、**「完了を待つ」という考え方自体がそもそもよろしくない**のですが、ちょっと考えてみましょう。
+
+## どんな作業の完了を「待つ」のか
+
+例えば、お馴染みの非同期 API `fetch()` は Promise-based API ですから Promise インスタンスを返してきましたね。`fetch()` は引数に渡した URL からデータを取得してくれます。ですが、ネットワーキングでリクエストを投げてレスポンスを受け取るまでには時間がかかります。通常は、こんな時間のかかる処理をメインスレッドで行っていたら無駄な待ち時間が発生してしまいますね。というわけで、データ取得は API を介してその作業を委任された環境(environment)がバックグラウンドで行ってくれていました。
 
 :::message
 環境と非同期 API についての話は『非同期 API と環境』のチャプターで解説したので、詳しくはそちらを参照してください。
 :::
 
-とはいえ、`const response = await fetch(url)` の場合は非同期処理の完了を待つというよりも、環境に委任した並列作業を待つという感じになるので、「非同期処理を待つ」とは少し違った印象を受けるのが自然ですね。ただし、`const text = await fetch(url).then((res) => res.text())` というような場合は Promise チェーンで最終的に返ってくる Promise インスタンスが解決されるの待つので、明らかに「非同期処理を待つ」と言えます。
+そして、`fetch()` は「非同期処理」の説明の代表となるように await 式での解説でもよく使われます。そして、await 式は「非同期処理の完了を待つ」という話でしたね。
+
+次のコードを見ると違和感があるはずです。一方の非同期関数は非同期 API である `fech()` を await していますが、もう一方の非同期関数は Promise チェーンを await しています。
 
 ```js
-async function test(url) {
+async function returnRespnose(url) {
+  const response = await fetch(url);
+  return response;
+}
+async function returnText(url) {
+  const text = await fetch(url).then(res => res.text());
+  return text;
+}
+```
+
+`const response = await fetch(url)` の場合は非同期処理の完了を待つというよりも、環境に委任した並列作業を待つという感じになるので、「非同期処理を待つ」とは違った印象を受けるのが自然ですね。ただし、`const text = await fetch(url).then((res) => res.text())` というような場合は `then()` のコールバック関数が完了するのを待っていますし、実際には Promise チェーンで最終的に返ってくる Promise インスタンスが解決されるの待つので、明らかに「非同期処理を待つ」と言えます。
+
+```js
+async function returnRespnose(url) {
   const response = await fetch(url);
   // 環境に委任した並列作業の完了を待つ
+  return response;
+}
+async function returnText(url) {
   const text = await fetch(url).then(res => res.text());
   // 環境に委任した並列作業の完了後にメインスレッドでデータと共に通知させた非同期のコールバック関数の完了を待つ
+  return text;
 }
 ```
 
 非同期処理を待つのか、非同期 API の完了を待つのかで印象がかなり変わってくるため、非同期の学習ではここで勘違いや混乱が起きることが多いです(個人的にはそうでした)。
 
-そういう訳で、await 式の捉え方は「非同期処理の完了を待つ」というよりも、「Promise インスタンスを評価して値を取り出す」というようにした方がよいです。
+そういう訳で、await 式の捉え方は「非同期処理の完了を待つ」というよりも、「**Promise インスタンスを評価して値を取り出す**」というようにした方がよいです。
 
-基本的には await 式は Promise インスタンスを評価して、その履行値を取り出すという処理です(後で解説しますが、await 式では単なる数値や文字列などの値を評価することも可能です)。
+基本的には await 式は Promise インスタンスを評価して、その履行値を取り出すという処理です(後で解説しますが、await 式では単なる数値や文字列などの値を評価することも可能です)。そもそも、await 自体は演算子であり、`await ~` というように右辺を評価して評価値を返します。「await 式」が await 演算子の右辺を評価して値を返すのは当然といえばそうですが、気づにくいことなので注意してください。
+
+https://jsprimer.net/basic/statement-expression/#expression
 
 むしろ、これが理解できていないと `setTimeout()` を await 式で待つというようなミスを犯してしまいます。`setTimeout()` API による何らかの処理を行ってから次の処理を行いたい場合は、以前のチャプターでみたように `setTimeout()` を Promise でラッピングする Promisification をする必要があります。
 
-さて、話を戻しますが、`fetch()` API は Promise-based な非同期 API であり、`fetch()` メソッドからは Promise インスタンスが処理の結果として返ってきます。そして、Promise チェーンを await する場合でも、結局は Promise チェーンから返ってくる Promise インスタンスを評価していますね。
+```js
+// Promisification
+function promiseTimer(delay) {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+// アロー関数で即時実行
+(async () => {
+  await promiseTimer(3000); 
+  // Promise インスタンスを返すので await で意図通りになる
+  console.log("after 3000ms");
+})();
+```
+
+## 「待つ」は非同期関数内の処理の一時停止
+
+環境が代行する非同期 API の並列作業の完了を「待つ」ことについて先に言及してしまいましたが、そもそも await 式の「待つ」の意味は**実際にそこですべての処理が停止させているわけではない**のでかなり注意する必要があります。
+
+「待つ」という言葉から直感的に想起するのは「そこで完全に処理が止まる」ということですが、そんなことが起きてしまったらメインスレッドを「ブロッキング」することになり、『非同期 API と環境』のチャプターで説明した非同期処理の目的である「環境が並列的にバックグラウンドで作業している間もメインスレッドをブロッキングすることなく別の作業を続けられるようにすること」が崩れてしまうことになります。
+
+async/await は Promise チェーンを変形することで書くことができますし、内部的にも Promise の処理に基づいています(これについては『V8 エンジンによる async/await の内部変換』のチャプターで解説します)。そして、Promise チェーンを学習してきましたが、ブロッキングなどが起きていませんでしたよね。await 式の「待つ」は非同期 API の作業を起点とした一連の作業「A(非同期 API の作業) したら B(コールバック関数) する、B したら C(コールバック関数) する」という逐次処理を行う時に、 A が終わっていないのに B はできないので、非同期 API の作業を環境が終わらせるまで順番的に A の次に行いたい B という作業を行わないで、**別の作業をメインスレッドで続ける**ということを意味します。「非同期 API の並列作業である A がバックグラウンドで環境が処理している間は、その非同期関数の内の処理は一時的に停止させて、別のことをやる」というのが「async/await でできること」であり「やりたいこと」です。
+
+```js
+// 非同期関数内の処理が中断された時は別の処理を行っている
+(async function immediateFn() {
+  const url = "https://api.github.com/zen";
+  const response = await fetch(url); // 作業 A (非同期 API による並列的作業)
+  // A が終わってから B を行うので中断
+  const text = await response.text(); // 作業 B (データの抽出)
+  // B が終わってから C を行うので中断
+  const message = "I respect" + text; // 作業 C (データの加工)
+  return message;
+})().then(msg => console.log(msg));
+```
+
+「待つ」ために行うことは「Stop」ではなく「Suspend(一時停止)」です。非同期関数内の処理を一時停止して、関数の外の別の処理を行います。つまり、メインスレッドをブロッキングすることなく、別の処理を行うわけです。「待つ」という言葉は説明するのに便利な言葉ですが、単体では情報が不足しすぎています。「待つ」や「await」という単語に惑わされないでください。
+
+:::message
+中断した後にどうやって再開するのか疑問に思われるかもしれませんが、その手段はもう知っています。イベントループでのマイクロタスクの処理です。『V8 エンジンによる async/await の内部変換』のチャプターで説明しますが、await 式は「待っている」作業が完了するとマイクロタスクを発行します。このマイクロタスクがイベントループにおいて Promise チェーンで見たのと同じように処理される訳です。
+:::
+
+ということで実際にはすべての処理が完全停止するわけではないので、非同期関数を単体で考えてもほとんど意味がないわけです。『コールバック関数の同期実行と非同期実行』のチャプターでも非同期処理を考えるときは必ず同期処理と一緒に考えないといけないということは言いましたが、**非同期処理そのものの意味が生じるのは他のコードとの関係性があってのこと**です。
+
+話を戻しますが、`fetch()` API は Promise-based な非同期 API であり、`fetch()` メソッドからは Promise インスタンスが処理の結果として返ってきます。そして、`await fetch(url).then(res => res.text())` のように Promise チェーンを await 式で評価する場合でも、結局は Promise チェーンから返ってくる Promise インスタンスを評価していますね。
+
+本質的には async/await と Promise チェーンは全く同じです。Promise のシステムに基づき Promise インスタンスを扱います。Promise インスタンスを介してマイクロタスクを連鎖的に発行し、それらがイベンループ上で連続的に処理されることで逐次処理を実現します。
+
+ということで、以下のコードで async/await と Promise チェーンの両方を書いていますが、意味はほほとんど同じです。
+
+```js
+// awaitMeansSudpendForSequential.js
+const url = "https://api.github.com/zen";
+
+console.log("[1] 🦖 同期: タイミングがずれない");
+
+(async function immediateFn() {
+  console.log("[2] 👻 💙 同期: タイミングがずれない");
+  const response = await fetch(url);
+  // 環境に委任した並列作業が終わってから次の行の処理にすすみたいので、一旦この関数内の処理は一時的に停止して次(関数外の別の処理)に進む
+  console.log("[5] 🦄 💙 非同期: タイミングがずれる");
+  const text = await response.text();
+  console.log("Github Philosophy:", text);
+})();
+
+// この２つのブロックはほとんど同じことを意味している
+
+{
+  // わかりやすくするために敢えてブロックにしている
+  console.log("[3] 👻 💚 同期:  タイミングがずれない");
+  fetch(url)
+    .then((response) => {
+      console.log("[6] 🦄 💚 非同期: タイミングがずれる");
+      return response.text();
+    })
+    .then((text) => console.log("Github Philosophy:", text));
+}
+
+console.log("[4] 🦖 同期: タイミングがずれない");
+```
+
+Promise チェーンでブロッキングが起きていなかった様に async/await でもブロッキングは起きません。「待つ」間には別の処理がメインスレッドで実行されています。実際に上のコードを実行すると順番は次のようになります。
+
+```sh
+❯ deno run --allow-net awaitMeansSuspendForSequential.js
+[1] 🦖 同期: タイミングがずれない
+[2] 👻 💙 同期: タイミングがずれない
+[3] 👻 💚 同期:  タイミングがずれない
+[4] 🦖 同期: タイミングがずれない
+[6] 🦄 💚 非同期: タイミングがずれる
+[5] 🦄 💙 非同期: タイミングがずれる
+Github Philosophy: It's not fully shipped until it's fast.
+Github Philosophy: It's not fully shipped until it's fast.
+```
+
+## Promise チェーンを async/await で書き直す
+
+async/await は Promise チェーンのシンタックスシュガーであると言われます。実際にはそれ以上のもの(デバッグなどで得られる効能が Promise チェーンよりも高いなどの性質がある)ですが、現時点では Promise チェーンと完全に同等であると考えてください。本質的な部分は同じですしね。
+
+例えば次のコードを考えてみましょう。
 
 ```js
 const githubApi = "https://api.github.com/zen";
@@ -122,11 +247,9 @@ fetchData(githubApi)
 console.log("[2] 🦖 MAINLINE: End");
 ```
 
-async/await は Promise チェーンのシンタックスシュガーであると言われます。実際にはそれ以上のもの(デバッグなどで得られる効能が Promise チェーンよりも高いなどの性質がある)ですが、現時点では Promise チェーンと完全に同等であると考えてください。
-
 Promise チェーンも async/await もマイクロタスクを連鎖的に発行してイベントループで処理されるのは同じです。
 
-上記の Promise チェーンは async/await で書き直すことができます。
+上記の Promise チェーンは次のように async/await で書き直すことができます。
 
 ```js
 const githubApi = "https://api.github.com/zen";
@@ -179,7 +302,7 @@ console.log("[2] 🦖 MAINLINE: End");
 ```
 
 # Callback hell → Promise chain → async/await
-いきなり謎の変形をしてしまったのでより簡単で分かりやすい Promise チェーンから非同期関数への変形を見てみます。
+もう少し簡単で分かりやすい Promise チェーンから非同期関数への変形を見てみます。
 
 次の動画の 23:36 ~ のところから視聴してみてください。Callback hell → Promise chain → async/await の変形が視覚的に示されていて変形のイメージをつかめます。
 
@@ -277,7 +400,21 @@ async function empty() {}
 
 何も `return` しない場合には、非同期関数から返ってくる Promise インスタンスは同期的に `undefined` で履行されます(なぜこうなるのかは次のチャプターで説明します)。
 
-永遠に Pending 状態の Promise インスタンスを `return` した場合などは今までの Promise チェーンと同じように、次の `then()` メソッドのコールバックなどを実行できません(`then()` メソッドはチェーンしている Promise インスタンスの状態が遷移した時に一度だけ実行されるから、永遠に Pending 状態なら絶対に実行されない)。
+実際、非同期関数で返却する値としての Promise インスタンスには特に興味がなく await 式を利用した一連の逐次処理がしたいから非同期関数を利用するというのは十分にありえます。即時実行するケースなどは大体そういう場合が多いのではないでしょうか。
+
+```js
+// await 式が使いたいから async function を書く
+(async function justFetch() {
+  const url = "https://api.github.com/zen";
+  const response = await fetch(url);
+  const text = await response.text();
+  console.log(text);
+  // undefined で履行される Promise インスタンスが返る
+  // この関数から返ってくるものには興味がない
+})();
+```
+
+ちなみに、永遠に Pending 状態の Promise インスタンスを `return` した場合などは今までの Promise チェーンと同じように、次の `then()` メソッドのコールバックなどを実行できません(`then()` メソッドはチェーンしている Promise インスタンスの状態が遷移した時に一度だけ実行されるから、永遠に Pending 状態なら絶対に実行されない)。
 
 ```js
 (async function pendingPromise() {

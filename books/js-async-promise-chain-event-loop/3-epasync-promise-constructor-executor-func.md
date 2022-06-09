@@ -424,5 +424,7 @@ https://stackoverflow.com/questions/41085189/using-underscore-variable-with-arro
 
 https://qiita.com/suin/items/a44825d253d023e31e4d
 
+https://typescriptbook.jp/reference/functions/function-expression-vs-arrow-functions
+
 以降、Promise インスタンスを返す関数や async/await を使った非同期関数などが登場しますが、このアロー関数を使って定義する場合があるので注意してください。
 

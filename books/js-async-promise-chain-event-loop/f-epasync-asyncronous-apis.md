@@ -20,7 +20,7 @@ title: "非同期 API と環境"
 - 「async/await は Promise を意識することなく非同期処理が書ける」
 - 「await は非同期処理の完了を待つ」
 
-**間違いではないが現実のすべてを語っていない文言**、情報が不足しすぎている文言、異なる情報を対比させないと誤解を招く文言、個人の主張である文言など、トラップが盛りだくさんです💣
+**間違いではないが現実のすべてを語っていない文言**、情報が不足しすぎており異なる情報を対比させないと誤解を招く文言、個人の主張である文言など、トラップが盛りだくさんです💣
 
 初学者の視点だと**これらの言葉に惑わされる可能性が非常に高い**ので、注意してください(自分自身が実際に惑わされた経験があります)。
 :::
@@ -34,18 +34,18 @@ title: "非同期 API と環境"
 
 非同期処理というのは JavaScript の中でも比較的高度な話題であり、そのカテゴリの中だけでも広範囲な内容や知識を扱うために、Promise や async/await といった ECMAScript(JavaScript の言語コア)の機能に目が行きがちです。そして Promise を扱う解説記事などでは、Promise 解説のために `setTimeout()` という API をいきなり使ってしまってしまっていることがよくあるため、この API が実際には何をやっていているのかということに目がいかないことがあります。
 
-非同期処理では、ECMAScript の機能だけでなく、「非同期 API + コールバック関数」や「`await` 式 + 非同期 API」という形の処理が多いです。このように ECMAScript の言語機能(コールバック関数、Promise, asyn/await など)に非同期 API (`fetch()` など)を組み合わせることが非同期処理のベーシックな使い方となります。
+非同期処理では、ECMAScript の機能だけでなく、「非同期 API + コールバック関数」や「`await` 式 + 非同期 API」という形の処理が多いです。このように ECMAScript の言語機能(コールバック関数、Promise, async/await など)に非同期 API (`fetch()` や `setTimeout()` など)を組み合わせることが「非同期処理」のベーシックな考え方・使い方となります。
 
-そういう訳で、非同期処理を理解するには非同期の Web APIs や Runtime APIs などを絶対に欠かすことはできませんし、その API の機能を提供する**環境に注目すること**が重要となります。非同期処理の話題で目につく Promise や async/await といった ECMAScript の言語機能だけを見ていても非同期処理の仕組みは理解できないので注意してください。この話が非同期処理の学習において最大の罠であるのは、**Promise や async/await の話だけを追っても「非同期処理についての謎」が永遠に解けないようになっているからです**。
+そういう訳で、非同期処理を理解するには非同期の Web APIs や Runtime APIs などを絶対に欠かすことはできませんし、その API の機能を提供する**環境に注目すること**が重要となります。非同期処理の話題で目につく Promise や async/await といった ECMAScript の言語機能だけを見ていても非同期処理の仕組みや実行順序について理解できないので注意してください。この話が非同期処理の学習において最大の罠であるのは、**Promise や async/await の話だけを追っても「非同期処理についての謎」が永遠に解けないようになっているからです**。
 
 # API の機能を提供する環境について
 そもそもの話をしますが、JavaScript には常に**実行する環境**(**environment**)があり、その環境によって利用できる機能が異なります。環境による相違点として顕著なものが環境の提供する機能である API です。
 
-一方で、JavaScript は ECMAScript という仕様に基づいて動作が定められているため、実行する環境が異なっても共通する動作があります。別のチャプターで解説しますが、環境に埋め込まれた JavaScript エンジンが ECMAScript を実装しています。例えば Chrome ブラウザ環境に埋め込まれている V8 という JavaScript エンジンは、Node や Deno といったランタイム環境にも利用されています。クライアントサイド(ブラウザ環境)やサーバーサイド(ランタイム環境)で JavaScript が同じように使えるのはこの JavaScript エンジンのおかげです。
+一方で、JavaScript は ECMAScript という仕様に基づいて動作が定められているため、実行する環境が異なっても共通する動作があります。別のチャプターで解説しますが、実際には環境に埋め込まれた JavaScript エンジンが ECMAScript を実装しています。例えば Chrome ブラウザ環境に埋め込まれている V8 という JavaScript エンジンは、Node や Deno といったランタイム環境にも利用されています。クライアントサイド(ブラウザ環境)やサーバーサイド(ランタイム環境)で JavaScript が同じように使えるのはこの JavaScript エンジンのおかげです。より正確には "ECMAScript エンジン" とでも呼べる代物ですね。
 
 https://jsprimer.net/basic/introduction/#javascript-ecmascript
 
-API は ECMAScript とは関係なく環境が独自に定義して提供しているものです。ただし、使い勝手が同じになるように `setTimeout()` や  `console.log()` など様々な環境で同じ名前で同じ使い勝手の API が提供されている場合がよくあります。実際には機能的にそれぞれ微妙に違うことがあります。
+API は ECMAScript とはほとんど関係なく環境が独自に定義して提供しているものです。ただし、使い勝手が同じになるように `setTimeout()` や  `console.log()` など様々な環境で同じ名前で同じ使い勝手の API が提供されている場合がよくあります。実際には機能的にそれぞれ微妙に違うことがあります(自分がそうなのですが、この事実に初学者は最初気づけずに混乱します)。
 
 重要なので再確認しますが、API というのは**環境に特有の機能**であり、ECMAScript の一部ではありません。
 
@@ -63,7 +63,7 @@ API は ECMAScript とは関係なく環境が独自に定義して提供して�
 - ブラウザ環境 : Chrome, Safari, Firefox など
 - ランタイム環境: Node, Deno など
 
-API にも色々な種類と分け方がありますが、ブラウザによって提供されるものは MDN では **Web APIs** として呼ばれています。この名前はかなり混乱を生じさせるものです。実態としては **Browser APIs** と呼ぶべきで、ブラウザ環境によって提供される API のことを指している場合が多いです。大抵の場合は、Web APIs といったらブラウザ環境が提供する機能のことだと考えてください。
+API にも色々な種類と分け方がありますが、ブラウザによって提供されるものは MDN では **Web APIs** として呼ばれています。この名前はかなり混乱を生じさせるものです。実態としては **Browser APIs** と呼ぶべきで、ブラウザ環境によって提供される API のことを指している場合が多いです。大抵の場合は、Web APIs といったらブラウザ環境が提供する機能のことだと考えてくださ(非同期 API とか Web API とか名前から直感的に想起されるもものと実体がそぐわないために混乱するケースが多いです)。
 
 https://developer.mozilla.org/ja/docs/Web/API
 
@@ -79,6 +79,13 @@ Web APIs も Runtime APIs にも同期型の API と非同期型の API が存�
 
 参考: [The Runtime | Manual | Deno](https://deno.land/manual/runtime)
 :::
+
+ただし、最近になってランタイム環境間での API の互換性を高める目的で [WinterCG(Web-interoperable Runtimes Community Group)](https://wintercg.org)という団体が発足しました。サーバーランタイム(Deno / Node.js) とエッジランタイム(Cloudflare Workers / Deno)の環境間で Web Platform API (`fetch()` や `setTimeout()` や `queueMicrotask()` など)の互換性を高めようというのが目的です。開発者は今後、より互換性の高い JavaScript で開発ができるようになると期待できます。
+
+>The ultimate goal of the group is to promote **runtimes supporting a comprehensive unified API surface** that JavaScript developers can rely on **regardless of the runtime they are using**: be it browsers, servers, embedded applications, or edge runtimes.
+>
+>The members of the group want to provide a space to better coordinate between browser vendors and other implementors on how Web Platform APIs can be best implemented and used outside of browsers.
+>([What are we trying to do? | WinterCG](https://wintercg.org/faq#what-are-we-trying-to-do) より引用)
 
 # 「非同期処理」の目的と仕組み
 環境と API についての予備知識を入れたので、このチャプターの本題である「非同期処理の目的」について考えてみましょう。
@@ -167,7 +174,7 @@ Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エ
 
 これを理解することで、非同期処理の学習にありがちな誤解を解くことができます。
 
-非同期処理そのものは確かに並列処理ではありませんが、「**API を介して環境に委任した作業はバックグラウンドで並列に行われ、それが完了したら何かをメインスレッドで非同期的に行う**」というように、環境全体では「非同期 API」+「非同期処理」として「並列」と「非同期」の両方が組み合わさって起きているという仕組みを理解する必要があります。
+非同期処理そのものは確かに並列処理ではありませんが、「**API を介して環境に委任した作業はバックグラウンドで並列に行われ、それが完了したら何かをメインスレッドで非同期的に行う**」というように、環境全体では「非同期 API」+「非同期処理」として「並列」と「非同期」の**両方が組み合わさって起きている**という仕組みを理解する必要があります。
 
 結果を取得できるまで時間のかかる並列的な作業などをバックグラウンドで行いたいから非同期処理という形でその完了を通知させるわけです。
 
@@ -222,6 +229,17 @@ console.log("sync"); // 環境が提供する API(同期的に実行される)
 
 :::message alert
 後述しますが、`setTimeout()` に対してより正確に対比できる API は `fetch()` ではなく `queueMicrotask()` です。`setTimeout()` はコールバックをタスクキューへと発行し、`queueMicrotask()` はコールバックをマイクロタスクキューへと発行します。
+
+```js
+console.log("[1] 🦖 sync");
+setTimeout(() => { // 非同期的に実行されるコールバック関数
+  console.log("[4] 🐵 async code");
+});
+queueMicrotask(() => { // 非同期的に実行されるコールバック関数
+  console.log("[3] 🐶 async code");
+});
+console.log("[2] 🦖 sync");
+```
 :::
 
 非同期処理の方式として、タスクは古い方式で、マイクロタスクは新しい方式です。マイクロタスクは Promise 処理のために導入された新しい機構であり、`fetch()` API はこのマイクロタスクの仕組みに立脚した非同期 API となります。`fetch()` は処理結果となる値を入れ込んだ Promise インスタンスを返してきます。これは **Promise-based API** と呼ばれるモダンな非同期 API の仕組みです。
