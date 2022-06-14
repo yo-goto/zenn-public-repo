@@ -1,8 +1,46 @@
 ---
 title: "EPAsync book 管理ノート"
-type: []
+aliases: [EPAsync, 本_イベントループとプロミスチェーンで学ぶ非同期処理]
+tags: [" #type/zenn/book #JavaScript/async  "]
 ---
-# 管理用ノート
+
+## MOC
+
+メイン
+[1-epasync-begin](1-epasync-begin)
+[2-epasync-event-loop](2-epasync-event-loop)
+[3-epasync-promise-constructor-executor-func](3-epasync-promise-constructor-executor-func)
+[4-epasync-callback-is-sync-or-async](4-epasync-callback-is-sync-or-async)
+[5-epasync-multiple-promises](5-epasync-multiple-promises)
+[6-epasync-then-always-return-new-promise](6-epasync-then-always-return-new-promise)
+[7-epasync-pass-value-to-the-next-chain](7-epasync-pass-value-to-the-next-chain)
+[8-epasync-return-promise-in-then-callback](8-epasync-return-promise-in-then-callback)
+[9-epasync-dont-next-promise-chain](9-epasync-dont-next-promise-chain)
+[10-epasync-dont-use-side-effect](10-epasync-dont-use-side-effect)
+[11-epasync-omit-return-by-arrow-shortcut](11-epasync-omit-return-by-arrow-shortcut)
+[12-epasync-wrapping-macrotask](12-epasync-wrapping-macrotask)
+[13-epasync-loop-is-nested](13-epasync-loop-is-nested)
+[14-epasync-chain-to-async-await](14-epasync-chain-to-async-await)
+[15-epasync-v8-converting](15-epasync-v8-converting)
+[16-epasync-top-level-async](16-epasync-top-level-async)
+
+サブ
+[a-epasync-promise-basic-consept](a-epasync-promise-basic-consept)
+[b-epasync-callstack-execution-context](b-epasync-callstack-execution-context)
+[c-epasync-what-event-loop](c-epasync-what-event-loop)
+[d-epasync-task-microtask-queues](d-epasync-task-microtask-queues)
+[e-epasync-v8-engine](e-epasync-v8-engine)
+[f-epasync-asyncronous-apis](f-epasync-asyncronous-apis)
+[g-epasync-resolve-reject](g-epasync-resolve-reject)
+[h-epasync-catch-finally](h-epasync-catch-finally)
+[x-epasync-epilogue](x-epasync-epilogue)
+[y-epasync-conclusion](y-epasync-conclusion)
+
+未完成
+[i-epasync-terms](i-epasync-terms)
+[x-epasync-ts-promise-type-annotation](x-epasync-ts-promise-type-annotation)
+
+## 管理用ノート
 
 タスク
 - [x] `config.yml` ファイルでチャプター管理した方が良さそう
@@ -19,6 +57,7 @@ type: []
 - [x] Top-level await
 
 ## チャプター管理
+`config.yml` に記載するチャプターデータ。
 
 ```yaml
 chapters:
