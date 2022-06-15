@@ -3,7 +3,7 @@ title: "それぞれのイベントループ"
 ---
 
 # このチャプターについて
-イベントループには HTML 仕様がありますが、それぞれの実行環境で少しずつ異なる部分があるります。このチャプターでは各実行環境においてイベントループがどのようになっているか、擬似コードを使って理解していきます。
+イベントループには HTML 仕様がありますが、それぞれの実行環境で少しずつ異なる部分があります。このチャプターでは各実行環境においてイベントループがどのようになっているか、擬似コードを使って理解していきます。
 
 # イベントループの共通性質
 
@@ -48,7 +48,7 @@ https://nodejs.org/api/timers.html#timers-promises-api
 
 >「**コールスタック(Call stack)が空になったらマイクロタスクを処理する**」
 
-マイクロタスクの実行タイミングは「Microtask checkpoint」と呼ばれ、イベントループはこのチェックポイントはコールスタックが空になった時に必ず実行されるように仕様で定義されています。Node や Deno といったランタイム環境では JavaScript の、ブラウザ環境このイベントループの仕様に近づき、マイクロタスクがコールスタックが空になったら実行されるように実装するはずであると期待できます(そもそもイベントループの仕様は HTML 仕様しか存在せず、ブラウザで動く JavaScript の再利用性を可能な限り高めるため)。
+マイクロタスクの実行タイミングは「Microtask checkpoint」と呼ばれ、イベントループはこのチェックポイントはコールスタックが空になった時に必ず実行されるように仕様で定義されています。Node や Deno といったランタイム環境では、「ブラウザ環境のイベントループの仕様に近づき、マイクロタスクがコールスタックが空になったら実行されるように実装するはずである」と期待できます(そもそもイベントループの仕様は HTML 仕様しか存在せず、ブラウザで動く JavaScript の再利用性を可能な限り高めるためことが期待されます)。
 
 https://github.com/nodejs/node/pull/22842
 
@@ -59,20 +59,22 @@ https://github.com/denoland/deno/issues/11731
 - 「**単一タスク(Task)が実行された後にすべてのマイクロタスク(Microtask)を処理する**」
 - 「**コールスタックが空になったらマイクロタスクを処理される**」
 
-そして、重要なこととして、Chrome, Node, Deno, (Electron なども) といった環境は共通して V8 エンジンを JavaScript エンジンとして採用しています。V8 エンジンについて知っておくことで JavaScript の処理モデルが理解しやすくなります。V8 のドキュメントやブログなどは非常に有用なのでいくつか読んでおくといいと思います(ECMA の新機能の使いかたなども紹介されています)。
+そして、重要なこととして、Chrome, Node, Deno, (Electron) といった環境は共通して V8 エンジンを JavaScript エンジンとして採用しています。V8 エンジンについて知っておくことで JavaScript の処理モデルが理解しやすくなります。V8 のドキュメントやブログなどは非常に有用なのでいくつか読んでおくと良いです(ECMAScript の新機能の使い方なども紹介されています)。
 
 https://v8.dev/blog/fast-async#tasks-vs.-microtasks
 
->On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
->(上記ページより引用)
-
-V8 エンジンのブログポストで見られるこの図が非同期処理の学習において、イベントループで理解すべき本質的な事象の図となっています(理解の上で非常に重要であり、非同期処理を予測するためのメンタルモデルの核心になります)。
+V8 エンジンの上記ブログポストで示されているこの図が非同期処理の学習において、イベントループで理解すべき本質的な事象の図となっています(理解の上で非常に重要であり、非同期処理を予測するためのメンタルモデルの核心になります)。
 
 ![microtasks vs tasks](/images/js-async/img_microtasks-vs-tasks.png)*([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks)より引用)*
 
 :::message
 今は理解できなくても構いませんので、後から参照してもらって大丈夫です。ですが、この項目の説明がこの本において理解すべきもっとも重要な話になることに注意してください。
 :::
+
+ブログ記事では次のようにも語られています。
+
+>On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
+>(上記ページより引用)
 
 非同期処理の仕組みの核心として、`setTimeout()` や  `setImmediate()` は環境の提供する非同期 API であり、それらはタスクを発行し、Promise や await の処理はマイクロタスクを発行し、**単一タスクが実行された後にすべてのマイクロタスクを処理します**。これを別の言い方で言うと「**コールスタックが空になったらマイクロタスクを処理する**」となります。ブラウザ環境とランタイム環境の大きな違いは**レンダリングの作業があるかないか**です。
 
@@ -513,13 +515,13 @@ https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-
 
 この講演で紹介されているイベントループの全体像は以下のようになっています。
 
-![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*上記ページより引用*
+![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*[上記ページ](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
 
 上図での黄色い小さい箱が、Call stack で実行される JavaScript コードです。その黄色いボックス内部について拡大して見ているのが下図で、その内部はコールバック(つまり Task) を実行した後にマイクロタスクをキューが完全に空にするまで処理するためのループとなっています。
 
-![Node event loop2](/images/js-async/img_node-event-loop-2.jpg)*上記ページより引用*
+![Node event loop2](/images/js-async/img_node-event-loop-2.jpg)*[上記ページ](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
 
-ただし、この動画は 2016/09/25 に公開されたのものです。従って、この動画で解説されている Node のバージョンは最大でも 6.6.0 です。つまりその時点での Node のイベントループの全体像となります。Node は v10 から v11 になるタイミングでマイクロタスク処理のタイミングがブラウザと同じタイミングにするという変更があったため、現在のバージョンと話が異なってしまっています。実際、紹介した図は v11 以上でそのまま解釈すると大筋は変わりませんが、マイクロタスクのタイミングの解釈は正確にはできません。
+ただし、この動画は 2016/09/25 に公開されたのものです。従って、この動画で解説されている Node のバージョンは最大でも v6.6.0 です。つまりその時点での Node のイベントループの全体像となります。Node は v10 から v11 になるタイミングでマイクロタスク処理のタイミングがブラウザと同じタイミングにするという変更があったため、現在のバージョンと話が異なってしまっています。実際、紹介した図は v11 以上でそのまま解釈すると大筋は変わりませんが、マイクロタスクのタイミングの解釈は正確にはできません。
 
 https://github.com/nodejs/node/pull/22842
 
@@ -544,7 +546,7 @@ setTimeout(() => {
 // version v11 以上の出力順番 [1 2 3 4]
 ```
 
-これの意味していることは、Node 環境はよりブラウザ環境のイベントループに近づいたということです。つまり、「**単一タスクを実行したらすべてのマイクロタスクを処理する**」という重大ルールが適用できるということです。これによってブラウザ環境と基本的に同じものとして考えることができます。
+これの意味していることは、「Node 環境はブラウザ環境のイベントループに近づいた」ということです。つまり、「**単一タスクを実行したらすべてのマイクロタスクを処理する**」という重大ルールが適用できるということです。これによってブラウザ環境と基本的に同じものとして考えることができます。
 
 従って、Node 環境のイベントループの疑似コードは以下のように考えることができます。
 
@@ -568,7 +570,7 @@ while (tasksAreWaiting()) {
 }
 ```
 
-しかし、これではまだ情報が足りていません。
+しかし、これでもまだ情報が足りていません。
 
 Node 環境にはもう１つのマイクロタスクキューである `nextTickQueue` が存在していることに気をつけてください。この `nextTickQueue` にマイクロタスクを送るには `process.nextTick()` API を利用します。ただし、Node 環境は歴史的経緯から、Promise の機能を取り入れる前に、`nextTickQueue` を導入しました。`process.nextTick()` API は現在では非推奨とはいかないまでも、今では代わりにデファクトスタンダードな API として `queueMicrotask()` を使用するように推奨しています。
 
@@ -654,11 +656,11 @@ while (tasksAreWaiting()) {
 }
 ```
 
-ちなみに以下の図であるプロセス終了時 `process#exit` の地点においてはもはやイベントループに戻ることができないので、次のようなコードで `proecss.on('exit', callback)` があった際にコールバック内部で別の Task を発行してもそれらは実行できません。マイクロタスクだけは実行できます。`socket.on("close", callback)` などのコールバックは Close callbasks phase で実行されるのでこれと勘違いしないようにしてください。
+ちなみに以下の図にあるプロセス終了時 `process#exit` の地点においてはもはやイベントループに戻ることができないので、次のようなコードで `proecss.on('exit', callback)` があった際にコールバック内部で別のタスクを発行してもそれらは実行できません。マイクロタスクだけは実行できます。ただし、`socket.on("close", callback)` などのコールバックは Close callbasks phase で実行されるのでこれと勘違いしないようにしてください。
 
 ![Node event loop](/images/js-async/img_node-event-loop-1.jpg)
 
-例えば、次のコードの `process.on("exit", callback)` の引数として渡したコールバック関数では、マイクロタスクは処理することはできますが、タスクは処理できませんので注意してください。
+例えば、次のコードで `process.on("exit", callback)` の引数として渡したコールバック関数において、マイクロタスクは処理することはできますが、タスクは処理できませんので注意してください。
 
 ```js
 // process の終了時に実行される
@@ -708,7 +710,7 @@ while (tasksAreWaiting()) {
 }
 ```
 
-ただし、Node 互換モードがあるので、そのモードを使用する際には、Node の nextTickQueue などポリフィルを使って使用できることに注意してください。
+ただし、Node 互換モードがあるので、そのモードを使用する際には、Node の nextTickQueue などをポリフィルを使って使用できることに注意してください。
 
 # 非同期処理を考える上でのイベントループ
 
@@ -717,7 +719,7 @@ while (tasksAreWaiting()) {
 ブラウザ環境でも、ランタイム環境でもイベントループの共通性質として言えることは、以下となります。
 
 - イベントループは１つ以上のタスクキューを持ち、単一のマイクロタスクキューを持つ(Node 以外)
-- 開始時のスクリプト評価(すべての同期処理)は最初のタスクになる
+- 開始時のスクリプト評価(すべての同期処理)はコードの実行を考える上での最初のタスクになる
 - 単一タスクが実行された後にすべてのマイクロタスクを処理する(コールスタックが空になったらマイクロタスクのチェックポイントが実行される)
 
 V8 エンジンのデフォルトイベントループで見たようにイベントループの基本形はこのようになります。

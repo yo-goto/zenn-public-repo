@@ -31,6 +31,7 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 [d-epasync-task-microtask-queues](d-epasync-task-microtask-queues)
 [e-epasync-v8-engine](e-epasync-v8-engine)
 [f-epasync-asyncronous-apis](f-epasync-asyncronous-apis)
+[f-epasync-synchronus-apis](f-epasync-synchronus-apis)
 [g-epasync-resolve-reject](g-epasync-resolve-reject)
 [h-epasync-catch-finally](h-epasync-catch-finally)
 [x-epasync-epilogue](x-epasync-epilogue)
@@ -62,7 +63,8 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 ```yaml
 chapters:
   - 1-epasync-begin # はじめに
-  - f-epasync-asyncronous-apis # 非同期APIと環境
+  - f-epasync-asyncronous-apis # 非同期 API と環境
+  - f-epasync-synchronus-apis # 同期 API とブロッキング
   - 2-epasync-event-loop # イベントループの概要と注意点
   - d-epasync-task-microtask-queues # タスクキューとマイクロタスクキュー
   - e-epasync-v8-engine # V8エンジン
