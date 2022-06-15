@@ -10,7 +10,8 @@ published: true
 price: 0
 chapters:
   - 1-epasync-begin # はじめに
-  - f-epasync-asyncronous-apis # 非同期APIと環境
+  - f-epasync-asyncronous-apis # 非同期 API と環境
+  - f-epasync-synchronus-apis # 同期 API とブロッキング
   - 2-epasync-event-loop # イベントループの概要と注意点
   - d-epasync-task-microtask-queues # タスクキューとマイクロタスクキュー
   - e-epasync-v8-engine # V8エンジン
