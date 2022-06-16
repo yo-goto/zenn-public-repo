@@ -1,5 +1,6 @@
 ---
 title: "Promise チェーンから非同期関数へ"
+aliases: [ch_Promise チェーンから非同期関数へ]
 ---
 
 # このチャプターについて

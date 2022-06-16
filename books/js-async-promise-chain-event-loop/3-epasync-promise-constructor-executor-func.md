@@ -1,5 +1,6 @@
 ---
 title: "Promise コンストラクタと Executor 関数"
+aliases: [ch_Promise コンストラクタと Executor 関数]
 ---
 
 # このチャプターについて

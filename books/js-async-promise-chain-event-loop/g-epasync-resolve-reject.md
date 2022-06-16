@@ -1,5 +1,6 @@
 ---
 title: "resolve 関数と reject 関数の使い方"
+aliases: [ch_resolve 関数と reject 関数の使い方]
 ---
 
 # このチャプターについて

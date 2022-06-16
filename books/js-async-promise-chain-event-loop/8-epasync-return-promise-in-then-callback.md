@@ -1,5 +1,6 @@
 ---
 title: "then メソッドのコールバックで Promise インスタンスを返す"
+aliases: [ch_then メソッドのコールバックで Promise インスタンスを返す]
 ---
 
 # このチャプターについて

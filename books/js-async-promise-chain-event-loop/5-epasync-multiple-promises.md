@@ -1,5 +1,6 @@
 ---
 title: "複数の Promise を走らせる"
+aliases: [ch_複数の Promise を走らせる]
 ---
 
 # このチャプターについて

@@ -1,5 +1,6 @@
 ---
 title: "Promise チェーンで値を繋ぐ"
+aliases: [ch_Promise チェーンで値を繋ぐ]
 ---
 
 # このチャプターについて

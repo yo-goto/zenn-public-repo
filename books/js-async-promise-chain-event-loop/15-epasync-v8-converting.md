@@ -1,5 +1,6 @@
 ---
 title: "V8 エンジンによる async/await の内部変換"
+aliases: [ch_V8 エンジンによる async/await の内部変換]
 ---
 
 # このチャプターについて

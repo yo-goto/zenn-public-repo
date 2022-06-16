@@ -1,5 +1,6 @@
 ---
 title: "then メソッドは常に新しい Promise を返す"
+aliases: [ch_then メソッドは常に新しい Promise を返す]
 ---
 
 # このチャプターについて
@@ -315,7 +316,7 @@ error: Uncaught (in promise) Rejected
 [Pending status] Promise { <pending> }
 [Rejcted status] Promise { <rejected> 'Rejected' }
 Resolved but
-node:internal/process/promises:279
+node:internal/process/promises:288
             triggerUncaughtException(err, true /* fromPromise */);
             ^
 
@@ -323,6 +324,6 @@ node:internal/process/promises:279
   code: 'ERR_UNHANDLED_REJECTION'
 }
 
-Node.js v17.8.0
+Node.js v18.2.0
 ```
 

@@ -1,5 +1,6 @@
 ---
 title: "同期 API とブロッキング"
+aliases: [ch_同期 API とブロッキング]
 ---
 
 # このチャプターについて
@@ -12,16 +13,18 @@ title: "同期 API とブロッキング"
 
 https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
 
-その一方で、Node 環境や Deno 環境では意図的にブロッキングを起こすようにデザインされた「**同期 API(Synchronous API)**」が存在しています。`console.log()` などの話は置いておいて、そういった API は名前の最後が `Sync` で終わるケースのものとして提供されています(I/O 関連の処理など)。
+その一方で、Node 環境や Deno 環境では意図的にブロッキングを起こすようにデザインされた「**同期 API(Synchronous API)**」が存在しています。`console.log()` などの Web APIs(Web Platform APIs) は置いておいて、そういった API は名前の最後が `Sync` で終わるケースのものとして提供されています(I/O 関連の処理など)。
 
 - 非同期 API (Non-blocking)
-  - Node: [fsPromises.writeFile](https://nodejs.org/dist/latest-v16.x/docs/api/fs.html#fspromiseswritefilefile-data-options)
-  - Deno: [Deno.writeFile](https://doc.deno.land/deno/stable/~/Deno.writeFile)
-- 同期 API (Blocking)
-  - Node [fs.wirteFileSync](https://nodejs.org/dist/latest-v16.x/docs/api/fs.html#fswritefilesyncfile-data-options)
+  - Node:
+    - [fs.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilefile-data-options-callback) (Callback-based API)
+    - [fsPromises.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fspromiseswritefilefile-data-options) (Promise-based API)
+  - Deno: [Deno.writeFile](https://doc.deno.land/deno/stable/~/Deno.writeFile) (Promise-based API)
+- 同期 API (Blocking) 
+  - Node: [fs.wirteFileSync](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilesyncfile-data-options)
   - Deno: [Deno.wirteFileSync](https://doc.deno.land/deno/stable/~/Deno.writeFileSync)
 
-同期 API を使うことで**ソースコードの配置と処理順番が完全に一致するようにできます**。つまり、小難しい非同期処理を考える必要がなくなります。ただし、同時に複数のことができる非同期 API のメリットを捨て去ることになります。
+同期 API を使うことで**ソースコードの配置と処理順番が完全に一致するようにできます**。つまり、コード配置と実行順序がずれてしまう難しい非同期処理を考える必要がなくなります。ただし、同時に複数のことができる非同期 API のメリットを捨て去ることになります。
 
 例えば、Deno 環境においてテキストファイルにデータを書きこんだ後に読みこんでコンソールに出力することを同期 API(`Deno.writeTextFileSync` と `Deno.readTextFileSync`)と非同期 API(`Deno.writeTextFile` と `Deno.readTextFile`)のそれぞれで考えてみます。
 
@@ -73,7 +76,7 @@ Deno.writeTextFile(path, inputData) // non-blocking
 console.log("[2]");
 ```
 
-非同期 API はメインスレッドをブロッキングしないようにデザインされているので、ソースコードは上から下に書いたとおりには実行されません。その代わりに、環境が時間のかかる非同期 API の処理を裏で行いっている間も同時に別のことをできます。実際に上のコードを実行すると次の出力を得ます。
+非同期 API はメインスレッドをブロッキングしないようにデザインされているので、ソースコードは上から下に書いたとおりには実行されません。その代わりに、環境が時間のかかる非同期 API の処理を裏で行っている間も同時に別のことができます。実際に上のコードを実行すると次の出力を得ます。
 
 ```sh
 # read と write のパーミッションが必要なので --allow-all で代用
@@ -85,11 +88,30 @@ console.log("[2]");
 
 そのため、ファイルの書き込み・読み出しの完了を待たずに最後の `console.log()` を実行できています。
 
-アプリケーションではなく書き捨てのスクリプトや簡単なテストではこの「同期 API」が役立ちます。書いた順番通りに実行されるので明らかに処理の流れが分かりやすいからです。ただし、一度に複数のことができる非同期 API のメリットを捨てることになるので、明らかに非同期 API より時間がかかることになります。
+アプリケーションではなく書き捨てのスクリプトや簡単なテストではこの「同期 API」が役立ちます。**書いた順番通りに実行されるので明らかに処理の流れが分かりやすい**からです。ただし、一度に複数のことができる非同期 API のメリットを捨てることになるので、明らかに非同期 API より時間がかかることになります。要するに非同期 API は「**効率が良い**」ということです。
 
 # コード配置のための書き方
 
-結局のところ非同期処理そのものは非同期 API が登場しない限り出番がないです。そして「同時に複数のことができる」ためにわざわざ難しい非同期 API を使います。同時に複数のことをやっているので、バックグラウンドでの API 処理が完了したら別の作業を非同期的にメインスレッドで行うための「ソースコードの書き方」が必要になります。そのシンタックス(書き方)が Callback hell や Promise chain、async/await です。
+結局のところ非同期処理そのものは非同期 API が登場しない限り出番がありません。そして「**同時に複数のことをやりたい**」がためにわざわざ難しい非同期 API を使います。同時に複数のことをやっているので、バックグラウンドでの API 処理が完了したら別の作業を非同期的にメインスレッドで行うための「ソースコードの書き方」が必要になります。そのシンタックス(書き方)が Callback hell や Promise chain、async/await です。
 
-非同期 API を起点にした一連の作業が特定順序で実行されることを保証するための書き方とその仕組みを学ぶということが非同期処理の学習です。
+```js:Promise chain
+// [1] -> [2] -> [3] という順番で実行されることを保証する
+Deno.writeTextFile(path, inputData) // [1]
+  .then(() => Deno.readTextFile(path)) // [2]
+  .then((data) => console.log("[3]", data)); // [3]
+```
+
+```js:async/await
+// 上のコードを async/await で書き換えた
+(async function writeAndRead() {
+  // [1] -> [2] -> [3] という順番で実行されることを保証する
+  await Deno.writeTextFile(path, inputData); // [1]
+  const data = await Deno.readTextFile(path); // [2]
+  console.log("[3]", data); // [3]
+})(); // 即時実行
+```
+
+もちろん、現実的にはエラーハンドリングが付き纏うので完全な保証ではないです。上の例も説明のために例外処理を省いていますので注意してください。
+
+非同期 API を起点にした一連の作業が特定順序で実行されることを保証するための書き方とその仕組みを学ぶということが非同期処理の学習です。つまり、「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
 

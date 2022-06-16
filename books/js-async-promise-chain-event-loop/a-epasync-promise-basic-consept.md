@@ -1,5 +1,6 @@
 ---
 title: "Promise の基本概念"
+aliases: [ch_Promise の基本概念]
 ---
 
 # このチャプターについて

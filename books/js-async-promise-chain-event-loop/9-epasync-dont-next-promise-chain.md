@@ -1,5 +1,6 @@
 ---
 title: "Promise チェーンはネストさせない"
+aliases: [ch_Promise チェーンはネストさせない]
 ---
 
 # このチャプターについて

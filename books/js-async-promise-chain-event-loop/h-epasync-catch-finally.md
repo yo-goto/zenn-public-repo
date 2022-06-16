@@ -1,5 +1,6 @@
 ---
 title: "catch メソッドと finally メソッド"
+aliases: [ch_catch メソッドと finally メソッド]
 ---
 
 # このチャプターについて
