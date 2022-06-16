@@ -10,6 +10,7 @@ published: true
 price: 0
 chapters:
   - 1-epasync-begin # はじめに
+  - sec-01-epasync # 第１章
   - f-epasync-asyncronous-apis # 非同期 API と環境
   - f-epasync-synchronus-apis # 同期 API とブロッキング
   - 2-epasync-event-loop # イベントループの概要と注意点
@@ -17,6 +18,7 @@ chapters:
   - e-epasync-v8-engine # V8エンジン
   - b-epasync-callstack-execution-context #コールスタックと実行コンテキスト
   - c-epasync-what-event-loop # それぞれのイベントループ
+  - sec-02-epasync # 第２章
   - a-epasync-promise-basic-consept # Promise の基本概念
   - 3-epasync-promise-constructor-executor-func # Promise コンストラクタと Executor 関数
   - 4-epasync-callback-is-sync-or-async # コールバック関数の同期実行と非同期実行
@@ -31,8 +33,9 @@ chapters:
   - h-epasync-catch-finally # catch メソッドと finally メソッド
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
+  - sec-03-epasync # 第３章
   - 14-epasync-chain-to-async-await # Promise チェーンから非同期関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
-  - x-epasync-epilogue # エピローグ
+  - x-epasync-epilogue # あとがき
 
