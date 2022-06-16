@@ -32,9 +32,9 @@ https://zenn.dev/estra/articles/js-async-programming-roadmap
 
 この本は次の３つの章から構成されています。
 
-- [第１章: API を提供する実行環境と JavaScript の実行メカニズム](sec-01-epasync)
-- [第２章: Promise インスタンスと Promise チェーン](sec-02-epasync)
-- [第３章: async 関数と await 式の挙動 ](sec-03-epasync)
+- [第１章 - API を提供する実行環境と実行メカニズム](sec-01-epasync)
+- [第２章 - Promise インスタンスと連鎖](sec-02-epasync)
+- [第３章 - async 関数と await 式の挙動](sec-03-epasync)
 
 第１章の内容はよりメタ的な視点での解説なので、先取りで Promise の知識(第２章の内容)を利用している場合があります。難しい場合は、ざっと目を通して第２章の内容を読み進めるのが良いかもしれません。
 
@@ -116,9 +116,7 @@ JavaScript と一言で言っても様々な環境で使用される言語です
 - Chrome などのブラウザ環境
 - Node や Deno といったランタイム環境
 
-自分は Deno がお気に入りなので、この本の説明で使用する JavaScript の実行は主に Deno ランタイム環境で行っています。
-
-https://deno.land
+自分は Deno がお気に入りなので、この本の説明で使用する JavaScript の実行は主に [Deno ランタイム環境](https://deno.land)で行っています。
 
 使用する Deno のバージョンは以下のものとなります。
 

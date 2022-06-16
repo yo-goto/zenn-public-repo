@@ -1,6 +1,6 @@
 ---
 date: 2022-06-16
-title: "第２章"
+title: "第２章 - Promise インスタンスと連鎖"
 alieases: [EPAsync 第３章]
 ---
 
