@@ -5,6 +5,10 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 ---
 
 ## MOC
+セクション管理
+[sec-01-epasync](sec-01-epasync)
+[sec-02-epasync](sec-02-epasync)
+[sec-03-epasync](sec-03-epasync)
 
 メイン
 [1-epasync-begin](1-epasync-begin)
@@ -43,12 +47,12 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 
 ## 管理用ノート
 
-タスク
+タスク。
 - [x] `config.yml` ファイルでチャプター管理した方が良さそう
   - 内容を後で差し替えたり、追加したりする時に管理しづらい。
-- [ ] yaml データを各データに記載する
+- [x] yaml データを各データに記載する
 
-追加内容
+追加内容。
 - [x] レンダリングパイプライン
 - [x] タスク詳細
 - [x] 擬似コード node など
@@ -56,6 +60,15 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 - [x] Promise の状態の詳細
 - [x] async/await
 - [x] Top-level await
+- [ ] Promise の型注釈
+- [ ] ジェネレーター
+- [ ] ループ
+- [ ] 静的メソッド
+
+## メモ
+
+メッセージが多すぎるので注釈に入れ替える部分を検討する。
+太文字が多すぎるので減らす。
 
 ## チャプター管理
 `config.yml` に記載するチャプターデータ。
@@ -63,6 +76,7 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 ```yaml
 chapters:
   - 1-epasync-begin # はじめに
+  - sec-01-epasync # 第１章
   - f-epasync-asyncronous-apis # 非同期 API と環境
   - f-epasync-synchronus-apis # 同期 API とブロッキング
   - 2-epasync-event-loop # イベントループの概要と注意点
@@ -70,6 +84,7 @@ chapters:
   - e-epasync-v8-engine # V8エンジン
   - b-epasync-callstack-execution-context #コールスタックと実行コンテキスト
   - c-epasync-what-event-loop # それぞれのイベントループ
+  - sec-02-epasync # 第２章
   - a-epasync-promise-basic-consept # Promise の基本概念
   - 3-epasync-promise-constructor-executor-func # Promise コンストラクタと Executor 関数
   - 4-epasync-callback-is-sync-or-async # コールバック関数の同期実行と非同期実行
@@ -84,9 +99,10 @@ chapters:
   - h-epasync-catch-finally # catch メソッドと finally メソッド
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
+  - sec-03-epasync # 第３章
   - 14-epasync-chain-to-async-await # Promise チェーンから非同期関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
-  - x-epasync-epilogue # エピローグ
+  - x-epasync-epilogue # あとがき
 ```
 
