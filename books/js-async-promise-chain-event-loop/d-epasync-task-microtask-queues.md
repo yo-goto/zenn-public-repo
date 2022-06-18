@@ -23,19 +23,19 @@ https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 『What the heck is the event loop anyway?』の動画で、イベントループの概略自体はつかめていると思いますが、その定義から考えていきます。
 
 >To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
->(上記ページより引用)
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 イベントループとは、**イベントやユーザーインタラクション、スクリプト、レンダリング、ネットワーキングなどをまとめ上げて調整するために**、ユーザーエージェントが使用しなくてはならないものであると述べられています。
 
 # タスクキュー
 
 >An event loop has one or more task queues. A task queue is a set of tasks.
->(上記ページより引用)
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 イベントループは１つ以上のタスクキュー(Task queue)を所有し、タスクキューはタスク(Task)の集合である、ということが述べられています。重要なこととして、タスクキューは１つではなく、複数存在してもよいといことが分かります。
 
 >Task queues are sets, not queues, because the event loop processing model grabs the first runnable task from the chosen queue, instead of dequeuing the first task.
->(上記ページより引用)
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 複数のタスクキューはキューではなく集合となっていることがわかります。イベントループは複数のタスクキューからから１つのタスクキューを選び、そのキューの先頭にある最も古いタスクを処理しなくてはいけませんが、複数あるタスクキューからどのタスクキューを選ぶかというのは実装側、つまり環境が考慮します。
 
@@ -48,6 +48,7 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 # タスク
 
 >Tasks encapsulate algorithms that are responsible for such work as:
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 タスクキューにプッシュされるタスク(Task)は、以下のような作業の責務を持つアルゴリズムをカプセル化するものです。
 
@@ -60,6 +61,7 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 そして、タスクには供給されるタスクソース(Task source)というものがあり、似た種類のタスクは同一のタスクキューへとプッシュされます。
 
 >Essentially, task sources are used within standards to separate logically-different types of tasks, which a user agent might wish to distinguish between. Task queues are used by user agents to coalesce task sources within a given event loop.
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 タスクキューで見てきた通り、タスクキューは１つ以上存在できるので、もちろんタスクキューにタスクを供給してくる供給源であるタスクソースも複数あります。上記に上げたタスクはそれぞれ異なるタスクソースで、異なるタスクキューにタスクを供給すると考えてよいでしょう。
 
@@ -114,9 +116,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/setInterval
 
 続いて仕様にはイベントループが所有するものについてもいくつか定義されています。理解する上で重要な部分について触れていきます。
 
->Each event loop has **a currently running task**, which is either a task or null. Initially, this is null. It is used to handle reentrancy.
+>Each event loop has **a currently running task**, which is either a task or null. Initially, this is null. It is used to handle reentrancy. 
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用、太字は筆者強調)
 
->Each event loop has **a microtask queue**, which is a queue of microtasks, initially empty. A microtask is a colloquial way of referring to a task that was created via the queue a microtask algorithm.
+>Each event loop has **a microtask queue**, which is a queue of microtasks, initially empty. A microtask is a colloquial way of referring to a task that was created via the queue a microtask algorithm. 
+>([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用、太字は筆者強調)
 
 イベントループは Currnetly running task (現在実行中のタスク) を持ち、さらに**単一の**マイクロタスクキュー(Microtask queue)を持つというように定義されていますね。
 
@@ -124,9 +128,9 @@ https://developer.mozilla.org/en-US/docs/Web/API/setInterval
 
 https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5
 
->1. Let task be the event loop's currently running task.
+>1. Let task be the event loop's currently running task. ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
 
->task could be a microtask.
+>task could be a microtask. ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
 
 イベントループの開始時にタスクをイベントループの Currently running task として扱いますが、この場合マイクロタスクであってもよいと書かれているので、現在実行中のタスクもマイクロタスクも Currnetly running task として考慮できます。従って、本質的にはタスクもマイクロタスクも同じ扱いで、コールスタック上にプッシュされた実行コンテキストであると理解できます。
 
@@ -134,7 +138,7 @@ https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-mod
 
 次に、マイクロタスクキューについて深堀りしましょう。まずマイクロタスクキュー(Microtask queue)はタスクキューではありません。
 
->The microtask queue is not a task queue.
+>The microtask queue is not a task queue. ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 上で見たとおり、イベントループはマイクロタスクキューを１つ持つといっていますね。
 
@@ -224,6 +228,7 @@ https://ja.javascript.info/mutation-observer
 https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth
 
 >A task is any JavaScript scheduled to be run by the standard mechanisms such as initially starting to execute a program, an event triggering a callback, and so forth. Other than by using events, you can enqueue a task by using `setTimeout()` or `setInterval()`.
+>([上記ページ](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth)より引用)
 
 タスク(Task)とは、**プログラムの実行開始**や**イベントがコールバックをトリガーする**などの**標準的なメカニズムにより実行されるようにスケジューリングされた JavaScript のこと**である、と述べられています。
 

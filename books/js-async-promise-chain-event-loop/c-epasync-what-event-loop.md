@@ -16,9 +16,7 @@ aliases: [ch_それぞれのイベントループ]
 
 >「**単一タスク(Task)が実行された後にすべてのマイクロタスク(Microtask)を処理する**」
 
-https://zenn.dev/estra/articles/js-async-programming-roadmap
-
-この記事の追記にて、ブラウザ環境(Chrome)とランタイム環境(Node, Deno)のイベントループについての調査をまとめましたが、結局のところ本質的な部分は同じであり、ブラウザ環境が実装すべき HTML 仕様のイベントループにランタイム環境も近づくことが期待できます。そして、実際にそうなっています。
+『[JSの非同期処理を理解するために必要だった知識と学習ロードマップ](https://zenn.dev/estra/articles/js-async-programming-roadmap)』の追記にて、ブラウザ環境(Chrome)とランタイム環境(Node, Deno)のイベントループについての調査をまとめましたが、結局のところ本質的な部分は同じであり、ブラウザ環境が実装すべき HTML 仕様のイベントループにランタイム環境も近づくことが期待できます。そして、実際にそうなっています。
 
 https://html.spec.whatwg.org/multipage/webappapis.html#spin-the-event-loop
 
@@ -29,18 +27,15 @@ Node 環境では Promise が入る前にタスクを発行するコールバッ
 
 Deno 環境ではタイマー以外は Promise based な API を基本としたために Node の Phase に相当するものは実質 Timers のみとなっています(これについては Discord のヘルプでコミッターに聞きました)。
 
-ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが示唆されています。
+ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが[示唆されています](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)。
 
->**理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。
->([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
+イベントベースの古い `FileReader.readAsText()` などの Web API に取って代わる新しい Promise-based API として `Blob.text()` なども登場してきています[^1]。
 
-`FileReader.readAsText()` などの Web API もイベントベースなので、より新しい Promise-based API として `Blob.text()` などが登場してきています。
+  [^1]: https://developer.mozilla.org/ja/docs/Web/API/Blob/text
 
-https://developer.mozilla.org/ja/docs/Web/API/Blob/text
+実は Node でも Promise-based な API を提供しはじめており、Promise based な Timer API (Promise インスタンスを返す `setTimeout()`, `setImmediate()`, `setInterval()`) なども存在しています[^2]。
 
-実は Node でも Promise-based な API を提供しはじめており、Promise based な Timer API (Promise インスタンスを返す `setTimeout()`, `setImmediate()`, `setInterval()`) なども存在しています。
-
-https://nodejs.org/api/timers.html#timers-promises-api
+  [^2]: https://nodejs.org/api/timers.html#timers-promises-api
 
 マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる(というか、もうなってる?)ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
 :::
@@ -75,7 +70,7 @@ V8 エンジンの上記ブログポストで示されているこの図が非�
 ブログ記事では次のようにも語られています。
 
 >On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
->(上記ページより引用)
+>([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks)より引用)
 
 非同期処理の仕組みの核心として、`setTimeout()` や  `setImmediate()` は環境の提供する非同期 API であり、それらはタスクを発行し、Promise や await の処理はマイクロタスクを発行し、**単一タスクが実行された後にすべてのマイクロタスクを処理します**。これを別の言い方で言うと「**コールスタックが空になったらマイクロタスクを処理する**」となります。ブラウザ環境とランタイム環境の大きな違いは**レンダリングの作業があるかないか**です。
 
@@ -104,22 +99,25 @@ https://libevent.org
 https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit
 
 >The main purpose of the scheduler is to decide which task gets to execute on the main thread at any given time. To enable this, the scheduler provides higher level replacements for the APIs that are used to post tasks on the main thread.
+>([Blink Scheduler](https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit) より引用)
+
+Chrome ブラウザ環境では、環境実装のルールとしてどのようにタスクキューを優先するかを Blink scheduler によって選択させているようです。内部的にどのような順位になっているからを知りたい場合は上記ドキュメントを参照してください。
 
 https://docs.google.com/a/google.com/document/d/1SWpjgtwIaL_hIcbm6uGJKZ8o8R9xYre-yG0VDOjFBxU/edit
 
 https://nhiroki.jp/2017/12/10/javascript-parallel-processing#1-%E3%83%AC%E3%83%B3%E3%83%80%E3%83%AA%E3%83%B3%E3%82%B0%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%81%A8-javascript-%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%83%A2%E3%83%87%E3%83%AB
 
-このように、ブラウザ環境でのイベントループでは、Node や Deno といったランタイム環境にはない、**レンダリングエンジンの存在があるため、レンダリングの作業そのものを考慮する必要があります**。逆にランタイム環境では、レンダリングのタスクが存在しないためシンプルになりますが、Node ではタスクの優先度をより細かくするなどの違いがあります。
+ブラウザ環境でのイベントループでは、Node や Deno といったランタイム環境にはない、Blink 等の**レンダリングエンジンの存在があるため、レンダリングの作業そのものを考慮する必要があります**。逆にランタイム環境では、レンダリングのタスクが存在しないためシンプルになりますが、Node ではタスクの優先度をより細かくするなどの違いがあります。
 
 :::message
 イベントループの共通性質で述べたように、ブラウザ環境とランタイム環境のイベントループの大きな違いは「**レンダリングの作業があるかないか**」です。
 :::
 
-実装に関する細かいことはとりあえず置いておいて、イベントループの疑似コードについて考えていきます。
+実装に関する細かいことは置いておいて、イベントループの疑似コードについて考えていきます。
 
 ## Mdn のイベントループ
 
-まずは、Mdn でイベントループがどのように語られているか見てみます。イベントループの疑似コードは次のようになっています。
+まずは、Mdn のドキュメントでイベントループがどのように語られているか見てみます。イベントループの疑似コードは次のようになっています。
 
 ```js:MDN のイベントループ
 while (queue.waitForMessage()) {
@@ -127,11 +125,12 @@ while (queue.waitForMessage()) {
 }
 ```
 
+ドキュメントには以下のように解説されています。
+
 >`queue.waitForMessage()` waits synchronously for a message to arrive (if one is not already available and waiting to be handled).
+>([The event loop - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#event_loop) より引用)
 
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#event_loop
-
-待ち状態のタスクがある限りそのタスクを処理しつづけるというループになっていますが、これは簡略化しすぎているので、非同期処理については何も分かりません。ですが、イベントループというものは本質的には、このようにタスクを処理するための半無限ループであることを理解しておくとよいです。
+待ち状態のタスク(メッセージ)がある限りそのタスクを処理しつづけるというループになっていますが、これは簡略化しすぎているので、非同期処理については何も分かりません。ですが、イベントループというものは本質的には、このようにタスクを処理するための半無限ループであることを理解しておくとよいです。そして、「**メッセージの通知**」を待つためのループであることを覚えておいてください。
 
 :::message
 ブラウザ環境の場合はタブなどを閉じない限りは無限にループしますが、ランタイム環境でコンソールからファイルを実行した場合には処理待ちのタスクが無くなりしだいプログラムが終了、つまりイベントループから脱出します。
@@ -272,7 +271,7 @@ JSConf.Asia での Jake Archibald 氏による講演動画『In The Loop』に�
 
 レンダリングパイプラインとは、簡単に言えばレンダリングの更新のための色々な処理のことです。以下のようなステップでレンダリング更新が行われます。
 
-![Rendering Pipeline](/images/js-async/img_renderingPipeline.jpg)
+![Rendering Pipeline](/images/js-async/img_renderingPipeline.jpg)*[Rendering Performance](https://web.dev/rendering-performance/)を参考に筆者作成*
 
 図中の最初の rAF は非同期 Web API である `requestAnimationFrame()` のコールバック関数となります。
 
@@ -286,7 +285,7 @@ JavaScript はシングルスレッド言語であり、ブラウザ環境でユ
 
 レンダリング更新は平均 16.7 ミリ秒 (60fps) で行われます。つまり上記のレンダリングパイプラインが 16.7 ミリ秒ごとに以下の図のようにメインスレッドで発生します。
 
-![Rendering pipeline 60 fps](/images/js-async/img_renderingPipelineFrames.jpg)
+![Rendering pipeline 60 fps](/images/js-async/img_renderingPipelineFrames.jpg)*[In The Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0)を参考に筆者作成*
 
 各レンダリングパイプラインの発生までの間隔でユーザーの JavaScript コード(タスクとマイクロタスク)をメインスレッドで実行できます。ただし、16.7 ミリ秒以上かかるタスクなどがあればレンダリング更新がおくれてしまいフレームが落ちることになるので注意する必要があります。
 
@@ -502,7 +501,7 @@ Node 環境のイベントループに上で述べたようにフェーズ(Phase
 
 https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#event-loop-explained
 
-![Node phases](/images/js-async/img_nodePhase.jpg)*上記ページより引用*
+![Node phases](/images/js-async/img_nodePhase.jpg)*[上記ページ](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/)より引用*
 
 フェーズ(Phase)は上図のようになっており、イベントループはこの６つのフェーズ(タスクキュー)をすべて経ることでイベントループ一周とします。ただ上の図は非常に分かりづらいのでもう少し情報が必要でしょう。
 
@@ -516,11 +515,11 @@ https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-
 
 この講演で紹介されているイベントループの全体像は以下のようになっています。
 
-![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*[上記ページ](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
+![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*[2016 Node Interactive.pdf](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
 
 上図での黄色い小さい箱が、Call stack で実行される JavaScript コードです。その黄色いボックス内部について拡大して見ているのが下図で、その内部はコールバック(つまり Task) を実行した後にマイクロタスクをキューが完全に空にするまで処理するためのループとなっています。
 
-![Node event loop2](/images/js-async/img_node-event-loop-2.jpg)*[上記ページ](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
+![Node event loop2](/images/js-async/img_node-event-loop-2.jpg)*[2016 Node Interactive.pdf](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
 
 ただし、この動画は 2016/09/25 に公開されたのものです。従って、この動画で解説されている Node のバージョンは最大でも v6.6.0 です。つまりその時点での Node のイベントループの全体像となります。Node は v10 から v11 になるタイミングでマイクロタスク処理のタイミングがブラウザと同じタイミングにするという変更があったため、現在のバージョンと話が異なってしまっています。実際、紹介した図は v11 以上でそのまま解釈すると大筋は変わりませんが、マイクロタスクのタイミングの解釈は正確にはできません。
 
@@ -659,7 +658,7 @@ while (tasksAreWaiting()) {
 
 ちなみに以下の図にあるプロセス終了時 `process#exit` の地点においてはもはやイベントループに戻ることができないので、次のようなコードで `proecss.on('exit', callback)` があった際にコールバック内部で別のタスクを発行してもそれらは実行できません。マイクロタスクだけは実行できます。ただし、`socket.on("close", callback)` などのコールバックは Close callbasks phase で実行されるのでこれと勘違いしないようにしてください。
 
-![Node event loop](/images/js-async/img_node-event-loop-1.jpg)
+![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*[2016 Node Interactive.pdf](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
 
 例えば、次のコードで `process.on("exit", callback)` の引数として渡したコールバック関数において、マイクロタスクは処理することはできますが、タスクは処理できませんので注意してください。
 

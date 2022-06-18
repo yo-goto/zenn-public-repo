@@ -83,7 +83,7 @@ Deno ランタイム環境において、上記２つのコードの実行順序
 https://v8.dev/features/top-level-await
 
 >Top-level await enables developers to use the await keyword outside of async functions. **It acts like a big async function** causing other modules who import them to wait before they start evaluating their body.
->(上記ページより引用)
+>([上記ページ](https://v8.dev/features/top-level-await)より引用)
 
 :::message alert
 Top-level await を使用したモジュール自体を `import` する他のモジュールはそれ自体のコードの評価を開始する前に待機することになり、Top-level await が導入される前に比べて、モジュールの実行順序が複雑になります。
