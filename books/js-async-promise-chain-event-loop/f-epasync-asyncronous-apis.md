@@ -183,6 +183,11 @@ Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エ
 
 https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
 
+Deno 環境でも同一名の API を使用できます。マニュアルには複数スレッドで独立させてプログラムを走らせることが可能と記載されています。
+
+>Workers can be used to **run code on multiple threads**. Each instance of Worker is **run on a separate thread**, dedicated only to that worker.
+>([Workers | Manual | Deno](https://deno.land/manual/runtime/workers#workers) より引用、太字は筆者強調)
+
 # 非同期 API は非同期処理か？
 
 だいたいの話は分かったと思いますので、解釈の話としてまとめておきます。

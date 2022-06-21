@@ -49,7 +49,7 @@ Fate の概念は非常に分かりづらいので図にしてみました。
 
 中央の `?` が書かれた Promise インスタンスは他の Promise インスタンスに従っています。つまり、他の Promise インスタンスで resolve されて、`Promise.resolve(promise)` や `promise.then(callback)` において `.then(callback)` メソッドで返ってくる Promise インスタンスなどが該当します。このインスタンスは Pending 状態であっても、従っている Promise インスタンスが Settled になることで連鎖的に状態(State)が遷移するため、このインスタンスの運命(Fate)は Resolved となっています。
 
-左の黄色の Promise インスタンスに対して何かしらの操作(resolve や reject) を行うとそのインスタンスの状態に影響があるので、この Promise インスタンスは Unresolved といえます(非常に分かりづらいですね😅)。
+左の黄色の Promise インスタンスに対して何かしらの操作(resolve や reject) を行うとそのインスタンスの状態に影響があるので、この Promise インスタンスは Unresolved といえます(非常に分かりづらいですね😅)。まあ、知っていたとしてもそこまで役にたたない知識ではあるかもしれません。
 
 Unresolved な Promise インスタンスは必然的に Pending 状態です。上で述べたように、Pending 状態である Promise インスタンスのすべてが Unresolved ではないことに注意してください。
 
@@ -57,7 +57,7 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 
 翻訳した日本語で考えてしまうと用語がややこしくなるので、なるべくオリジナルの英単語を使って理解した方が良いです。特に日本語の "解決する" などの単語には注意を払った方が良いでしょう。
 
-基本的には英語でもややこしく、"resolve" と言ったときに、単に fullfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fullfill であり、これは単に履行状態にするという意味で捉えることができます。
+とは言え、基本的には英語でもややこしく、"resolve" と言ったときに、単に fullfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fullfill であり、これは単に履行状態にするという意味で捉えることができます。
 
 動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` メソッドの挙動が `reject()` に比べて複雑で、再帰性が関与してくるからです。
 
@@ -67,7 +67,7 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 Unwrapping については『resolve 関数と reject 関数の使い方』で解説しています。そちらを参照してください。
 :::
 
-難しいですが、Fate の概念は他の文章を読むときに役立ちます。または、`Promise.fullfill()` というメソッドが存在せずに `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。
+難しいですが、Fate の概念は他の文章を読むときには役立ちます。または、`Promise.fullfill()` というメソッドが存在せずに `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。
 
 あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。
 

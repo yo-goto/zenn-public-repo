@@ -90,28 +90,63 @@ console.log("[2]");
 
 アプリケーションではなく書き捨てのスクリプトや簡単なテストではこの「同期 API」が役立ちます。**書いた順番通りに実行されるので明らかに処理の流れが分かりやすい**からです。ただし、一度に複数のことができる非同期 API のメリットを捨てることになるので、明らかに非同期 API より時間がかかることになります。要するに非同期 API は「**効率が良い**」ということです。
 
-# コード配置のための書き方
+# 「実行と完了」の順番を保証する書き方
 
-結局のところ非同期処理そのものは非同期 API が登場しない限り出番がありません。そして「**同時に複数のことをやりたい**」がためにわざわざ難しい非同期 API を使います。同時に複数のことをやっているので、バックグラウンドでの API 処理が完了したら別の作業を非同期的にメインスレッドで行うための「ソースコードの書き方」が必要になります。そのシンタックス(書き方)が Callback hell や Promise chain、async/await です。
+結局のところ非同期処理そのものは非同期 API が登場しない限り出番がありません。そして「**同時に複数のことをやりたい**」がためにわざわざ難しい非同期 API を使います。同時に複数のことをやっているので、バックグラウンドでの API 処理が完了したら、**その処理に関連する別作業**を非同期的にメインスレッドで行うための「ソースコードの書き方」が必要になります。そのシンタックス(書き方)が Callback hell や Promise chain、async/await です。
+
+ソースコード全体で考えた時には配置順番通りに実行がされなくても、非同期 API を起点としたある箇所について「実行と完了」自体が特定の順番に起きるように適切に書くことが重要です。例えば、「ファイルにデータを書き込む」ことを行ってから「ファイルのデータを読み出す」ことはその実行と完了の順番が担保されることが重要です。
 
 ```js:Promise chain
-// [1] -> [2] -> [3] という順番で実行されることを保証する
-Deno.writeTextFile(path, inputData) // [1]
-  .then(() => Deno.readTextFile(path)) // [2]
-  .then((data) => console.log("[3]", data)); // [3]
+// [A] -> [B] -> [C] という順番で実行と完了がなされるのを保証する
+Deno.writeTextFile(path, inputData) // [A]
+  .then(() => Deno.readTextFile(path)) // [B]
+  .then((data) => console.log("[3]", data)); // [C]
 ```
 
 ```js:async/await
 // 上のコードを async/await で書き換えた
-(async function writeAndRead() {
-  // [1] -> [2] -> [3] という順番で実行されることを保証する
-  await Deno.writeTextFile(path, inputData); // [1]
-  const data = await Deno.readTextFile(path); // [2]
-  console.log("[3]", data); // [3]
+(async function writeThenRead() {
+  // [A] -> [B] -> [C] という順番で実行と完了がなされるのを保証する
+  await Deno.writeTextFile(path, inputData); // [A]
+  const data = await Deno.readTextFile(path); // [B]
+  console.log("[3]", data); // [C]
 })(); // 即時実行
 ```
 
 もちろん、現実的にはエラーハンドリングが付き纏うので完全な保証ではないです。上の例も説明のために例外処理を省いていますので注意してください。
 
-非同期 API を起点にした一連の作業が特定順序で実行されることを保証するための書き方とその仕組みを学ぶということが非同期処理の学習です。つまり、「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
+非同期 API を起点にした一連の作業が特定順序で実行・完了されることを保証するための正しい書き方とその仕組みを学ぶということが非同期処理の学習です。つまり、「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
+
+# アンチパターン
+
+非同期 API や非同期処理の書き方はアンチパターンを知ることも重要になってきます。
+
+正しい書き方を行わない場合、例えば Promise chain なら Promise を返す処理を `return` せずに「副作用」として使用してしまったり、async/await なら適切に `await` しないことで、「実行と完了」の順番を担保できなくなります。それにより以下のコードでは I/O で競合が起きたり、意図した結果とならないケースがでてきます。
+
+```js:副作用にしてしまったアンチパターン
+Deno.writeTextFile(path, inputData) // [A]
+  .then(() => {
+    Deno.readTextFile(path); // 副作用となる
+  }) // [B]
+  .then((data) => console.log("[3]", data)); // [C] undefined が出力される
+```
+
+```js:適切にawaitしないアンチパターン
+(async function writeAndRead() {
+  // [A] と [B] が競合し、データの書き込み→読み込みという完了すべき作業の順番を担保できない
+  Deno.writeTextFile(path, inputData); // [A]
+  // [A] が完了しているか分からないが [B] を開始
+  const data = Deno.readTextFile(path); // [B]
+  console.log("[3]", data); // [C] そもそも Proimise インスタンスから値が取り出せていないので Promise{ <pending> } が出力される
+})();
+```
+
+Node では、Promise-based な File System 系の API 操作は[スレッドセーフ](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)ではないので同時に同じファイルを修正してしまうような場合に注意するように書かれています。上の例ではファイル書き込みが完了してからファイル読み込みを行うのが良いでしょう(つまり副作用にしないことや適切に await することを守る)。Deno でも考え方は同じです。
+
+> The promise APIs use the underlying Node.js threadpool to perform file system operations off the event loop thread. These operations are **not synchronized or threadsafe**. Care must be taken **when performing multiple concurrent modifications on the same file or data corruption may occur**.
+> ([File system | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#promises-api) より引用、太字は筆者強調)
+
+非同期 API を使って「同時に複数のことができる」からといって**競合するような複数の API 操作は同時にしてはいけない**ということです。それらは順番に完了を待って行うようにしましょう。特定の実行順番が守られている操作群に対して関係の無い操作を同時に行うのなら大丈夫です。
+
+もちろん同期 API を使うならそもそも同時に複数のことをやらないので、そういった心配は必要ないです。
 
