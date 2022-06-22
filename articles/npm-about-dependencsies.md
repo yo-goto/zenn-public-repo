@@ -206,7 +206,7 @@ npm のパッケージ配置アルゴリズムについての公式ドキュメ�
 >npm は Node JavaScript プラットフォームのためのパッケージマネジャーである。npm は node によってモジュールが発見できるようにモジュールを正しく配置し、依存関係の衝突を賢くマネージする。
 >
 >npm is the package manager for the Node JavaScript platform. **It puts modules in place so that node can find them, and manages dependency conflicts intelligently**.
->\- [npm | npm Docs](https://docs.npmjs.com/cli/v7/commands/npm)より引用
+>([npm | npm Docs](https://docs.npmjs.com/cli/v7/commands/npm)より引用、太字は筆者強調)
 
 npm と呼ばれるパッケージマネジャーの役割は大きく分けて次の 2 つとのことだ。
 
@@ -296,7 +296,7 @@ npm v7 で見るべき package のフィールドに記載されているのは 
 >It describes the **exact tree that was generated, such that subsequent installs are able to generate identical trees**, regardless of intermediate dependency updates.
 >(中略)
 >As of npm v7, lockfiles include **enough information to gain a complete picture of the package tree**, reducing the need to read `package.json` files, and allowing for significant performance improvements.
->\- [package-lock.json | npm Docs](https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json) より引用
+>([package-lock.json | npm Docs](https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json) より引用、太字は筆者強調)
 
 直訳すると分かりづらくなるが、まず初めに「ロックファイルは後で行われるインストールにおいて**同一のツリー**を生成できるように、生成された**正確なツリー**を記述する」とある。
 
@@ -707,11 +707,6 @@ X,Y,Z が更に依存を持つ場合にはそれぞのパッケージディレ�
 この形式であれば Primary dependencies のみが Flat に配置され、Secondary dependencies は Nest された状態であるためわかりやすい構造であるし、`npm ls` で出力した論理的依存ツリーと構造がほぼ一致する。npm v2 では `node_modules` フォルダをこのような構造にしていた。
 
 しかし、ディレクトリの状態を見れば X というパッケージは A と B のフォルダに両方存在していることがわかる。これではデータ量が無駄におおきくなってしまう。Deep tree の状態であればどれだけ無駄な重複ができてしまうかわからない。
-
-↓ 冗長性を表す有名なミーム画像。
-![](https://camo.githubusercontent.com/98d81a9061d57563e0dfcf8a447e9142c97547e618719b9a4a7f9202fa911d12/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f444549565f3158577341416c5932392e6a7067)
-
-[tj/node-prune](https://github.com/tj/node-prune) より引用
  
 このような状態を避けてなるべく冗長性をへらすように npm v3 では構造の最適化が行われるようになった。すべての Flat dependencies は Primary だけではなく一部の Secondary を含むようになり、node_noduels フォルダルートへ Flat に配置されるようになった。
 
@@ -963,9 +958,9 @@ Primary が中心となってできる DAG を Primay を階層のルートと�
 
 「単一のノードがシステム内で複数の役割を果たす」ために、これがパッケージの重複の原因となる。hoisting の結果 dedupe すべきパッケージがこの重複したノードであり、また、バージョン条件が衝突した結果として複数バージョンのインストールおよび hoisting の衝突が引き起こされたりして npm ドッペルゲンガーが出現してくる。
 
-一連の Dependency Graph → Logical Dependency Tree → node_modules Tree(Folder tree)への流れを図にまとめてみると以下のようになる。
+一連の Dependency Graph → Logical Dependency Tree → node_modules Tree(Folder tree)への流れを図にまとめてみると以下のようになる(図は筆者作成)。
 
-![](/images/npm-dependencies/dagToTree.jpg)
+![dagToTree](/images/npm-dependencies/dagToTree.jpg)
 
 `cowsay` のインストールにおける `strip-ansi` パッケージで見てみると
 
@@ -997,7 +992,7 @@ Primary が中心となってできる DAG を Primay を階層のルートと�
 そして、なぜこれほどまでにパッケージの配置が問題になるのかという前提に立ち返ると
 
 >npm is the package manager for the Node JavaScript platform. **It puts modules in place so that node can find them, and manages dependency conflicts intelligently**.
->\- [npm | npm Docs](https://docs.npmjs.com/cli/v7/commands/npm)より引用
+>([npm | npm Docs](https://docs.npmjs.com/cli/v7/commands/npm)より引用、太字は筆者強調)
 
 npm がモジュール配置を行うのは node つまり Node.js のプログラムがパッケージを見つけることができるようにするためだ。
 
@@ -1145,7 +1140,7 @@ console.log(`${style.green.open}Hello world!${style.green.close}`);
 
 `node` コマンドを使うと普通に実行できてしまう。
 
-![](/images/npm-dependencies/img_npm-phantom-dependency-log.jpg)
+![phantom-dependency-log](/images/npm-dependencies/img_npm-phantom-dependency-log.jpg)
 
 このようなことをしても、`npm ls -a` で出力した論理的依存ツリーには表示されないので直接的な依存を検知できない。見えない幽霊のような依存、とにかく "Phantom" な状態になってしまっている。
 
@@ -1162,7 +1157,7 @@ ctest@1.0.0 /Users/roshi/Development/Testing/ctest
 ```
 
 Phantom Dependency を図にすると次のようになる。
-![](/images/npm-dependencies/img_diamond-phantom-dep.jpg)
+![phantom dependency](/images/npm-dependencies/img_diamond-phantom-dep.jpg)
 
 逆に Phantom ではない通常の依存関係について考えてみる。
 
