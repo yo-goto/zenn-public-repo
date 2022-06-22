@@ -12,7 +12,7 @@ alieases: [EPAsync 第３章]
 
 # チャプター
 
-- [Promise チェーンから非同期関数へ](14-epasync-chain-to-async-await)
+- [Promise チェーンから async 関数へ](14-epasync-chain-to-async-await)
 - [V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)
 - [Top-level await](16-epasync-top-level-async)
 

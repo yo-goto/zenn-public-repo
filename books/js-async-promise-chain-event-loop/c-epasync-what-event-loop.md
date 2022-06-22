@@ -70,7 +70,7 @@ V8 エンジンの上記ブログポストで示されているこの図が非�
 ブログ記事では次のようにも語られています。
 
 >On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
->([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks)より引用)
+>([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks)より引用、太字は筆者強調)
 
 非同期処理の仕組みの核心として、`setTimeout()` や  `setImmediate()` は環境の提供する非同期 API であり、それらはタスクを発行し、Promise や await の処理はマイクロタスクを発行し、**単一タスクが実行された後にすべてのマイクロタスクを処理します**。これを別の言い方で言うと「**コールスタックが空になったらマイクロタスクを処理する**」となります。ブラウザ環境とランタイム環境の大きな違いは**レンダリングの作業があるかないか**です。
 

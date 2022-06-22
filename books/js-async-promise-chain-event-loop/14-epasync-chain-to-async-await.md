@@ -1,6 +1,6 @@
 ---
-title: "Promise チェーンから非同期関数へ"
-aliases: [ch_Promise チェーンから非同期関数へ]
+title: "Promise チェーンから async 関数へ"
+aliases: [ch_Promise チェーンから async 関数へ]
 ---
 
 # このチャプターについて
@@ -303,14 +303,14 @@ console.log("[2] 🦖 MAINLINE: End");
 ```
 
 # Callback hell → Promise chain → async/await
-もう少し簡単で分かりやすい Promise チェーンから非同期関数への変形を見てみます。
+もう少し簡単で分かりやすい Promise チェーンから async 関数への変形を見てみます。
 
 次の JSConf EU で行われた Shelley Vohr 氏による『Asynchrony: Under the Hood』の公演動画を 23:36 ~ のところから視聴してみてください。Callback hell → Promise chain → async/await の変形が視覚的に示されていて変形のイメージをつかめます。
 
 @[youtube](SrNQS8J67zc)
 
 :::message
-ここではシンプルに Promise チェーンから非同期関数へと変形でき同じものであることをイメージできることが重要です。
+ここではシンプルに Promise チェーンから async 関数へと変形でき同じものであることをイメージできることが重要です。
 最初は変換を意識してみると理解しやすいですが、実際に使用する際には Promise を扱っていることだけ意識しておけばいいと思います。
 :::
 

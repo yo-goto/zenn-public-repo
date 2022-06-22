@@ -299,7 +299,7 @@ resumable function empty() {
 そして `peformPromiseThen()` が無いのでマイクロタスクは１つも発行されず、非同期関数から返ってくる Promise インスタンスはただちに履行状態となります。
 
 :::message
-非同期関数(Async funciton)はどんなときでも必ず Promise インスタンスを返します。
+非同期関数(Async function)はどんなときでも必ず Promise インスタンスを返します。
 :::
 
 それでは、次のコードの実行順番を予測します。
@@ -1020,7 +1020,7 @@ https://zenn.dev/qnighy/articles/3a999fdecc3e81#%E9%9D%9E%E5%90%8C%E6%9C%9F%E3%8
 
 ## await async function の場合
 
-基本形はすべてわかったので、少し応用を考えてみたいと思います。今度は await 式で async funciton (の返り値)を評価してみます。
+基本形はすべてわかったので、少し応用を考えてみたいと思います。今度は await 式で async function (の返り値)を評価してみます。
 
 ```js:fooW
 async function fooPrevious() {
@@ -1354,7 +1354,7 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 このように、async/await のオーバーヘッド(余計な Promise インスタンスとマイクロタスクの生成)を削減し最適化したことで async/await は高速化し、async stack trace による Debuggability(デバッグのしやすさ) の向上も伴って、async/await の機能は手書きの Promise に勝るようになったとのことです。
 
 >**async/await outperforms hand-written promise code now**. The key takeaway here is that we significantly reduced the overhead of async functions — **not just in V8, but across all JavaScript engines, by patching the spec**.
->([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用)
+>([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用、太字は筆者強調)
 
 そして、開発者にも手書きの Promise よりも async/await の使用と V8 がネイティブに提供する Promise 実装を使用するように勧めています。
 
@@ -1362,7 +1362,7 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 >- **favor async functions and await over hand-written promise code**, and
 >- stick to the native promise implementation offered by the JavaScript engine to benefit from the shortcuts, i.e. avoiding two microticks for await.
 >
->([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用)
+>([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用、太字は筆者強調)
 
 # async/await のまとめ
 V8 の舞台裏を見ることで async/await の挙動が理解できたと思います。

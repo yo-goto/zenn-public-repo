@@ -15,16 +15,20 @@ https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
 
 その一方で、Node 環境や Deno 環境では意図的にブロッキングを起こすようにデザインされた「**同期 API(Synchronous API)**」が存在しています。`console.log()` などの Web APIs(Web Platform APIs) は置いておいて、そういった API は名前の最後が `Sync` で終わるケースのものとして提供されています(I/O 関連の処理など)。
 
+例えば、ファイルへの書き込みを行う API ですが、名前は安直に `writeFile` として Node でも Deno でも大体同じ機能で提供されています。Deno は Node の後発なので、**ユーザー側は Node にすでに存在している API 機能が Deno にもあるだろうと期待して探します**。そして実際にあります。ただし、`writeFile` と言っても上で説明したような非同期型と同期型が以下のように存在しており、同期型は両方とも `Sync` で名前が終わっていることが分かります。
+
 - 非同期 API (Non-blocking)
   - Node:
-    - [fs.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilefile-data-options-callback) (Callback-based API)
+    - [fs.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilefile-data-options-callback) (Callback-based API[^callback-based])
     - [fsPromises.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fspromiseswritefilefile-data-options) (Promise-based API)
   - Deno: [Deno.writeFile](https://doc.deno.land/deno/stable/~/Deno.writeFile) (Promise-based API)
 - 同期 API (Blocking) 
   - Node: [fs.wirteFileSync](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilesyncfile-data-options)
   - Deno: [Deno.wirteFileSync](https://doc.deno.land/deno/stable/~/Deno.writeFileSync)
 
-同期 API を使うことで**ソースコードの配置と処理順番が完全に一致するようにできます**。つまり、コード配置と実行順序がずれてしまう難しい非同期処理を考える必要がなくなります。ただし、同時に複数のことができる非同期 API のメリットを捨て去ることになります。
+  [^callback-based]: Node に存在している古いタイプのタスクベースの API です。これを使って逐次処理を行うには Callback hell をつくることになります。
+
+`fs.writeFileSync` や `Deno.writeFileSync` などの同期 API を使うことで**ソースコードの配置と処理順番が完全に一致するようにできます**。つまり、コード配置と実行順序がずれてしまう難しい非同期処理を考える必要がなくなります。ただし、同時に複数のことができる非同期 API のメリットを捨て去ることになります。
 
 例えば、Deno 環境においてテキストファイルにデータを書きこんだ後に読みこんでコンソールに出力することを同期 API(`Deno.writeTextFileSync` と `Deno.readTextFileSync`)と非同期 API(`Deno.writeTextFile` と `Deno.readTextFile`)のそれぞれで考えてみます。
 
@@ -119,14 +123,15 @@ Deno.writeTextFile(path, inputData) // [A]
 
 # アンチパターン
 
-非同期 API や非同期処理の書き方はアンチパターンを知ることも重要になってきます。
+非同期 API や非同期処理の書き方は**アンチパターンを知ることも重要**になってきます。
 
 正しい書き方を行わない場合、例えば Promise chain なら Promise を返す処理を `return` せずに「副作用」として使用してしまったり、async/await なら適切に `await` しないことで、「実行と完了」の順番を担保できなくなります。それにより以下のコードでは I/O で競合が起きたり、意図した結果とならないケースがでてきます。
 
 ```js:副作用にしてしまったアンチパターン
 Deno.writeTextFile(path, inputData) // [A]
   .then(() => {
-    Deno.readTextFile(path); // 副作用となる
+    Deno.readTextFile(path); 
+    // return していないので副作用となる
   }) // [B]
   .then((data) => console.log("[3]", data)); // [C] undefined が出力される
 ```
@@ -137,7 +142,8 @@ Deno.writeTextFile(path, inputData) // [A]
   Deno.writeTextFile(path, inputData); // [A]
   // [A] が完了しているか分からないが [B] を開始
   const data = Deno.readTextFile(path); // [B]
-  console.log("[3]", data); // [C] そもそも Proimise インスタンスから値が取り出せていないので Promise{ <pending> } が出力される
+  console.log("[3]", data); // [C] 
+  // そもそも Proimise インスタンスから値が取り出せていないので Promise{ <pending> } が出力される
 })();
 ```
 

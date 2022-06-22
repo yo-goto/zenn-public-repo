@@ -12,6 +12,8 @@ aliases: [ch_Promise コンストラクタと Executor 関数]
 
 Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript の一部ではなくブラウザやランタイムの環境が提供する機能)の処理の結果として返されるパターンが多いですが、Promise そのものは**ビルトインオブジェクト**であり、ECMAScript (JavaScript の言語コア) の一部であることを忘れないようにしてください。
 
+また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "Promise-based API" のことを指しており、Promise 自体が API であるわけではないので注意してください。
+
 # Promise コンストラクタ
 コード上では `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
 

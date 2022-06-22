@@ -14,7 +14,7 @@ V8 エンジンは Chrome, Node, Deno のそれぞれの環境で利用されて
 https://v8.dev/
 
 >V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone, or can be embedded into any C++ application**.
->([上記公式ページ](https://v8.dev/)より引用)
+>([上記公式ページ](https://v8.dev/)より引用、太字は筆者強調)
 
 V8 は **Google が提供するオープンソースの JavaScript エンジン**であり、C++ で書かれており、基本的に Chrome で利用されています。
 
@@ -110,18 +110,20 @@ https://v8.dev/docs/d8
 >d8 is V8’s own developer shell.
 >
 >**d8 is useful for running some JavaScript locally or debugging changes you have made to V8**. Building V8 using GN for x64 outputs a d8 binary in out.gn/x64.optdebug/d8. You can call d8 with the --help argument for more information about usage and flags.
->([上記ページ](https://v8.dev/docs/d8)より引用)
+>([上記ページ](https://v8.dev/docs/d8)より引用、太字は筆者強調)
 
 d8 は V8 エンジンで利用でき、ローカル環境で JavaScript の実行をテストできます。`v8` コマンドで立ち上がる REPL もこの d8 となります。
 
 jsvu で V8 エンジンがインストールできたら `v8` コマンドが使えるようになっています。実際に使用してみます。
 
 ```sh
-# REPL を立ち上げる
+# REPL を立ち上げて色々なオブジェクトについて見てみる
 ❯ v8
 V8 version 10.3.125
 d8> globalThis
 [object global]
+d8> Object.keys(globalThis)
+["version", "print", "printErr", "write", "read", "readbuffer", "readline", "load", "setTimeout", "quit", "testRunner", "Realm", "performance", "Worker", "os", "d8", "arguments"]
 d8> console
 {debug: function debug() { [native code] }, error: function error() { [native code] }, info: function info() { [native code] }, log: function log() { [native code] }, warn: function warn() { [native code] }, dir: function dir() { [native code] }, dirxml: function dirxml() { [native code] }, table: function table() { [native code] }, trace: function trace() { [native code] }, group: function group() { [native code] }, groupCollapsed: function groupCollapsed() { [native code] }, groupEnd: function groupEnd() { [native code] }, clear: function clear() { [native code] }, count: function count() { [native code] }, countReset: function countReset() { [native code] }, assert: function assert() { [native code] }, profile: function profile() { [native code] }, profileEnd: function profileEnd() { [native code] }, time: function time() { [native code] }, timeLog: function timeLog() { [native code] }, timeEnd: function timeEnd() { [native code] }, timeStamp: function timeStamp() { [native code] }, context: function context() { [native code] }, [Symbol(Symbol.toStringTag)]: "Object"}
 d8> setTimeout
@@ -132,18 +134,17 @@ setInterval
 ^
 ReferenceError: setInterval is not defined
     at (d8):1:1
-
-d8> Promise
-function Promise() { [native code] }
 d8> queueMicrotask
 (d8):1: ReferenceError: queueMicrotask is not defined
 queueMicrotask
 ^
 ReferenceError: queueMicrotask is not defined
     at (d8):1:1
-d8> Object.keys(globalThis)
-["version", "print", "printErr", "write", "read", "readbuffer", "readline", "load", "setTimeout", "quit", "testRunner", "Realm", "performance", "Worker", "os", "d8", "arguments"]    
+d8> Promise
+function Promise() { [native code] }
 ```
+
+上記 REPL での実行結果から色々なことが分かります。
 
 ## V8 エンジンの Web API もどき
 

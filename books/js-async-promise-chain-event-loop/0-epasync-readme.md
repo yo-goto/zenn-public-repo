@@ -40,6 +40,7 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 [h-epasync-catch-finally](h-epasync-catch-finally)
 [x-epasync-epilogue](x-epasync-epilogue)
 [y-epasync-conclusion](y-epasync-conclusion)
+[z-epasync-reference](z-epasync-reference)
 
 未完成
 [i-epasync-terms](i-epasync-terms)
@@ -100,7 +101,7 @@ chapters:
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
   - sec-03-epasync # 第３章
-  - 14-epasync-chain-to-async-await # Promise チェーンから非同期関数へ
+  - 14-epasync-chain-to-async-await # Promise チェーンから async 関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
   - x-epasync-epilogue # あとがき

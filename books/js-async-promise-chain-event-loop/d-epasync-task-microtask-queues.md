@@ -176,7 +176,7 @@ Deno 環境では、基本的にはマイクロタスクキューが１つです
 // Web API
 queueMicrotask(() => {
   console.log("👦 MICRO: microtask [Functional Execution Context]");
-});
+}); // 戻り値なしなので Promise chain はできない
 // ただちにマイクロタスクキューにマイクロタスクを発行する
 ```
 
@@ -186,7 +186,24 @@ https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask
 
 https://developer.mozilla.org/ja/docs/Web/API/HTML_DOM_API/Microtask_guide#enqueueing_microtasks
 
-`queueMicrotask()` はブラウザ環境で提供される Web API ですが、Node でも Deno でも使用できます。
+Promise インスタンスが返ってこないので chain できない点以外については、基本的に `Promise.reoslve().then()` と同じように考えることができます。
+
+```js
+// qmt.js
+Promise.resolve().then(() => console.log("[1] 🍎"));
+queueMicrotask(() => console.log("[2] 🫐"));
+Promise.resolve().then(() => console.log("[3] 🍎"));
+queueMicrotask(() => console.log("[4] 🫐"));
+
+// 実行結果
+// ❯ deno run qmt.js
+// [1] 🍎
+// [2] 🫐
+// [3] 🍎
+// [4] 🫐
+```
+
+`queueMicrotask()` はブラウザ環境で提供される Web API ですが、Node でも Deno でも同じ名前で使用できます。
 
 https://nodejs.org/api/globals.html#queuemicrotaskcallback
 
@@ -196,7 +213,7 @@ https://doc.deno.land/deno/stable/~/queueMicrotask
 
 ## MutationObserver API
 
-`MutationOberver()` は MutationObserver API という大きなインタフェースの一部として、`MutationObserver()` コンストラクタが提供されています。DOM 内の要素を監視して、何かの変更があった際にコールバックをマイクロタスクとして発火する Web API です。この API が発行するマイクロタスクは Promise とは関係なく、`MutationObserver()` 自体からも Promise ではなくオブザーバインスタンスが返ってくるので注意してください。
+`MutationOberver()` コンストラクタ関数は MutationObserver API という大きなインタフェースの一部として提供されています。DOM 内の要素を監視して、何かの変更があった際にコールバックをマイクロタスクとして発火する Web API です。この API が発行するマイクロタスクは Promise とは関係なく、`MutationObserver()` 自体からも Promise ではなくオブザーバインスタンスが返ってくるので注意してください。
 
 マイクロタスクキューは基本的に Promise 処理のための機構ですが、この Web API はその機構を利用します。
 
@@ -396,17 +413,17 @@ console.log("🦖 [3] Sync process end");
 
 # 非同期処理の本質
 
-:::message alert
-こちらの内容については『V8 エンジンによる async/await の内部変換』のチャプターの最後で再度まとめていますので、今は理解できなくても大丈夫です。
-:::
-
-非同期処理の本質的な仕組みは「**イベントループにおけるタスクとマイクロタスクの処理**」です。
+この本の結論をもう言ってしまいますが、非同期処理の本質的な仕組みは「**イベントループにおけるタスクとマイクロタスクの処理**」です。
 
 非同期処理の起点は「非同期 API」による並列的作業です。環境がバックグラウンドで代行している非同期 API の処理(`fetch()` メソッドによるリソース取得など)の間、メインスレッドでは別の処理を行うことができます。そして、その並列的作業の処理が終わり次第、メインスレッドへと通知させて、起点となった非同期 API の処理結果を使って別のことをやります(取得したリソースのデータを加工するなど)。非同期 API を起点とした一連の作業は「**特定の順番に行うこと**」、つまり「A したら B する、B したら C する」というような「**逐次処理**」が肝になります。
 
 その順番をうまく設定するのが開発者であり、コード内で特定の順番となるように処理のスケジューリングを行います。そして、API を起点とした一連の逐次処理のための書き方がコールバック関数や Promise チェーン、async/await となります。そして、その書き方から実際に実行するためにあれやこれやをやる仕組みがイベントループであり、タスクキュー・マイクロタスクキューです。その処理の単位がタスクやマイクロタスクです。
 
 ということで、「A したら B する、B したら C する」というような逐次処理について、他の同期処理とは別のタイミングで(つまり非同期的に)それぞれ順番に実行したいなら、タスクやマイクロタスクを連鎖(chain)させます。**それぞれの処理が連鎖的に起きることで、逐次処理となります**。
+
+:::message
+非同期処理の学習においてやっかいな点は、非同期処理を理解するためには「非同期(asynchronous)」だけではなく、「同期(synchronous)」「並列(parallel)」「並行(concurrent)」「逐次(sequential)」などの概念を組み合わせて考える必要があることです。
+:::
 
 コールバックベースの API による Callback hell についてはいわば「**タスク連鎖(Task chain)**」といえるでしょう。イベントループ上でタスクの連鎖的処理を行うことで非同期的に逐次処理を行うことができます。
 

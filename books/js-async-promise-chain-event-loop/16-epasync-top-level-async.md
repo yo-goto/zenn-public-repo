@@ -7,7 +7,7 @@ aliases: [ch_Top-level await]
 
 このチャプターでは、async/await の学習においてトラップとなる Top-level await について簡単に解説しておきます。
 
-Top-level await は新しい機能(ES2022 で導入)であり、await 式が非同期関数(async funciton)の外側で使えるようになります。ただし、初学者がこの機能について学んでしまうことで、**「同期」と「非同期」の概念が分からなくなってしまいます**(個人的な経験です)。したがって、非同期関数について理解できてから学習するようにしてください。
+Top-level await は新しい機能(ES2022 で導入)であり、await 式が非同期関数(async function)の外側で使えるようになります。ただし、初学者がこの機能について学んでしまうことで、**「同期」と「非同期」の概念が分からなくなってしまいます**(個人的な経験です)。したがって、非同期関数について理解できてから学習するようにしてください。
 
 # Top-level await とは
 
@@ -83,7 +83,7 @@ Deno ランタイム環境において、上記２つのコードの実行順序
 https://v8.dev/features/top-level-await
 
 >Top-level await enables developers to use the await keyword outside of async functions. **It acts like a big async function** causing other modules who import them to wait before they start evaluating their body.
->([上記ページ](https://v8.dev/features/top-level-await)より引用)
+>([上記ページ](https://v8.dev/features/top-level-await)より引用、太字は筆者強調)
 
 :::message alert
 Top-level await を使用したモジュール自体を `import` する他のモジュールはそれ自体のコードの評価を開始する前に待機することになり、Top-level await が導入される前に比べて、モジュールの実行順序が複雑になります。
