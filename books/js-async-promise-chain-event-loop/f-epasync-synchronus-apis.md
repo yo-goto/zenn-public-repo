@@ -17,12 +17,16 @@ https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
 
 例えば、ファイルへの書き込みを行う API ですが、名前は安直に `writeFile` として Node でも Deno でも大体同じ機能で提供されています。Deno は Node の後発なので、**ユーザー側は Node にすでに存在している API 機能が Deno にもあるだろうと期待して探します**。そして実際にあります。ただし、`writeFile` と言っても上で説明したような非同期型と同期型が以下のように存在しており、同期型は両方とも `Sync` で名前が終わっていることが分かります。
 
-- 非同期 API (Non-blocking)
+:::message
+「非同期 API / 同期 API」という呼称は理解の妨げになる可能性があり信頼できないので、代わりに「Non-blocking API / Blocking API」をメインに考えた方が分かりやすいかもしれません。
+:::
+
+- 非同期 API (Non-blocking API)
   - Node:
     - [fs.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilefile-data-options-callback) (Callback-based API[^callback-based])
     - [fsPromises.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fspromiseswritefilefile-data-options) (Promise-based API)
   - Deno: [Deno.writeFile](https://doc.deno.land/deno/stable/~/Deno.writeFile) (Promise-based API)
-- 同期 API (Blocking) 
+- 同期 API (Blocking API) 
   - Node: [fs.wirteFileSync](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilesyncfile-data-options)
   - Deno: [Deno.wirteFileSync](https://doc.deno.land/deno/stable/~/Deno.writeFileSync)
 
@@ -92,7 +96,14 @@ console.log("[2]");
 
 そのため、ファイルの書き込み・読み出しの完了を待たずに最後の `console.log()` を実行できています。
 
-アプリケーションではなく書き捨てのスクリプトや簡単なテストではこの「同期 API」が役立ちます。**書いた順番通りに実行されるので明らかに処理の流れが分かりやすい**からです。ただし、一度に複数のことができる非同期 API のメリットを捨てることになるので、明らかに非同期 API より時間がかかることになります。要するに非同期 API は「**効率が良い**」ということです。
+アプリケーションではなく書き捨てのスクリプトや簡単なテストではこの「同期 API(Blocking API)」が役立ちます。実際、この程度のスクリプトなら非同期にすることに大きな意味がない(時間的な効率は問題にならない)ので同期で書くのが多いのではないでしょうか(ただ非同期 API や非同期処理を理解するためにはこのぐらいの短さで考えた方がいいです)。
+
+というのも、同期 API では**書いた順番通りに実行されるので明らかに処理の流れが分かりやすい**からです。ただし、一度に複数のことができる非同期 API のメリットを捨てることになるので、明らかに非同期 API より時間がかかることになります。要するに非同期 API は「**効率が良い**」ということです。
+
+以下にまとめておきます。
+
+- 同期 API(Blocking API) : 書いた順番通りに実行されるので処理の流れがわかりやすいが、意図的に同時に１つのことしかやらないようにしているので効率が悪い。
+- 非同期 API(Non-blocking API) : 書いた順番通りに実行されないため処理の流れがわかりづらく制御が難しいが、同時に複数のことができるため効率が良い。関連する作業の順序を制御するための書き方が、Callback、Promise chain、async/await となる。
 
 # 「実行と完了」の順番を保証する書き方
 
@@ -117,15 +128,50 @@ Deno.writeTextFile(path, inputData) // [A]
 })(); // 即時実行
 ```
 
+:::message alert
 もちろん、現実的にはエラーハンドリングが付き纏うので完全な保証ではないです。上の例も説明のために例外処理を省いていますので注意してください。
+:::
 
-非同期 API を起点にした一連の作業が特定順序で実行・完了されることを保証するための正しい書き方とその仕組みを学ぶということが非同期処理の学習です。つまり、「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
+Callback 形式なら適切にネストさせることで、Promise チェーンなら適切に連鎖させることで、async/await なら適切に await することで、コード全体での順序では**時間的に非連続であったとしても注目している特定の範囲内に存在するコードの実行と完了の順番を保証させます**。
 
-# アンチパターン
+ちなみに、Callback-based API や Promise-based API の処理オーダー(順番)が重要であることは実は Node API Document の fs の項目に直接的に言及されています。
+
+>Because they are executed asynchronously by the underlying thread pool, there is no guaranteed ordering when using either the callback or promise-based methods.
+>(中略)
+>**It is important to correctly order the operations by awaiting the results of one before invoking the other**:
+>(中略)
+>Or, when using the callback APIs, **move the `fs.stat()` call into the callback of the `fs.rename()` operation**:
+>([File system | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#ordering-of-callback-and-promise-based-operations) より引用、太字は筆者強調)
+
+また、以下の様に Deno の非同期 API でドキュメントのサンプルに常に `await` キーワードが付いているのは Promise-based API であることを示すのと同時に、完了を担保してから次の処理を行うケースが一般的だからという理由が考えられます。
+
+```js
+await Deno.writeTextFile("hello1.txt", "Hello world\n");  // overwrite "hello1.txt" or create it
+```
+
+https://doc.deno.land/deno/stable/~/Deno.writeTextFile
+
+このように、非同期 API を起点にした一連の作業が特定順序で実行・完了されることを保証するための正しい書き方とその仕組みを学ぶということが非同期処理の学習です。つまり、「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
+
+# 非同期処理そのものが目的なのではない
+
+前のチャプターで『「非同期処理」の目的と仕組み』について解説しましたが、結局のところあえて非同期処理をしたい理由があってやるのではなく、「非同期 API を使用するという目的」を達成するために非同期処理のシンタックス(Promise chain, async/await)を使わざる負えないというケースが多いだけです。
+
+(Promise が絡む文脈では)「非同期処理」は結果として非同期的に処理されてしまうコードであるというだけで、非同期処理そのものは目的(やりたいこと)ではないケースがほとんどです。ユーザーインタラクションやイベント処理、`setTimeout()` などのタイマー処理によってスケジューリングすることで意図的に非同期にすることを除けば、効率の良い非同期 API を使用したいがために結果的に付随する処理が非同期処理になってしまうという訳です。
+
+同時に複数のことをやることで効率的な処理をしたいから非同期 API を使うのであって、非同期処理がやりたから Promise chain やら async/await を使うのではないです。
+
+イベントループとコールスタックによって、非同期 API の処理結果と次の処理を１つのメインスレッドに集約的に通知させます。同時に複数のことをやるが、その結果を使った処理を再度１つのスレッドに集めて、次の処理を実行したり、別の非同期 API を起動させたりするという一連の作業順番を制御するために Promise chain や async/await を書く必要があるということです。そして、その結果として非同期的に処理されるコードがでてくるということです。
+
+基本的には、非同期処理は「結果」であって「目的」ではないです。非同期処理のシンタックスも「結果的に使わざる負えない手段」であって「目的」ではないです。
+
+ユーザーインタラクションのイベント処理やタイマー系で意図的に非同期にしてスケジューリングすることなどを除けば、処理の流れが分かりずらなくなる非同期処理をわざわざ書かなくても良いなら使う必要は一切ありません。
+
+# アンチパターンを知る
 
 非同期 API や非同期処理の書き方は**アンチパターンを知ることも重要**になってきます。
 
-正しい書き方を行わない場合、例えば Promise chain なら Promise を返す処理を `return` せずに「副作用」として使用してしまったり、async/await なら適切に `await` しないことで、「実行と完了」の順番を担保できなくなります。それにより以下のコードでは I/O で競合が起きたり、意図した結果とならないケースがでてきます。
+正しい書き方を行わない場合、例えば Promise chain なら Promise を返す処理を `return` せずに「副作用(Side Effect)」として使用してしまったり、async/await なら適切に `await` しないことで、「実行と完了」の順番を担保できなくなります。場合によっては I/O で競合が起きたり、意図した結果とならないケースがでてきます。
 
 ```js:副作用にしてしまったアンチパターン
 Deno.writeTextFile(path, inputData) // [A]
@@ -147,12 +193,61 @@ Deno.writeTextFile(path, inputData) // [A]
 })();
 ```
 
-Node では、Promise-based な File System 系の API 操作は[スレッドセーフ](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)ではないので同時に同じファイルを修正してしまうような場合に注意するように書かれています。上の例ではファイル書き込みが完了してからファイル読み込みを行うのが良いでしょう(つまり副作用にしないことや適切に await することを守る)。Deno でも考え方は同じです。
+Deno でも考え方は同じすが、Node では、Promise-based な File System 系の API 操作は[スレッドセーフ](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)ではないので同時に同じファイルを修正してしまうような場合に注意するように書かれています。
 
 > The promise APIs use the underlying Node.js threadpool to perform file system operations off the event loop thread. These operations are **not synchronized or threadsafe**. Care must be taken **when performing multiple concurrent modifications on the same file or data corruption may occur**.
 > ([File system | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#promises-api) より引用、太字は筆者強調)
 
-非同期 API を使って「同時に複数のことができる」からといって**競合するような複数の API 操作は同時にしてはいけない**ということです。それらは順番に完了を待って行うようにしましょう。特定の実行順番が守られている操作群に対して関係の無い操作を同時に行うのなら大丈夫です。
+上のコードの例では同時に書き込みを行ってはいませんが、「書き込んだデータを読み出す」という意図のコードを書くなら、ファイル書き込みが完了してからファイル読み込みを行うのが良いでしょう(つまり副作用にしないことや適切に await することで実行と完了の順序を決める)。
 
-もちろん同期 API を使うならそもそも同時に複数のことをやらないので、そういった心配は必要ないです。
+非同期 API を使って「同時に複数のことができる」からといって**競合するような複数の API 操作は同時にしてはいけない**ということです。それらは順番に完了を待って行うようにしましょう。特定の実行順番が守られている操作群に対して関係の無い操作を同時に行うのなら大丈夫です。もちろん同期 API を使うならそもそも同時に複数のことをやらないので、そういった心配は必要ないです。
+
+そして、関連のない複数操作は適宜並列化(同時に実行)させて、効率化を測ることができます。複数の Promise 処理を１つずつ await するのではなく、投げっぱなしにした後でまとめて await するなどを行えます。
+
+# API の補足と標準モジュール
+
+API という言葉は非常にわかりづらく、とにかく曖昧なので読む人によっては非常に混乱させる用語です(文脈に応じてビルトインオブジェクトあるいはコンストラクタ関数のことを API と呼んでいる人も見かけます)。
+
+`Deno` から名前が始まる API は「Deno globals」と呼ばれ、公式の API ドキュメントでは「Deno CLI APIs」とも呼ばれています。つまり CLI(コマンドランインターフェース)のための API であるため、必ずしも Node の API と対応付けることができません。環境(直接的には Deno の実行ファイル)が提供する API の機能としては別に Deno では「標準モジュール(Standard module: Deno std)」というウェブ上で配布されているモジュールが存在しており、これらは API とは呼ばれていません。
+
+>These modules do not have external dependencies and they are reviewed by the Deno core team. The intention is to have a standard set of high quality code that all Deno projects can use fearlessly.
+>([std@0.145.0 | Deno](https://deno.land/std@0.145.0) より引用)
+
+標準モジュールの実装は TypeScript で行われており、内部を見ると Deno globals の API や標準モジュール自体を組み合わせることでより**実用性の高いユーティリティ機能を実現したもの**を配布しているようです。それぞれの機能ごとに `fs` (File System) や `http`、`io` などのモジュールに分割されています。
+
+例えば、ファイルをコピーするための機能として提供されている `copy` 関数を次のように URL から `import` を行うことでコードをダウンロード・キャッシュして使えるようにします。
+
+```js
+import { copy } from "https://deno.land/std@0.145.0/fs/mod.ts";
+// URL から標準モジュールである copy 関数をインポートする
+
+const src = "./txtFiles/test1.md";
+const dist = "./txtFiles/copied.md";
+
+try {
+  // コピーしてから読み出す
+  await copy(src, dist); // Promise インスタンスを返すので await
+  const text = await Deno.readTextFile(dist); // Promise インスタンスを返すので await
+  console.log(text);
+} catch (err) {
+  console.error(err);
+}
+```
+
+この fs モジュールの `copy` という関数は公式リポジトリの以下の場所に存在しています。`export async function copy` で非同期の `copy` 関数としてエクスポートされているものです。
+
+https://github.com/denoland/deno_std/blob/0.145.0/fs/copy.ts#L85-L269
+
+ソースコードを見てみると、内部的にはエクスポートされていない `copyFile` 関数などが使われており、さらにそれらは内部で `Deno.lstat` や `Deno.copyFile` などの Deno globals(CLI API) が利用されています。
+
+要するに、Deno globals などの API はより低レイヤーのコア機能として Deno のバイナリに格納されており(コード上ではグローバルネームスペース)、コアではないユーティリティ機能はそこから標準モジュール(std)として分離して提供されていると解釈できます。Deno ではもともとは CLI API として提供されていたものが std に方に機能移行されることなどもあります(`Deno.Buffer` → `io/buffer`)。
+
+標準モジュールでも同期型・非同期型のものがあり、名前も同期型のものは `Sync` で終わります。同期型は内部で Deno globals の同期 API が使われているためブロッキングします。非同期型は async 関数として定義されており、内部的にも Deno globals の非同期 API が利用されていたりします。
+
+`path` モジュールなどは顕著ですが、Node の `path` モジュールに準ずる機能の殆どは Deno では標準モジュールの `path` として提供されています(そもそも Node のモジュールも API と呼べるのか怪しい部分がありますが、Node API Document として提供されているので API と認めてもよいでしょう)。
+
+https://nodejs.org/dist/v18.2.0/docs/api/path.html
+
+https://deno.land/std@0.145.0/path
+
 

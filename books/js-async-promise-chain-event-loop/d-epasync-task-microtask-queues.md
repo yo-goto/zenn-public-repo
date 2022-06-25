@@ -96,6 +96,16 @@ const timerId = setTimeout(() => {
 
 `setTimeout()` API の遅延時間を 0 秒にすることでタスクキューへタスクを簡単に発行できますが、あくまでタイマー処理であり、０ミリ秒遅延は実際０ミリ秒にはならず１ミリ秒以上の時間がかかることに注意してください。
 
+```ts:Denoでの型定義
+function setTimeout(
+  cb: (...args: any[]) => void,
+  delay?: number,
+  ...args: any[],
+): number;
+```
+
+https://doc.deno.land/deno/stable/~/setTimeout
+
 ## setInvertal API
 
 タスクベースの非同期 API である、`setInterval()` は、`setInverval(cb, interval)` というように指定したインターバル時間が経過するたびに、引数のコールバック関数をタスクとしてタスクキューに発行します。
@@ -111,6 +121,16 @@ const inervalId = setInterval(() => {
 戻り値は `setInterval()` で作成したタイマーを識別するユニークな ID で、0 でない正の整数値です。`clearInterval(intervalId)` を使って以後のインターバルをキャンセルできます。
 
 https://developer.mozilla.org/en-US/docs/Web/API/setInterval
+
+```ts:Denoでの型定義
+function setInterval(
+  cb: (...args: any[]) => void,
+  delay?: number,
+  ...args: any[],
+): number;
+```
+
+https://doc.deno.land/deno/stable/~/setInterval
 
 # イベントループの所有物
 
@@ -210,6 +230,12 @@ https://nodejs.org/api/globals.html#queuemicrotaskcallback
 https://doc.deno.land/deno/stable/~/queueMicrotask
 
 上で説明したとおり、Node 環境では `process.nextTick()` API よりも `queueMicrotask()` API の使用が推奨されます。
+
+```ts:Denoでの型定義
+function queueMicrotask(func: VoidFunction): void;
+```
+
+https://doc.deno.land/deno/stable/~/queueMicrotask
 
 ## MutationObserver API
 
