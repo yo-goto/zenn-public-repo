@@ -94,9 +94,7 @@ const promiseTimer = (delay) => {
 
 promiseTimer(1000)
   .then(() => console.log("Timeout"))
-  .then(() => console.log("Next action"))
-  .then(() => console.log("Next action"))
-  .catch((err) => console.error(err.message));
+  .then(() => console.log("Next action"));
 ```
 
 これで、特定時間が経過したら何かする、それが完了したらまた何かするというのがやりやすくなります。
@@ -117,11 +115,9 @@ const promiseTimer = (delay)
 ```
 :::
 
-Promise でラップして使わない場合にはコールバックをいくつもネストする必要がでてくるので、いわゆる **Callback Hell** になります。
+Promise でラップして使わない場合にはコールバックをいくつもネストする必要がでてくるので、いわゆる **Callback Hell** になります。その形から "Pyramid of doom" とも呼ばれます。
 
 ```js
-const msg = "Timeout!";
-
 setTimeout((value) => {
   console.log(value);
   setTimeout((value) => {
@@ -130,10 +126,13 @@ setTimeout((value) => {
       console.log(value);
       setTimeout((value) => {
         console.log(value);
+        setTimeout((value) => {
+          console.log(value, "ピラミッドのてっぺん");
+        }, 1000, value);
       }, 1000, value);
     }, 1000, value);
   }, 1000, value);
-}, 1000, msg);
+}, 1000, "タイムアウト");
 ```
 
 また、Promise でラップすることによって、Async function にて `await` 式を使って完了を待てるようになります。
@@ -150,4 +149,29 @@ const promiseTimer = (delay) => new Promise((resolve) => setTimeout(resolve, del
 })();
 // 即時実行関数
 ```
+
+例えば、これで何が嬉しいかというと次の関連する処理まで一時的に時間を置きたいという要望を叶えることができます。上で定義した `promiseTimer()` を `sleep()` という名前で再び定義して考えてみます。複数回のリクエストをおこなような操作を対象となるサーバーに負荷をかけないように時間間隔を置くことである程度分割して行うようにしたい場合、この `sleep()` によって async 関数内の次の処理を指定時間以上あけるようにできます。
+
+```js
+function sleep(time) {
+  // resolve の名前は何でもよいので短い r にしておく
+  return new Promise(r => setTimeout(r, time)); 
+}
+(async () => {
+  await multipleFetch(); // 複数の fetch を行う async 関数だとする
+  await sleep(3000).then(() => console.log("3秒以上経過したから再度リクエスト"));
+  await multipleFetch();
+  await sleep(3000).then(() => console.log("3秒以上経過したから再度リクエスト"));
+  await multipleFetch();
+  console.log("async 関数内のすべての処理が終了しました");
+})();
+```
+
+非同期関数の外側で何らかの別の処理が走っている可能性もありイベントループのマイクロタスクキューで別の待ちタスクなどがあれば、３秒よりももっと多くの時間遅延します。
+
+実際に Deno では標準モジュール(std)の `async` モジュールで提供される `delay()` 関数はこのように作られています。リポジトリでは次の場所に存在しています。上で定義したものより緻密に作られていますが内部的には `setTimeout()` をちゃんと使っていることが分かります。
+
+https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
+
+https://doc.deno.land/https://deno.land/std@0.145.0/async/mod.ts/~/delay
 

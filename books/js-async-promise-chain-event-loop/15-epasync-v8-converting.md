@@ -662,7 +662,7 @@ console.log("🦖 [2] MAINLINE: End");
 
 このコードの実行結果は次のようになります。前のケースと同じです。
 
-```js
+```sh
 ❯ v8 asyncSpeed0.js
 🦖 [1] MAINLINE: Start
 🦖 [2] MAINLINE: End

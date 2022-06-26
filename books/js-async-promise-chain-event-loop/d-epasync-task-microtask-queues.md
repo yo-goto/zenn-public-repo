@@ -227,8 +227,6 @@ queueMicrotask(() => console.log("[4] 🫐"));
 
 https://nodejs.org/api/globals.html#queuemicrotaskcallback
 
-https://doc.deno.land/deno/stable/~/queueMicrotask
-
 上で説明したとおり、Node 環境では `process.nextTick()` API よりも `queueMicrotask()` API の使用が推奨されます。
 
 ```ts:Denoでの型定義

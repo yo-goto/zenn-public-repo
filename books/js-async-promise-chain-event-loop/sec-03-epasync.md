@@ -16,4 +16,6 @@ alieases: [EPAsync 第３章]
 - [V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)
 - [Top-level await](16-epasync-top-level-async)
 - [Promise の静的メソッドと並列化](17-epasync-static-method)
+- [await 式の配置による制御](18-epasync-await-position)
+- [反復処理の制御](19-epasync-async-loop)
 
