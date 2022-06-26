@@ -27,6 +27,7 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 [14-epasync-chain-to-async-await](14-epasync-chain-to-async-await)
 [15-epasync-v8-converting](15-epasync-v8-converting)
 [16-epasync-top-level-async](16-epasync-top-level-async)
+[Promise の静的メソッドと並列化](17-epasync-static-method)
 
 サブ
 [a-epasync-promise-basic-consept](a-epasync-promise-basic-consept)
@@ -61,10 +62,10 @@ tags: [" #type/zenn/book #JavaScript/async  "]
 - [x] Promise の状態の詳細
 - [x] async/await
 - [x] Top-level await
+- [x] 静的メソッド
+- [ ] ループ
 - [ ] Promise の型注釈
 - [ ] ジェネレーター
-- [ ] ループ
-- [ ] 静的メソッド
 
 ## メモ
 
@@ -104,6 +105,7 @@ chapters:
   - 14-epasync-chain-to-async-await # Promise チェーンから async 関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
+  - 17-epasync-static-method # Promise の静的メソッドと並列化
   - x-epasync-epilogue # あとがき
 ```
 
