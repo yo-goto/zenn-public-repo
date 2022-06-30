@@ -28,7 +28,7 @@ chapters:
   - 7-epasync-pass-value-to-the-next-chain # Promise チェーンで値を繋ぐ
   - 8-epasync-return-promise-in-then-callback # then メソッドのコールバックで Promise インスタンスを返す
   - 9-epasync-dont-next-promise-chain # Promise チェーンはネストさせない
-  - 10-epasync-dont-use-side-effect # then メソッドのコールバックで非同期処理
+  - 10-epasync-dont-use-side-effect # コールバックで副作用となる非同期処理
   - 11-epasync-omit-return-by-arrow-shortcut # アロー関数で return を省略する
   - h-epasync-catch-finally # catch メソッドと finally メソッド
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
@@ -38,5 +38,8 @@ chapters:
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
   - 17-epasync-static-method # Promise の静的メソッドと並列化
+  - 18-epasync-await-position # await 式の配置による制御
+  - 19-epasync-async-loop # 反復処理の制御
   - x-epasync-epilogue # あとがき
+  - z-epasync-reference # 参考文献
 
