@@ -14,24 +14,50 @@ aliases: [ch_参考文献]
 
 # [第１章 - API を提供する環境と実行メカニズム](sec-01-epasync.md)
 
-## [コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async.md) (🦄)
+## [非同期 API と環境](f-epasync-asyncronous-apis) (🦄)
 
-- [Callback function (コールバック関数) - MDN Web Docs 用語集: ウェブ関連用語の定義 | MDN](https://developer.mozilla.org/ja/docs/Glossary/Callback_function)
+- [How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion)
+- [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)
+- [JavaScriptとは · JavaScript Primer #jsprimer](https://jsprimer.net/basic/introduction/#javascript-ecmascript)
+- [Async Await JavaScript Tutorial – How to Wait for a Function to Finish in JS](https://www.freecodecamp.org/news/async-await-javascript-tutorial/)
+- [Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API)
+- [サードパーティ API(Third-party APIs)](https://developer.mozilla.org/ja/docs/Learn/JavaScript/Client-side_web_APIs/Third_party_APIs#restful_api_%E2%80%94_nytimes)
+- [WinterCG(Web-interoperable Runtimes Community Group)](https://wintercg.org)
+- [Inside look at modern web browser (part 2) - Chrome Developers](https://developer.chrome.com/blog/inside-browser-part2/)
+- [What the heck is the event loop anyway? – Philip Roberts](https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html)
+- [Web Worker の使用 - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers)
 
 ## [同期 API とブロッキング](f-epasync-synchronus-apis.md) (🦄)
 
 - [スレッドセーフ - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)
 - [ブロッキングとノンブロッキングの概要 | Node.js](https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/)
 
-# [イベントループの概要と注意点](2-epasync-event-loop) (🦄)
+## [イベントループの概要と注意点](2-epasync-event-loop) (🦄)
 
 - [Writing a JavaScript framework - Execution timing, beyond setTimeout - RisingStack Engineering](https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-beyond-settimeout/)
 - [Tasks, microtasks, queues and schedules - JakeArchibald.com](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
 
-## [Promise の基本概念](a-epasync-promise-basic-consept) (🦄)
+## [タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues) (🦄)
 
-- [promises-unwrapping/states-and-fates.md at master · domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md)
-- [What is the correct terminology for javascript promises - Stack Overflow](https://stackoverflow.com/questions/29268569/what-is-the-correct-terminology-for-javascript-promises/29269515#29269515)
+- [JavaScriptの非同期処理をじっくり理解する (1) 実行モデルとタスクキュー](https://zenn.dev/qnighy/articles/345aa9cae02d9d)
+- [setInterval() - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/setInterval)
+- [Using microtasks in JavaScript with queueMicrotask() - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)
+- [queueMicrotask() - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask)
+- [JavaScript で queueMicrotask() によるマイクロタスクの使用 - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/HTML_DOM_API/Microtask_guide#enqueueing_microtasks)
+- [MutationObserver() - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver/MutationObserver)
+- [In depth: Microtasks and the JavaScript runtime environment - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth)
+
+## [V8 エンジンについて](e-epasync-v8-engine) (🦄)
+
+- [V8 JavaScript engine](https://v8.dev/)
+- [JavaScript V8 Engine Explained | HackerNoon](https://hackernoon.com/javascript-v8-engine-explained-3f940148d4ef)
+- [JS Visualizer 9000](https://www.jsv9000.app/)
+- [並行モデルとイベントループ - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/EventLoop)
+- [ブラウザ JavaScript / Node.js の仕組みを知ろう！ ～トラブルに迅速に立ち向かえる様に - Qiita](https://qiita.com/megmogmog1965/items/e180d02be711cecdc038)
+- [JavaScriptがブラウザでどのように動くのか | メルカリエンジニアリング](https://engineering.mercari.com/blog/entry/20220128-3a0922eaa4/)
+- [GoogleChromeLabs/jsvu: JavaScript (engine) Version Updater](https://github.com/GoogleChromeLabs/jsvu)
+- [fishで「パスを通す」ための最終解答](https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer)
+- [Using d8 · V8](https://v8.dev/docs/d8)
 
 ## [コールスタックと実行コンテキスト](b-epasync-callstack-execution-context) (🦄)
 
@@ -39,6 +65,7 @@ aliases: [ch_参考文献]
 - [JavaScript Execution Context – How JS Works Behind The Scenes](https://www.freecodecamp.org/news/execution-context-how-javascript-works-behind-the-scenes/)
 - [In depth: Microtasks and the JavaScript runtime environment - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth#javascript_execution_contexts)
 - [zero-cost async stack traces // slidr.io](https://slidr.io/bmeurer/zero-cost-async-stack-traces-1#27)
+
 
 ## [それぞれのイベントループ](c-epasync-what-event-loop) (🦄)
 
@@ -69,13 +96,12 @@ aliases: [ch_参考文献]
 - [Learn Node.js, Unit 5: The event loop - YouTube](https://www.youtube.com/watch?v=X9zVB9WafdE&list=TLGGmD0fij1sF90wNTA1MjAyMg)
 - [IBM Developer](https://developer.ibm.com/tutorials/learn-nodejs-the-event-loop/#why-you-need-to-understand-the-event-loop)
 
+# [第２章 - Promise インスタンスと連鎖](sec-02-epasync)
+
 ## [Promise の基本概念](a-epasync-promise-basic-consept)
 
 - [promises-unwrapping/states-and-fates.md at master · domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md)
 - [What is the correct terminology for javascript promises - Stack Overflow](https://stackoverflow.com/questions/29268569/what-is-the-correct-terminology-for-javascript-promises/29269515#29269515)
-
-
-# [第２章 - Promise インスタンスと連鎖](sec-02-epasync.md)
 
 ## [Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func) (🦄)
 
@@ -86,19 +112,46 @@ aliases: [ch_参考文献]
 - [JavaScript: 通常の関数とアロー関数の違いは「書き方だけ」ではない。異なる性質が10個ほどある。 - Qiita](https://qiita.com/suin/items/a44825d253d023e31e4d)
 - [従来の関数とアロー関数の違い | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/functions/function-expression-vs-arrow-functions)
 
+## [コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async) (🦄)
+
+- [Callback function (コールバック関数) - MDN Web Docs 用語集: ウェブ関連用語の定義 | MDN](https://developer.mozilla.org/ja/docs/Glossary/Callback_function)
+
 ## [resolve 関数と reject 関数の使い方](g-epasync-resolve-reject.md) (🦄)
 
 - [Understanding Promises in JavaScript: Part V - Resolved Promises and Promise Fates | Saurabh Misra](https://www.saurabhmisra.dev/promises-in-javascript-resolved-promise-fates)
 
+## [複数の Promise を走らせる](5-epasync-multiple-promises)
+
+なし。
+
+## [then メソッドは常に新しい Promise を返す](6-epasync-then-always-return-new-promise)
+
+なし。
+
+## [Promise チェーンで値を繋ぐ](7-epasync-pass-value-to-the-next-chain)
+
+なし。
 
 ## [コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect) (🦄)
 
 - [Node.js 18 is now available! | Node.js](https://nodejs.org/en/blog/announcements/v18-release-announce/)
 
+## [アロー関数で return を省略する](11-epasync-omit-return-by-arrow-shortcut) (🦄)
+
+なし。
+
+## [catch メソッドと finally メソッド](h-epasync-catch-finally)
+
+なし。
+
 ## [古い非同期 API を Promise でラップする](12-epasync-wrapping-macrotask) (🦄)
 
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)
 - [Promisification](https://ja.javascript.info/promisify)
+
+## [イベントループは内部にネストしたループがある](13-epasync-loop-is-nested)
+
+なし。
 
 # [第３章 - async 関数と await 式の挙動](sec-03-epasync.md)
 

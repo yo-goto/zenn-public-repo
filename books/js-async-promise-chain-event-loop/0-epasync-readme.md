@@ -2,6 +2,7 @@
 title: "EPAsync book 管理ノート"
 aliases: [EPAsync, 本_イベントループとプロミスチェーンで学ぶ非同期処理]
 tags: [" #type/zenn/book #JavaScript/async  "]
+url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 ---
 
 ## MOC

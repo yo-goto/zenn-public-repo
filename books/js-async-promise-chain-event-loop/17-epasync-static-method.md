@@ -125,24 +125,24 @@ fetch(urls[1]);
 fetch(urls[2]);
 ```
 
-ということで次のように Promise chain を並列化していると思っていても、内部的な非同期 API 処理が並列化されるだけで、chain 部分のコールバックは今まで見てきたようにマイクロタスクとしてイベントループで連鎖的に並行で連鎖的に処理されます。
+ということで次のように Promise chain を並列化していると思っていても、内部的な非同期 API 処理が並列化されるだけで、chain 部分のコールバックは今まで見てきたようにマイクロタスクとしてイベントループで連鎖的に並行で処理されます。
 
 ```js
 // 非同期 API の並列起動
 fetch(urls[0]).then(response => response.text()).then(text => console.log(text)); 
 fetch(urls[1]).then(response => response.text()).then(text => console.log(text));
 fetch(urls[2]).then(response => response.text()).then(text => console.log(text));
-// chain によって登録されているコールバックはマイクロタスクとして連鎖的に処理される
+// chain によって登録されているコールバック関数はマイクロタスクとして連鎖的に処理される
 ```
 
 先程定義したような async 関数 `fetchThenConsole()` も次のように３つを順番に起動したときには、内部の await 式で一時的断中しても非同期 API がバックグラウンドで継続するために async 関数そのものが「並列化」しているように誤解してしまうことが多いです。Promise chain と同じ様に await 式以降の処理はマイクロタスクとして連鎖的にイベントループで処理されます。
 
 ```js
 // async 関数を順番に起動していく
-fetchThenConsole(urls[0]);
-fetchThenConsole(urls[1]);
-fetchThenConsole(urls[2]);
-// 並列化しているのはあくまで非同期 API
+fetchThenConsole(urls[0]); // 内部の await 式で一時中断して呼び出し元に制御が戻る
+fetchThenConsole(urls[1]); // 内部の await 式で一時中断して呼び出し元に制御が戻る
+fetchThenConsole(urls[2]); // 内部の await 式で一時中断して呼び出し元に制御が戻る
+// 並列化しているのはあくまで内部の非同期 API
 // await 式以降はイベントループで連鎖的に処理される
 ```
 
@@ -199,7 +199,7 @@ const testUrls2 = [
 })();
 ```
 
-適当な HTML ファイルのスクリプトタグで `src="./index.js"` を指定して読み込ませます。開発者ツールのネットワークの項目を確認するとブラウザ環境では大体１つの fetch に次のような時間がかかっていることが分かります。待機時間がかなりを占めていることが分かります。
+適当な HTML ファイルのスクリプトタグで `src="./index.js"` を指定した上でローカルサーバーを立てて読み込ませます。開発者ツール(dev tool)のネットワークの項目を確認するとブラウザ環境では大体１つの fetch に次のような時間がかかっているおり、待機時間がかなりを占めていることが分かります。
 
 ![time_to_fetch](/images/js-async/img_devtool_time_to_fetch.jpg)
 
@@ -277,7 +277,7 @@ Promise.all(promiseArray)
   });
 ```
 
-`Promise.all()` からは返ってくるのは Promise インスタンスなのでもちろん chian できます。そしてその Promise の履行値は `[ 1, 2, 3 ]` という数値の配列であることが分かります。`then()` で chain した際に入力として受け取る `data` は `Promise.all()` から返る Promise インスタンスの履行値です。
+`Promise.all()` からは返ってくるのは Promise インスタンスなのでもちろん chain できます。そしてその Promise の履行値は `[ 1, 2, 3 ]` という数値の配列であることが分かります。`then()` で chain した際に入力として受け取る `data` は `Promise.all()` から返る Promise インスタンスの履行値です。
 
 こんな感じで複数の Promise インスタンスをまとめ上げて、すべてが履行状態になった後でなにかしたいと言う時にはこの `Promise.all()` メソッドを使用します。このような使い方がいわゆる「Promise の合成(Composition)」と呼ばれる行為です。
 
@@ -373,6 +373,10 @@ Promise combinator は `Promise.resolve()` や `Promise.reject()` と同じく�
 ## Promise.allSettled vs Promise.all
 
 複数の Promise 処理すべてに興味があり、Promise 処理同士に依存関係があり１つも失敗したくないという場合には、`Promise.all()` を使用します。`fetch()` で考えるとすべてのリソースフェッチに成功する必要があるなら、この `Promise.all()` を利用します。複数の Promise 処理の成功や失敗に興味がなく、とりあえずすべての処理を行ってからなにかしたいという場合には `Promise.allSettled()` を使用します。複数の Promise 処理がすべて Settled になったら返り値の Promise インスタンスが履行状態になります。
+
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
+
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 
 『[古い非同期 API を Promise でラップする](12-epasync-wrapping-macrotask)』のチャプターで解説した Promisification した `setTimeout()` によるタイマーを使って比較してみましょう。
 
@@ -481,16 +485,17 @@ Promise.all([
 
 使い分け次のようばケースとなります。
 
-- `Promise.allSettled()` を使用するのは、複数の非同期タスクが互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用されます。
-- `Promise.all()` を使用するのは、複数の非同期タスクが互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合にはより適切。
+- `Promise.allSettled()` を使用するのは、複数の非同期が絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用されます。
+- `Promise.all()` を使用するのは、複数の非同期が絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合にはより適切。
 
-https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
-
-https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 
 ## Promise.race vs Promise.any
 
 複数の Promise 処理すべてには興味がなく、対象となるものの内のどれか１つの Promise インスタンスが Settled になるかどうかに興味があり、履行か拒否には興味がない場合には `Promise.race())` を使用します。履行されたものに興味があり、最初に履行したものを取り出したい場合には `Promise.any()` を使用します。この２つのメソッドも複数の Promise 処理を合成して並列化しますが、１つのものが条件を満たした時点で他の処理については考える必要がなくなり、完了、つまり返り値の Promise インスタンスが履行状態となります。
+
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/any
+
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
 
 `Promise.race()` も Promise インスタンスの配列を引数にとり、返り値となる Promise インスタンスは配列内の一番最初に完了した、つまり Settled となった Promise インスタンスと同じ状態になります。履行状態なら返り値のインスタンスも履行状態となり、拒否状態なら返り値のインスタンスも拒否状態となります。
 

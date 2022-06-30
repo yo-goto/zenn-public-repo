@@ -136,7 +136,9 @@ deno 1.20.4
 
 https://deno.land/x/deno@v1.20.4
 
-Deno ではデフォルトで TypeScript を設定無しにすぐに実行できるので、**最終的に TypeScript で Promise の型を考える**ために使っているという側面もあります。
+Deno ではデフォルトで TypeScript を設定無しにすぐに実行できるので、**最終的に TypeScript で Promise の型を考える**ために使っているという側面もあります。Deno を使うことで JavaScript に型情報の操作を加えた TypeScript へとスムーズに移行していくことができます[^DenoのTS]。
+
+  [^DenoのTS]: Deno は V8 エンジンでの JavaScript をベースにしつつ、型の世界(TypeScript)へと簡単に立ち入ることができる環境なので段階的に「型情報の操作」に関する学習を進めることができます。[ts-node](https://typestrong.org/ts-node/) などの追加パッケージが必要なく TypeScript ファイルをコマンドラインから実行できます。
 
 サーバーを立てたり HTML ファイルなどを噛ませず、以下の様に JS ファイルを用意してターミナルから `deno run` コマンドを使ってローカル環境で JavaScript を実行していきます。`node` コマンドでもいいですが、これが JavaScript の非同期処理をテストするための最も早い方法です。
 
@@ -199,6 +201,10 @@ JS Visualizer では実装ミスとも言える点や勘違いしやすい点が
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2022-06-30
+  - 新チャプター「await 式の配置による制御」を追加
+  - 新チャプター「反復処理の制御」を追加
+  - 新チャプター「参考文献」を追加
 - 2022-06-26
   - 新チャプター「Promise の静的メソッドと並列化」を追加
 - 2022-06-16

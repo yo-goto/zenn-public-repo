@@ -5,9 +5,9 @@ aliases: [ch_await 式の配置による制御]
 
 # このチャプターについて
 
-非同期処理の学習の後半戦では「**await 式の配置**」がキーになります。await 式の配置次第で実行や完了の順番が変わってくるため、**await 式の配置によって効率的に順序付けする、あるいは意図的に実行順序付けしないことが重要です**。
+非同期処理の学習の後半戦では「**await 式の配置**」がキーになります。await 式の配置次第で実行や完了の順番が変わってくるため、**await 式の配置によって効率的に順序付けする、あるいは意図的に順序付けしないことが重要です**。
 
-このチャプターに到達するまでに Promise やら非同期 API の挙動については十分に学んだので今度は**こちら側から意図的に制御していく**ことを訓練していきます。
+このチャプターに到達するまでに Promise やら非同期 API の挙動については十分に学んだので、今度はこちら側から意図的に「制御の流れ」を作りだしていく訓練を行います。
 
 # 不定性の制御
 
@@ -72,7 +72,7 @@ randomTimer("3rd", "[C-1]")
   .then(() => console.log("👦 [C-3]"));  // C-1 → C-2 → C-3 の保証
 ```
 
-特定範囲内での不定性の制御したいなら async 関数内で await 式を配置して順序づけを行うことで、**この範囲内での実行と完了の順番を担保できます**。いつもどおり、この async 関数の範囲外にあるコードが await 式で中断している最中にもメインスレッドで実行されているのですべてのコードの実行順序ではないことに注意してください。
+特定範囲内での不定性の制御したいなら async 関数内で await 式を配置して順序づけを行うことで、**この範囲内での実行と完了の順番を担保できます**。いつもどおり、この async 関数の範囲外にあるコードが await 式で中断している最中にもメインスレッドで実行されているので、すべてのコードの実行順序ではないことに注意してください。
 
 ```js
 (async () => {
@@ -94,7 +94,7 @@ randomTimer("3rd", "[C-1]")
 })();
 ```
 
-非同期 API は環境がバックグラウンドで並列的に処理してくれているので裏でどのように処理されているかは分かりません。`fetch()` に限ったことではなく非同期 API を並列化した際にはある程度不定性がでてくるため、行いたい順番(実行と完了の順番)が重要なら await で制御する必要があります。
+非同期 API は環境がバックグラウンドで並列的に処理してくれていますが、裏でどのように処理されているかは分かりません。`fetch()` に限ったことではなく非同期 API を並列化した際にはある程度不定性がでてくるため、行いたい順番(実行と完了の順番)が重要なら await 式で制御する必要があります。
 
 ```js
 (async () => {
@@ -115,7 +115,7 @@ randomTimer("3rd", "[C-1]")
 })();
 ```
 
-少し復習として Promise chain と async/await の変形を考えてみましょう。上記コードの例では await Promise chain の形になっていますが、もちろん Promise chain だけででもそのような順序付けができますが、`randomTimer()` のコードを完全な Promise chain にしてみます。
+少し復習として Promise chain と async/await の変形を考えてみましょう。上記コードの例では await Promise chain の形になっていますが、もちろん Promise chain だけででもそのような順序付けができます。実際に `randomTimer()` のコードを完全な Promise chain にすることで順序付けてみます。
 
 ```js:Promise chain
 randomTimer("1st", "[A-1]")
@@ -133,12 +133,12 @@ randomTimer("1st", "[A-1]")
           .then(() => console.log("👦 [A-9]"))
           .then(() => {
             console.log("すべてのrandomTimer chainが完了しました");
-          })
-      })
+          });
+      });
   });
 ```
 
-かなり見づらいので、『[Promise チェーンはネストさせない](9-epasync-dont-next-promise-chain)』のチャプターで見た通り、なるべくネストさせないように変形すると次のようになります。
+ネストが入っていて見づらいので、『[Promise チェーンはネストさせない](9-epasync-dont-next-promise-chain)』のチャプターで見た通り、なるべくネストさせないようにフラットに変形すると次のようになります。
 
 ```js:ネストをフラットにしたchain
 randomTimer("1st", "[A-1]")
@@ -183,7 +183,7 @@ randomTimer("1st", "[A-1]")
 })();
 ```
 
-もしも順序に意味がないなら `Promise.all()` などでまとめ上げます。
+もしも順序に意味がないなら `Promise.all()` などでまとめ上げて並列化させます。これで時間効率がよくなり、すばやく完了します。
 
 ```js
 (async () => {
@@ -224,7 +224,7 @@ randomTimer("1st", "[A-1]")
 
 このように意図に応じて色々な変形や書き方がありえます。
 
-ただし、次のように async 関数である `randomTimer()` を await せずに放っておくと良くないことが起きます。これにいては後で解説します。
+ただし、次のように async 関数である `randomTimer()` を await せずに放っておくようなコードを書くと良くないことが起きます。これについては後で解説します。
 
 ```js
 (async () => {
@@ -236,7 +236,7 @@ randomTimer("1st", "[A-1]")
 })();
 ```
 
-# スケールを持つレイヤーでの制御
+# レイヤーでの制御
 
 変形をもどして await Promise chain の形をもう一度みてみましょう。この形から学べることがいくつかあります。
 
@@ -259,7 +259,7 @@ randomTimer("1st", "[A-1]")
 })();
 ```
 
-やっかないこととして、上記の await で制御しているのは Promise chain という単位で順序付けていることです。Promise chain そのものは内部で「`fetch()` してから `response.text()` でテキスト抽出して、最終的にコンソール出力する」という順序付けがすでになされています。asycn 関数内ではその chain を単位にしてさらに await で順序付けを行っています。
+やっかないこととして、上記の await で制御しているのは Promise chain という単位で順序付けていることです。Promise chain そのものは内部で「`fetch()` してから `response.text()` でテキスト抽出して、最終的にコンソール出力する」という順序付けがすでになされています。async 関数内ではその chain を単位にしてさらに await で順序付けを行っています。
 
 つまり、小さいスケールでの順序付け(あるいは並列化)と一段回大きなスケールでの順序付け(あるいは並列化)がされていることに気づく必要があります。関心のある領域(レイヤー)内での実行と完了の順番を保証するために await や chain での制御が次のように多重のレイヤーで行われていることがあり得ます。
 
@@ -277,11 +277,12 @@ async function middleStep() {
   const p1 = smallStep().then().then();
   const p2 = smallStep().then().then();
   const p3 = smallStep().then().then();
-  return await Promise.all([p1, p2, p3]);
+  await Promise.all([p1, p2, p3]);
+  console.log("すべてのsmallStepのchainが完了しました");
 }
 
 async function smallStep() {
-  // 非同期 API を起点にした chian の並列化(本質的には非同期 API の並列化)
+  // 非同期 API を起点にした chain の並列化(本質的には非同期 API の並列化)
   const p1 = fetch(urls[0]).then(response => response.text()).then(text => console.log(text)); 
   const p2 = Deno.writeTextFile(paths[0], inputData).then(() => console.log("書き込み完了しました"));
   const p3 = fetch(urls[1]).then(response => response.text()).then(text => console.log(text)); 
@@ -293,7 +294,7 @@ async function smallStep() {
 export default bigStep;
 ```
 
-ライブラリなどで提供される async 関数は内側でネットワーキングを行う Web API や Node や Deno でのパッケージならそれぞれの Runtime API を使用していますが、ユーザーが直接的に触る async 関数は export されたレイヤーのトップとなったものです。内部的に環境の機能である非同期 API が関与した様々な処理がまとめられて抽象化されており、利用するための１つの窓口となった async 関数を使用して、それを使った後に何か関連する作業をしたい場合に await で制御します。
+ライブラリなどで提供される async 関数は内側でネットワーキングを行う Web API や Node や Deno でのパッケージならそれぞれの Runtime API を使用していますが、ユーザーが直接的に触る async 関数は export されて別の場所で使えるようなったもので、つまりレイヤーのトップとなったものです。内部的に環境の機能である非同期 API が関与した様々な処理がまとめられて抽象化されており、利用するための１つの窓口となった async 関数を使用して、それを使った後に何か関連する作業をしたい場合に await で制御します。
 
 ```js
 import bigStep from "bigStep";
@@ -361,9 +362,9 @@ import noAwait from "./noAwait.js";
 })();
 ```
 
-このコードで意図したいのは次のようなことです。
+このコードで意図したいのは次のようなことだと想定してください。
 
->「ランダムな時間で完了するタイマーの処理を２つ同時に起動する `asyncFn()` という処理を `asyncFn()` 関数内で２つ順番に実行して(注: １つ目が終わってから２つ目を起動させる)それらが完了してからコンソールに完了メッセージを出力して、最終的に `noAwait()` 自体が完了したことを通知するメッセージをコンソールに出力する」
+>「ランダムな時間で完了するタイマーの処理２つを並列に起動する `asyncFn()` という処理を `noAwait()` 関数内で２つ順番に実行して(注: １つ目が終わってから２つ目を起動させる)それらがすべて完了してからコンソールに完了メッセージを出力して、最終的に `noAwait()` 自体が完了したことを通知するメッセージをコンソールに出力する。そして、それを `useNoAwait.js` を実行することで実現する。」
 
 さて、`useNoAwait.js` ファイルを `deno run` で実行してみるとどのような出力が得られるでしょうか。ちょっと考えてみてください。
 
@@ -387,7 +388,7 @@ import noAwait from "./noAwait.js";
 ```
 :::
 
-このコードは今までのように意図したとおりになりません。意図通りのコードであれば次のような出力が得られるはずですがそうはなりませんでした。
+このコードは今までのように意図した通りにはなりません。意図通りのコードであれば次のような出力が得られるはずですがそうはなりませんでした。
 
 ```sh
 # 意図通りであればこうなるはずだがならない😅...
@@ -449,7 +450,7 @@ import noAwait from "./noAwait.js";
 
 ```sh
 ❯ deno run useNoAwait.js
-🤪 ２つのasyncFnの処理は完了しました?  # <-- 意図していない
+🤪 ２つのasyncFnの処理は完了しました?  # <-- 意図していない?
 😅 noAwaitの処理は完了しました? # <--- 意図していない?
 ⏰ rTimerの処理を終了します
 184[ms]経過
@@ -465,9 +466,21 @@ import noAwait from "./noAwait.js";
 
 `😅 noAwaitの処理は完了しました?` の出力は意図したものでしょうか?
 
-混乱しやすいですが、この部分は実は意図通りになっています。意図していた通りに `noAwait()` が完了してからコンソールにメッセージが出力されています。つまりこの時点で **`noAwait()` 自体は完了しています**。
+混乱しやすいですが、この部分は実は意図通りになっています。意図していた通りに `noAwait()` が完了してからコンソールにメッセージが出力されています。つまりこの時点で **`noAwait()` 自体は完了しています**。つまり、`noAwait()` を使っているレイヤーのコードには問題はありません。
 
-```js
+```js:useNoAwait.js(このコードは問題ない)
+import noAwait from "./noAwait.js";
+
+(async () => {
+  await noAwait(); 
+  // noAwait の完了してから次の処理が実行される
+  console.log("😅 noAwaitの処理は完了しました?");
+})();
+```
+
+問題なのは `noAwait()` 関数そのものです。
+
+```js:問題のある箇所
 export default async function noAwait() {
   asyncFn();
   asyncFn();
@@ -516,9 +529,9 @@ async 関数内の処理は上から下に１つずつ実行されていきま�
 
 つまり、`noAwait()` では２つの `asyncFn()` を起動しただけで後は知りません、という状態になっています。この２つの async 関数の完了はどこになるか感知しません。そしてユーザー側も分かりません。イベントループでマイクロタスクが連鎖的に処理されるのでいつかは処理が完了するはずですが、予測して次の処理を作り出すのはかなり困難でしょう。
 
-`noAwait()` を提供しているのがライブラリだったとすると、ライブラリのコードが壊れているのでユーザーはそのソースを改変しない限り意図通りのコードを書くことができない状態になっています。使う側がちゃんと await していようがレイヤー内部のどこかでぶっ壊れていれば適切な順番や流れを作ることができないので、`sleep()` で待機時間を挿入して待つようなことになります。
+`noAwait()` を提供しているのがライブラリだったとすると、ライブラリのコードが壊れているのでユーザーはそのソースを改変しない限り意図通りのコードを書くことができない状態になっています。使う側がちゃんと await していようが内部レイヤーのどこかで壊れていれば適切な順番や制御の流れを作ることができないので、`sleep()` で待機時間を挿入して待つようなことになります。
 
-問題なのは**範囲内での async 関数や非同期 API が投げっぱなしになっている**ことです。これらの処理が起動している呼び出し元の範囲で完了が担保されていないとさらに上のレイヤーで利用するときにちゃんと await したのに実行順番が意図通りにならないというバグを引き起こすことになります。
+問題なのは**範囲内での async 関数や非同期 API が投げっぱなしになっている**ことです。これらの処理が起動している呼び出し元の範囲で完了が担保されていないと、さらに上のレイヤーで利用する際に適切に await しても実行順番が意図通りにならないというバグを引き起こします。
 
 ```js
 export default async function noAwait() {
@@ -530,12 +543,12 @@ export default async function noAwait() {
 }
 ```
 
-「投げっぱなしにしておきたい」という意図が無い限り、async 関数や非同期 API はそれらを利用する async 関数内で完了を担保しておかないと上のレイヤーで使う時に困ることになります。つまり、「起動する」ということのみが行われて、完了した後に何かしたい場合に上のレイヤーでそれを行うのは非常に難しくなってしまいます。
+「投げっぱなしにしておきたい」という意図が無い限り、async 関数や非同期 API はそれらを利用する async 関数内で完了を担保しておかないと、上のレイヤーで使う時に困ることになります。つまり、「起動する」ということのみが行われて、完了した後に何かしたい場合に上のレイヤーでそれを行うのは非常に難しくなってしまいます(これを回避するために `sleep()` を噛ませて一時的に時間を置くなどする必要がでてくる)。
 
 これは『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』のチャプターで見たように `return` しない非同期処理のケースと同じです。`await` 式で Promise 処理を評価しないのは `then()` のコールバックで Promise 処理を `return` しないことによって「副作用」になってしまうのと同じです。
 
 :::message
-そもそも `console.log()` が副作用なのですが、何が起きるのか分かりやすくするために利用しています。
+そもそも `console.log()` 自体が副作用なのですが、何が起きるのか分かりやすくするために利用しています。
 :::
 
 順序付けて行う場合でも並列化する場合でも、利用する async 関数や非同期 API に対して await を配置することは、その async 関数内での完了そのものを担保することになります。
@@ -571,8 +584,8 @@ Top-level await が使えるのに async の即時実行などを解説に多用
 // async 関数内に処理があるのに await 式が１つも無いと怒られる
 async function noAwait() {
   asyncFunc1(); 
-  asyncFunc1();
-  asyncFunc1();
+  asyncFunc2();
+  asyncFunc3();
 }
 ```
 
@@ -580,17 +593,17 @@ async function noAwait() {
 >In general, the primary reason to use async functions is to use await expressions inside. If an async function has no await expression, it is most likely an unintentional mistake.
 >([require-await | deno_lint docs](https://lint.deno.land/?q=require-await#require-await) より引用)
 
-このリントルールに怒られないようにするには１つでも await 式があればよいのですが、今までの話を踏まえると確実にこの範囲内で完了を担保させておくのが良いでしょう。
+このリントルールに怒られないようにするには１つでも await 式があればよいのですが、今までの話を踏まえると確実にこの範囲内で起動するすべての非同期処理の完了を担保させておくのが良いでしょう。
 
 ```js
 async function noAwait() {
-  // ２つを並列化しておく
-  await Promise.all([ // この範囲内で完了が担保される
+  // ２つを並列化
+  await Promise.allSettled([ // この範囲内で完了が担保される
     asyncFunc1(),
-    asyncFunc1(),
+    asyncFunc2(),
   ]);
   // 上が終わってから実行
-  await asyncFunc1(); // この範囲内で完了が担保される
+  await asyncFunc3(); // この範囲内で完了が担保される
   // すべての処理の完了がこの範囲内で担保される 
 }
 ```
@@ -665,7 +678,7 @@ function pTimer(time, order) {
 
 `Promise.race()` を使う目的は複数の Promise 処理を競争させて最初に完了したものの後に何かするということです。より分かりやすく考えると、例えば `fetch()` メソッドなら複数のリソースから同時にデータフェッチさせて一番最初に取得できたデータだけを表示させるなどがやりたい時に利用します。しかし、一番最初に完了したもの以外の `fetch()` はどうなるでしょうか。上の `raceTime.js` のコードで見たように「投げっぱなし」となり、利用する async 関数自体が完了した後になってから投げっぱなしになった処理が完了します。
 
-投げっぱなしになっている処理は気持ち悪いので `Promise.reace()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぎぐために一番最初に完了したもの以外を停止させます。
+投げっぱなしになっている処理は気持ち悪いので `Promise.reace()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぐために一番最初に完了したもの以外を停止させます。
 
 一旦 Promise 処理から離れると `setTimeout()` API の停止には対応する `clearTimeout()` API というものを利用することで実現できます。`setTimeout()` からは戻りとしてタイマーの ID である数値が返ってくるのでそれを `clearTimeout()` に入力として渡すことでタイマーをキャンセルできます。
 
@@ -687,7 +700,7 @@ https://doc.deno.land/https://deno.land/std@0.145.0/async/mod.ts/~/delay
 function delay(ms: number, options?: DelayOptions): Promise<void>;
 ```
 
-このタイマーを使う際には AbortController と AbortSignal という API が利用できます。これらは中止系の処理を統一化した API であり、この API を介して中止イベントを発火させて、それを通知した処理を停止させます。
+このタイマーを使う際には AbortController と AbortSignal という API が利用できます。これらは中止系の処理を統一化した API であり、これらの API を介して中止イベントを発火させて、その通知を受け取った処理を停止させます。
 
 https://developer.mozilla.org/ja/docs/Web/API/AbortController
 
@@ -701,7 +714,7 @@ AbortController と AbortSignal の使い方については Masaki Hara さん�
 
 https://zenn.dev/qnighy/articles/772f632af595aa
 
-基本的な使い方としては、`AbortController()` コンストラクタを使用して `new` で AbortController インスタンスを作成し、abort の命令を受信する signal オブジェクトを作ります。
+基本的な使い方としては、`AbortController()` コンストラクタを使用して `new` で AbortController インスタンスを作成し、中止(abort)のイベントを受信する signal オブジェクトを作ります。
 
 ```js
 const controller = new AbortController();
@@ -709,7 +722,7 @@ const signal = controller.signal;
 // const { signal } = controller; // 分割代入の場合
 ```
 
-`fetch()` なら第二引数に `{ signal: signal }` というオブジェクトを渡すことで `fetch()` を停止させる準備ができます。この `signal` を介して `fetch()` は `abort` のイベントを受信します。
+`fetch()` なら第二引数に `{ signal: signal }` というオブジェクトを渡すことで `fetch()` を停止させる準備ができます。`fetch()` はこの `signal` を介して `abort` のイベントを受信します。
 
 ```js
 fetch(url, { signal })
@@ -725,13 +738,13 @@ fetch(url, { signal })
 controller.abort(); // abort イベントの発火
 ```
 
-それでは実際に `setTimeout()` で 500 ミリ秒以内に `conroller.abort()` によって `fetch()` 処理の中止を通知させるコードを考えてみると次のようになります。
+それでは実際に `setTimeout()` で 500 ミリ秒後に `conroller.abort()` を起動することで `fetch()` 処理の中止を通知させるコードを考えてみると次のようになります。
 
 ```js
+const url = "https://api.github.com/zen";
+
 const controller = new AbortController();
 const signal = controller.signal;
-
-const url = "https://api.github.com/zen";
 
 console.log("fetchを開始します");
 fetch(url, { signal })
@@ -749,9 +762,9 @@ setTimeout(() => {
 }, 500);
 ```
 
-`fetch()` が完了していなければ、`fetch()` に渡した `signal` を介して停止命令が受信されるので非同期例外として DOMException が throw され、`catch()` メソッドで補足されます。
+500 ミリ秒経過後に `fetch()` によるデータフェッチが完了していなければ、`fetch()` の第二引数に渡した `signal` を介して停止命令が受信されて処理がキャンセルされるます。その際には非同期例外として DOMException が throw されるので、chain の `catch()` メソッドで補足できます。
 
-これを実行すると自分の通信環境では大体の確率で停止できます。
+これを実行すると自分の通信環境ではある程度の確率で停止できます。
 
 ```sh
 ❯ deno run -A fetchAbort.js
@@ -762,7 +775,7 @@ DOMException: The signal has been aborted
 
 `signal.aborted` ですでに `controller.abort()` によって `abort` イベントが発火されたかどうかを確認できます。また、`signal.addEventListener("abort", eventhandler)` で `abort` イベントをリスンしてハンドルできます。
 
-基本的な使い方がわかったところで、Deno の std である `delay()` について考えます。`delay()` 関数の TypeScript による実装を見てもらうと分かりますが、この AbortController と AbortSignal API の機構を `setTimeout()` と `clearTimeout()` API を組み合わせることでキャンセル可能な Promise-based なタイマーを実現しています。
+基本的な使い方がわかったところで、Deno の std である `delay()` について考えます。`delay()` 関数の TypeScript による実装を見てもらうと分かりますが、この AbortController API と AbortSignal API の機構を `setTimeout()` API と `clearTimeout()` API を組み合わせることで**キャンセル可能な Promise-based なタイマー**を実現しています。
 
 https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
 
@@ -791,7 +804,7 @@ import { delay } from "https://deno.land/std@0.145.0/async/mod.ts";
 })();
 ```
 
-それでは話を戻して、実際に `await Promise.race(promises)` で複数の遅延時間のタイマーを競争させて最初に完了したもの以外を直ちに停止させてみます。`delay()` を更に async 関数でラップして `dTimer()` というレイヤーを作っておきます。
+それでは話を戻して、実際に `await Promise.race(promises)` で複数の遅延時間のタイマーを競争させて最初に完了したもの以外を直ちに停止させてみます。`delay()` を更に async 関数でラップして `dTimer()` 関数というレイヤーを作っておきます。
 
 ```js:dtime.js
 import { delay } from "https://deno.land/std@0.145.0/async/mod.ts";
@@ -832,7 +845,69 @@ raceの結果: 100[ms]のタイマー
 
 当たり前ですが一番短い 100 ミリ秒のタイマーが最初に完了するため、このタイマーが完了次第コンソールに完了の結果が出力されます。そして、`const winner = await Promise.race(promises);` の直後に `controller.abort();` ですべてのタイマーをキャンセルするように指示しているので他のタイマーも含めてすべてのタイマーが `abort` のイベントを受け取り内部的に `clearTimeout()` が呼ばれてタイマー処理がキャンセルされます。
 
-`dTimer()` の第三引数はオプション引数にしてあるので `{ signal }` を渡さなくても機能します。これを渡さないとどうなるでしょうか。
+`reject(new DOMException("Delay was aborted.", "AbortError"))` によって `delay()` から返る Promise インスタンスは拒否状態となります。`dTimer` 内部で例外の補足などを行っていないため次のように try-catch で async 関数内で例外補足できます。
+
+```js
+async function dTimer(msg, time, option = {}) {
+  try {
+    await delay(time, option);
+    console.log(`${time}[ms]が経過しました`);
+    return msg;
+  } catch (err) {
+    console.log("タイマーはキャンセルされました" ,err)
+  }
+}
+```
+
+この状態で実行すると次の出力を得ます。
+
+```sh
+❯ deno run dtime.js
+100[ms]が経過しました
+raceの結果: 100[ms]のタイマー
+タイマーの競争が終了しました
+タイマーはキャンセルされました DOMException: Delay was aborted.
+タイマーはキャンセルされました DOMException: Delay was aborted.
+```
+
+競争終了前にキャンセルのメッセージを通知させたければ、`console.log("タイマーの競争が終了しました");` の前に `dTimer()` から返ってくる Promsie インスタンスが Settled となるのを await 式で評価して待ちます。
+
+```js
+(async () => {
+  const promises = rTimes.map((time) =>
+    dTimer(`${time}[ms]のタイマー`, time, { signal })
+  );
+  const winner = await Promise.race(promises);
+  controller.abort(); // すべてのタイマーを停止させる
+  console.log("raceの結果:", winner);
+  await Promise.allSettled(promises);
+  // ここで再度 await してすべての dTimer の完了を待ってから出力
+  console.log("タイマーの競争が終了しました");
+})();
+
+async function dTimer(msg, time, option = {}) {
+  try {
+    await delay(time, option);
+    console.log(`${time}[ms]が経過しました`);
+    return msg;
+  } catch (err) {
+    console.log("タイマーはキャンセルされました" ,err)
+  }
+}
+```
+
+再度 await することでキャンセルされた `dTimer()` の処理の完了を待ってから終了通知のメッセージを出力できます。
+
+```sh
+❯ deno run dtime.js
+100[ms]が経過しました
+raceの結果: 100[ms]のタイマー
+タイマーはキャンセルされました DOMException: Delay was aborted.
+タイマーはキャンセルされました DOMException: Delay was aborted.
+タイマーの競争が終了しました
+```
+
+`dTimer()` の第三引数はデフォルト引数によって省略可能にしてあるので `{ signal }` を渡さなくても機能します。これを渡さないとどうなるでしょうか。
 
 ```diff js
 (async () => {

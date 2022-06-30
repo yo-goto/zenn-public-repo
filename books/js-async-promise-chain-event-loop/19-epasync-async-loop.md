@@ -21,29 +21,36 @@ const urls = [
 ];
 ```
 
+反復処理といっても、やりたいことの意図に応じてデータフェッチを並列化したり、順序付けして逐次実行する２つのケースが考えられます。
+
 # (1) 順番に興味がないので並列化して効率化
-この場合、各 URL からリソースを取得する順番に意味は特になければ、`Promise.all()` などでまとめて上げて内部的に非同期 API を並列化させて効率化させてもよいでしょう。データフェッチ以外のケースでも、非同期の複数タスクの間に依存関係や順序関係が無いならこのようなやり方で行います。
 
-この場合は配列の `map()` メソッドなどを使って Promise の配列を作り、`await Promise.all()` ですべての完了をまってから次に何かを行うようにします。各 async 関数は Promise の配列を作る過程で並列的に起動させます。実際にはもちろん１つずつ起動させますが、内部的に利用される非同期 API が起動後に環境によってバックグラウンドで時間的に継続処理されるので実質的に「並列化」されます。
+まずは、順番に興味がない場合ですが、各 URL からリソースを取得する順番に意味が無ければ、`Promise.all()` などでまとめて上げて内部的に非同期 API を並列化することで効率化させます。データフェッチ以外のケースでも、非同期の複数タスクの間に依存関係や順序関係が無いならこのようなやり方で行います。
 
-```js
+この場合は配列の `map()` メソッドなどを使って Promise の配列を作り、`await Promise.all()` ですべての完了をまってから次に何かを行うようにします。各 async 関数は Promise の配列を作る過程で並列的に起動させます。実際にはもちろん１つずつ起動させますが、内部的に利用される非同期 API が起動後に環境によってバックグラウンドで時間的に継続処理されるので実質的に「並列化」されることになります。
+
+```js:並列化を分ける
 (async () => {
-  const responses = await Promise.all(urls.map((url) => fetch(url)));
-  const jsons = await Promise.all(responses.map((response) => response.json()));
-  jsons.forEach((json) => console.log(json));
+  const responses = await Promise.all(urls.map(url => fetch(url)));
+  const jsons = await Promise.all(responses.map(response => response.json()));
+  jsons.forEach(json => console.log(json));
   console.log("すべての非同期処理が完了しました");
 })();
 ```
 
-```js
+```js:並列化を分けない
 (async () => {
-  const promises = urls.map(url => fetch(url).then(response => response.json().then(json => console.log(json))));
+  const promises = urls.map(url => 
+    fetch(url)
+      .then(response => response.json())
+      .then(json => console.log(json))
+  );
   await Promise.all(proimses);
   console.log("すべての非同期処理が完了しました");
 })();
 ```
 
-どの程度の粒度の操作で await するかを考える必要がありまが、通常は共通の操作を asycn 関数にまとめて try-catch に閉じ込めるなどを行うのが一般的ではないでしょうか。async 関数内の処理は独立させてそのレイヤーでの実行と完了の順番が担保されるようにします。
+どの程度の粒度の操作を単位にして await するかを考える必要がありますが、通常は共通の操作を async 関数にまとめて try-catch に閉じ込めるなどを行うのが一般的ではないでしょうか。async 関数内の処理は独立させてそのレイヤーでの実行と完了の順番が担保されるようにします。
 
 ```js
 async function fetchThenConsole(url) {
@@ -78,7 +85,7 @@ async function fetchThenConsole(url) {
 })();
 ```
 
-一般的には `forEach()` のコールバックで非同期タスクの実行をやるとミスが起きるのであまり使われないのではないでしょうか。`map()` の方が分かりやすいですし。`forEach()` のミスについては後で解説します。
+一般的には `forEach()` のコールバックで非同期が絡む作業の実行をやるとミスが起きるのであまり使われないのではないでしょうか。`map()` の方が分かりやすいですし。`forEach()` 使用時のミスについては後で解説します。
 
 # (2) 順番に興味があるので順序付けて実行
 もしも、１つ目のリソースを取得が完了してから２つ目のリソースを取得したいという意図があるなら、await 式などで順序付ける必要がでてきます。データフェッチ以外のケースで、非同期の複数タスクの間に依存関係や順序関係がある場合にもこのようなやり方で行います。
@@ -87,27 +94,28 @@ async function fetchThenConsole(url) {
 
 ## 基本は for ループ
 
-古典的な `for` ループを使えるのが async/await のメリットの１つです。古典的な表現ですが、順番に非同期タスクを行うための最も分かりやすい処理の形となります。
+古典的な `for` ループを使えるのが async/await のメリットの１つです。古典的な表現ですが、順番に非同期が絡む作業を行うための最も分かりやすい処理の形となります。
 
 ```js
 (async () => {
   for (let i = 0; i < urls.length; i++) {
-    await fetchThenConsole(urls[i]); // async 関数
+    await fetchThenConsole(urls[i]); 
+    // fetchThenConsole() は async 関数
     console.log(`${i + 1}個目のフェッチが完了しました`);
   }
   console.log("すべての非同期処理が完了しました");
 })();
 ```
 
-各 await 式でこの即時実行の async 関数は処理を一時的に中断して関数の外へと制御が以降します。Promise インスタンスが解決して処理再開を告げるマイクロタスクがコールスタックのトップになることで中断したところから処理再開します。
+各 await 式でこの即時実行の async 関数は処理を一時的に中断して関数の外へと制御が移行します。Promise インスタンスが解決して処理再開を告げるマイクロタスクがコールスタックのトップになることで中断したところから処理再開します。
 
-この場合は順番にリソースの取得が完了してから次のリソース取得を行っています。
+この場合には順番にリソースの取得が完了してから次のリソース取得を行っています。
 
 ## reduce で chain を繋げる
 
 Promise chain しか使えずに async/await が登場するまではこの `for` ループによる古典的な書き方はできませんでした。代わりに配列の `reduce()` メソッドを使って Promise インスタンスにどんどん chain をくっつけていくというやり方で順番付けを行う「スマートなやり方」があります。
 
-今度はデータフェッチではなく、Promise-based なタイマーで一定時間 `sleep()` する処理を考えてみます。
+今度はデータフェッチではなく、Promise-based なタイマーで一定時間 `sleep()` する処理を考えてみます。このタイマーは別のファイルで `import` して使いたいので `export default` しておきます。
 
 ```js:sleep.js
 export default function sleep(time) {
@@ -180,7 +188,7 @@ const result = array.reduce((
   // なんらかの処理
   // 次のイテレーションの previousValue として使われる値を返却する
   return { /*...*/ };
-}, initialValue);
+}, initialValue); // 初期値(最初の previousValue)
 ```
 
 例えば、1000 という数値に対して配列内の各数値を足した値を算出します。`reduce()` メソッドの第二引数に初期値を渡すと、その初期値が最初のコールバック処理の `prviousValue` として与えられます。
@@ -209,7 +217,7 @@ const result = array.reduce((previousValue, currentItem) => {
 console.log(result); //=>  6
 ```
 
-次に Promise chain で累積的に計算を行うことを考えてみます。まずは簡単な chian を `reduce()` で実現するところからです。
+次に Promise chain で累積的に計算することを考えてみます。まずは簡単な Proimse chain を `reduce()` で実現するところから始めましょう。
 
 ```js
 const chars = ["A", "B", "C", "D", "E"];
@@ -237,7 +245,7 @@ const pChain = chars.reduce((previous, item) => {
 
 やっていることは、累積値に chain したものを `return` することで後ろに chain をくっつけていくということです。最初は考えるのが面倒ですが慣れれば結構シンプルだと分かります。
 
-これの肝は初期値として最初から履行している Promise インスタンス `Promise.resolve()` を渡すことです。Promise chain を構築する上では chain の頭となる Promise インスタンスが必要となります。`reduce()` の処理によってこの初期値となる Promise インスタンスの後ろに順番に行いたい処理を `then()` で chian しています。
+これの肝は初期値として最初から履行している Promise インスタンス `Promise.resolve()` を渡すことです。Promise chain を構築する上では chain の頭となる Promise インスタンスが必要となります。`reduce()` の処理によってこの初期値となる Promise インスタンスの後ろに順番に行いたい処理を `then()` で chain しています。
 
 累積処理の結果として最終的にできあがった Promise chain が返ってくるのでこの一連の処理が終わった後に何かしたい場合にはさらに chain するか await 式で評価します。
 
@@ -278,7 +286,7 @@ const chars = ["A", "B", "C", "D", "E"];
 })();
 ```
 
-作り上げるべき Promise chain を理解するために、あえて上のコードを chain にしてみましょう。
+作り上げるべき Promise chain を理解するために、あえて上のコードを chain にしてみましょう(分かりやすくするために無駄に一行ずつ `then()` のコールバックにしています)。
 
 ```js
 (async () => {
@@ -302,7 +310,7 @@ const chars = ["A", "B", "C", "D", "E"];
 
 `sleep()` は Promise インスタンスを返す関数ですから、「副作用」とならないように `then()` のコールバックで `return` してあげる必要がありました。`sleep(1000)` から chain をはじめてもよいのですが、`reduce()` の初期値を考えやすくするために最初から履行している Promise インスタンスである `Promise.resolve()` を chain の先頭にします。
 
-それではこの chian を目指して先程作った `pChain` を改造していきます。
+それではこの chain を目指して先程作った `pChain` を改造していきます。
 
 ```js
 const chars = ["A", "B", "C", "D", "E"];
@@ -342,7 +350,7 @@ const chars = ["A", "B", "C", "D", "E"];
 })();
 ```
 
-これを実行することで意図踊りの結果が得られます。
+これを実行することで意図通りの結果が得られます。
 
 ```sh
 ❯ deno run reduceChain.js
@@ -360,7 +368,7 @@ E
 すべてのアルファベットを出力しました
 ```
 
-改良すべきところがあるとするなら、`then()` が多く、マイクロタスクが無駄に発生してしまうところを直しておきます。Promise chain が分かりやすいように初期値を `Promise.reoslve()` にしましたが、元のコードと同じく、`sleep(1000)` を初期値にして始めてよいでしょう。`console.log()` の実行と `sleep(1000)` の返却も１つの `then()` コールバックにまとめて良いでしょう。
+改良すべきところがあるとするなら、`then()` が多く、マイクロタスクが無駄に発生してしまうところを直しておきます。Promise chain が分かりやすいように初期値を `Promise.reoslve()` にしましたが、元のコードと同じく、Promise インスタンスが返ってくる `sleep(1000)` を初期値にして始めてよいでしょう。`console.log()` の実行と `sleep(1000)` の返却も１つの `then()` コールバックにまとめて良いでしょう。
 
 ```js:reduceChainKai.js
 import sleep from './sleep.js';
@@ -372,7 +380,7 @@ const chars = ["A", "B", "C", "D", "E"];
   const pChain = chars.reduce((promise, item) => {
     return promise.then(() => {
         console.log(item);
-        return sleep(100);
+        return sleep(100); // 副作用にならないように return する
       });
     }, sleep(1000));
   await pChain;
@@ -383,7 +391,7 @@ const chars = ["A", "B", "C", "D", "E"];
 
 前のコードよりも分かりづらいので改良といえるかは微妙ですが。
 
-とにかく、`reduce()` メソッドで順番に非同期タスクを実行する反復処理を書くのは分かりづらいです。`for` ループで書いたほうが明らかに分かりやすくはなります。
+とにかく、`reduce()` メソッドで順番に非同期が絡む作業を実行する反復処理を書くのは分かりづらいです。次のように `for` ループで書いたほうが明らかに分かりやすくなります。
 
 ```js
 import sleep from "./sleep.js";
@@ -392,18 +400,18 @@ const chars = ["A", "B", "C", "D", "E"];
 
 (async () => {
   console.log("１秒ごとにアルファベットの出力を開始します");
-  for (let i = 0; i < chars.length; i++) {
-    await sleep(1000);
-    console.log(chars[i]);
-  }
   await sleep(1000);
+  for (let i = 0; i < chars.length; i++) {
+    console.log(chars[i]);
+    await sleep(1000);
+  }
   console.log("すべてのアルファベットを出力しました");
 })();
 ```
 
 # async callback と forEach
 
-配列の `forEach()` メソッドによる反復処理は使い方をミスすると意図しない結果になるのであまりおすすめではない方法です。
+配列の `forEach()` メソッドによる反復処理は使い方をミスすると意図しない結果になるので、おすすめではない方法です。
 
 再びデータフェッチで考えてみましょう。`fetch()` から始まる一連の処理を単位にした反復処理を行いたいという次のコードは意図した結果にならないコードです。
 
@@ -438,12 +446,12 @@ const urls = [
 { userId: 1, id: 3, title: "fugiat veniam minus", completed: false }
 ```
 
-まずこのコードは VS code で書いていると Deno のリンターに次のように怒られます。
+まずこのコードは VS code で書いていると Deno のリンターの "require-await" ルールによって再び怒られてしまいます。
 
 >Async arrow function has no 'await' expression.
 Remove 'async' keyword from the function or use 'await' expression inside.deno-lint(require-await)
 
-await 式は async 関数の直下でのみ有効です。`for` ループとは異なり、`forEach()` メソッドで行っているのはコールバック関数内で await 式を利用しています。コールバック内の await と asycn の即時実行関数は関連がありません。そのため、Deno のリンターに怒られないようにするにはコールバック関数そのものを async 化して即時実行の asycn キーワードを取り除きます。
+await 式は async 関数の直下でのみ有効です。`for` ループとは異なり、`forEach()` メソッドで行っているのはコールバック関数内で await 式を利用しています。コールバック内の await と async の即時実行関数は関連がありません。そのため、Deno のリンターに怒られないようにするにはコールバック関数そのものを async 化して即時実行の async キーワードを取り除きます。
 
 ```js
 (() => {
@@ -458,7 +466,7 @@ await 式は async 関数の直下でのみ有効です。`for` ループとは�
 })();
 ```
 
-async キーワードを取り除くと即時実行する必要がそのそもなくなってしまったので即時実行ではなく普通に実行するようにします(この時点で雲行きがかなり怪しくなってきました)。
+async キーワードを取り除くと即時実行する必要がそもそも無くなってしまったので即時実行ではなく普通に実行するようにします(この時点で雲行きがかなり怪しくなってきました)。
 
 ```js
 const urls = [
@@ -476,7 +484,7 @@ urls.forEach(async (url) => {
 console.log("これが先に出力されてしまう");
 ```
 
-もちろんこれも意図踊りにはなりません。実行すると前と同じ結果になります。
+もちろんこれも意図通りにはなりません。実行すると前と同じ結果になります。
 
 ```sh
 ❯ deno run -A forEachAsync.js
@@ -503,10 +511,9 @@ urls.forEach(async (url) => {
 
 コールバックである async 関数から返される Promise インスタンスを取得できて await 式で評価できれば意図通りのコードがかけるはずです。
 
-というか、そもそも async の即時実行関数でその範囲での実行と完了の保証をしたかったのに、async の即時実行を辞めたのも問題です。
+というか、そもそも特定の範囲での実行と完了の保証をしたかったのに、async の即時実行を辞めてしまったのも問題です。
 
-`forEach()` での順序付けは方法が思いつきませんが(コールバックを async 化した時点で既に意図踊りになりません)、`forEach()` をなんとか使って並列化した上で制御することはできます。
-とにかく async 関数の実行によって返される Promise インスタンスを取得できることが重要です。
+`forEach()` での順序付けは方法が思いつきませんが(コールバック関数を async 化した時点で既に意図通りになりません)、`forEach()` をなんとか使って並列化した上で制御することはできます。とにかく **async 関数の実行によって返される Promise インスタンスを取得できることが重要**です。
 
 このチャプターの冒頭の方で書いた方法ですが、配列を用意しておいて、その配列に async 関数や非同期 API の chain から返ってくる Promise インスタンスをいれておくことで別のところから制御できるようになります。
 
@@ -548,9 +555,9 @@ const urls = [
 データフェッチがすべて終わってから出力できる
 ```
 
-`forEach()` の解説したのは `forEach()` で反復処理をしようということではなく、非同期タスクの返り値となる Promise インスタンスを await 式で評価して実行と完了の順序を制御することの重要性を確認するためです。
+`forEach()` を解説したのは「`forEach()` で反復処理をしましょう」ということではなく、「非同期が絡む作業の返り値となる Promise インスタンスを await 式で評価して実行と完了の順序を制御することが重要である」ということを確認するためです。Promise インスタンスの評価ができないものは副作用的な振る舞いとなり特定範囲内での完了を担保できなくなってしまいます。
 
-実際、上のようなコードを書くなら `map()` の方が素直にかけて良いです。順序付けを行いたいなら `for` ループなどで分かりやすいコードを書いたほうがきっと良いでしょう。
+実際、上のようなコードを書くなら `map()` の方が素直に書けるので良いです。順序付けを行いたいなら `for` ループなどで分かりやすいコードを書いたほうがきっと良いでしょう。
 
 # for-await-of について
 
