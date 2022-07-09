@@ -29,13 +29,13 @@ Deno 環境ではタイマー以外は Promise based な API を基本とした�
 
 ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが[示唆されています](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)。
 
-イベントベースの古い `FileReader.readAsText()` などの Web API に取って代わる新しい Promise-based API として `Blob.text()` なども登場してきています[^1]。
+イベントベースの古い `FileReader.readAsText()` などの Web API に取って代わる新しい Promise-based API として `Blob.text()` なども登場してきています[^Blob.text]。
 
-  [^1]: https://developer.mozilla.org/ja/docs/Web/API/Blob/text
+  [^Blob.text]: https://developer.mozilla.org/ja/docs/Web/API/Blob/text
 
-実は Node でも Promise-based な API を提供しはじめており、Promise based な Timer API (Promise インスタンスを返す `setTimeout()`, `setImmediate()`, `setInterval()`) なども存在しています[^2]。
+実は Node でも Promise-based な API を提供しはじめており、Promise based な Timer API (Promise インスタンスを返す `setTimeout()`, `setImmediate()`, `setInterval()`) なども存在しています[^Promise-based-Timer]。
 
-  [^2]: https://nodejs.org/api/timers.html#timers-promises-api
+  [^Promise-based-Timer]: https://nodejs.org/api/timers.html#timers-promises-api
 
 マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる(というか、もうなってる?)ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
 :::
@@ -519,7 +519,7 @@ Node 環境のイベントループの実装は、Libuv (**Unicorn Velociraptor*
 
 - Promise 用のものに加えてがもう１つ `nextTickQueue` というマイクロタスクキューが存在していおり、そのキューにあるマイクロタスクは Promise のマイクロタスクキューよりも先に処理される
 - 複数のタスクキューが存在しており、各タスクキューはそれぞれのフェーズ(Phase)に結びついており、イベントループはそれぞれの 6 つのフェーズを経ることでイベントループの一周となる
-- `setImmediate()` という Web 非互換のタイマーがあり、I/O サイクル内では `setTimeout()` のコールバックの比較では `setImmediate()` のコールバックの方が先に処理される
+- `setImmediate()` という Web 非互換のタイマーがあり、I/O サイクル内では `setTimeout()` のコールバックとの比較では `setImmediate()` のコールバックの方が先に処理される
 
 Node 環境のイベントループに上で述べたようにフェーズ(Phase)という概念が導入されています。このフェーズはそれぞれをタスクキューであると考えてください(実際にはキューでないものもある)。
 
@@ -603,7 +603,7 @@ Node 環境にはもう１つのマイクロタスクキューである `nextTic
 - nextTickQueue
 - microTaskQueue
 
-`nextTickQueue` にあるマイクロタスクは Promise 用のマイクロタスクキューよりも先に処理されます。例えば、次のコードを考えるます。
+`nextTickQueue` にあるマイクロタスクは Promise 用のマイクロタスクキューよりも先に処理されます。例えば、次のコードを考えます。
 
 ```js
 // queueMicroVsNextTick.js
@@ -645,6 +645,27 @@ console.log("[2] 🦖 MAINLINE: End");
 [5] 👦 MICRO: [microTaskQueue] queueMicrotask
 [6] 👦 MICRO: [microTaskQueue] queueMicrotask
 [7] ⏰ TIMRES: Task
+```
+
+より短いコードで見てみると次のようになります。
+
+```js:nodeTimer.js
+setImmediate(() => console.log("[6]")); // コールバックをタスクとして発行
+setTimeout(() => console.log("[5]")); // コールバックをタスクとして発行
+queueMicrotask(() => console.log("[3]")); // コールバックをマイクロタスクとして発行
+Promise.resolve().then(() => console.log("[4]")); // コールバックをマイクロタスクとして発行
+process.nextTick(() => console.log("[2]")); // コールバックをマイクロタスクとして発行
+console.log("[1]"); // 同期処理
+```
+
+```sh
+❯ node nodetimer.js
+[1]
+[2]
+[3]
+[4]
+[5]
+[6]
 ```
 
 さらに注意点として、１つのフェーズでは特定数の Task が実行されて、次のフェーズに行きます。すべてではなく特定数(最大制限)があるのは、１つのフェーズのタスク(Task)多すぎると次のフェーズにいつまでも移行できなくなるからです。では実行されずに残されたタスクはどうなるかというと一旦保留にして、次のイベントループにおいて実行されます。ただし、タスクだけは常に完全にキューが空になるまで実行されます。
@@ -715,7 +736,77 @@ https://www.youtube.com/watch?list=TLGGmD0fij1sF90wNTA1MjAyMg&v=X9zVB9WafdE&feat
 
 https://developer.ibm.com/tutorials/learn-nodejs-the-event-loop/#why-you-need-to-understand-the-event-loop
 
+### タイマーの比較
+
+Phase では Timers が最初で Check よりも早く実行されるはずですが、遅延時間を指定しない `setTimeout()` と `setImmediate()` の比較をそれら単体でやると実行順序は不定となります。
+
+```js:timeout_vs_immediate.js
+setTimeout(() => console.log("timeout"));
+setImmediate(() => console.log("immediate"));
+```
+
+実際に複数回実行すると次のようにどちらのケースも起きます。
+
+```sh
+❯ node timeout_vs_immediate.js
+timeout
+immediate
+❯ node timeout_vs_immediate.js
+immediate
+timeout
+```
+
+公式ドキュメントにはそれらのオーダーは呼び出されたコンテキストに依存すると書いてあります。メインモジュール内で両方呼び出された場合にはそれらのタイミングはプロセスのパフォーマンスに束縛されます。
+
+>The order in which the timers are executed will vary depending on the context in which they are called. If both are called from within the main module, then timing will be bound by the performance of the process (which can be impacted by other applications running on the machine).
+>([The Node.js Event Loop, Timers, and process.nextTick() | Node.js](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout) より引用)
+
+I/O サイクル(Callback-based API の `fs` のメソッドのコールバックの中など)で呼び出すと決定的になり、`setImmediate()` のコールバックが常に先に実行されます。
+
+```js
+const fs = require('fs');
+
+fs.readFile("./test.md", () => {
+  setImmediate(() => console.log("immediate"));
+  setTimeout(() => console.log("timeout"));
+});
+
+// 実行すると常に同じ順番になる(決定的)
+// ❯ node ioCycle.js
+// immediate
+// timeout
+```
+
+ちなみに、Node の `setTimeout()` API は遅延時間を指定しない場合はデフォルトで `1` として設定されます。また、`1` 以下の数値を指定しても `1` としてセットされます。
+
+>When delay is larger than 2147483647 or less than 1, the delay will be set to 1. Non-integer delays are truncated to an integer.
+>([Timers | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/timers.html#settimeoutcallback-delay-args) より引用)
+
+絶対に１ミリ秒以上かかります。`queueMicrotask()` API コールバックそのままタスクキューに送るという処理ではなく、あくまで遅延時間が経過したらコールバックをタスクキューに送るというタイマーである訳です。
+
+同期処理やマイクロタスクを使った処理が１つでもあると、この結果は大抵 Phase の順番通りになり、Timers のコールバックの方が先に処理されます。とはいえ、タイマーなので不定性がつきまといます。
+
+```js:normalTimeComparison.js
+setImmediate(() => console.log("immediate"));
+setTimeout(() => console.log("timeout"));
+// process.nextTick(() => console.log("nextTick"));
+console.log("sync process");
+
+// ❯ node normalTimeComparison.js
+// sync process
+// timeout
+// immediate
+```
+
+自分の環境ではタイマーの遅延時間を `3` にすると `setImmediate()` のコールバックが先に実行されるようになります。
+
+タイマーの比較はあまり気にしすぎると混乱するので軽く流しても大丈夫です。`setImmediate()` の正しい使い方はこのような比較ではなく、I/O イベントのコールバック直後に実行するクリーンアップなどに利用します。
+
+>Schedules the "immediate" execution of the callback after I/O events' callbacks.
+
 ## Deno 環境のイベントループ
+
+Deno は Node に比べてかなりシンプルです。Promise-based API を非同期 API の基軸にして、マイクロタスクの仕組みに集約しているためタスクをサイクルして使うフェーズ概念そのものがありません。Node よりもシンプルに考えることができます。Node のフェーズに相当するものは Timer 系の処理(`setTimeout()` や `setInterval()`)のみです。
 
 Deno 環境のイベントループの実装は Tokio という Rust 言語のための非同期ランタイムが担当しており、JavaScript の Promise などの仕組みは Rust における Future という別の非同期処理の仕組みによって実現されています。ただし、Deno のイベントループについてはほとんど情報がなく公式ドキュメントが更新されるのを待っています(変更が多いので、かなり時間がかかりそうです)。
 

@@ -160,7 +160,7 @@ const .promise = @promiseResolve(x);
 
 ## await 式は確実にマイクロタスクを１つ発行する
 
-`performPromiseThen()` の箇所に注目してほしいのですが、これは `Promsise.prototype.then()` が舞台裏でやっていることと本質的に同じとなります。
+`performPromiseThen()` の箇所に注目してほしいのですが、これは `Promise.prototype.then()` が舞台裏でやっていることと本質的に同じとなります。
 
 `peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。
 

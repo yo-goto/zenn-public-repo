@@ -870,7 +870,7 @@ raceの結果: 100[ms]のタイマー
 タイマーはキャンセルされました DOMException: Delay was aborted.
 ```
 
-競争終了前にキャンセルのメッセージを通知させたければ、`console.log("タイマーの競争が終了しました");` の前に `dTimer()` から返ってくる Promsie インスタンスが Settled となるのを await 式で評価して待ちます。
+競争終了前にキャンセルのメッセージを通知させたければ、`console.log("タイマーの競争が終了しました");` の前に `dTimer()` から返ってくる Promise インスタンスが Settled となるのを await 式で評価して待ちます。
 
 ```js
 (async () => {
