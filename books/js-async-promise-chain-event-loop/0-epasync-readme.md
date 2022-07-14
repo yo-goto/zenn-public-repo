@@ -69,7 +69,7 @@ url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 - [x] 静的メソッド
 - [x] ループ
 - [x] Promise の型注釈
-- [ ] ジェネレーター
+- [ ] ジェネレータ
 
 ## メモ
 

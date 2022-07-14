@@ -169,7 +169,7 @@ v18.2.0
 
 https://nodejs.org/dist/v18.2.0/docs/api/
 
-そして、それらの環境に拘らず考えるために途中から V8 エンジンを使用します。この V8 エンジンについても解説しますが、V8 エンジンは Chrome, Node, Deno, Electron などで使用されている JavaScritp エンジン(ECMAScript を実装しているもの)です。
+そして、それらの環境に拘らず考えるために途中から V8 エンジンを使用します。この V8 エンジンについても解説しますが、V8 エンジンは Chrome, Node, Deno, Electron などで使用されている JavaScript エンジン(ECMAScript を実装しているもの)です。
 
 この本で使用する V8 エンジンのバージョンは次のものとなります。
 

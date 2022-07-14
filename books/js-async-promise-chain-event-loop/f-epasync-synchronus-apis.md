@@ -165,7 +165,7 @@ Promise や async/awiat などの処理は、結果としてタイミングが�
 
 実際に MDN のドキュメントでは、async/await の目的が Promise-based API の利用のためであることがで明言されています。
 
->Note: async/await の目的は、プロミスベースの API を利用するのに必要な構文を簡素化することです。 async/await の動作は、ジェネレーターとプロミスの組み合わせに似ています。
+>Note: async/await の目的は、プロミスベースの API を利用するのに必要な構文を簡素化することです。 async/await の動作は、ジェネレータとプロミスの組み合わせに似ています。
 >([非同期関数 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function) より引用)
 
 別のチャプターで解説しますが、イベントループとコールスタックによって、非同期 API の処理結果と次の処理を１つのメインスレッドに集約的に通知させます。同時に複数のことをやるが、その結果を使った処理を再度１つのスレッドに集めて、次の処理を実行したり、別の非同期 API を起動させたりするという一連の作業順番を制御するために Promise chain や async/await を書く必要があるということです。そして、その結果としてコード上の配置と実行タイミングがずれて処理されるコードがでてくるということです。

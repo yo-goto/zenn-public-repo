@@ -55,7 +55,7 @@ try {
 console.log("🦖 [D] MAINLINE: End");
 ```
 
-ただし、Top-level await は使えるのは、JavaScritpt モジュール(ECMAScript モジュール)でのみなので注意してください。モジュールについての詳細は次の V8 や Mdn のドキュメントを参照してください。
+ただし、Top-level await は使えるのは、JavaScriptt モジュール(ECMAScript モジュール)でのみなので注意してください。モジュールについての詳細は次の V8 や Mdn のドキュメントを参照してください。
 
 https://v8.dev/features/modules
 

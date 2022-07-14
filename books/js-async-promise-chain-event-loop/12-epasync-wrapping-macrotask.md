@@ -1,6 +1,10 @@
 ---
 title: "古い非同期 API を Promise でラップする"
-aliases: [ch_古い非同期 API を Promise でラップする]
+aliases: [
+  ch_古い非同期 API を Promise でラップする,
+  Promisify,
+  Promisification
+]
 ---
 
 # このチャプターについて

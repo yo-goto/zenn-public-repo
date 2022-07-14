@@ -1,45 +1,65 @@
 ---
-title: "TypeScript を基礎から Promise の型注釈まで駆け登る"
+title: "TypeScript の基礎から Promise の型注釈まで駆け登る"
 emoji: "🧞‍♀️"
 type: "tech"
 topics: ["javascript", "typescript", "deno", "promise"]
 published: true
 date: 2022-07-14
 url: "https://zenn.dev/estra/articles/ts-with-promise-type-annotation"
-aliases: [記事_TypeScript を基礎から Promise の型注釈まで駆け登る]
 tags: [" #type/zenn "]
+aliases: [記事_TypeScript の基礎から Promise の型注釈まで駆け登る, contextual typing]
 ---
 
 # はじめに
 
 :::message alert
-この記事は以 Zenn の Book の方で公開している『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』で収録済みのチャプターからの記事として切り出したものになります(チャプター単体でも記事になるものとして判断して公開しています)。
+この記事は以 Zenn の Book の方で公開している『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』で収録済みのチャプターから記事として切り出したものになります(チャプター単体でも記事になるものとして判断して公開しています)。
 :::
 
 この記事は JavaScript の非同期処理を学習した人間が Promise や非同期処理を介して逆に TypeScript の型注釈を理解しようという特殊な試みの記事になります。
 
-「**JavaScript で非同期処理を学んでから TypeScript を見れば怖くないよ**」ということを趣旨として練り上げました。
-
-Promsie の型注釈や TypeScript の非同期処理の解説については以下のように既にいくつも有用なリソースがあります。
+実は Promsie の型注釈や TypeScript の非同期処理の解説については以下のように既にいくつも有用なリソースがあります。
 
 - [Promise / async / await | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/promise-async-await)
 - [イベントループと TypeScript の型から理解する非同期処理](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop)
 
-ですが、今回は初学者の目線からアウトプットを兼ねて自分なりの解釈で TypeScript についての基礎から Promise の型注釈に必要な知識まで一気に駆け上がって説明してみたいと思います(型注釈については基本的なことしか解説しませんので個別の詳細については日本語でオープンソースに公開されている『[サバイバルTypeScript](https://typescriptbook.jp/)』などを参考にしてください)。
+今回は初学者の目線からアウトプットを兼ねて自分なりの解釈で TypeScript についての基礎から Promise の型注釈に必要な知識まで一気に駆け上がって説明してみたいと思います(型注釈については基本的なことしか解説しませんので個別の詳細については日本語でオープンソースに公開されている『[サバイバル TypeScript](https://typescriptbook.jp/)』などを参考にしてください)。
 
-中々長いですが、TypeScript 初学者の方や非同期処理に興味ある方は読んでてみてください。
+:::details 参考ドキュメントについて
+TypeScript や JavaScript については Web で使われる言語のことはあって、インターネット上でいくつも参考になるドキュメントが公開されています。自分が読んでいるもので個人的な感覚でいくつか紹介します。
 
-なお JavaScript の基礎や非同期処理そのものについての解説は省略させてもらいます。『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』の方でかなり詳細に解説しているので興味がある方はそちらを見てください。
+- 『[JavaScript Primer](https://jsprimer.net/)』
+  最新の ECMAScript 仕様に基づいて JavaScript のシンタックスを網羅的に学べるドキュメントです。JavaScript を学ぶならかなりおすすめです。
+- 『[MDN Web Docs](https://developer.mozilla.org/ja/)』
+  Web 開発必須のドキュメントです。JavaScript や Web API について分からないことがあったらとりあえず MDN を読むと解決します。
+- 『[サバイバルTypeScript](https://typescriptbook.jp/)』
+  現実的に使う際に注意する点や実務で使うコーディングなどを前提にした分かりやすい日本語の解説になっており、付随してフロントエンドで利用するツールやフレームワークなどを包括的に解説しています。TypeScript 学習の入り口となるおすすめのドキュメントです。
+- 『[The TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)』
+  TypeScript 公式のドキュメントです。TypeScript の機能を効率的にシンプルに知ることができます。実はめちゃくちゃわかりやすく解説されているので、英語に抵抗が無いなら絶対におすすめです(これに最近気づきました)。
+- 『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/)』
+  初学者には難易度高めで抽象的な印象を受けますが、本質的な説明で比較的短く解説されています。「なるほど、そういうことね」みたいな納得感が得られます。
 
-ちなみに環境は [Deno](https://deno.land/manual) を使います。といことで、この記事は Deno 環境で JavaScript を学習してから TypeScript へと移行するケーススタディにもなるかもしれません。
+学習のレベルに沿ってわかりやすさが変わってくるので、今分かりづらいものでも、時間がたつとなるほどとなることが多いです。できれば全部目を通すのが良いかなと思います(いきなり頭から全部読むということではなく、どれかを起点にしてこっちのドキュメントではどう説明されているんだろうという感じで状況に応じてつまみ食いするのがいいです)。あと、公式ドキュメントが実はかなり分かりやすい構成なので英語だからと言って食わず嫌いしないで読んでみるといいと思います。
 
-Deno を使う理由については後述します。
+その他 Youtube などにある分かりやすい解説動画で補う形を自分は取っています。『[JSConf](https://www.youtube.com/c/JSConfEU)』などのオーソリティのあるカンファレンス動画での深堀りや『[Fireship](https://www.youtube.com/c/Fireship)』などのショート動画、日本語では『[トラハック](https://www.youtube.com/channel/UC-bOAxx-YOsviSmqh8COR0w)』さんなど分かりやすく視聴しやすいです。
+:::
+
+「**JavaScript で非同期処理を学んでから TypeScript を見れば怖くないよ**」ということを趣旨として内容を練り上げましたが、今回は前提となる内容を本で解説してしまっているため、比較がわかりにくいかもしれません。「JavaScript から TypeScript までは大した距離が無い」ということだけでも伝わると思うので、TypeScript 初学者の方や非同期処理に興味ある方は読んでてみてください。
+
+ということで、JavaScript の基礎や非同期処理そのものについての解説は省略させてもらいます。『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』の方でかなり詳細に解説しているので興味がある方はそちらを見てください。
+
+ちなみに環境は [Deno](https://deno.land/manual) を使います。(Deno を使う理由については後述します)。
 
 # TypeScript について
 
 TypeScript は JavaScript に型システムを導入した言語です。
 
 個人的な(浅い)経験から言うと JavaScript をしっかり学べば TypeScript は怖くありません(使いこなせるかは別の話として、怖くないと思うことが重要です)。逆に TypeScript から入ってしまうと JavaScript の機能に加えて型情報の操作や型チェックのエラーといった学ぶべき事柄が膨大になるので圧倒されてしまいます。
+
+これは、TypeScript を理解するためには JavaScript の知識が欠かせないということでもあります。『[サバイバルTypeScript](https://typescriptbook.jp/)』でも次のように言われています。
+
+>TypeScriptから見ると、JavaScriptはTypeScriptの一部と言えます。そのため、TypeScriptを十分に理解するには、JavaScriptの理解が欠かせません。まだJavaScriptをよく分かっていない場合は、TypeScriptの学習と平行してJavaScriptも学ぶ必要があります。
+>([JavaScriptはTypeScriptの一部 | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/overview/javascript-is-typescript) より引用)
 
 そして JavaScript での非同期処理が理解できれば TypeScript の非同期処理はおそるるに足りません。『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/recap)』でも次のように言われています。
 
@@ -48,7 +68,7 @@ TypeScript は JavaScript に型システムを導入した言語です。
 >本質的には、TypeScriptはJavaScriptのリンター(コードの静的解析ツール)です。型情報を持たない他のJavaScriptのリンターよりも優れているだけです。
 >([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
 
-TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。
+TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。TypeScript の非同期処理は JavaScript の非同期処理のコードに型情報を上乗せしたものであり、本質的には Promise や async/await といった JavaScript(ECMAScript) の非同期シンタックスやその処理を実現するためのイベントループの機構、ランタイムを埋め込んでいる環境とそこから提供される非同期 API を理解すれば良い訳です。
 
 私見では以下のような「型の情報操作機能(type manipulation)」が JavaScript に追加されたものが TypeScript であると認識しています。
 
@@ -60,21 +80,23 @@ TypeScript はより良い JavaScript を書くためのリンターに過ぎま
 - 型情報の主張(Type assertion)
 - 型情報の再利用(Type reusing)
 
-あとは型情報の操作によって副次的に追加されたコードの書き方やいくらかの演算子とキーワードなどが加わっただけで、それ以外はただの JavaScript です。(もちろん型の再利用や Narrowing など TypeScript に特化した難しさはありますが)こういう恐れすぎない心持ちのもとで学習を進めていきます。
+あとは型情報の操作によって副次的に追加されたコードの書き方やいくらかの演算子とキーワードなどが加わっただけで、それ以外はただの JavaScript です。図で表すと次のような関係になっています。中枢には実行環境に関わらず共通の動作を定める仕様となる ECMAScript があります。
 
-非同期処理についても JavaScript から始めて型無しで学んだあとで、「より堅牢なコードを書くために TypeScript による型注釈を加えて扱うデータに対しての具象性を高めていく」という考えのもとで進めていきます。
+![JSとTSの関係](/images/js-async/img_whatIsJSTS.jpg)*[JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) を参考に図を作成*
 
-JavaScript をすでに知っている学習者は TypeScript 公式ハンドブックの『TypeScript for JavaScript Programmers』の項目を読むことで JavaScript から TypeScript にする方法の概要を短い時間で学ぶことができます。TypeScript に特化した機能がなんなのか分かってしまえば、学ぶべき量がそこまで多くないことが分かります(もちろん少なくはないですが、JS と同時に学ぼうとする場合よりも遥かに少ないことが認識できます)。
+(もちろん型の再利用や Narrowing など TypeScript に特化した難しさはありますが)こういう恐れすぎない心持ちのもとで学習を進めていきます。非同期処理についても JavaScript から始めて型無しで学んだあとで、「より堅牢なコードを書くために TypeScript による型注釈を加えて扱うデータに対しての具象性を高めていく」という考えのもとで進めていきます。
+
+JavaScript をすでに知っている学習者は TypeScript 公式ハンドブックの『TypeScript for JavaScript Programmers』の項目を読むことで JavaScript から TypeScript にする方法の概要を短い時間で学ぶことができます。TypeScript に特化した機能がなんなのか分かってしまえば、学ぶべき量がそこまで多くないことが分かります(もちろん少なくはないですが、TypeScript だけで学ぼうとする場合よりも遥かに少ないことが認識できます)。
 
 https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
 
 そして朗報です。Deno では TypeScript が設定なしですぐに使えます。これが Deno を主な実行環境に選んだ理由の１つです。Node 環境であれば TypeScript そのものをローカルインストールしたり [ts-node](https://typestrong.org/ts-node/) といったコマンドラインから実行するためのツールが必要になったり、コンパイルオプションを定義する必要などがあるので、TypeScript の学習をしたい人にとって高いハードルがあるのですが、Deno がこれを解決してくれます。
 
-今まで通り JavaScript でやってきたように `deno run` で TypeScript のスクリプトファイルを実行できます。
+今まで通り JavaScript でやってきたようにターミナルからコマンドラインで `deno run` コマンドを実行することで TypeScript のスクリプトファイルを実行できます。
 
-```sh
+```sh:コマンドライン
 # JS ファイルと同じく TS ファイルを引数にして実行できる
-$ deno run hellowold.ts
+❯ deno run hellowold.ts
 hello world!
 ```
 
@@ -89,6 +111,8 @@ VS Code などを使っていれば Deno 専用の拡張機能を入れること
 https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno
 
 そして、Deno では V8 エンジンがランタイムになっています。TypeScript は JavaScript へとトランスパイル(コンパイルの一種)を行うことで実際には JavaScript を JavaScript エンジンで動かしているに過ぎません。TypeScript でのエラーはコンパイル時の型チェックエラーと実際に JavaScript として動かした時のランタイムエラーとなります。
+
+型チェックでエラーがでても JavaScript エンジンでランタイムエラーがでないで JavaScript として正しく動く場合もあります。JavaScript として正しく動いたとしても、型チェックで意図的に警告を出させることで、実際に動かす前によりよいコードを書くように書き直す機会を得ることができます。
 
 # 型注釈の基本
 
@@ -115,7 +139,7 @@ const str3 = "文字列リテラル"; // TypeScript
 // 文字列リテラルなので string 型であることはあきらかであり推論できる
 ```
 
-型を省略してもそのコードから型を推論して自動的に型情報が得られるこの機能を型推論(type inferernce)と言います。上のような変数宣言では初期化値から型が推論されます。
+型を省略してもそのコードから型を推論して自動的に型情報が得られるこの機能を型推論(type inference)と言います。上のような変数宣言では初期値から型が推論されます。
 
 Deno ではこのような明らかに型推論が容易な変数宣言ではむしろ型注釈を省略するように促すリンタールール "no-inferrable-types" がありますので、省略しないと怒られてしまいます。
 
@@ -126,7 +150,7 @@ https://lint.deno.land/?q=infer#no-inferrable-types
 
 リンタードキュメントには記載されていますが、以下のような型注釈に警告がなされて冗長なので型注釈を省略するようにと言われます。
 
-```ts:無効となる型注釈(型注釈を省略しないと怒られる)
+```ts:無効となるコード(型注釈を省略しないと怒られる)
 // 値の初期化
 const a: bigint = 10n;
 const b: bigint = BigInt(10);
@@ -157,7 +181,7 @@ function fn(s: number = 5, t: boolean = true) {}
 
 なるほど、変数にプリミティブ値などを代入する際にはこのように型注釈をすればよいのかということが逆に分かります。
 
-型注釈に利用する `string` などは JavaScritp の各プリミティブ型やオブジェクトの名前そのものです。基本的なものは次のようになっています。
+型注釈に利用する `string` などは JavaScript の各プリミティブ型やオブジェクトの名前そのものです。基本的なものは次のようになっています。
 
 JSの主要なデータ型 | 型注釈での名前 | 値
 --|--|--
@@ -345,7 +369,7 @@ const floors = floats.map(function (item: number): number {
 
 このようなプロセスは関数のコンテキストが自身の型を通知することから **contextual typing** と呼ばれます。
 
-アロー関数でも同じです。型注釈は省略できます。
+アロー関数でも同じです。contextual typing によって型注釈は省略できます。
 
 ```ts
 const floors = floats.map((item) => {
@@ -392,7 +416,7 @@ const sarr: Array<string> = ["A", "B", "C"];
 >**Generics provide variables to types**. A common example is an array. An array without generics could contain anything. An array with generics **can describe the values that the array contains**.
 >([TypeScript: Documentation - TypeScript for JavaScript Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#generics) より引用、太字は筆者強調)
 
-`Array<Type>` という `<Type>` の中に実際に書く型である `string` などが **型引数(type argument)** と呼ばれるものであり、これで関数のように型に引数を指定します(実際に存在している型名を指定します)。こ
+`Array<Type>` という `<Type>` の中に実際に書く型である `string` などが **型引数(type argument)** と呼ばれるものであり、これで関数のように型に引数を指定します(実際に存在している型名を指定します)。
 
 `Array<Type>` で型注釈をする場合には `<>` の部分は省略できないことに注意してください。
 
@@ -400,7 +424,7 @@ const sarr: Array<string> = ["A", "B", "C"];
 const arr: Array<number> = [1, 3]; // OK
 
 // Array<Type> の <Type> の部分は省略できない
-const arr: Array = [1, 3]; // エラー
+const arr: Array = [1, 3]; // [Error]: Generic type 'Array<T>' requires 1 type argument(s).
 ```
 
 したがって、配列にどのような型の要素を入れるか決めていない場合などにはどんな型の代入も受け入れる特殊な `any` 型を利用します。
@@ -425,6 +449,41 @@ https://lint.deno.land/?q=any#no-explicit-any
 let uarr: Array<unknown>;
 let uar: unknown[];
 ```
+
+また、このジェネリクスを使って自分で一般的な型を定義することも可能です。
+
+https://www.typescriptlang.org/docs/handbook/2/objects.html#generic-object-types
+
+例えば、`data` プロパティの値の型がなんでもいい型をつくりたい場合に次のように一々色々な具体的な型を指定した型をつくらずに、(一般化する際に `any` や `unknown` も使わないで)型引数を指定してその型に適応した型を作り出せるようにしたいです。
+
+```ts
+type StringProp = {
+  data: string;
+};
+type NumberProp = {
+  data: number;
+}
+type BooleanProp = {
+  data: boolean;
+}
+```
+
+`Array<Type>` のように型変数を使えるようにするには型定義の際に `<>` を型名の後ろにつけて適当な名前の型変数を付けてあげます。こういった型は "Generic Object Type" と呼ばれています。
+
+```ts
+type GeneralProp<YourType> = { // 型変数の名前はなんでもよい
+  data: YourType;
+};
+
+const strProp: GeneralProp<string> = {
+  data: "文字列",
+};
+const numProp: GeneralProp<number> = {
+  data: 42,
+};
+```
+
+型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
 
 # ジェネリック関数
 ジェネリック関数(generic function)はこのジェネリクスの概念を利用した関数になります。
@@ -471,7 +530,7 @@ const result2 = returnArrEl(["A", "B", "C"]);
 console.log(result2);
 ```
 
-この型注釈だと数値を要素として配列しか引数に受付なくなってしまいますね。実際、VS code ならエディタ上で型チェックに引っかかり警告されますが、`deno check` コマンドでコマンドラインから型チェックを実行してもエラーが吐き出されます。
+この型注釈だと数値を要素とした配列しか引数に受付なくなってしまいますね。実際、VS code ならエディタ上で型チェックに引っかかり警告されますが、`deno check` コマンドでコマンドラインから型チェックを実行してもエラーが吐き出されます。
 
 :::details deno check で型チェック
 ```sh
@@ -496,7 +555,7 @@ Found 3 errors.
 ```
 :::
 
-この関数の処理は配列の要素の型に依存せずにただ配列要素を返すだけなので、配列要素の型に関わらずに配列を受け入れるように「**一般化**」したいです。
+この関数の処理は配列の要素の型に依存せずにただ配列要素を返すだけなので、配列要素の型に関わらず「あらゆる配列」を受け入れるように「**一般化**」したいです。
 
 `unknown` 型は「どんな型か分からない時に使う型」で `any` よりも安全性が高い型だという話でしたので、`unknown[]` という配列要素の型が分からない配列という型注釈はどうでしょうか。
 
@@ -525,7 +584,7 @@ function returnArrEl<Type>(
 
 `Type` は実際に存在する型の名前ではなく型変数ですから、これで一般化されたことになります。
 
-元々の関数を見てみると、`arr[0]` の型は `arr` という配列要素の型と同じですね。この処理では配列や配列要素の型がなんであろうと別に関係なく、引数として受け取った配列の要素をただ返すという処理です。関数の引数という入力の値の型と関数の返り値という出力の値の型には関連性が存在しています。
+元々の関数を見てみると、`arr[0]` の型は `arr` という配列要素の型と同じですね。この処理では配列や配列要素の型がなんであろうと別に関係なく、引数として受け取った配列の要素をただ返すという処理です。関数の引数という入力の値の型と関数の返り値という出力の値の型には**関連性が存在**しています。
 
 このように関数の入力となる値の型と出力となる値の型に関連性がある場合には型変数を利用して**相互の型をリンクさせることができます**。以下の関数の型注釈では、型変数によって入力の値と出力の値の型が同じになるようにリンクさせています。
 
@@ -613,9 +672,11 @@ function strOrNum(
 }
 ```
 
-こういったコードの構造に基づいて値の型をより具体的に推定できるようにすることを **Narrowing** と呼びます(あるいはその現象そのものを Narrwing と呼びます)。つまり、型情報の選別やフィルターを行う行為が必要となります。
+こういったコードの構造に基づいて値の型をより具体的に推定できるようにすることを(型の範囲をより具体的なものに狭めることから) **Narrowing** と呼びます(あるいはその現象そのものを Narrwing と呼びます)。つまり、型情報の選別やフィルターを行う行為がコードを書く上でも必要となります。
 
 https://www.typescriptlang.org/docs/handbook/2/narrowing.html
+
+上のコードでの `if` 節や `switch` や `while` などのコードの構造によって各場所での変数の型を絞り込みます。このようなコードを書くと TypeScript (コンパイラやエディタの拡張機能)はある変数が特定のブランチなどに到達した時点でその型がなんであるか解析をしています。この解析を「**制御フロー解析(Control flow analysis: CFA)**」と呼びます。
 
 もしも、次のように `else` ブランチを増やしてもそのブランチには決して到達することはありません(`string` 型か `number` 型しか引数に受け取らないため)。
 
@@ -626,17 +687,20 @@ function strOrNum(
 ): void {
   if (typeof param === "string") {
     console.log(param.toUpperCase());
+    // param: string として CFA で解析される
   } else if (typeof param === "number") { 
     // string 型でないなら number 型
     console.log(Math.floor(param));
+    // param: number として CFA で解析される
   } else {
     console.log(param); 
     //          ^^^^^ never 型(決して観測されない)
+    // param: never として CFA で解析される
   }
 }
 ```
 
-ということで、その `else` ブランチ内で引数を参照しようとすると `never` 型として見なされます。`never` 型の値は決して観測されることがないことを表現する型です。
+ということで、その `else` ブランチ内で引数を参照しようとすると制御フロー解析によってその値は `never` 型として見なされます。`never` 型の値は決して観測されることがないことを表現する型です。
 
 他にも、例外をスローするだけの関数では返り値を決して取れないため、返り値の型を `never` 型として注釈します。無限ループを作り出す関数なども返り値が取れないので返り値の型注釈は `never` 型になります。
 
@@ -672,8 +736,8 @@ type PositiveOddNumbersUnderTen = 1 | 3 | 5 | 7 | 9;
 :::details インターセクション型(intersection type)
 
 型の合成としてユニオン型(union type)がありましたが、もう１つの合成の仕方としてインターセクション型(intersection type)が存在しています。
-ブール演算の論理和と論理積と同じです。
-ユニオン型は `A | B` として「A または B」という型の合成でしたが、インターセクション型は `A & B` として「A かつ B」という型の合成を行います。主にオブジェクトの型同士で積を作成して、合成に使ったすべてのメンバーを持つオブジェクトの型を作成します。
+
+これはブール演算の論理和と論理積と同じです。ユニオン型は `A | B` として「A または B」という型の合成でしたが、インターセクション型は `A & B` として「A かつ B」という型の合成を行います。主にオブジェクトの型同士で積を作成して、合成に使ったすべてのメンバーを持つオブジェクトの型を作成します。
 
 ```ts
 type Colorful = {
@@ -794,7 +858,7 @@ responsePromise
   .then(text => console.log(text));
 ```
 
-この `Response` という型は Deno 側が元々用意してくれている型で `lib.deno.fetch.d.ts` というファイルに定義されています。VS Code なで `Response` をクリックすると定義もとに飛べます。
+この `Response` という型は Deno 側が元々用意してくれている型で `lib.deno.fetch.d.ts` というファイルに定義されています。VS Code などで `Response` をクリックすると定義もとに飛べます。
 
 型定義は API ドキュメントの以下のページでも確認できます。
 
@@ -827,7 +891,7 @@ class Response implements Body {
 }
 ```
 
-このように API メソッドやそれに付随するインターフェイスの型定義を Deno 側で既に用意されているのでそれらの恩恵を受けてコードを書くことができます。
+このように API メソッドやそれに付随するインターフェイスの型定義を Deno 側で既に用意してくれているのでそれらの恩恵を受けてコードを書くことができます。
 
 `fetch()` から返る Promise インスタンスの中身は Response であきらかですから、型注釈は省略して型推論させても良いです。
 
@@ -848,7 +912,7 @@ const pn = fetch("https://api.github.com/zen").then(response => response.text())
 
 # Promise を返す関数の型注釈
 
-Promise インスタンスを返す関数は次のように型注釈を書きます。履行値の値の型を型引数として指定して上げることで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
+Promise インスタンスを返す関数は次のように型注釈を書きます。履行値の値の型を型引数として指定することで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
 
 ```ts
 function returnPromise(
@@ -861,7 +925,7 @@ function returnPromise(
 }
 ```
 
-JavaScript では async 関数は Promise インスタンスを返すことが一目で分かりましたが、このような Promisification したものは分かりづらかったので返り値の型を見れば一目で理解できます。
+JavaScript では async 関数は Promise インスタンスを返すことが一目で分かりましたが、このような Promisification したものは分かりづらかったので、型注釈をしたことで返り値の型を見れば一目で理解できるようになりまたね。
 
 引数と返り値の値の型をリンクさせて一般化するには型変数を使ってジェネリック関数にします。
 
@@ -913,7 +977,31 @@ interface Promise<T> {
 }
 ```
 
-`Promise.resolve()` メソッドもジェネリクスで型が定義されています。
+ジェネリクスではデフォルトの型引数を指定することもできます。`then<TResult1 = T, TResult2 = never>` の `T` や `never` はデフォルトの型引数であり、明示的に指定しない場合の型引数となります。
+
+:::details インターフェース型(interface type)
+
+オブジェクトの型を定義するために型エイリアス(type alias)が使えましたが、インターフェース型(interface type)はオブジェクトの型を定義するためのもう１つの方法です。型エイリアスはあらゆる型に名前を付けるものとして使えますが、インターフェース型はオブジェクトやクラスの型を表現するためのものとして利用できます。
+
+以下のように型エイリアスとインターフェースでは書き方が異なることに注意してください。
+
+```ts
+// インターフェースで型を定義
+interface Animal1 {
+  name: string;
+  habitat: string;
+} // 宣言なのでセミコロンは書かない
+
+
+// 型エイリアスで型を定義
+type Animal2 = {
+  name: string;
+  habitat: string;
+};
+```
+:::
+
+ちなみに、`Promise.resolve()` メソッドもジェネリクスで型が定義されています。
 
 ```ts:lib.es2015.promise.d.ts
     /**
@@ -925,9 +1013,33 @@ interface Promise<T> {
 ```
 
 :::message
-ECMAScript のシンタックスとして具体的な型に依存しないタイプのプロトタイプメソッドはこのように型が抽象化、あるいは一般化されたものとして型定義が用意されています。
+ECMAScript のシンタックスとして具体的な型に依存しないタイプのプロトタイプメソッドはこのように型が抽象化、あるいは一般化されたものとして型定義が用意されています。今日の JavaScript には `Map`、`Set` といったデータのコレクションを表現するためのビルトインオブジェクトが存在しています。予想されるように `Array<T>` や `Promise<T>` と同じくこれらのコレクションのデータ型はジェネリクスで `Map<K, V>` や `Set<T>` として一般化されて型定義されています。
 
-`.d.ts` という拡張子のファイルは型定義ファイルと呼ばれるものです。TypeScript が提供する型や npm のパッケージ配布を行うために作成されます。
+また、`.d.ts` という拡張子のファイルは型定義ファイルと呼ばれるものです。TypeScript が提供する型や npm のパッケージ配布を行うために作成されます。
+:::
+
+:::details JSDoc の補足
+型定義ファイルに記載されている `@param` などは JSDoc と呼ばれる JavaScript のソースコードにアノテーションを追加するために使われるマークアップです。元々 JavaScript で利用されていましたが、TypeScript でも利用可能です。以下のように、関数定義の直前に様々な情報を記載します。
+
+```js
+/**
+ * 人物の名前を引数にとって挨拶文を出力する関数
+ * 
+ * @param {(string|string[])} [sombody=John Doe] - 人物の名前または名前の配列
+ **/
+function sayHello(somebody) {
+  if (somebody) {
+    sombody = 'John Doe';
+  } else if (Array.isArray(somobody)) {
+    somebody = sombody.join(', ');
+  }
+  alert('Hello' + somebody);
+}
+```
+
+この JSDoc で関数の説明や引数・返り値の説明などを加えることでエディタ上で使い方などが表示されるようになります。TypeScript そのものとは関係ないですが、組み合わせて使えます。TypeScript の公式ドキュメントにもリファレンスが記載されています。
+
+- 参考: [TypeScript: Documentation - JSDoc Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html)
 :::
 
 ということで、通常は省略しますが `Promise.resolve()` や `then()` メソッドを呼び出す際には型引数に明示的にコールバック関数から返される値の型を指定できます。
@@ -1102,7 +1214,7 @@ async function fetcher(
 })();
 ```
 
-JavaScritpt で言う所の [try-catch hell](https://www.youtube.com/watch?v=ITogH7lJTyE) を避けるための `[data, error]` という２つの値からなる配列を返すパターンを使っています。このパターンを使うことで返り値の型注釈が面倒なことになっていますね(現時点ではあまりうまく型付けできていないと思います)。
+JavaScriptt で言う所の [try-catch hell](https://www.youtube.com/watch?v=ITogH7lJTyE) を避けるための `[data, error]` という２つの値からなる配列を返すパターンを使っています。このパターンを使うことで返り値の型注釈が面倒なことになっていますね(現時点ではあまりうまく型付けできていないと思います)。
 
 要素の型がそれぞれ異なる配列は TypeScript では**タプル(Tuple)型**と呼ばれます。
 
@@ -1191,13 +1303,45 @@ async function fetcher(
 
 もっとうまい型注釈はあるだろうなと思いますが、とりあえずはこれで型エラーにはなりません(型の表現方法はいくつもあります)。
 
+# 型表現の多様さ
+
+実際、型の表現をいかにするかということが TypeScript の難しいところでもあり、醍醐味だとも思います。関数の返り値などは意図に応じて様々な型の表現がありえます。例えば次のような２つの数値の大きさを比較する関数を考えてみましょう。
+
+```ts
+function compare(
+  a: number, 
+  b: number
+): number { // ただの数値型
+  return a === b
+    ? 0
+    : (a > b ? 1 : -1);
+}
+```
+
+a と b の数値を比較して等しいなら `0` を返して、a の方が大きいなら `1` を返し、b の方が大きいなら `-1` を返すような関数の戻り値は上のように単純に `number` 型として注釈もできますが、下のようにより具体的な３つの数値リテラルのいづれかというリテラル型のユニオン型で型注釈も可能です。
+
+```ts
+function compare(
+  a: number, 
+  b: number
+): -1 | 0 | 1 { // リテラル型のユニオン型
+  return a === b
+    ? 0
+    : (a > b ? 1 : -1);
+}
+```
+
+このように型の表現というのはいくらでもあります。
+
+また、今まで学んでてきたものは基本的な型表現であり、それら以外にも Typescript ではジェネリクスなどを組み合わせた汎用的で便利な型をいくつか用意しています。こういった型はユーティリティ型(Utility type)と呼ばれいくつも種類が存在しています。
+
 :::details ユーティリティ型(Utility type)
 
-型の表現をいかにするかと言うのが TypeScript の難しいところでもあり、醍醐味だとも思います。今まで学んでてきたものは基本的な型表現であり、それら以外にも Typescript ではジェネリクスなどを組み合わせた汎用的で便利な型をいくつか用意しています。こういった型はユーティリティ型(Utility type)と呼ばれいくつも種類が存在しています。以下の公式ハンドブックのページに網羅されています。いきなり全部覚えるのは難しそうなので少しづつ覚えていきます。
+以下の公式ハンドブックのページに網羅されています。いきなり全部覚えるのは難しそうなので少しづつ覚えていきます。
 
 - [TypeScript: Documentation - Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)
 
-例えば、ジェネリクスで型引数として指定したオブジェクトの型のプロパティをすべて省略可能(optional)にする `Require<Type>` というユーティリティ型があります。
+例えば、ジェネリクスで型引数として指定したオブジェクトの型のプロパティをすべて必須にする `Required<Type>` というユーティリティ型があります。この型の型引数として指定したオブジェクトなどの型のプロパティはオプショナルプロパティとして定義されていてもすべて必須にした型を作成してくれます。
 
 ```ts
 type Props = {
@@ -1217,6 +1361,22 @@ const obj3:  Required<Props> = {
 };
 // Property 'b' is missing in type '{ a: number; }' but required in type 'Required<Props>'
 ```
+
+`Required<Type>` とは逆に型引数に指定したオブジェクトの型のプロパティをすべてオプショナルなものとした型を作成できる `Partial<Type>` というユーティリティ型も存在しています。
+
+```ts
+type Props = {
+  a: number; // 省略できない
+  b: string; // 省略できない
+};
+
+const obj1: Partial<Props> = {
+  a: 42,
+}; // b も a も省略可能な型
+// { a?: number; b?: string; } という型注釈と同じ
+```
+
+ユーティリティ型は一見難しそうに見えますが、ジェネリクスの概念と型の基礎がわかっていれば全然難しくありません。
 :::
 
 # まとめ
@@ -1224,4 +1384,8 @@ const obj3:  Required<Props> = {
 TypeScript の非同期処理は JavaScript の非同期処理に過ぎません。ジェネリクスや型変数・型引数を理解できればある程度の型注釈はできるようになります。
 
 ただし、複雑な関数の戻り値などの型注釈をしっかりしようと思うとやはり TypeScript の型の記述方法についてより詳しく知る必要があるでしょう。
+
+以下のように **type challenges** というコミュニティによる型表現のテストがあるので今後は取り組んでみたいですね。
+
+https://github.com/type-challenges/type-challenges
 

@@ -93,7 +93,7 @@ function promiseResolve(v) {
 ```js:V8エンジンによる変換コード
 // 途中で一時停止できる関数として resumable (再開可能) のマーキング
 // 非同期関数からは、susupend のところまで行った時点で処理を中断して Pending 状態の Promise インスタンス(implicit_promise)が呼び出し元に返される
-// 通常の return は意味がない(generator の yeild ぽい)
+// 通常の return は意味がない(generator の yield ぽい)
 resumable function foo(v) {
   implicit_promise = createPromise(); 
   // 非同期関数の返り値となる promise インスタンスを作成
@@ -114,7 +114,7 @@ resumable function foo(v) {
   // 3. foo (非同期関数)を一時停止して implicit_promise を caller へと返す
   w = suspend(«foo», implicit_promise); 
   // ここまでが１つの awiat で、foo のコンテキストを一旦ポップする
-  // w には await 式の評価結果の値が yeild され代入される(yields 42 from the await)
+  // w には await 式の評価結果の値が yield され代入される(yields 42 from the await)
   // w = のところに値が入り実行再開する(w には promise の履行値 42 が入る)
 
   resolvePromise(implicit_promise, w); // return する値 w (= 42)で resolve する
@@ -157,6 +157,60 @@ const .promise = @promiseResolve(x);
   err => @throw(.generator_object, err));
 @yield(.generator_object, .outer_promise);
 ```
+
+:::details ジェネレータ関数の yield 式
+
+ジェネレータ関数では、`yield` の数だけ関数の処理を一時停止して値を生み出すことができます。
+
+```js:yieldSample.js
+// ジェネレータ関数の定義
+function* generatorFn(n) {
+  n++;
+  yield n;
+  n *= 5;
+  yield n;
+  n = 0;
+  yield n;
+}
+// ジェネレータオブジェクトをジェネレータ関数から取得
+const generator = generatorFn(5);
+
+// ジェネレータオブジェクトの next メソッドでイテレータリザルトを返す
+console.log(generator.next());
+// { value: 6, done: false }
+console.log("関数を一時停止してなにか別の処理");
+console.log(generator.next());
+// { value: 30, done: false }
+console.log("関数を一時停止してなにか別の処理");
+console.log(generator.next());
+// { value: 0, done: false }
+console.log("関数を一時停止してなにか別の処理");
+console.log(generator.next());
+// { value: undefined, done: false }
+console.log("ジェネレータ関数内のすべての処理を終了");
+```
+
+このスクリプトを実行すると次のような出力を得ます。
+```sh
+❯ deno run yieldSample.js
+{ value: 6, done: false }
+関数を一時停止してなにか別の処理
+{ value: 30, done: false }
+関数を一時停止してなにか別の処理
+{ value: 0, done: false }
+関数を一時停止してなにか別の処理
+{ value: undefined, done: true }
+ジェネレータ関数内のすべての処理を終了
+```
+
+async/await では最初の `await` 式でのみ暗黙的に async 関数から返される Promise インスタンスを `yield` していると考えることができます。それ以降は await 式による評価のたびに一時停止しますが、呼び出し元に値を返しません。最終的に async 関数内の処理がすべて完了すると async 関数内で `return` されている値で最初に返した Promsie インスタンスを履行します。
+
+あるいは async 関数内部でジェネレータが使われているとも考えることができます。実際、async/await が ECMAScript に導入されるまではこのジェネレータ関数と Promsie インスタンスを組み合わせて async 関数のようなものつくっていました。async 関数を使ったコードを Babel や TypeScript で古い JavaScript にトランスパイルする際にはジェネレータ関数と Promise インスタンスを組み合わせて実現しています。
+
+参考: [async await - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/future-javascript/async-await)
+
+ジェネレータ関数について知らなければこのことについては無視してもよいです。
+:::
 
 ## await 式は確実にマイクロタスクを１つ発行する
 
