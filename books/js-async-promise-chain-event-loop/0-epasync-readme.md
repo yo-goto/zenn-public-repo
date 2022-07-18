@@ -114,7 +114,7 @@ chapters:
   - 17-epasync-static-method # Promise の静的メソッドと並列化
   - 18-epasync-await-position # await 式の配置による制御
   - 19-epasync-async-loop # 反復処理の制御
-  - k-epasync-iterator-generator # イテレータとジェネレータ関数
+  - k-epasync-iterator-generator # イテレータとイテラブルとジェネレータ関数
   - j-epasync-ts-promise-type-annotation # Promise の型注釈
   - x-epasync-epilogue # あとがき
   - z-epasync-reference # 参考文献

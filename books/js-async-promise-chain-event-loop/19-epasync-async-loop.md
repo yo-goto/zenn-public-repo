@@ -409,7 +409,9 @@ const chars = ["A", "B", "C", "D", "E"];
 })();
 ```
 
-# async callback と forEach
+# async callback
+
+## async callback と forEach
 
 配列の `forEach()` メソッドによる反復処理は使い方をミスすると意図しない結果になるので、おすすめではない方法です。
 
@@ -515,6 +517,10 @@ urls.forEach(async (url) => {
 
 `forEach()` での順序付けは方法が思いつきませんが(コールバック関数を async 化した時点で既に意図通りになりません)、`forEach()` をなんとか使って並列化した上で制御することはできます。とにかく **async 関数の実行によって返される Promise インスタンスを取得できることが重要**です。
 
+:::message
+`forEach()` で `reduce()` のように Promise chain を繋げるパターンもあるらしいので、それで逐次処理はできそうです。
+:::
+
 このチャプターの冒頭の方で書いた方法ですが、配列を用意しておいて、その配列に async 関数や非同期 API の chain から返ってくる Promise インスタンスをいれておくことで別のところから制御できるようになります。
 
 ```js:forEachOk.js
@@ -558,6 +564,41 @@ const urls = [
 `forEach()` を解説したのは「`forEach()` で反復処理をしましょう」ということではなく、「非同期が絡む作業の返り値となる Promise インスタンスを await 式で評価して実行と完了の順序を制御することが重要である」ということを確認するためです。Promise インスタンスの評価ができないものは副作用的な振る舞いとなり特定範囲内での完了を担保できなくなってしまいます。
 
 実際、上のようなコードを書くなら `map()` の方が素直に書けるので良いです。順序付けを行いたいなら `for` ループなどで分かりやすいコードを書いたほうがきっと良いでしょう。
+
+## async callback と map
+
+async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスのは配列を作成できます。
+
+```js
+// Promsie インスタンスの配列を作成する
+const promises = urls.map(async (url) => {
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    console.log(text);
+    // この場合は返り値はないので undefined で履行した Promise インスタンスが返る
+  } catch(err) {
+    console.log(err);
+    // この場合は返り値はないので undefined で履行した Promise インスタンスが返る
+  }
+});
+```
+
+これは次のように async 関数として切り出して `map()` のコールバックで起動させると変わりません。
+
+```js
+async function fetchThenConsole(url) {
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    console.log(text);
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+const promises = urls.map(url => fetchThenConsole(url));
+```
 
 # for ループの派生
 

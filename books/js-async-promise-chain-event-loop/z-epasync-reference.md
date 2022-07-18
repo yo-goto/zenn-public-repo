@@ -12,7 +12,7 @@ aliases: [ch_参考文献]
 - [Effective Deno](https://zenn.dev/uki00a/books/effective-deno)
 - [Node.jsとはなにか？なぜみんな使っているのか？ - Qiita](https://qiita.com/non_cal/items/a8fee0b7ad96e67713eb)
 
-# [第１章 - API を提供する環境と実行メカニズム](sec-01-epasync.md)
+# [第１章 - API を提供する環境と実行メカニズム](sec-01-epasync)
 
 ## [非同期 API と環境](f-epasync-asyncronous-apis)
 
@@ -27,7 +27,7 @@ aliases: [ch_参考文献]
 - [What the heck is the event loop anyway? – Philip Roberts](https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html)
 - [Web Worker の使用 - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers)
 
-## [同期 API とブロッキング](f-epasync-synchronus-apis.md)
+## [同期 API とブロッキング](f-epasync-synchronus-apis)
 
 - [スレッドセーフ - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)
 - [ブロッキングとノンブロッキングの概要 | Node.js](https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/)
@@ -116,7 +116,7 @@ aliases: [ch_参考文献]
 
 - [Callback function (コールバック関数) - MDN Web Docs 用語集: ウェブ関連用語の定義 | MDN](https://developer.mozilla.org/ja/docs/Glossary/Callback_function)
 
-## [resolve 関数と reject 関数の使い方](g-epasync-resolve-reject.md)
+## [resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)
 
 - [Understanding Promises in JavaScript: Part V - Resolved Promises and Promise Fates | Saurabh Misra](https://www.saurabhmisra.dev/promises-in-javascript-resolved-promise-fates)
 
@@ -168,7 +168,7 @@ aliases: [ch_参考文献]
 - [JavaScriptの非同期処理をじっくり理解する (1) 実行モデルとタスクキュー](https://zenn.dev/qnighy/articles/345aa9cae02d9d)
 - [Further Adventures of the Event Loop - Erin Zimmer - JSConf EU 2018 - YouTube](https://www.youtube.com/watch?v=u1kqx6AenYw)
 
-# [第３章 - async 関数と await 式の挙動](sec-03-epasync.md)
+# [第３章 - async 関数と await 式の挙動](sec-03-epasync)
 
 ## [Promise チェーンから async 関数へ](14-epasync-chain-to-async-await)
 
@@ -208,12 +208,12 @@ aliases: [ch_参考文献]
 - [JavaScriptの非同期処理をじっくり理解する (4) AbortSignal, Event, Async Context](https://zenn.dev/qnighy/articles/772f632af595aa)
 - [オブジェクト · JavaScript Primer #jsprimer](https://jsprimer.net/basic/object/#optional-chaining-operator)
 
-## [反復処理の制御](19-epasync-async-loop.md)
+## [反復処理の制御](19-epasync-async-loop)
 
 - [Array.prototype.reduce() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
 - [for await...of - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for-await...of)
 
-## [イテレータとジェネレータ関数](k-epasync-iterator-generator.md)
+## [イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)
 
 - [JavaScript の イテレータ を極める！ - Qiita](https://qiita.com/kura07/items/cf168a7ea20e8c2554c6)
 - [JavaScript の ジェネレータ を極める！ - Qiita](https://qiita.com/kura07/items/d1a57ea64ef5c3de8528)
@@ -225,7 +225,7 @@ aliases: [ch_参考文献]
 - [Symbol.asyncIterator - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator)
 - [AsyncGenerator - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator)
 
-## [Promise の型注釈](j-epasync-ts-promise-type-annotation.md)
+## [Promise の型注釈](j-epasync-ts-promise-type-annotation)
 
 - [Promise / async / await | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/promise-async-await)
 - [タプル (tuple) | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/values-types-variables/tuple)

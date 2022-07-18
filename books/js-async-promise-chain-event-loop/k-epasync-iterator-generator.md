@@ -1,5 +1,5 @@
 ---
-title: "イテレータとジェネレータ関数"
+title: "イテレータとイテラブルとジェネレータ関数"
 ---
 
 # このチャプターについて
@@ -30,11 +30,13 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Iteration_protoco
 
 (1) と (2) の両方のプロトコルを満たすことで反復処理プロトコル(iteration protocol)になります。ということで基本的には両方のプロトコルが実装してある必要があります。
 
-厳密な説明はしませんので、注意してください。
+:::message alert
+各プロトコルについて概要は説明しますが、厳密な定義の説明はしませんので、注意してください。
+:::
 
 ## イテレータと反復子プロトコル
 
-反復子プロトコル(iterator protocol)は以下の規約です。
+反復子プロトコル(iterator protocol)は以下のような規約です。
 
 - `next()` という引数が０個または１個のメソッドを持つ
 - `next()` が実行されると `done` と `value` という少なくとも２つのプロパティを持つイテレータリザルト(iterator result)というオブジェクトを返す
@@ -78,7 +80,7 @@ const obj = {
 
 ## イテラブルオブジェクトと反復可能プロトコル
 
-反復可能プロトコル(iterable protocol)は以下の規約です。
+反復可能プロトコル(iterable protocol)は以下のような規約です。
 
 - `[Symbol.iterator]()` という引数なしのメソッドを持つ
 - `[Symbol.iterator]()` が実行されるとされるとイテレータ(反復子プロトコルを満たすオブジェクト)を返す
@@ -150,10 +152,10 @@ const iterableObject = {
 const iterator = iterableObject[Symbol.iterator]();
 
 // next() メソッドを実行するとイテレータリザルトが返ってくる
-console.log(iterator.next()) //  => { value: 1, done: false } 
-console.log(iterator.next()) //  => { value: 2, done: false }
-console.log(iterator.next()) //  => { value: 3, done: false }
-console.log(iterator.next()) // => { value: 3, done: true }
+console.log(iterator.next()); //  => { value: 1, done: false } 
+console.log(iterator.next()); //  => { value: 2, done: false }
+console.log(iterator.next()); //  => { value: 3, done: false }
+console.log(iterator.next()); // => { value: 3, done: true }
 console.log(iterator.next()); //  => { value: 3, done: true }
 ```
 
@@ -166,7 +168,7 @@ console.log(iterator.next()); //  => { value: 3, done: true }
 
 ## for...of
 
-先程定義したイテラブルオブジェクトを実際に for ループで反復処理してみます。
+先程定義したイテラブルオブジェクトを実際に `while` ループで反復処理してみます。
 
 ```js:sympleIterable.js
 const iterableObject = {
@@ -325,7 +327,7 @@ C
 */
 ```
 
-配列がイテラブルあることから、オブジェクトのプロパティに対して反復処理を行いたいときも一度 `Object.keys()` や `Object.values()` などのオブジェクトの静的メソッドを使って一旦配列にすることで `for...of` で反復処理ができるようになります。
+配列がイテラブルであることから、オブジェクトのプロパティに対して反復処理を行いたいときも一度 `Object.keys()` や `Object.values()` などのオブジェクトの静的メソッドを使って一旦配列にすることで `for...of` で反復処理ができるようになります。
 
 ```js
 const fruits = {
@@ -380,9 +382,9 @@ console.log(...str); // => A B C
 
 // 分割代入
 const [num1, num2, num3] = arr;
-console.log(num1); // => 1
-console.log(num2); // => 2
-console.log(num3); // => 3
+console.log(num1);  // => 1
+console.log(num2);  // => 2
+console.log(num3);  // => 3
 const [char1, char2, char3] = str;
 console.log(char1); // => A
 console.log(char2); // => B
@@ -430,7 +432,7 @@ function* generatorFn() {
 const generator = generatorFn();
 ```
 
-そして、ジェネレータ関数では async 関数の `await` 式のように `yield` 式というものがあり、ジェネレータ関数内の `yield` 式で評価する値を返して関数内の処理を一時停止できます。
+そして、ジェネレータ関数では async 関数の `await` 式のように `yield` というものがあり、ジェネレータ関数内の `yield` する値を返して関数内の処理を一時停止できます。
 
 ジェネレータ関数から返されるジェネレータオブジェクトはイテレータであるので `next()` メソッドを使ってイテレータリザルトを返すことができます。
 
@@ -523,13 +525,13 @@ function* genFn() {
 const gen = genFn();
 
 // ジェネレータオブジェクトはイテレータなので next() でイテレータリザルトが返ってくる
-console.log(gen.next()); // { value: 1, done: false }
-console.log(gen.next()); // { value: 2, done: false }
-console.log(gen.next()); // { value: 3, done: false }
-console.log(gen.next()); // { value: A, done: false }
-console.log(gen.next()); // { value: B, done: false }
-console.log(gen.next()); // { value: C, done: false }
-console.log(gen.next()); // { value: undefined, done: true }
+console.log(gen.next()); // => { value: 1, done: false }
+console.log(gen.next()); // => { value: 2, done: false }
+console.log(gen.next()); // => { value: 3, done: false }
+console.log(gen.next()); // => { value: A, done: false }
+console.log(gen.next()); // => { value: B, done: false }
+console.log(gen.next()); // => { value: C, done: false }
+console.log(gen.next()); // => { value: undefined, done: true }
 ```
 
 上のジェネレータ関数を `yield` のみで書くと次のようになります。`yield*` はイテラブルなオブジェクトの要素に対する連続的な `yield` を
@@ -605,10 +607,10 @@ async イテラブルオブジェクトの `[Symbol.asyncIterator]` からは as
 (async () => {
   const asyncIterator = asyncIterable[Symbol.asyncIterator]();
   // next() メソッドからは Promise インスタンスが返ってくるので await 式で評価する
-  console.log(await asyncIterator.next()); // { value: 1, done: false}
-  console.log(await asyncIterator.next()); // { value: 2, done: false}
-  console.log(await asyncIterator.next()); // { value: 3, done: false}
-  console.log(await asyncIterator.next()); // { done: true }
+  console.log(await asyncIterator.next()); // => { value: 1, done: false}
+  console.log(await asyncIterator.next()); // => { value: 2, done: false}
+  console.log(await asyncIterator.next()); // => { value: 3, done: false}
+  console.log(await asyncIterator.next()); // => { done: true }
 })();
 ```
 
@@ -708,9 +710,9 @@ async function* asyncGenFn(start, end) {
 */
 ```
 
-`await` 式を利用しているのでマイクロタスクが各イテレーションで発生し、更に非同期ジェネレータ関数内の各 `yield` 式ごとに Promise インスタンスが返されることに注意してください。
+`await` 式を利用しているのでマイクロタスクが各イテレーションで発生し、更に非同期ジェネレータ関数内の各 `yield` ごとに Promise インスタンスが返されることに注意してください。
 
-非同期ジェネレータ関数の意味は「ジェネレータ関数の内部で `await` 式が利用できるようになった」程度で十分です。実際、ジェネレータ関数で `yield` 式だけでなく `await` 式も使えるようになっただけです。
+非同期ジェネレータ関数の意味は「ジェネレータ関数の内部で `await` 式が利用できるようになった」程度で十分です。実際、ジェネレータ関数で `yield` だけでなく `await` 式も使えるようになっただけです。
 
 ジェネレータ関数の内部で Promsie-based API などを利用したいときはこの非同期ジェネレータ関数が役立つことになります。
 
@@ -744,7 +746,7 @@ async function* asyncGenFn(url) {
 
 # 参考文献
 
-イテレータとジェネレータ関数についてはこちらの kura07 さんの記事でも非常にわかりやすく解説されているので参考にしてください。
+イテレータとイテラブルとジェネレータ関数についてはこちらの kura07 さんの記事でも非常にわかりやすく解説されているので参考にしてください。
 
 https://qiita.com/kura07/items/cf168a7ea20e8c2554c6
 

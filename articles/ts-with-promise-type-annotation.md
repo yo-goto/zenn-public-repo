@@ -48,11 +48,11 @@ TypeScript や JavaScript については Web で使われる言語のことは�
 
 ということで、JavaScript の基礎や非同期処理そのものについての解説は省略させてもらいます。『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』の方でかなり詳細に解説しているので興味がある方はそちらを見てください。
 
-ちなみに環境は [Deno](https://deno.land/manual) を使います。(Deno を使う理由については後述します)。
+ちなみに環境は [Deno](https://deno.land/manual) を使います(Deno を使う理由については後述します)。
 
 # TypeScript について
 
-TypeScript は JavaScript に型システムを導入した言語です。
+TypeScript は JavaScript に[型システム](https://www.wikiwand.com/ja/%E5%9E%8B%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0)を導入した言語です。
 
 個人的な(浅い)経験から言うと JavaScript をしっかり学べば TypeScript は怖くありません(使いこなせるかは別の話として、怖くないと思うことが重要です)。逆に TypeScript から入ってしまうと JavaScript の機能に加えて型情報の操作や型チェックのエラーといった学ぶべき事柄が膨大になるので圧倒されてしまいます。
 
@@ -68,7 +68,9 @@ TypeScript は JavaScript に型システムを導入した言語です。
 >本質的には、TypeScriptはJavaScriptのリンター(コードの静的解析ツール)です。型情報を持たない他のJavaScriptのリンターよりも優れているだけです。
 >([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
 
-TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。TypeScript の非同期処理は JavaScript の非同期処理のコードに型情報を上乗せしたものであり、本質的には Promise や async/await といった JavaScript(ECMAScript) の非同期シンタックスやその処理を実現するためのイベントループの機構、ランタイムを埋め込んでいる環境とそこから提供される非同期 API を理解すれば良い訳です。
+TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。
+
+そして、TypeScript の非同期処理は **JavaScript の非同期処理のコードに型情報を上乗せしたもの** であり、本質的には Promise や async/await といった JavaScript(ECMAScript) の非同期シンタックスやその処理を実現するためのイベントループの機構、ランタイム(JS エンジン)を埋め込んでいる環境とそこから提供される非同期 API を[理解すれば良い訳です](https://zenn.dev/estra/articles/js-async-programming-roadmap)。つまり、**「非同期処理」を理解するために必要な知識そのものと TypeScript には殆ど関係性がありません**。
 
 私見では以下のような「型の情報操作機能(type manipulation)」が JavaScript に追加されたものが TypeScript であると認識しています。
 
@@ -86,13 +88,15 @@ TypeScript はより良い JavaScript を書くためのリンターに過ぎま
 
 (もちろん型の再利用や Narrowing など TypeScript に特化した難しさはありますが)こういう恐れすぎない心持ちのもとで学習を進めていきます。非同期処理についても JavaScript から始めて型無しで学んだあとで、「より堅牢なコードを書くために TypeScript による型注釈を加えて扱うデータに対しての具象性を高めていく」という考えのもとで進めていきます。
 
-JavaScript をすでに知っている学習者は TypeScript 公式ハンドブックの『TypeScript for JavaScript Programmers』の項目を読むことで JavaScript から TypeScript にする方法の概要を短い時間で学ぶことができます。TypeScript に特化した機能がなんなのか分かってしまえば、学ぶべき量がそこまで多くないことが分かります(もちろん少なくはないですが、TypeScript だけで学ぼうとする場合よりも遥かに少ないことが認識できます)。
+実際、JavaScript と TypeScript の境界線がどこにあるのかを意識することでスッキリと理解できる場合が多いです。また、何か分からないことがでてきた場合も、問題を解決するために調べる必要のあるレイヤーがどれか分かることは非常に重要です。TypeScript についてわからないと思っていたことが実は ECMAScript のシンタックスだったり(その場合は Mdn で調べる)、ECMAScript の関数が分からないと思っていたらその関数は JavaScript 実行環境が独自定義する API だったり(その場合はランタイム環境のマニュアルや API ドキュメントで調べる)、型ガード関数で TypeScript 独自の書き方で型の解析に利用するものだったり(その場合は TypeScript Handbook で調べる)と、境界線が分かっていないと調べる領域を間違ってしまう場合があります。 
+
+そういったことを踏まえて、JavaScript をすでに知っている学習者は TypeScript 公式ハンドブックの『TypeScript for JavaScript Programmers』の項目を読むことで JavaScript から TypeScript にする方法の概要を短い時間で学ぶことができます。TypeScript に特化した機能がなんなのか分かってしまえば、学ぶべき量がそこまで多くないことが分かります(もちろん少なくはないですが、TypeScript だけで学ぼうとする場合よりも遥かに少ないことが認識できます)。
 
 https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
 
 そして朗報です。Deno では TypeScript が設定なしですぐに使えます。これが Deno を主な実行環境に選んだ理由の１つです。Node 環境であれば TypeScript そのものをローカルインストールしたり [ts-node](https://typestrong.org/ts-node/) といったコマンドラインから実行するためのツールが必要になったり、コンパイルオプションを定義する必要などがあるので、TypeScript の学習をしたい人にとって高いハードルがあるのですが、Deno がこれを解決してくれます。
 
-今まで通り JavaScript でやってきたようにターミナルからコマンドラインで `deno run` コマンドを実行することで TypeScript のスクリプトファイルを実行できます。
+JavaScript ファイルと同じようにターミナルからコマンドラインで `deno run` コマンドを実行することで TypeScript のスクリプトファイルを実行できます。
 
 ```sh:コマンドライン
 # JS ファイルと同じく TS ファイルを引数にして実行できる
@@ -100,7 +104,7 @@ https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
 hello world!
 ```
 
-これによって手軽に TypeScript の実行ができるので何度でもテストできます。
+これによってコマンドラインから手軽に TypeScript の実行ができるので何度でもテストできます。
 
 さらに、Deno には備え付けのリンターがあり、そのリントルールの注意を見ることで良い TypeScript を書く訓練ができます。リントルールの詳細は次の公式ドキュメントから閲覧できます。
 
@@ -239,6 +243,17 @@ const barr = [true, false];
 //    ^^^^   ^^^^^^^^^^^^^ boolean[] として推論される
 ```
 
+空配列で初期化するような場合、初期値からの型推論ができないので、特に型注釈をしておく必要があるでしょう。型注釈しない場合は `any[]` として推論されてしまいます。
+
+```ts
+const narr: number[] = [];
+// 数値型の要素のみを受け入れる
+narr.push(42); // OK
+
+narr.push("文字列"); // NG
+// [Error]: Argument of type 'string' is not assignable to parameter of type 'number'
+```
+
 :::message
 `const tuple: [number] = [1];` というような `[number]` の型注釈もありますが、これはタプル型と呼ばれるもので通常の配列の型注釈とは少し違いますので注意してください。
 :::
@@ -316,7 +331,7 @@ function strLength(str: string): number {
 }
 ```
 
-引数がいくつもあったりすると関数宣言の行が長くなって見づらくなるので改行してあげると見やすくなります。
+引数がいくつもあったりすると関数宣言の行が長くなって見づらくなるので改行してあげると見やすくなります。これで引数や戻り値の型注釈に対してもコメントしやすくなります。
 
 ```ts:TypeScript
 function strsLength(
@@ -385,9 +400,135 @@ Promise.resolve(1.1) // 数値なので number 型が通知される
   // コールバック関数の型注釈は省略できる
 ```
 
+コールバックで使うときなどは上で見たように contextual typing の仕組みによって型注釈を省略できる場合がありますが、それ以外の場合でアロー関数を定義する際の型注釈は次のようになります。通常の関数宣言の型注釈と大差ありません。
+
+```ts
+const arrowStrsLength1 = (str1: string, str2: string): number => {
+  const join = str1 + str2;
+  return join.length;
+};
+
+// 引数などの型注釈が長くなったら改行して見やすくする
+const arrowStrsLength2 = (
+  str1: string,
+  str2: string
+): number => {
+  const join = str1 + str2;
+  return join.length;
+};
+```
+
+こういったアロー関数の型も型エイリアスによって使い回せるようにできます。ただし、書き方が `(引数: 引数の型) => 戻り値の型` というようになるので注意してください。
+
+```ts
+// 関数の型に StrsLength という名前を付ける
+type StrsLength = (str1: string, str2: string) => number;
+
+// 関数の型を代入する変数に対して注釈してあるので、引数や返り値の型注釈は省略できる
+const arrowStrsLength: StrsLength = (str1, str2) => {
+  const join = str1 + str2;
+  return join.length;
+}
+```
+
+型エイリアスなどによって関数の型の作成する際にはいくつか書き方があるので注意してください。
+
+```ts
+// 関数の型の作成(アロー関数構文)
+type StrsLength1 = (str1: string, str2: string) => number;
+
+// 関数の型の作成(メソッド構文)
+type StrsLength2 = {
+  (str1: string, str2: string): number
+};
+```
+
+メソッド構文は [Call Signature](https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures) とも呼ばれます。
+
+オブジェクトのメソッドの型注釈は上で見たアロー関数の形に似た型注釈をする場合が多いですが、JS ではメソッドの定義方法も次のようにいくつかり、その方法に基づいて型注釈を行えます。
+
+```js:JavaScript
+const obj = {
+  prop: 42,
+  // functionキーワードによるメソッド定義
+  method1: function(str) { return str.length; }, 
+  // 短縮記法によるメソッド定義
+  method2(str) { return str.length; }, 
+  // アロー関数によるメソッド定義
+  method3: (str) => { return str.length; }, 
+};
+```
+
+TypeScript でそれぞれの方法に対して型注釈を施すと次のようになります。とは言っても、どのタイプで定義するかは統一しておいたほうが良いでしょう。
+
+```ts:TypeScript
+const obj = {
+  prop: 42,
+  method1: function(str: string): number {
+    return str.length;
+  },
+  method2(str: string): number {
+    return str.length;
+  },
+  method3: (str: string): number => {
+    return str.length;
+  },
+};
+```
+
+型エイリアスで上のようなオブジェクトの型を作成したい場合には次のようにします。方法はどれでもいいですが、実際のメソッドや関数の定義ではアロー関数と通常の関数で `this` などの挙動が変わるので、実際に使っているものに統一した方がいいでしょう。
+
+そして通常の関数の場合には `function` キーワードを使わずに短縮記法のみで型を宣言します。以下のように２つの方法しか使えません。
+
+```ts
+type MyObj = {
+  prop: number;
+  // Function field (省略記法の書き方)
+  method1(str: string): number; 
+  method2(str: string): number;
+  // Arrow function field (アロー関数の書き方)
+  method3: (str: string) => number; 
+};
+```
+
+型エイリアスで作成したオブジェクトの型を実際に変数に注釈として割り当てる場合にはすでに注釈が加わっているため、メソッドの実装で型注釈を省略できます。また、`function` キーワードを使った定義も可能です。
+
+```ts
+// 変数に MyObj 型として型注釈して初期化(メソッド定義の際の引数とか返り値の型注釈は省略できる)
+const myobj: MyObj = {
+  prop: 42,
+  method1: function (str) { return str.length; },
+  method2(str) { return str.length; },
+  method3: (str) => { return str.length; },
+};
+```
+
+型エイリアスでメソッドを持つオブジェクトの型を１から作成してみましたが、定義したオブジェクトから型を抽出して別の場所で使い回すようなこをとしたい場合もあります。そのような場合には `typeof` 型演算子(typeof type operator)を使って変数から型を抽出できます。
+
+```ts
+const objWithArrowFn = {
+  prop: 42,
+  method1: (str: string): number => str.length,
+  method2: (str: string): number => str.length,
+  method3: (str: string): number => str.length,
+};
+
+// 変数から型の抽出
+type ReusingType1 = typeof objWithArrowFn;
+// これと同じ意味
+type ReusingType2 = {
+  prop: number;
+  method1: (str: string) => number;
+  method2: (str: string) => number;
+  method3: (str: string) => number;
+};
+```
+
 # ジェネリクス
 
-**ジェネリクス(generics)** は関数のように型が引数(あるいは変数)を扱えるようにすることでより一般的な処理を記述できるようにする TypeScript の機能(あるいはその概念)です。ジェネリクスは TypeScritp の型システムを支える重要な概念であり、Promise の型注釈を理解する上でも必要です。いかつい名前が付いていて難しそうですが実はそこまで難しくはありません。
+**ジェネリクス(generics)** は関数のように型が引数(あるいは変数)を扱えるようにすることでより一般的な処理を記述できるようにする TypeScript の機能(あるいはその概念)です。
+
+ジェネリクスは TypeScript の型システムを支える重要な概念であり、Promise の型注釈を理解する上でも必要です。いかつい名前が付いていて難しそうですが実はそこまで難しくはありません。そして、「ジェネリクス」が分かると TypeScript の型について一気に理解できることが多くなります。
 
 配列型がジェネリクスを理解するための分かりやすい例です。変数の型注釈で配列は次のように型注釈を行っていましたね。
 
@@ -475,12 +616,14 @@ type GeneralProp<YourType> = { // 型変数の名前はなんでもよい
   data: YourType;
 };
 
+// type StringProp = { data: string }; と同じ型注釈
 const strProp: GeneralProp<string> = {
   data: "文字列",
-};
+}; 
+// type NumberProp = { data: number }; と同じ型注釈
 const numProp: GeneralProp<number> = {
   data: 42,
-};
+}; 
 ```
 
 型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
@@ -803,7 +946,7 @@ const cOrT3: ColorOrText = {
 参考: [TypeScriptのUnion / Intersection Typesで遊んだ - Lambdaカクテル](https://blog.3qe.us/entry/2020/01/21/142740)
 :::
 
-さて、ジェネリック関数に話を戻すと型変数を複数個定義することでそれぞれをリンクすることも可能です。例えば、配列のプロトタイプメソッドである `map()` の機能を新しく関数として定義する場合にこのような使い方ができます。
+ジェネリック関数に話を戻すと型変数を複数個定義することでそれぞれをリンクすることも可能です。例えば、配列のプロトタイプメソッドである `map()` の機能を新しく関数として定義する場合にこのような使い方ができます。
 
 ```ts
 function mymap<Input, Output>( // Input と Output は型変数
@@ -822,7 +965,7 @@ const parsedN = mymap<string, number>(["1", "2"], (item) => parseInt(item));
 
 # Promise の型注釈
 
-さて、Promise の型注釈するには今まで見てきたジェネリクスの概念と型引数・型変数が必要です。まずは簡単な変数宣言から型注釈を始めてみます。次のように文字列を履行値として直ちに履行する Promise インスタンスを作成して変数に代入します。
+さて、Promise の型注釈をするには今まで見てきたジェネリクスの概念と型引数・型変数が必要です。まずは簡単な変数宣言から型注釈を始めてみます。次のように文字列を履行値として直ちに履行する Promise インスタンスを作成して変数に代入します。
 
 ```js:JavaScript
 const sp = new Promise(resolve => {
@@ -908,24 +1051,24 @@ const p: Promise<string> = fetch("https://api.github.com/zen").then(response => 
 const pn = fetch("https://api.github.com/zen").then(response => response.text());
 ```
 
-結局のところ JavaScript が正しく書かれていれば TypeScript で動きます。ただし、正しい型注釈をしようと思ったらそれなりに TypeScript のことを知らないと難しいです。
+結局のところ JavaScript が正しく書かれていれば TypeScript で動きます。ただし、正しい型注釈をしようと思ったらそれなりに TypeScript のことを知らないと難しいです。実際、現実的にはエラーハンドリングをしますから、エラーオブジェクトなどの型注釈も必要となります。
 
 # Promise を返す関数の型注釈
 
-Promise インスタンスを返す関数は次のように型注釈を書きます。履行値の値の型を型引数として指定することで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
+Promise インスタンスを返す関数は次のように返り値の型注釈を書きます。履行値の値の型を `Promise<Type>` の型引数として指定することで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
 
 ```ts
 function returnPromise(
   str: string
 ): Promise<string> {
   return new Promise(resolve => {
-    console.log("解決値が文字列の場合は <string> にする");
+    console.log("履行値が文字列の場合は <string> にする");
     resolve(str); // string 型の値で履行する
   });
 }
 ```
 
-JavaScript では async 関数は Promise インスタンスを返すことが一目で分かりましたが、このような Promisification したものは分かりづらかったので、型注釈をしたことで返り値の型を見れば一目で理解できるようになりまたね。
+JavaScript では async 関数は `async` キーワードが付いているため Promise インスタンスを返すことが一目で分かりましたが、このような Promise インスタンスを返す通常の関数や `setTimeout()` などの API を Promisification したものは分かりづらかったので、型注釈をしたことで返り値の型を見れば一目で理解できるようになりまたね。
 
 引数と返り値の値の型をリンクさせて一般化するには型変数を使ってジェネリック関数にします。
 
@@ -994,12 +1137,37 @@ interface Animal1 {
 
 
 // 型エイリアスで型を定義
-type Animal2 = {
+type Animal2 = { // 代入
   name: string;
   habitat: string;
 };
 ```
 :::
+
+このようなビルトインメソッドなどの型定義では型変数が大量に使われていて複雑なように見えますが、JavaScript での書き方を知っていて、しっかり見れば結構分かります。実際次のように型を抽出・整理してみることでスッキリと理解できます。
+
+```ts
+// 関数の型と unedfined 型と null 型のユニオン型
+type OnFullfilled<T, TResult1> = ((value: T) => TResult1 | PromiseLike<TResult1>)
+  | undefined 
+  | null;
+// 関数の型と unedfined 型と null 型のユニオン型
+type OnRejcted<TReulst2> = ((reason: any) => TResult2 | PromiseLike<TResult2>) 
+  | undefined 
+  | null;
+
+// 型変数はリンクしているので注意
+interface Promise<T> {
+  then<TResult1 = T, TResult2 = never>(
+    onfulfilled?: OnFullfilled<T, TReulst1>,  // optional
+    onrejected?: OnRejcted<TResult2> // optional
+  ): Promise<TResult1 | TResult2>;
+
+  catch<TResult = never>(
+    onrejected?: OnRejcted<TResult> // optional
+  ): Promise<T | TResult>;
+}
+```
 
 ちなみに、`Promise.resolve()` メソッドもジェネリクスで型が定義されています。
 
@@ -1243,11 +1411,25 @@ function reutrnMultipleValue(): [number, string, boolean] {
 const list1: [number, string, boolean] = reutrnMultipleValue();
 
 // 型エイリアスで型を作成した場合
-type tuple = [number, string, boolean];
-const list2: tuple = reutrnMultipleValue();
+type MyTuple = [number, string, boolean];
+const list2: MyTuple = reutrnMultipleValue();
 ```
 
-これを利用することで、async 関数利用時の try-catch を大量に書くのを防ぎます。基本は async 関数に例外補足を閉じ込めて標準化してデータフェッチの成功時には `[data, null]` を返し、失敗時には `[null, error]` を返すようにするというパターンです。
+複数の型の要素を受け入れる配列に対して、タプル型として型注釈を加えない場合にはそれぞれの要素の値の型のユニオン型の配列となります。これはタプル型ではないので注意してください。
+
+```ts
+const unionArr1 = [42, "文字列", true];
+// unionArr1: (number | string | boolean)[] として推論されてしまう
+const unionArr2: (number | string | boolean)[] = [42, "文字列", true, 32, "text", false];
+// ユニオン型の配列なので要素数に制限はない
+// 配列要素の型が number または string または boolean という意味
+
+// これがタプル型の注釈(要素数は型のとおり３つとなる)
+const tuple: [number, string, boolean] = [42, "文字列", true];
+// 値の並びも number, string, boolean の順番に決まっている
+```
+
+タプル型の値を返すことで、async 関数利用時の try-catch を大量に書くのを防ぎます。基本は async 関数に例外補足を閉じ込めて標準化してデータフェッチの成功時には `[data, null]` を返し、失敗時には `[null, error]` を返すようにするというパターンです。
 
 ```js
 async function fetcher(url) {
@@ -1302,6 +1484,70 @@ async function fetcher(
 `Todo` 型の合成としてのユニオン型を `Todo|null` として、エラーの型については詳しくないのでとりあえず `unknown` 型と `null` 型のユニオン型 `null|unknown` という２つのユニオン型のタプル型を `Promise<Type>` の型引数として指定してあげています。
 
 もっとうまい型注釈はあるだろうなと思いますが、とりあえずはこれで型エラーにはなりません(型の表現方法はいくつもあります)。
+
+あるいは、タプル型ではなく次のようなオブジェクトで返すというのが便利かもしれません。
+
+```ts
+// fetcher 関数から返ってくるオブジェクトの型定義
+type DataFromFetcher = {
+  data: Todo | null;
+  error: any;
+};
+```
+
+また、配列ならイテラブルで `for...of` を使った反復処理ができるので少しコードを改造して以下のようにします。
+
+```ts
+const endPoints: string[] = [
+  "https://jsonplaceholder.typicode.com/todos/1",
+  "https://jsonplaceholder.typicode.com/todos/2",
+  "https://jsonplaceholder.typicode.com/todos/3",
+];
+
+type Todo = {
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
+};
+type DataFromFetcher = {
+  data: Todo | null;
+  error: any;
+};
+
+async function fetcher(
+  url: string
+): Promise<DataFromFetcher> {
+  try {
+    const response = await fetch(url);
+    const json: Todo = await response.json();
+    return {
+      data: json,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error,
+    };
+  }
+}
+
+(async () => {
+  let todos: Todo[] = [];
+  // 配列はイテラブルなので for...of で反復処理できる
+  for (const url of endPoints) {
+    // 分割代入
+    const { data, error } = await fetcher(url);
+    // 二重否定で null でないことを判定
+    if (!!data) todos = [...todos, data];
+    if (error) console.error(error);
+  }
+  console.log({ todos });
+})();
+```
+
+こちらのコードの方が型についてはスッキリしていますね。
 
 # 型表現の多様さ
 
@@ -1379,13 +1625,13 @@ const obj1: Partial<Props> = {
 ユーティリティ型は一見難しそうに見えますが、ジェネリクスの概念と型の基礎がわかっていれば全然難しくありません。
 :::
 
-# まとめ
+# 型チャレンジ
 
 TypeScript の非同期処理は JavaScript の非同期処理に過ぎません。ジェネリクスや型変数・型引数を理解できればある程度の型注釈はできるようになります。
 
 ただし、複雑な関数の戻り値などの型注釈をしっかりしようと思うとやはり TypeScript の型の記述方法についてより詳しく知る必要があるでしょう。
 
-以下のように **type challenges** というコミュニティによる型表現のテストがあるので今後は取り組んでみたいですね。
+以下のように **type challenges** というコミュニティによる型表現のテストがあるので型についての基礎が理解できたらぜひ取り組んでいきましょう。
 
 https://github.com/type-challenges/type-challenges
 

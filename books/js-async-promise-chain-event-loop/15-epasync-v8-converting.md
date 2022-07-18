@@ -158,7 +158,7 @@ const .promise = @promiseResolve(x);
 @yield(.generator_object, .outer_promise);
 ```
 
-:::details ジェネレータ関数の yield 式
+:::details ジェネレータ関数の yield
 
 ジェネレータ関数では、`yield` の数だけ関数の処理を一時停止して値を生み出すことができます。
 
@@ -209,7 +209,7 @@ async/await では最初の `await` 式でのみ暗黙的に async 関数から�
 
 参考: [async await - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/future-javascript/async-await)
 
-ジェネレータ関数について知らなければこのことについては無視してもよいです。
+ジェネレータ関数について知らなければこのことについてはとりあえずは無視してもよいです。ジェネレータ関数や `yield` については第４章の「[イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)」で解説します。
 :::
 
 ## await 式は確実にマイクロタスクを１つ発行する

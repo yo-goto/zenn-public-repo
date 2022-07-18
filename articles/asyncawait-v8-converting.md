@@ -265,7 +265,7 @@ const .promise = @promiseResolve(x);
 @yield(.generator_object, .outer_promise);
 ```
 
-:::details ジェネレータ関数の yield 式
+:::details ジェネレータ関数の yield
 
 ジェネレータ関数では、`yield` の数だけ関数の処理を一時停止して値を生み出すことができます。
 
