@@ -15,5 +15,6 @@ alieases: [EPAsync 第４章]
 - [Promise の静的メソッドと並列化](17-epasync-static-method)
 - [await 式の配置による制御](18-epasync-await-position)
 - [反復処理の制御](19-epasync-async-loop)
+- [イテレータとジェネレータ関数](k-epasync-iterator-generator.md)
 - [Promise の型注釈](j-epasync-ts-promise-type-annotation)
 

@@ -213,6 +213,18 @@ aliases: [ch_参考文献]
 - [Array.prototype.reduce() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
 - [for await...of - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for-await...of)
 
+## [イテレータとジェネレータ関数](k-epasync-iterator-generator.md)
+
+- [JavaScript の イテレータ を極める！ - Qiita](https://qiita.com/kura07/items/cf168a7ea20e8c2554c6)
+- [JavaScript の ジェネレータ を極める！ - Qiita](https://qiita.com/kura07/items/d1a57ea64ef5c3de8528)
+- [反復処理プロトコル - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Iteration_protocols)
+- [計算プロパティ名 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Object_initializer#%E8%A8%88%E7%AE%97%E3%83%97%E3%83%AD%E3%83%91%E3%83%86%E3%82%A3%E5%90%8D)
+- [for...of - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...of)
+- [反復可能オブジェクトを期待する構文 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Iteration_protocols#%E5%8F%8D%E5%BE%A9%E5%8F%AF%E8%83%BD%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%92%E6%9C%9F%E5%BE%85%E3%81%99%E3%82%8B%E6%A7%8B%E6%96%87)
+- [Promise.all() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+- [Symbol.asyncIterator - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator)
+- [AsyncGenerator - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator)
+
 ## [Promise の型注釈](j-epasync-ts-promise-type-annotation.md)
 
 - [Promise / async / await | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/promise-async-await)

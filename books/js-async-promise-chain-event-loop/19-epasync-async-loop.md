@@ -559,13 +559,74 @@ const urls = [
 
 実際、上のようなコードを書くなら `map()` の方が素直に書けるので良いです。順序付けを行いたいなら `for` ループなどで分かりやすいコードを書いたほうがきっと良いでしょう。
 
-# for-await-of について
+# for ループの派生
 
-`for await...of` はジェネレータやイテレーターが絡む非同期ループの構文です。
+順番に興味があるので順序付けて実行する場合には基本的に `for` ループを使用しますが、`for` ループには以下のようないくつかの派生形が存在しています。
 
-https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for-await...of
+- `for...in`
+- `for...of`
+- `for await...of`
 
-今はまだ解説できるレベルの理解ではないので、これについては解説しません。ジェネレータのチャプターが追加できればこちらも解説するかもしれません。
+## for...in
+`for...in` はオブジェクトのプロパティを反復するために作られたものですが、この方法にはいくつかの問題があるため、デバッグ目的以外には基本的に使いません。
 
-とりあえず `for` ループの一種であると考えておいてください。
+オブジェクトの反復処理をしたい場合にはオブジェクト列挙のための静的メソッドである `Object.keys()` や `Object.values()`、`Object.entries()` などを利用して配列を作り出し反復処理を行います。
+
+## イテラブルオブジェクトの反復処理
+
+残り２つの `for...of` と `for await...of` はイテレータや非同期イテレータが絡みます。次のチャプターで詳しく解説しますが「イテラブル(iterable=反復可能)なオブジェクト」に対して各ループで変数を割り当てて反復処理ができます。
+
+ビルトインオブジェクトでイテラブルなものとして代表的なのは配列です。次のように API のエンドポイントの URL 配列があるときには、`for...of` の構文で反復処理が可能です。
+
+```js
+const urls = [
+  "https://jsonplaceholder.typicode.com/todos/1",
+  "https://jsonplaceholder.typicode.com/todos/2",
+  "https://jsonplaceholder.typicode.com/todos/3",
+];
+
+async function fetchThenConsole(url) {
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    console.log(text);
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+(async () => {
+  // 配列はイテラブルオブジェクトなので for...of 構文が使える
+  for (const url of urls) {
+    await fetchThenConsole(url); 
+  }
+  console.log("すべての非同期処理が完了しました");
+})();
+```
+
+実際に実行すると次のような出力を得ます。
+```sh
+❯ deno run -A forOfIteration.js
+{
+  "userId": 1,
+  "id": 1,
+  "title": "delectus aut autem",
+  "completed": false
+}
+{
+  "userId": 1,
+  "id": 2,
+  "title": "quis ut nam facilis et officia qui",
+  "completed": false
+}
+{
+  "userId": 1,
+  "id": 3,
+  "title": "fugiat veniam minus",
+  "completed": false
+}
+すべての非同期処理が完了しました
+```
+
+`for await...of` は非同期ジェネレータ関数などを使うので次のチャプターで解説します。
 

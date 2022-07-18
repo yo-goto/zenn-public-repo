@@ -43,6 +43,7 @@ url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 [g-epasync-resolve-reject](g-epasync-resolve-reject)
 [h-epasync-catch-finally](h-epasync-catch-finally)
 [j-epasync-ts-promise-type-annotation](j-epasync-ts-promise-type-annotation)
+[k-epasync-iterator-generator](k-epasync-iterator-generator)
 [x-epasync-epilogue](x-epasync-epilogue)
 [y-epasync-conclusion](y-epasync-conclusion)
 [z-epasync-reference](z-epasync-reference)
@@ -68,8 +69,8 @@ url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 - [x] Top-level await
 - [x] 静的メソッド
 - [x] ループ
+- [x] ジェネレータ
 - [x] Promise の型注釈
-- [ ] ジェネレータ
 
 ## メモ
 
@@ -113,6 +114,7 @@ chapters:
   - 17-epasync-static-method # Promise の静的メソッドと並列化
   - 18-epasync-await-position # await 式の配置による制御
   - 19-epasync-async-loop # 反復処理の制御
+  - k-epasync-iterator-generator # イテレータとジェネレータ関数
   - j-epasync-ts-promise-type-annotation # Promise の型注釈
   - x-epasync-epilogue # あとがき
   - z-epasync-reference # 参考文献
