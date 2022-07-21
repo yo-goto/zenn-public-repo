@@ -203,7 +203,7 @@ while (true) {
 
 ### 複数のタスクキュー
 
-『タスクキューとマイクロタスクキュー』のチャプターで解説した通り、HTML 仕様においてイベントループは１つ以上のタスクキューを持ちます。
+『[タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)』のチャプターで解説した通り、HTML 仕様においてイベントループは１つ以上のタスクキューを持ちます。
 
 >An event loop has one or more task queues. A task queue is a set of tasks.
 >([Event loops | HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)

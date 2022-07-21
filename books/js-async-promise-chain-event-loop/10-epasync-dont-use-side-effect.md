@@ -159,7 +159,7 @@ returnPromise("1st Promise", "[B]")
 console.log("🦖 [G] Sync process");
 ```
 
-「then メソッドのコールバックで Promise インスタンスを返す」や「Promise チェーンはネストさせない」のチャプターでネストは経験したので正解できましたか?
+「then メソッドのコールバックで Promise インスタンスを返す」や「[Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)」のチャプターでネストは経験したので正解できましたか?
 
 :::details 答え
 答えは、「A → B → G → C → D → E → F」となります。
@@ -402,7 +402,7 @@ console.log("[3] Sync process");
 # Promise チェーンの目的
 もうすこし一般化して考えてみます。Promise チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
 
-今まで `then()` メソッドのコールバックで同期処理をして、また次の `then()` メソッドのコールバックをしていたため、そもそも、今までの Promise チェーンは本質的にあまり意味の無い行為でした。例えば、『Promise チェーンで値を繋ぐ』のチャプターで見た次のコードですが、本来このように無駄にチェーンを長くする必用など基本的にはありません。
+今まで `then()` メソッドのコールバックで同期処理をして、また次の `then()` メソッドのコールバックをしていたため、そもそも、今までの Promise チェーンは本質的にあまり意味の無い行為でした。例えば、『[Promise チェーンで値を繋ぐ](7-epasync-pass-value-to-the-next-chain)』のチャプターで見た次のコードですが、本来このように無駄にチェーンを長くする必用など基本的にはありません。
 
 ```js
 // chainValueName.js
@@ -623,8 +623,7 @@ doAsyncTask()
 
 あまり非同期 API の話はこの本の都合上まだやりたくないのですが(未来のチャプターでしっかり話したいので)非同期処理を逐次的に行う例として `fetch()` メソッドを利用して例をあげます。
 
-次の記事で書いたようにに、Deno では本来 Web API であるはずの `fetch()` が Web 互換な API として提供されているので実際に使ってみます。
-https://zenn.dev/estra/articles/deno-fetch-local-file-async-practice
+『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで解説したように、Deno では本来 Web API であるはずの `fetch()` が Web 互換な API (Web Platform APIs) として同じ名前・同じ使い勝手で提供されています。
 
 :::message
 ちなみに Node 18 でも `fetch()` メソッドが利用できるようになったそうです。
@@ -703,7 +702,7 @@ fetch(localUrl)
 
 これは、`response.json()` なども同じで Promise インスタンスを返すような処理については Promise チェーンで値を繋いでから何かします。
 
-ところで、チャプター９の「Promise チェーンはネストさせない」で Promise チェーンのネストは基本的にはアンチパターンであると言いましたが、ネストが深くならないなら、別にやっても問題は無いです。ただネストを行う場合にはエラーハンドリングに気をつけましょう。
+ところで、『[Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise チェーンのネストは基本的にはアンチパターンであると言いましたが、ネストが深くならないなら、別にやっても問題は無いです。ただネストを行う場合にはエラーハンドリングに気をつけましょう。
 
 ```js
 fetch(localUrl)
@@ -720,7 +719,7 @@ fetch(localUrl)
   });
 ```
 
-Promise インスタンスから解決値を取り出す方法としては、実はもう１つ await 式がありますが、詳細はここでは解説しません。『Promise チェーンから async 関数へ』のチャプターで詳しく解説します。
+Promise インスタンスから解決値を取り出す方法としては、実はもう１つ await 式がありますが、詳細はここでは解説しません。『[Promise チェーンから async 関数へ](14-epasync-chain-to-async-await)』のチャプターで詳しく解説します。
 
 ```js
 // async function 内部で Promise インスタンスから直接値を取り出す

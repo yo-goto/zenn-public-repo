@@ -55,7 +55,7 @@ console.log("🦖 [4] Sync process");
 
 `.then((value) => console.log("👦 Resolved value: ", value));` については、`console.log()` の返り値は `undefined` となるので、次の `then()` メソッドのコールバックに値を渡す必要がなければやっても大丈夫です。
 
-値を繋ぐ際には、この「アロー関数の省略形」を意識しておくとよいです。次のコードは「Promise チェーンで値を繋ぐ」のチャプターの最後に見ましたが、ちょっと `console.log()` を抜いて改造してみます。
+値を繋ぐ際には、この「アロー関数の省略形」を意識しておくとよいです。次のコードは『[Promise チェーンで値を繋ぐ](7-epasync-pass-value-to-the-next-chain)』のチャプターの最後に見ましたが、ちょっと `console.log()` を抜いて改造してみます。
 
 ```js
 // chainValueName.js

@@ -6,7 +6,7 @@ alieases: [EPAsync 第３章]
 
 # この章について
 
-第３章ではいよいよ async/await へと突入します。Promise チェーンとイベントループの知識を使って async/await を理解します。第３章は Promise の知識が必須なのでなるべく第２章を終えてから読むようにしてください。
+第３章ではいよいよ async/await へと突入します。Promise チェーンとイベントループの知識を使って async/await を理解します。第３章は Promise の知識が必須なのでなるべく[第２章](sec-02-epasync)を終えてから読むようにしてください。
 
 # チャプター
 

@@ -4,7 +4,7 @@ aliases: [ch_resolve 関数と reject 関数の使い方]
 ---
 
 # このチャプターについて
-『Promise の基本概念』のチャプターでも少し触れましたが、`resolve()` メソッドは `reject()` メソッドよりも複雑なので使い方に気をつける必要があります。
+『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターでも少し触れましたが、`resolve()` メソッドは `reject()` メソッドよりも複雑なので使い方に気をつける必要があります。
 
 このチャプターでは、`new Promise(executor)` で使用する Executor 関数の引数である `resolve()` 関数と `reject()` 関数の注意点について解説していきます。
 
@@ -77,7 +77,7 @@ promise
 ```
 :::
 
-`resolve()` や `reject()` でコールバック関数内の処理は止まりません。ですが、『Promise の基本概念』のチャプターで言ったとおり、Promise インスタンスが一度 Settled (Fullfilled または Rejected 状態) になったらもう二度とそのインスタンスの状態は変わりません。従って、一度状態が変化したら、いくら `resolve()` や `reject()` を呼び出しても何も効果を得ることはできません。解決値が変わったり、例外が発生することもありません。
+`resolve()` や `reject()` でコールバック関数内の処理は止まりません。ですが、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターで言ったとおり、Promise インスタンスが一度 Settled (Fullfilled または Rejected 状態) になったらもう二度とそのインスタンスの状態は変わりません。従って、一度状態が変化したら、いくら `resolve()` や `reject()` を呼び出しても何も効果を得ることはできません。解決値が変わったり、例外が発生することもありません。
 
 `resolve()` や `reject()` は Promise インスタンスの状態を変えるの試みるだけです。
 

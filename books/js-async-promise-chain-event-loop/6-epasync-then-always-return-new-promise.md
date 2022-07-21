@@ -100,7 +100,7 @@ Promise チェーンにおいて、各 `then()` メソッドにおいて返っ�
 - Rejected(拒否状態)
 
 :::message
-Promise の状態(State)と運命(Fate)などの基本概念については、チャプター『Promise の基本概念』を参照してください。
+Promise の状態(State)と運命(Fate)などの基本概念については、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターを参照してください。
 :::
 
 `Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise チェーンでは `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
@@ -252,7 +252,7 @@ const promise = new Promise(res => {
 
 つまり、グローバルコンテキストがコールスタックからポップして、コールスタックが空になった時にマイクロタスクのチェックポイントですから、その時点からマイクロタスクが処理されます。
 
-４番目では、`console.log("[Rejcted status]", Promise.reject("Rejected"))` が実行されます。`Promise.resject()` については、`Promise.resolve()` の時と同じです。「Promise コンストラクタと Executor 関数」のチャプターで説明したように以下の２つはほとんど同じでした。
+４番目では、`console.log("[Rejcted status]", Promise.reject("Rejected"))` が実行されます。`Promise.resject()` については、`Promise.resolve()` の時と同じです。「[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)」のチャプターで説明したように以下の２つはほとんど同じでした。
 
 ```js
 const promise = Promise.reject("Promise拒否時の理由");

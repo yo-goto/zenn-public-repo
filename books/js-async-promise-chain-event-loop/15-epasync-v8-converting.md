@@ -975,7 +975,7 @@ Promise インスタンス以外で resolve を試みるとマイクロタスク
 ある Promise インスタンスのコンストラクタで `resolve()` 関数や `Promise.resolve()` の引数として、Promise インスタンスを渡すと **Unwrapping** という現象がおき、引数として渡した Promise インスタンスの状態や履行値、拒否理由などを自身の状態と値として同化できます。
 
 :::message
-Unwrapping については『resolve 関数と reject 関数の使い方』のチャプターで解説しました。
+Unwrapping については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』のチャプターで解説しました。
 :::
 
 ただし、この `Promise.resolve()` と `resolve()` の２つには注意すべき違いがあります。
@@ -1265,7 +1265,7 @@ console.log("🦖 [2] MAINLINE: End");
 Rejected 状態の Promise インスタンスにチェーンされている `then()` メソッドの**コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
 
 :::message
-『catch メソッドと finally メソッド』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise チェーンの実行となります。
+『[catch メソッドと finally メソッド](h-epasync-catch-finally)』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise チェーンの実行となります。
 :::
 
 ```sh
