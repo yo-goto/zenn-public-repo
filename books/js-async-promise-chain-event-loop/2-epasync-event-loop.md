@@ -166,7 +166,7 @@ Promise.resolve('promise resloved').then(res => console.log(res))
 JSConf.Asia での Jake Archibald 氏による講演動画『In The Loop』においても、`Script` がコールスタックに載っており、`Script` が Call Stack から pop されて初めて Microtask が実行されています。
 
 ↓ 動画の 31:33 ~ のところ。
-@[youtube](cCOL7MC4Pl0)
+https://youtu.be/cCOL7MC4Pl0
 
 これまた Jake Archibald 氏の記事内のデモにおいて、最初の「スクリプトの評価」もしくは「スクリプトの実行」自体が実質的に Task となっており、Call stack に `script` がプッシュされています。
 
@@ -225,7 +225,7 @@ console.log("[3] Sync process");
 
 JSConf EU 2018 での Erin Zimmer 氏の講演動画である『Further Adventures of the Event Loop』で明確に語られていました。動画の `1:35 ~` のところ。
 
-@[youtube](u1kqx6AenYw)
+https://youtu.be/u1kqx6AenYw
 
 https://2018.jsconf.eu/speakers/erin-zimmer-further-adventures-of-the-event-loop.html
 

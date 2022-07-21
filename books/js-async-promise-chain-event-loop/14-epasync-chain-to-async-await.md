@@ -451,7 +451,7 @@ console.log("[4]");
 
 次の JSConf EU で行われた Shelley Vohr 氏による『Asynchrony: Under the Hood』の公演動画を 23:36 ~ のところから視聴してみてください。Callback hell → Promise chain → async/await の変形が視覚的に示されていて変形のイメージをつかめます。
 
-@[youtube](SrNQS8J67zc)
+https://youtu.be/SrNQS8J67zc
 
 :::message
 ここではシンプルに Promise チェーンから async 関数へと変形でき同じものであることをイメージできることが重要です。

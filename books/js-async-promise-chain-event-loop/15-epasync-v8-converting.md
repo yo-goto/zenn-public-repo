@@ -19,7 +19,7 @@ https://zenn.dev/estra/articles/asyncawait-v8-converting
 
 https://v8.dev/blog/fast-async#await-under-the-hood
 
-@[youtube](DFP5DKDQfOc)
+https://youtu.be/DFP5DKDQfOc
 
 :::message
 ブログ記事と動画において、「以前の ECMAScript の仕様では async/await のオーバーヘッド(余計な Promise インスタンスとマイクロタスクの生成)があったため、V8 エンジンでそれを改善した上で、**ECMAScript の仕様自体にその最適化をマージし**、V8 エンジンだけでなく**あらゆるエンジンで同じ最適化ができるようにした**」ということが述べられています。

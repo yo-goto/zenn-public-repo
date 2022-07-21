@@ -49,7 +49,7 @@ function noPureOp(input) {
 
 副作用については以下の JSConf EU 2017 での Anjana Vakil 氏の講演動画『Learning Functional Programming with JavaScript』が非常にわかりやすいので興味があれば視聴してみるとよいです。
 
-@[youtube](e-5obm1G_FY)
+https://www.youtube.com/watch?v=e-5obm1G_FY&list=TLGGz_fwguCfqL8yMDA3MjAyMg
 
 # returnの代わりに副作用を使用しない
 さて、今まで `then()` メソッドのコールバック関数内にて返すものとしては次のパターンでした。

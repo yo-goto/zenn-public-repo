@@ -420,7 +420,7 @@ ECMAScript に取り入れられた非同期処理に関するものとして as
 
 ここまで来て、色々な非同期処理の知識を得たと思いますが、ECMAScript の「非同期処理」の俯瞰を行うために Electron のコアエンジニアである Shelley Vohr 氏が JSConf EU で行った講演動画である『Asynchrony: Under the Hood』を見ておくといいと思います。
 
-@[youtube](SrNQS8J67zc)
+https://youtu.be/SrNQS8J67zc
 
 Philip Roberts 氏の動画よりも新しいので、ECMAScript の機能として新しく追加された Promise のためのキューである Microtask queue が入った状態の Event loop の話をしています。ですが、最初にこれを見ても多分理解できないと思うので、やはり「What the heck is the event loop anyway?」から視聴するのをオススメします。
 

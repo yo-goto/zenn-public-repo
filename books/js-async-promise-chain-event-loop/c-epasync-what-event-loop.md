@@ -102,7 +102,7 @@ Loupe であった Web API の要素(複数同時に実行できるため実質�
 
 共通性質やメンタルモデルの注意点について頭に入れておきましたので、より具体的にイベントループがどのようになっているかを見ておきましょう。イベントループについてはテキストで理解するよりも動画で理解した方がいい場合があるので、こちらの動画を参考にしてください。
 
-@[youtube](2qDNgBgKsXI)
+https://youtu.be/2qDNgBgKsXI
 
 この動画は、[JSConf EU 2018 での Erin Zimmer 氏が行った講演動画である『Further Adventures of the Event Loop』](https://youtu.be/u1kqx6AenYw)の別の場所での講演動画です。JSConf の短い時間で語られていた内容がより詳細に語られており、非常にわかりやすいので是非視聴することをおすすめします。
 
@@ -285,7 +285,7 @@ taskLoop();
 
 JSConf.Asia での Jake Archibald 氏による講演動画『In The Loop』において、タスク、マイクロタスク、アニメーションタスク(`resquestAnimationFrame()` API のコールバック)で無限ループを作成した場合の比較を行っているので、詳しくはこちらを参考してください。
 
-@[youtube](cCOL7MC4Pl0)
+https://youtu.be/cCOL7MC4Pl0
 
 ### レンダリングパイプライン
 
@@ -531,7 +531,7 @@ https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#event-loop-exp
 
 Node のイベントループについては以下の Node Interactive EUROPE での Bert Belder 氏による講演動画で詳しく解説されています。
 
-@[youtube](PNa9OMajw9w)
+https://youtu.be/PNa9OMajw9w
 
 この動画で Bert Belder 氏によって説明されている資料は本人が公開している次の Google Drive 上ある PDF から閲覧できます。Bert Belder 氏は現在は Deno の開発に関わっているみたいですね。
 
