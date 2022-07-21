@@ -273,6 +273,10 @@ for (const v of iterableObject) {
 - `Map`
 - `Set`
 
+:::message alert
+オブジェクトリテラルなどで作成した通常のオブジェクトは、自分で `[Symbol.iterator]()` や `next()` などを実装する必要があったのでイテレータでもイテラブルでもありません。
+:::
+
 つまり、これらのオブジェクトは `for...of` の構文で反復処理ができることになります。
 
 ```js
@@ -409,6 +413,80 @@ Promise.all(str).then(val => console.log(val))
 [ "A", "B", "C" ]
 */
 ```
+
+## 非同期の反復処理で for...of を利用する
+
+配列などがビルトインのイテラブルオブジェクトであると分かった今、『[反復処理の制御](19-epasync-async-loop)』のチャプターで見たような反復処理は `for...of` 構文を使ってわかりやすくイテレーションできることが分かります。次のような API エンドポイントの URL が配列などで与えられていれば、これを使った反復処理は `for...of` でできます。
+
+```js
+const urls = [
+  "https://jsonplaceholder.typicode.com/todos/1",
+  "https://jsonplaceholder.typicode.com/todos/2",
+  "https://jsonplaceholder.typicode.com/todos/3",
+];
+```
+
+前のチャプターでは、古典的な初期化子などを使った `for` のイテレーションでした。
+
+```js
+(async () => {
+  for (let i = 0; i < urls.length; i++) {
+    await fetchThenConsole(urls[i]); 
+    // fetchThenConsole() は async 関数
+  }
+  console.log("すべての非同期処理が完了しました");
+})();
+```
+
+これを新しいイテラブルオブジェクトで使える `for...of` で書き換えると次のようになります。
+
+```js
+(async () => {
+  // urls は配列でイテラブルなので for...of が使える
+  for (const url of urls) {
+    await fetchThenConsole(url); 
+  }
+  console.log("すべての非同期処理が完了しました");
+})();
+```
+
+また、文字列を１秒ずつ待って出力する次の処理も配列を使っているので `for...of` でイテレーションするように変えることができます。
+
+```js
+import sleep from "./sleep.js";
+
+const chars = ["A", "B", "C", "D", "E"];
+
+(async () => {
+  console.log("１秒ごとにアルファベットの出力を開始します");
+  await sleep(1000);
+  for (let i = 0; i < chars.length; i++) {
+    console.log(chars[i]);
+    await sleep(1000);
+  }
+  console.log("すべてのアルファベットを出力しました");
+})();
+```
+
+`for...of` で書き換えると次のようになります。
+
+```js
+import sleep from "./sleep.js";
+
+const chars = ["A", "B", "C", "D", "E"];
+
+(async () => {
+  console.log("１秒ごとにアルファベットの出力を開始します");
+  await sleep(1000);
+  for (const char of chars) {
+    console.log(char);
+    await sleep(1000);
+  }
+  console.log("すべてのアルファベットを出力しました");
+})();
+```
+
+配列に限らず、ビルトインのイテラブルオブジェクトである `Map` や `Set` などでも使える汎用性のある構文です。
 
 # ジェネレータ関数
 
