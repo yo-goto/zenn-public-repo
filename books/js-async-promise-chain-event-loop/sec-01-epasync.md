@@ -14,7 +14,7 @@ alieases: [EPAsync 第１章]
 
 この章の内容を理解するために、JSConfEU で行われた Philip Roberts 氏の講演動画である『What the heck is the event loop anyway?』をはじめに見ておくことを強く推奨しています(この動画は非常に重要なのでこの本を読まずとも必ず見るようにしてください)。
 
-@[youtube](8aGhZQkoFbQ)
+https://www.youtube.com/watch?v=8aGhZQkoFbQ
 
 この動画で、"イベントループ" と "コールスタック"、"非同期 API" の概要を掴んでからこの章の内容を読んでいただけると良いと思います。
 
