@@ -10,6 +10,7 @@ aliases: [ch_Promise チェーンはネストさせない]
 :::
 
 このチャプターでは、Promise チェーンにおけるネストについて、アンチパターンとしての話と、原理的な話を行います。
+
 # Promise チェーンをネストしてみる
 前のチャプターでは、`then()` メソッドのコールバックにおいて、Promise インスタンスを `return` した場合は、「Promise インスタンスが `resolve` された値が次の `then()` メソッドのコールバック関数の引数として渡される」という話でした。
 
@@ -18,65 +19,65 @@ aliases: [ch_Promise チェーンはネストさせない]
 
 ```js
 // promiseNest.js
-console.log('🦖 [1] Sync process');
+console.log('🦖 [1] Sync');
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 [${order}] This line is (A)Synchronously executed`);
+    console.log(`👻 [${order}] (a)sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise('1st Promise', '2')
   .then((value) => {
-    console.log('👦 [5] This line is Asynchronously executed');
+    console.log('👦 [5] Async');
     console.log('👦 Resolved value: ', value);
     return returnPromise('2nd Promise', '6')
       .then((value) => {
-        console.log('👦 [9] This line is Asynchronously executed');
+        console.log('👦 [9] Async');
         console.log('👦 Resolved value: ', value);
         return 'from [9] callback';
       });
   })
   .then((value) => {
-    console.log('👦 [11] This line is Asynchronously executed');
+    console.log('👦 [11] Async');
     console.log('👦 Resolved value: ', value);
   });
 returnPromise('3rd Promise', '3')
   .then((value) => {
-    console.log('👦 [7] This line is Asynchronously executed');
+    console.log('👦 [7] Async');
     console.log('👦 Resolved value: ', value);
     return returnPromise('4th Promise', '8')
       .then((value) => {
-        console.log('👦 [10] This line is Asynchronously executed');
+        console.log('👦 [10] Async');
         console.log('👦 Resolved value: ', value);
         return 'from [10] callback';
       });
   })
   .then((value) => {
-    console.log('👦 [12] This line is Asynchronously executed');
+    console.log('👦 [12] Async');
     console.log('👦 Resolved value: ', value);
   });
 
-console.log('🦖 [4] Sync process');
+console.log('🦖 [4] Sync');
 ```
 
 基本的には今までの流れと代りません。また圧縮して書いてみます。
 
 ```js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] Sync");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("1st Promise", "2").then(cb1).then(cb2);
 returnPromise("3rd Promise", "3").then(cb3).then(cb4);
-console.log("🦖 [4] Sync process");
+console.log("🦖 [4] Sync");
 ```
 
 今までと同じところまで流れを書いてみます。
 1. 最初のタスク「スクリプトの評価」による「すべての同期処理の実行」
-  1. `console.log("[1] Sync process")` が同期処理される
+  1. `console.log("[1] Sync")` が同期処理される
   2. `returnPromise("1st Promise", "2")` が同期処理されて `then(cb1)` のコールバック `cb1` が直ちがマイクロタスクキューへと送られる
   3. `returnPromise("3rd Promise", "3")` が同期処理されて `then(cb3)` のコールバック `cb3` が直ちにマイクロタスクキューへと送られる
-  4. `console.log("[4] Sync process")` が同期処理される
+  4. `console.log("[4] Sync")` が同期処理される
   5. イベントループの次のステップへ移行(同期処理がすべて終わり、グローバルコンテキストがポップしてコールスタックが空になったので、「マイクロタスクのチェックポイント」となる)
 2. 「マイクロタスクキューのすべてのマイクロタスクを実行する」
   6. `cb1` が実行される
@@ -94,7 +95,7 @@ returnPromise("1st Promise", "2")
   .then((value) => {
     // これが cb1 
     // 上から下に実行されていく
-    console.log("👦 [5] This line is Asynchronously executed");
+    console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
 
     return returnPromise("2nd Promise", "6").then(callbackNext);
@@ -126,7 +127,7 @@ returnPromise("3rd Promise", "3")
   .then((value) => {
     // これが cb3 
     // 上から下に実行されていく
-    console.log("👦 [7] This line is Asynchronously executed");
+    console.log("👦 [7] Async");
     console.log("👦 Resolved value: ", value);
 
     return returnPromise("4th Promise", "8").then(callbackNext2);
@@ -147,19 +148,19 @@ returnPromise("3rd Promise", "3")
 returnPromise("1st Promise", "2")
   .then((value) => {
     // cb1
-    console.log("👦 [5] This line is Asynchronously executed");
+    console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
     return returnPromise("2nd Promise", "6")
       .then((value) => {
         // callbackNext
-        console.log("👦 [9] This line is Asynchronously executed");
+        console.log("👦 [9] Async");
         console.log("👦 Resolved value: ", value);
         return "from [9] callback";
       });
   })
   .then((value) => {
     // cb2
-    console.log("👦 [11] This line is Asynchronously executed");
+    console.log("👦 [11] Async");
     console.log("👦 Resolved value: ", value);
   });
 ```
@@ -186,24 +187,24 @@ returnPromise("1st Promise", "2")
 
 ```sh
 ❯ deno run promiseNest.js
-🦖 [1] Sync process
-👻 [2] This line is (A)Synchronously executed
-👻 [3] This line is (A)Synchronously executed
-🦖 [4] Sync process
-👦 [5] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [6] This line is (A)Synchronously executed
-👦 [7] This line is Asynchronously executed
-👦 Resolved value:  3rd Promise
-👻 [8] This line is (A)Synchronously executed
-👦 [9] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
-👦 [10] This line is Asynchronously executed
-👦 Resolved value:  4th Promise
-👦 [11] This line is Asynchronously executed
-👦 Resolved value:  from [9] callback
-👦 [12] This line is Asynchronously executed
-👦 Resolved value:  from [10] callback
+🦖 [1] Sync
+👻 [2] (a)sync
+👻 [3] (a)sync
+🦖 [4] Sync
+👦 [5] Async
+👦 Resolved value: 1st Promise
+👻 [6] (a)sync
+👦 [7] Async
+👦 Resolved value: 3rd Promise
+👻 [8] (a)sync
+👦 [9] Async
+👦 Resolved value: 2nd Promise
+👦 [10] Async
+👦 Resolved value: 4th Promise
+👦 [11] Async
+👦 Resolved value: from [9] callback
+👦 [12] Async
+👦 Resolved value: from [10] callback
 ```
 
 分かりにくいですが、結局普通の Promise チェーンと同じ出力の順番になります。JS Visuzalizer で可視化してみたので実際にそうなることを確認してみてください。
@@ -217,128 +218,128 @@ returnPromise("1st Promise", "2")
 実際にネストを解消してみます。
 
 ```diff js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "[2]")
   .then((value) => {
-    console.log("👦 [5] This line is Asynchronously executed");
+    console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
     return returnPromise("2nd Promise", "[6]")
 -     .then((value) => {
--       console.log("👦 [9] This line is Asynchronously executed");
+-       console.log("👦 [9] Async");
 -       console.log("👦 Resolved value: ", value);
 -       return "from [9] callback";
 -     });
   })
 + .then((value) => {
-+   console.log("👦 [9] This line is Asynchronously executed");
++   console.log("👦 [9] Async");
 +   console.log("👦 Resolved value: ", value);
 +   return "from [9] callback";
 + })
   .then((value) => {
-    console.log("👦 [11] This line is Asynchronously executed");
+    console.log("👦 [11] Async");
     console.log("👦 Resolved value: ", value);
   });
 returnPromise("3rd Promise", "[3]")
   .then((value) => {
-    console.log("👦 [7] This line is Asynchronously executed");
+    console.log("👦 [7] Async");
     console.log("👦 Resolved value: ", value);
     return returnPromise("4th Promise", "[8]")
 -     .then((value) => {
--       console.log("👦 [10] This line is Asynchronously executed");
+-       console.log("👦 [10] Async");
 -       console.log("👦 Resolved value: ", value);
 -       return "from [10] callback";
 -     });
   })
 + .then((value) => {
-+   console.log("👦 [10] This line is Asynchronously executed");
++   console.log("👦 [10] Async");
 +   console.log("👦 Resolved value: ", value);
 +   return "from [10] callback";
 + })
   .then((value) => {
-    console.log("👦 [12] This line is Asynchronously executed");
+    console.log("👦 [12] Async");
     console.log("👦 Resolved value: ", value);
   });
 
-console.log("🦖 [4] Sync process");
+console.log("🦖 [4] Sync");
 ```
 
 結果はこのようになり、ネストした状態のものよりも圧倒的に見やすく、流れが分かりなりました。
 
 ```js
 // promiseNestShallow.js
-console.log('🦖 [1] Sync process');
+console.log('🦖 [1] Sync');
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 [${order}] This line is (A)Synchronously executed`);
+    console.log(`👻 [${order}] (a)sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise('1st Promise', '2')
   .then((value) => {
-    console.log('👦 [5] This line is Asynchronously executed');
+    console.log('👦 [5] Async');
     console.log('👦 Resolved value: ', value);
     return returnPromise('2nd Promise', '6');
   })
   .then((value) => {
-    console.log('👦 [9] This line is Asynchronously executed');
+    console.log('👦 [9] Async');
     console.log('👦 Resolved value: ', value);
     return 'from [9] callback';
   })
   .then((value) => {
-    console.log('👦 [11] This line is Asynchronously executed');
+    console.log('👦 [11] Async');
     console.log('👦 Resolved value: ', value);
   });
 returnPromise('3rd Promise', '3')
   .then((value) => {
-    console.log('👦 [7] This line is Asynchronously executed');
+    console.log('👦 [7] Async');
     console.log('👦 Resolved value: ', value);
     return returnPromise('4th Promise', '8');
   })
   .then((value) => {
-    console.log('👦 [10] This line is Asynchronously executed');
+    console.log('👦 [10] Async');
     console.log('👦 Resolved value: ', value);
     return 'from [10] callback';
   })
   .then((value) => {
-    console.log('👦 [12] This line is Asynchronously executed');
+    console.log('👦 [12] Async');
     console.log('👦 Resolved value: ', value);
   });
 
-console.log('🦖 [4] Sync process');
+console.log('🦖 [4] Sync');
 ```
 
 出力結果は全く同じになります。
 
 ```sh
 ❯ deno run promiseNestShallow.js
-🦖 [1] Sync process
-👻 [2] This line is (A)Synchronously executed
-👻 [3] This line is (A)Synchronously executed
-🦖 [4] Sync process
-👦 [5] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [6] This line is (A)Synchronously executed
-👦 [7] This line is Asynchronously executed
-👦 Resolved value:  3rd Promise
-👻 [8] This line is (A)Synchronously executed
-👦 [9] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
-👦 [10] This line is Asynchronously executed
-👦 Resolved value:  4th Promise
-👦 [11] This line is Asynchronously executed
-👦 Resolved value:  from [9] callback
-👦 [12] This line is Asynchronously executed
-👦 Resolved value:  from [10] callback
+🦖 [1] Sync
+👻 [2] (a)sync
+👻 [3] (a)sync
+🦖 [4] Sync
+👦 [5] Async
+👦 Resolved value: 1st Promise
+👻 [6] (a)sync
+👦 [7] Async
+👦 Resolved value: 3rd Promise
+👻 [8] (a)sync
+👦 [9] Async
+👦 Resolved value: 2nd Promise
+👦 [10] Async
+👦 Resolved value: 4th Promise
+👦 [11] Async
+👦 Resolved value: from [9] callback
+👦 [12] Async
+👦 Resolved value: from [10] callback
 ```
 
 Promise チェーンはこのようにネストさせずに流れを見やすくします。
