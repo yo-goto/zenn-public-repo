@@ -14,7 +14,7 @@ aliases: [ch_参考文献]
 
 # [第１章 - API を提供する環境と実行メカニズム](sec-01-epasync)
 
-## [非同期 API と環境](f-epasync-asyncronous-apis)
+## [非同期 API と環境](f-epasync-asynchronous-apis)
 
 - [How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion)
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)
@@ -98,7 +98,7 @@ aliases: [ch_参考文献]
 
 # [第２章 - Promise インスタンスと連鎖](sec-02-epasync)
 
-## [Promise の基本概念](a-epasync-promise-basic-consept)
+## [Promise の基本概念](a-epasync-promise-basic-concept)
 
 - [promises-unwrapping/states-and-fates.md at master · domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md)
 - [What is the correct terminology for javascript promises - Stack Overflow](https://stackoverflow.com/questions/29268569/what-is-the-correct-terminology-for-javascript-promises/29269515#29269515)
@@ -137,7 +137,7 @@ aliases: [ch_参考文献]
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises)
 
-## [Promise チェーンはネストさせない](9-epasync-dont-next-promise-chain)
+## [Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)
 
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises)

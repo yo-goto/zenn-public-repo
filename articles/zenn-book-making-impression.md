@@ -204,7 +204,7 @@ https://zenn.dev/zenn/articles/zenn-cli-guide#%E3%83%95%E3%82%A1%E3%82%A4%E3%83%
 そして、サブチャプターのような位置づけで途中から挿入するチャプターはアルファベットの小文字を頭につけるように作成します。
 
 ```txt:後から追加したサブチャプターのファイル名
-a-epasync-promise-basic-consept.md
+a-epasync-promise-basic-concept.md
 b-epasync-callstack-execution-context.md
 c-epasync-what-event-loop.md
 d-epasync-task-microtask-queues.md
@@ -244,7 +244,7 @@ sec-03-epasync.md
 chapters:
   - 1-epasync-begin # はじめに
   - sec-01-epasync # 第１章
-  - f-epasync-asyncronous-apis # 非同期 API と環境
+  - f-epasync-asynchronous-apis # 非同期 API と環境
   - f-epasync-synchronus-apis # 同期 API とブロッキング
   - 2-epasync-event-loop # イベントループの概要と注意点
   - d-epasync-task-microtask-queues # タスクキューとマイクロタスクキュー
@@ -252,7 +252,7 @@ chapters:
   - b-epasync-callstack-execution-context #コールスタックと実行コンテキスト
   - c-epasync-what-event-loop # それぞれのイベントループ
   - sec-02-epasync # 第２章
-  - a-epasync-promise-basic-consept # Promise の基本概念
+  - a-epasync-promise-basic-concept # Promise の基本概念
   - 3-epasync-promise-constructor-executor-func # Promise コンストラクタと Executor 関数
   - 4-epasync-callback-is-sync-or-async # コールバック関数の同期実行と非同期実行
   - g-epasync-resolve-reject # resolve 関数と reject 関数の使い方
@@ -260,7 +260,7 @@ chapters:
   - 6-epasync-then-always-return-new-promise # then メソッドは常に新しい Promise を返す
   - 7-epasync-pass-value-to-the-next-chain # Promise チェーンで値を繋ぐ
   - 8-epasync-return-promise-in-then-callback # then メソッドのコールバックで Promise インスタンスを返す
-  - 9-epasync-dont-next-promise-chain # Promise チェーンはネストさせない
+  - 9-epasync-dont-nest-promise-chain # Promise チェーンはネストさせない
   - 10-epasync-dont-use-side-effect # コールバックで副作用となる非同期処理
   - 11-epasync-omit-return-by-arrow-shortcut # アロー関数で return を省略する
   - h-epasync-catch-finally # catch メソッドと finally メソッド

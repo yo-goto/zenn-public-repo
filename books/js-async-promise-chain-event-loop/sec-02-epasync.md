@@ -12,7 +12,7 @@ alieases: [EPAsync 第３章]
 
 # チャプター
 
-- [Promise の基本概念](a-epasync-promise-basic-consept)
+- [Promise の基本概念](a-epasync-promise-basic-concept)
 - [Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)
 - [コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)
 - [resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)
