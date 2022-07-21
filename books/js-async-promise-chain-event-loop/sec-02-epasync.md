@@ -20,7 +20,7 @@ alieases: [EPAsync 第３章]
 - [then メソッドは常に新しい Promise を返す](6-epasync-then-always-return-new-promise)
 - [Promise チェーンで値を繋ぐ](7-epasync-pass-value-to-the-next-chain)
 - [then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)
-- [Promise チェーンはネストさせない](9-epasync-dont-next-promise-chain)
+- [Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)
 - [コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)
 - [アロー関数で return を省略する](11-epasync-omit-return-by-arrow-shortcut)
 - [catch メソッドと finally メソッド](h-epasync-catch-finally)
