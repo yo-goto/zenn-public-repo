@@ -17,33 +17,33 @@ aliases: [ch_then メソッドは常に新しい Promise を返す]
 
 ```js:returnPromiseByFuncArg2AddChain.js
 // returnPromiseByFuncArg2AddChain.js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 [${order}] This line is Synchronously executed`);
+    console.log(`👻 [${order}] Sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "B")
   .then((value) => {
-    console.log("👦 [C] This line is Asynchronously executed");
+    console.log("👦 [C] Async");
     console.log("👦 Resolved value: ", value);
   })
   .then(() => {
-    console.log("👦 [D] This line is Asynchronously executed");
+    console.log("👦 [D] Async");
   });
 returnPromise("2nd Promise", "E")
   .then((value) => {
-    console.log("👦 [F] This line is Asynchronously executed");
+    console.log("👦 [F] Async");
     console.log("👦 Resolved value: ", value);
   })
   .then(() => {
-  console.log("👦 [G] This line is Asynchronously executed");
+  console.log("👦 [G] Async");
   });
 
-console.log("🦖 [H] Sync process");
+console.log("🦖 [H] Sync");
 ```
 
 :::details 答え
@@ -51,16 +51,16 @@ console.log("🦖 [H] Sync process");
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-🦖 [A] Sync process
-👻 [B] This line is Synchronously executed
-👻 [E] This line is Synchronously executed
-🦖 [H] Sync process
-👦 [C] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👦 [F] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
-👦 [D] This line is Asynchronously executed
-👦 [G] This line is Asynchronously executed
+🦖 [A] Sync
+👻 [B] Sync
+👻 [E] Sync
+🦖 [H] Sync
+👦 [C] Async
+👦 Resolved value: 1st Promise
+👦 [F] Async
+👦 Resolved value: 2nd Promise
+👦 [D] Async
+👦 [G] Async
 ```
 :::
 
@@ -69,16 +69,16 @@ console.log("🦖 [H] Sync process");
 準備としてコールバック関数などを `cb1` というように省略表記をしてコードを圧縮して書くと次のようになります。
 
 ```js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("1st Promise", "B").then(cb1).then(cb2);
 returnPromise("2nd Promise", "E").then(cb3).then(cb4);
-console.log("🦖 [H] Sync process");
+console.log("🦖 [H] Sync");
 ```
 
 前のコードと考え方は同じです。まずはイベントループにおいて最初のタスクである「スクリプトの評価」で「すべての同期処理の実行」が行われます。コールスタックの一番下にグローバルコンテキストが積まれた状態で同期処理がどんどん行われていきます。
 
-- (1) `console.log("🦖 [A] Sync process")` が同期処理される
+- (1) `console.log("🦖 [A] Sync")` が同期処理される
 - (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fullfilled)状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちにマイクロタスクキューへと送られます。
 
 さて、ここまでは前のコードと同じですね。
@@ -114,25 +114,25 @@ Promise の状態(State)と運命(Fate)などの基本概念については、�
 そして、そのまま次の処理へと進みます。次の行は `returnPromise("2nd Promise", "E").then(cb1).then(cb2)` なので、まったく同じことが置きます。
 
 ```js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 const returnPromise = (resolvedValue, order) => {...};
 returnPromise("1st Promise", "B").then(cb1).then(cb2);
 returnPromise("2nd Promise", "E").then(cb3).then(cb4);
-console.log("🦖 [H] Sync process");
+console.log("🦖 [H] Sync");
 ```
 
 1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行(Fullfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちにマイクロタスクキューへと送られます
 2. `then(cb3)` で返ってくる別の Promise インスタンスはまだ待機状態なので `then(cb4)` のコールバック関数 `cb4` はまだキューへ送られずにそのまま待機となります
-3. 次の処理に進み、`console.log("[H] Sync process")` が実行されます
+3. 次の処理に進み、`console.log("[H] Sync")` が実行されます
 
 これでイベントループにおいてコード実行の最初のタスクである「スクリプトの評価」における「すべて同期処理の実行」が終わりました。出力はこの時点で次のようになっています。
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-🦖 [A] Sync process
-👻 [B] This line is Synchronously executed
-👻 [E] This line is Synchronously executed
-🦖 [H] Sync process
+🦖 [A] Sync
+👻 [B] Sync
+👻 [E] Sync
+🦖 [H] Sync
 
 # ...この先はどうなる?
 ```
@@ -151,14 +151,14 @@ console.log("🦖 [H] Sync process");
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-🦖 [A] Sync process
-👻 [B] This line is Synchronously executed
-👻 [E] This line is Synchronously executed
-🦖 [H] Sync process
-👦 [C] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👦 [F] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
+🦖 [A] Sync
+👻 [B] Sync
+👻 [E] Sync
+🦖 [H] Sync
+👦 [C] Async
+👦 Resolved value: 1st Promise
+👦 [F] Async
+👦 Resolved value: 2nd Promise
 
 # ...この先はどうなる?
 ```
@@ -169,16 +169,16 @@ console.log("🦖 [H] Sync process");
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2AddChain.js
-🦖 [A] Sync process
-👻 [B] This line is Synchronously executed
-👻 [E] This line is Synchronously executed
-🦖 [H] Sync process
-👦 [C] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👦 [F] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
-👦 [D] This line is Asynchronously executed
-👦 [G] This line is Asynchronously executed
+🦖 [A] Sync
+👻 [B] Sync
+👻 [E] Sync
+🦖 [H] Sync
+👦 [C] Async
+👦 Resolved value: 1st Promise
+👦 [F] Async
+👦 Resolved value: 2nd Promise
+👦 [D] Async
+👦 [G] Async
 ```
 
 言葉で説明すると非常に長くなってしまいましたがこのような結果となります。

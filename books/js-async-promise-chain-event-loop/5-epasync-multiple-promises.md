@@ -20,33 +20,33 @@ aliases: [ch_複数の Promise を走らせる]
 
 ```js:returnPromiseByFunc.js
 // returnPromiseByFunc.js
-console.log('🦖 [1] MAINLINE: Sync process');
+console.log('🦖 [1] MAINLINE: Sync');
 
 // アロー関数で定義するので注意
 const returnPromise = (resolveValue) => {
   return new Promise((resolve) => {
-    console.log('👻 [2] This line is Synchronously executed');
+    console.log('👻 [2] Sync');
     resolve(resolveValue);
   });
 };
 
 returnPromise('Resolved by function').then((value) => {
-  console.log('👦 [4] This line is Asynchronously executed');
-  console.log('👦 [5] Resolved value: ', value);
+  console.log('👦 [4] Async');
+  console.log('👦 [5] Resolved value:', value);
 });
 
-console.log('🦖 [3] MAINLINE: Sync process');
+console.log('🦖 [3] MAINLINE: Sync');
 ```
 
 これは前のコードではそのまま Promise インスタンスを作成していたのを Promise インスタンスを返す関数に置き換えただけなので実行結果は以前と同じになります(履行値だけ違う)。
 
 ```sh
 ❯ deno run returnPromiseByFunc.js
-🦖 [1] MAINLINE: Sync process
-👻 [2] This line is Synchronously executed
-🦖 [3] MAINLINE: Sync process
-👦 [4] This line is Asynchronously executed
-👦 [5] Resolved value:  Resolved by function
+🦖 [1] MAINLINE: Sync
+👻 [2] Sync
+🦖 [3] MAINLINE: Sync
+👦 [4] Async
+👦 [5] Resolved value: Resolved by function
 ```
 
 具体的には `returnPromise()` 関数は同期的に実行されて、内部の `Promise()` コンストラクタの引数であるコールバック関数もそのまま同期的に実行されます。
@@ -55,32 +55,32 @@ console.log('🦖 [3] MAINLINE: Sync process');
 
 ```js:returnPromiseByFuncArg.js
 // returnPromiseByFuncArg.js
-console.log('🦖 [1] MAINLINE: Sync process');
+console.log('🦖 [1] MAINLINE: Sync');
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 [${order}] This line is Synchronously executed`);
+    console.log(`👻 [${order}] Sync`);
     resolve(resolvedValue);
   });
 };
 
-returnPromise('First Promise', 2).then((value) => {
-  console.log('👦 [4] This line is Asynchronously executed');
-  console.log('👦 [5] Resolved value: ', value);
+returnPromise('1st Promise', 2).then((value) => {
+  console.log('👦 [4] Async');
+  console.log('👦 [5] Resolved value:', value);
 });
 
-console.log('🦖 [3] MAINLINE: Sync process');
+console.log('🦖 [3] MAINLINE: Sync');
 ```
 
 テンプレートリテラルで書き換えただけなので実行結果は同じになります。
 
 ```sh
 ❯ deno run returnPromiseByFuncArg.js
-🦖 [1] MAINLINE: Sync process
-👻 [2] This line is Synchronously executed
-🦖 [3] MAINLINE: Sync process
-👦 [4] This line is Asynchronously executed
-👦 [5] Resolved value:  First Promise
+🦖 [1] MAINLINE: Sync
+👻 [2] Sync
+🦖 [3] MAINLINE: Sync
+👦 [4] Async
+👦 [5] Resolved value: 1st Promise
 ```
 
 # 複数の Promise 処理を走らせる
@@ -89,25 +89,25 @@ console.log('🦖 [3] MAINLINE: Sync process');
 
 ```js:returnPromiseByFuncArg2.js
 // returnPromiseByFuncArg2.js
-console.log('🦖 [A] MAINLINE: Sync process');
+console.log('🦖 [A] MAINLINE: Sync');
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 [${order}] This line is Synchronously executed`);
+    console.log(`👻 [${order}] Sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise('1st Promise', 'B').then((value) => {
-  console.log('👦 [C] This line is Asynchronously executed');
-  console.log('👦 Resolved value: ', value);
+  console.log('👦 [C] Async');
+  console.log('👦 Resolved value:', value);
 });
 returnPromise('2nd Promise', 'D').then((value) => {
-  console.log('👦 [E] This line is Asynchronously executed');
-  console.log('👦 Resolved value: ', value);
+  console.log('👦 [E] Async');
+  console.log('👦 Resolved value:', value);
 });
 
-console.log('🦖 [F] MAINLINE: Sync process');
+console.log('🦖 [F] MAINLINE: Sync');
 ```
 
 実行順番がどうなるか分かりましたか?
@@ -117,14 +117,14 @@ console.log('🦖 [F] MAINLINE: Sync process');
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2.js
-🦖 [A] MAINLINE: Sync process
-👻 [B] This line is Synchronously executed
-👻 [D] This line is Synchronously executed
-🦖 [F] MAINLINE: Sync process
-👦 [C] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👦 [E] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
+🦖 [A] MAINLINE: Sync
+👻 [B] Sync
+👻 [D] Sync
+🦖 [F] MAINLINE: Sync
+👦 [C] Async
+👦 Resolved value: 1st Promise
+👦 [E] Async
+👦 Resolved value: 2nd Promise
 ```
 :::
 
@@ -148,10 +148,10 @@ console.log('🦖 [F] MAINLINE: Sync process');
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2.js
-🦖 [A] MAINLINE: Sync process
-👻 [B] This line is Synchronously executed
-👻 [D] This line is Synchronously executed
-🦖 [F] MAINLINE: Sync process
+🦖 [A] MAINLINE: Sync
+👻 [B] Sync
+👻 [D] Sync
+🦖 [F] MAINLINE: Sync
 
 # ...この先はどうなる?
 ```
@@ -164,12 +164,12 @@ console.log('🦖 [F] MAINLINE: Sync process');
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2.js
-🦖 [A] MAINLINE: Sync process
-👻 [B] This line is Synchronously executed
-👻 [D] This line is Synchronously executed
-🦖 [F] MAINLINE: Sync process
-👦 [C] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
+🦖 [A] MAINLINE: Sync
+👻 [B] Sync
+👻 [D] Sync
+🦖 [F] MAINLINE: Sync
+👦 [C] Async
+👦 Resolved value: 1st Promise
 
 # ...この先はどうなる?
 ```
@@ -178,39 +178,39 @@ console.log('🦖 [F] MAINLINE: Sync process');
 
 ```sh
 ❯ deno run returnPromiseByFuncArg2.js
-🦖 [A] MAINLINE: Sync process
-👻 [B] This line is Synchronously executed
-👻 [D] This line is Synchronously executed
-🦖 [F] MAINLINE: Sync process
-👦 [C] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👦 [E] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
+🦖 [A] MAINLINE: Sync
+👻 [B] Sync
+👻 [D] Sync
+🦖 [F] MAINLINE: Sync
+👦 [C] Async
+👦 Resolved value: 1st Promise
+👦 [E] Async
+👦 Resolved value: 2nd Promise
 ```
 
 順番をアルファベットから数字に直してみるとこのようになります。
 
 ```js
 // doubleThenCallback.js
-console.log("🦖 [1] MAINLINE: Sync process");
+console.log("🦖 [1] MAINLINE: Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 [${order}] This line is Synchronously executed`);
+    console.log(`👻 [${order}] Sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "2").then((value) => {
-  console.log("👦 [5] This line is Asynchronously executed");
-  console.log("👦 Resolved value: ", value);
+  console.log("👦 [5] Async");
+  console.log("👦 Resolved value:", value);
 });
 returnPromise("2nd Promise", "3").then((value) => {
-  console.log("👦 [6] This line is Asynchronously executed");
-  console.log("👦 Resolved value: ", value);
+  console.log("👦 [6] Async");
+  console.log("👦 Resolved value:", value);
 });
 
-console.log("🦖 [4] MAINLINE: Sync process");
+console.log("🦖 [4] MAINLINE: Sync");
 ```
 
 ↓ JS Visuzalizer 9000 で実際に可視化してみたので確認してくみてください。

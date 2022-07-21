@@ -18,14 +18,14 @@ aliases: [ch_コールバック関数の同期実行と非同期実行]
 
 ```js:executorIsSync.js
 // executorIsSync.js
-console.log('🦖 [1] MAINLINE: Sync process');
+console.log('🦖 [1] MAINLINE: Sync');
 
 const promise = new Promise((resolve) => {
   console.log('👻 [2] これは同期的に実行される');
   resolve('🍎 解決値');
 });
 
-console.log("🦖 [3] MAINLINE: Sync process");
+console.log("🦖 [3] MAINLINE: Sync");
 ```
 
 ちなみに **"非同期処理"について考える時には、必ず"同期処理"と一緒に考えないと意味がない** ので、考えたい当該部分のコードを同期的に実行される `console.log()` で囲んでいます。
@@ -34,9 +34,9 @@ console.log("🦖 [3] MAINLINE: Sync process");
 
 ```sh
 ❯ deno run executorIsSync.js
-🦖 [1] MAINLINE: Sync process
+🦖 [1] MAINLINE: Sync
 👻 [2] これは同期的に実行される
-🦖 [3] MAINLINE: Sync process
+🦖 [3] MAINLINE: Sync
 ```
 
 Promise は「**非同期処理の結果**を表現するビルトインオブジェクト」ですが、このように Promise コンストラクタに渡すコールバック関数は「**同期的に**」実行されます。つまり、完全に上から下へ行を移動するように実行されています。
@@ -45,30 +45,30 @@ Promise は「**非同期処理の結果**を表現するビルトインオブ�
 
 ```js:thenCallbackIsAsync.js
 // thenCallbackIsAsync.js
-console.log('🦖 [1] MAINLINE: Sync process');
+console.log('🦖 [1] MAINLINE: Sync');
 
 const promise = new Promise((resolve) => {
-  console.log('👻 [2] This line is Synchronously executed');
+  console.log('👻 [2] Sync');
   resolve('Resolved!');
 });
 
 promise.then((value) => {
-  console.log('👦 [4] This line is Asynchronously executed');
-  console.log('👦 [5] Resolved value: ', value);
+  console.log('👦 [4] Async');
+  console.log('👦 [5] Resolved value:', value);
 });
 
-console.log('🦖 [3] MAINLINE: Sync process');
+console.log('🦖 [3] MAINLINE: Sync');
 ```
 
 さて、結果はコードに書いてあるのでもう分かっていると思いますが、これを実行すると次のような出力になります。
 
 ```sh
 ❯ deno run thenCallbackIsAsync.js
-🦖 [1] MAINLINE: Sync process
-👻 [2] This line is Synchronously executed
-🦖 [3] MAINLINE: Sync process
-👦 [4] This line is Asynchronously executed
-👦 [5] Resolved value:  Resolved!
+🦖 [1] MAINLINE: Sync
+👻 [2] Sync
+🦖 [3] MAINLINE: Sync
+👦 [4] Async
+👦 [5] Resolved value: Resolved!
 ```
 
 Promise インスタンスは `then()` と `catch()` と `finally()` などの**プロトタイプメソッド**が使用できます。これによって、その Promise インスタンスの**状態が変化した後で**メソッドの引数として渡したコールスタック関数が「**非同期的に**」実行されることを保証できます。
@@ -85,7 +85,7 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 
 というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
-コールバック関数がマイクロタスクとして１つ発行されており、マイクロタスクキューには実行されるのを待っているマイクロタスクが１つあるので、直ちにそれを実行します。それによって、"👦[4]This line is Asynchronously executed" がログに出力されて、その後に "👦[5]Resolved value:  Resolved!" がログに出力されます。
+コールバック関数がマイクロタスクとして１つ発行されており、マイクロタスクキューには実行されるのを待っているマイクロタスクが１つあるので、直ちにそれを実行します。それによって、`"👦[4]Async"` がログに出力されて、その後に `"👦[5]Resolved value: Resolved!"` がログに出力されます。
 
 実際にどのようにマイクロタスクが動くかを JS Visualizer 9000 で可視化してみたので以下のページから確認してみてください。
 
@@ -118,9 +118,9 @@ const syncCall = (callback, order) => {
   callback([order, "Synchronously", syncCall.name]);
 };
 
-console.log("🦖 [1] MAINLINE: Sync process");
+console.log("🦖 [1] MAINLINE: Sync");
 syncCall(myFunc, "[2]");
-console.log("🦖 [3] MAINLINE: Sync process");
+console.log("🦖 [3] MAINLINE: Sync");
 ```
 
 ちなみに `myFunc` 関数の引数のところでは、「引数における配列の分割代入」を使用しています。また、関数内部ではテンプレートリテラルを使っていることに注意してください。
@@ -129,9 +129,9 @@ console.log("🦖 [3] MAINLINE: Sync process");
 
 ```sh
 ❯ deno run whatIsCallbackFn-basic.js
-🦖 [1] MAINLINE: Sync process
-👻 [2] This line is Synchronously executed by syncCall
-🦖 [3] MAINLINE: Sync process
+🦖 [1] MAINLINE: Sync
+👻 [2] Sync by syncCall
+🦖 [3] MAINLINE: Sync
 ```
 
 逆に、コールバック関数が非同期的に実行される場合ももちろんあります。この本ではしばらくの間 `setTimeout()` という非同期 API を使わないで説明する縛りをしていますが、次のように非同期 API にコールバック関数を渡す場合や、この後で説明する `then()` メソッドの引数としてコールバック関数を渡した場合は非同期に実行されます。
@@ -153,25 +153,25 @@ const thenCall = (callback, order) => {
     .then(callback);
 };
 
-console.log("🦖 [1] MAINLINE: Sync process");
+console.log("🦖 [1] MAINLINE: Sync");
 asyncAPICall(myFunc, "[7]");
-console.log("🦖 [2] MAINLINE: Sync process");
+console.log("🦖 [2] MAINLINE: Sync");
 thenCall(myFunc, "[6]");
-console.log("🦖 [3] MAINLINE: Sync process");
+console.log("🦖 [3] MAINLINE: Sync");
 syncCall(myFunc, "[4]");
-console.log("🦖 [5] MAINLINE: Sync process");
+console.log("🦖 [5] MAINLINE: Sync");
 ```
 
 このコードを実行すると以下の出力を得ます。
 
 ```sh
 ❯ deno run whatIsCallbackFn.js
-🦖 [1] MAINLINE: Sync process
-🦖 [2] MAINLINE: Sync process
-🦖 [3] MAINLINE: Sync process
-👻 [4] This line is Synchronously executed by syncCall
-🦖 [5] MAINLINE: Sync process
-👻 [6] This line is Asynchronously executed by thenCall
+🦖 [1] MAINLINE: Sync
+🦖 [2] MAINLINE: Sync
+🦖 [3] MAINLINE: Sync
+👻 [4] Sync by syncCall
+🦖 [5] MAINLINE: Sync
+👻 [6] Async by thenCall
 👻 [7] This line is Asynchrouously executed by asyncAPICall
 ```
 

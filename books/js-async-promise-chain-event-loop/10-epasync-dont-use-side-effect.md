@@ -68,60 +68,60 @@ https://www.youtube.com/watch?v=e-5obm1G_FY&list=TLGGz_fwguCfqL8yMDA3MjAyMg
 
 ```js
 //  promiseShouldBeReturned-non.js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "[2]")
   .then((value) => {
-    console.log("👦 [5] This line is Asynchronously executed");
+    console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
     // return しない場合は副作用となり値が渡らない
     returnPromise("2nd Promise", "[6]")
   })
   .then((value) => {
     // この value は undefined となる
-    console.log("👦 [9] This line is Asynchronously executed");
+    console.log("👦 [9] Async");
     console.log("👦 Resolved value: ", value); // undefined が表示される
   });
 returnPromise("3rd Promise", "[3]")
   .then((value) => {
-    console.log("👦 [7] This line is Asynchronously executed");
+    console.log("👦 [7] Async");
     console.log("👦 Resolved value: ", value);
     // Promise インスタンスについては必ず return するようにする
     return returnPromise("4th Promise", "[8]")
   })
   .then((value) => {
-    console.log("👦 [10] This line is Asynchronously executed");
+    console.log("👦 [10] Async");
     console.log("👦 Resolved value: ", value); // 値が繋がるので 4th Promise と表示される
   });
 
-console.log("🦖 [4] Sync process");
+console.log("🦖 [4] Sync");
 ```
 
 これを実行すると次の出力を得ます。`undefined` となっているところに注目してください。
 
 ```sh
 ❯ deno run promiseShouldBeReturned-non.js
-🦖 [1] Sync process
-👻 [2] This line is (A)Synchronously executed
-👻 [3] This line is (A)Synchronously executed
-🦖 [4] Sync process
-👦 [5] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [6] This line is (A)Synchronously executed
-👦 [7] This line is Asynchronously executed
-👦 Resolved value:  3rd Promise
-👻 [8] This line is (A)Synchronously executed
-👦 [9] This line is Asynchronously executed
-👦 Resolved value:  undefined
-👦 [10] This line is Asynchronously executed
-👦 Resolved value:  4th Promise
+🦖 [1] Sync
+👻 [2] (a)sync
+👻 [3] (a)sync
+🦖 [4] Sync
+👦 [5] Async
+👦 Resolved value: 1st Promise
+👻 [6] (a)sync
+👦 [7] Async
+👦 Resolved value: 3rd Promise
+👻 [8] (a)sync
+👦 [9] Async
+👦 Resolved value: undefined
+👦 [10] Async
+👦 Resolved value: 4th Promise
 ```
 
 従って、値を正しく繋げたい場合には、副作用ではなく `return` をつけるようにしましょう。
@@ -130,33 +130,33 @@ console.log("🦖 [4] Sync process");
 
 ```js
 // promiseShouldBeReturnedAddThen-right.js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   });
 };
 
 returnPromise("1st Promise", "[B]")
   .then((value) => {
-    console.log("👦 [C] This line is Asynchronously executed");
-    console.log("👦 Resolved value: ", value);
+    console.log("👦 [C] Async");
+    console.log("👦 Resolved value:", value);
     // return で正しいチェーンを作る
     return returnPromise("2nd Promise", "[D]")
       .then((value) => {
-        console.log("👦 [E] This line is Asynchronously executed");
-        console.log("👦 Resolved value: ", value);
+        console.log("👦 [E] Async");
+        console.log("👦 Resolved value:", value);
         return "Pass next value";
       });
   })
   .then((value) => {
-    console.log("👦 [F] This line is Asynchronously executed");
-    console.log("👦 Resolved value: ", value);
+    console.log("👦 [F] Async");
+    console.log("👦 Resolved value:", value);
   });
 
-console.log("🦖 [G] Sync process");
+console.log("🦖 [G] Sync");
 ```
 
 「then メソッドのコールバックで Promise インスタンスを返す」や「[Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)」のチャプターでネストは経験したので正解できましたか?
@@ -166,16 +166,16 @@ console.log("🦖 [G] Sync process");
 
 ```sh:数字付きで出力
 ❯ deno run promiseShouldBeReturnedAddThen-right.js
-🦖 [A-1] Sync process
-👻 [B-2] This line is (A)Synchronously executed
-🦖 [G-3] Sync process
-👦 [C-4] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [D-5] This line is (A)Synchronously executed
-👦 [E-6] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
-👦 [F-7] This line is Asynchronously executed
-👦 Resolved value:  Pass next value
+🦖 [A-1] Sync
+👻 [B-2] (a)sync
+🦖 [G-3] Sync
+👦 [C-4] Async
+👦 Resolved value: 1st Promise
+👻 [D-5] (a)sync
+👦 [E-6] Async
+👦 Resolved value: 2nd Promise
+👦 [F-7] Async
+👦 Resolved value: Pass next value
 ```
 :::
 
@@ -195,11 +195,11 @@ Promise インスタンスを返す処理は常に `return` するべきです�
 
 ```js
 // promiseShouldBeReturnedNest.js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order, nextOrder) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
     // ↓ ここにチェーンを追加してみる
   }).then((value) => {
@@ -210,17 +210,17 @@ const returnPromise = (resolvedValue, order, nextOrder) => {
 
 returnPromise("1st Promise", "[B]", "[C]")
   .then((value) => {
-    console.log("👦 [D] This line is Asynchronously executed");
+    console.log("👦 [D] Async");
     console.log("👦 Resolved value: ", value);
     // ここで敢えて return しないとどういう実行順番になるか?
     returnPromise("2nd Promise", "[E]", "[F]");
   })
   .then((value) => {
-    console.log("👦 [G] This line is Asynchronously executed");
+    console.log("👦 [G] Async");
     console.log("👦 Resolved value: ", value);
   });
 
-console.log("🦖 [H] Sync process");
+console.log("🦖 [H] Sync");
 ```
 
 :::details 答え
@@ -229,16 +229,16 @@ console.log("🦖 [H] Sync process");
 数字付きで実際に出力してみるとこうなります。
 ```sh
 ❯ deno run promiseShouldBeReturnedNest.js
-🦖 [A] Sync process
-👻 [B] This line is (A)Synchronously executed
-🦖 [H] Sync process
+🦖 [A] Sync
+👻 [B] (a)sync
+🦖 [H] Sync
 👹 [C] Additional nested chain
-👦 [D] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [E] This line is (A)Synchronously executed
+👦 [D] Async
+👦 Resolved value: 1st Promise
+👻 [E] (a)sync
 👹 [F] Additional nested chain
-👦 [G] This line is Asynchronously executed
-👦 Resolved value:  undefined
+👦 [G] Async
+👦 Resolved value: undefined
 ```
 :::
 
@@ -252,11 +252,11 @@ Promise インスタンスを返すような処理を `return` しない場合�
 
 ```js
 // promiseShouldBeReturnedNest-3rd.js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
   return new Promise((resolve) => {
-      console.log(`👻 ${order} This line is (A)Synchronously executed`);
+      console.log(`👻 ${order} (a)sync`);
       resolve(resolvedValue);
     })
     .then((value) => {
@@ -271,17 +271,16 @@ const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
 
 returnPromise("1st Promise", "[B]", "[C]", "[D]")
   .then((value) => {
-    console.log("👦 [E] This line is Asynchronously executed");
+    console.log("👦 [E] Async");
     console.log("👦 Resolved value: ", value);
     returnPromise("2nd Promise", "[F]", "[G]", "[H]");
   })
   .then((value) => {
-    console.log("👦 [I] This line is Asynchronously executed");
+    console.log("👦 [I] Async");
     console.log("👦 Resolved value: ", value);
   });
 
-console.log("🦖 [N] Sync process");
-
+console.log("🦖 [N] Sync");
 ```
 
 :::details 答え
@@ -290,17 +289,17 @@ console.log("🦖 [N] Sync process");
 数字付きで実際に出力してみるとこうなります。
 ```sh
 ❯ deno run promiseShouldBeReturnedNest-3rd.js
-🦖 [A-1] Sync process
-👻 [B-2] This line is (A)Synchronously executed
-🦖 [N-3] Sync process
+🦖 [A-1] Sync
+👻 [B-2] (a)sync
+🦖 [N-3] Sync
 👹 [C-4] Additional nested chain
 🦄 [D-5] Additional nested chain
-👦 [E-6] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [F-7] This line is (A)Synchronously executed
+👦 [E-6] Async
+👦 Resolved value: 1st Promise
+👻 [F-7] (a)sync
 👹 [G-8] Additional nested chain
-👦 [I-9] This line is Asynchronously executed
-👦 Resolved value:  undefined
+👦 [I-9] Async
+👦 Resolved value: undefined
 🦄 [H-10] Additional nested chain
 ```
 :::
@@ -316,11 +315,11 @@ console.log("🦖 [N] Sync process");
 
 ```js
 // promiseShouldBeReturnedNest-3rdReturn.js
-console.log("🦖 [A] Sync process");
+console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   })
     .then((value) => {
@@ -335,40 +334,40 @@ const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
 
 returnPromise("1st Promise", "[B]", "[C]", "[D]")
   .then((value) => {
-    console.log("👦 [E-6] This line is Asynchronously executed");
-    console.log("👦 Resolved value: ", value);
+    console.log("👦 [E] Async");
+    console.log("👦 Resolved value:", value);
     // ちゃんと return する
     return returnPromise("2nd Promise", "[F]", "[G]", "[H]");
   })
   .then((value) => {
-    console.log("👦 [I] This line is Asynchronously executed");
-    console.log("👦 Resolved value: ", value);
+    console.log("👦 [I] Async");
+    console.log("👦 Resolved value:", value);
   });
 
-console.log("🦖 [N] Sync process");
+console.log("🦖 [N] Sync");
 ```
 
 上のコードでは、しっかりと `return` するように変更しました。このコードの実行結果は以下のようになります。
 
 ```sh
 ❯ deno run promiseShouldBeReturnedNest-3rdReturn.js
-🦖 [A-1] Sync process
-👻 [B-2] This line is (A)Synchronously executed
-🦖 [N-3] Sync process
+🦖 [A-1] Sync
+👻 [B-2] (a)sync
+🦖 [N-3] Sync
 👹 [C-4] Additional nested chain
 🦄 [D-5] Additional nested chain
-👦 [E-6] This line is Asynchronously executed
-👦 Resolved value:  1st Promise
-👻 [F-7] This line is (A)Synchronously executed
+👦 [E-6] Async
+👦 Resolved value: 1st Promise
+👻 [F-7] (a)sync
 👹 [G-8] Additional nested chain
 🦄 [H-9] Additional nested chain
-👦 [I-10] This line is Asynchronously executed
-👦 Resolved value:  2nd Promise
+👦 [I-10] Async
+👦 Resolved value: 2nd Promise
 ```
 
 しっかりと実行順番が制御できていますね。
 
-今までの例ではそこまで重要なことに思えないかもしれませんげ、後のチャプターで説明する Macrotask を発行する `setTimeout()` 関数を使用した場合や、時間のかかる I/O 処理、またはインターネットを介したデータ取得を行う `fetch()` 関数などを副作用として使ってしまった場合には、その処理が終わっていないにも関わらず次の `then()` メソッドのコールバックが実行されてしまいます。
+今までの例ではそこまで重要なことに思えないかもしれませんげ、後のチャプターで説明するタスクを発行する `setTimeout()` 関数を使用した場合や、時間のかかる I/O 処理、またはインターネットを介したデータ取得を行う `fetch()` 関数などを副作用として使ってしまった場合には、その処理が終わっていないにも関わらず次の `then()` メソッドのコールバックが実行されてしまいます。
 
 例えば、次のコードでは、17 行目の `returnPromise("2nd Promise", "6", "8");` では内部の `setTimeout()` 関数の処理が完了するのを待たずに、次の `then()` メソッドのコールバック関数が実行されてしまいます。
 
@@ -377,9 +376,9 @@ console.log("[1] Sync process");
 
 const returnPromise = (resolvedValue, order, nextOrder) => {
   return new Promise((resolve) => {
-    console.log(`${order} This line is Synchronously executed`);
+    console.log(`${order} (a)sync`);
     setTimeout(() => {
-      console.log(`${nextOrder} This line is always Asynchronously executed`);
+      console.log(`${nextOrder} Always async`);
       resolve(resolvedValue);
     }, 3000);
   });
@@ -387,12 +386,12 @@ const returnPromise = (resolvedValue, order, nextOrder) => {
 
 returnPromise("1st Promise", "[2]", "[4]")
   .then((value) => {
-    console.log("[5] This line is Asynchronously executed");
+    console.log("[5] Async");
     console.log("Resolved value: ", value);
     returnPromise("2nd Promise", "[6]", "[8]"); // 7 ではなく 8 となる
   })
   .then((value) => {
-    console.log("[7] This line is Asynchronously executed");
+    console.log("[7] Async");
     console.log("Resolved value: ", value); // undefined が表示される
   });
 
@@ -406,43 +405,45 @@ console.log("[3] Sync process");
 
 ```js
 // chainValueName.js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] MAINLINE(Start): Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} Sync`);
     resolve(resolvedValue);
   });
 };
-returnPromise("1st Promise", "[2]")
+
+// 文字列 "🐵 1st Promise" で解決された後にその値を最後まで連鎖させる
+returnPromise("🐵 1st Promise", "[2]")
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [4]", value); // 🐵 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [5]", value); // 🐵 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [6]", value); // 🐵 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [7]", value); // 🐵 1st Promise
   });
 
-console.log("🦖 [3] Sync process");
+console.log("🦖 [3] MAINLINE(End): Sync");
 ```
 
 ↓ いらない Promise チェーンをなくしてみます。
 
 ```js
 // chainValueName-kai.js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   });
 };
@@ -453,7 +454,7 @@ returnPromise("1st Promise", "[2]").then((value) => {
   console.log("👦 Resolved value: ", value); // 1st Promise
 });
 
-console.log("🦖 [3] Sync process");
+console.log("🦖 [3] Sync");
 ```
 
 Promise チェーンを利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Proimse インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。

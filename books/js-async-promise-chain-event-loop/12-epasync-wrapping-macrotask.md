@@ -25,28 +25,28 @@ aliases: [
 
 ```js
 // timeout.js
-console.log('🦖 [1] MAINILNE: Sync process');
+console.log('🦖 [1] MAINILNE: Sync');
 setTimeout(() => {
-  console.log('⏰ [5] TIMERS: This line will be printed after 3000ms');
+  console.log('⏰ [5] TIMERS: 3000ms でタイムアウト');
 }, 3000); // 3000ミリ秒後に実行したい(3000ミリ秒後にタスクキューへ発行)
 setTimeout(() => {
-  console.log('⏰ [4] TIMERS: This line will be printed after 2000ms');
+  console.log('⏰ [4] TIMERS: 2000ms でタイムアウト');
 }, 2000); // 2000ミリ秒後に実行したい(2000ミリ秒後にタスクキューへ発行)
 setTimeout(() => {
-  console.log('⏰ [3] TIMERS: This line will be printed after 1000ms');
+  console.log('⏰ [3] TIMERS: 1000ms でタイムアウト');
 }, 1000); // 1000ミリ秒後に実行したい(1000ミリ秒後にタスクキューへ発行)
-console.log('🦖 [2] MAINILNE: Sync process');
+console.log('🦖 [2] MAINILNE: Sync');
 ```
 
 実行すると次の出力を得ます。
 
 ```sh
 ❯ deno run timeout.js
-🦖 [1] MAINILNE: Sync process
-🦖 [2] MAINILNE: Sync process
-⏰ [3] TIMERS: This line will be printed after 1000ms
-⏰ [4] TIMERS: This line will be printed after 2000ms
-⏰ [5] TIMERS: This line will be printed after 3000ms
+🦖 [1] MAINILNE: Sync
+🦖 [2] MAINILNE: Sync
+⏰ [3] TIMERS: 1000ms でタイムアウト
+⏰ [4] TIMERS: 2000ms でタイムアウト
+⏰ [5] TIMERS: 3000ms でタイムアウト
 ```
 
 Visualizer で可視化してみたので次のリンクから確認してください。

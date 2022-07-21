@@ -29,11 +29,11 @@ a => a + 100;
 
 ```js
 // promiseShouldBeReturned.js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is (A)Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   });
 };
@@ -50,7 +50,7 @@ returnPromise("3rd Promise", "[3]")
   })
   .then((value) => console.log("👦 Resolved value: ", value));
 
-console.log("🦖 [4] Sync process");
+console.log("🦖 [4] Sync");
 ```
 
 `.then((value) => console.log("👦 Resolved value: ", value));` については、`console.log()` の返り値は `undefined` となるので、次の `then()` メソッドのコールバックに値を渡す必要がなければやっても大丈夫です。
@@ -59,43 +59,45 @@ console.log("🦖 [4] Sync process");
 
 ```js
 // chainValueName.js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] MAINLINE(Start): Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} Sync`);
     resolve(resolvedValue);
   });
 };
-returnPromise("1st Promise", "[2]")
+
+// 文字列 "🐵 1st Promise" で解決された後にその値を最後まで連鎖させる
+returnPromise("🐵 1st Promise", "[2]")
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [4]", value); // 🐵 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [5]", value); // 🐵 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [6]", value); // 🐵 1st Promise
     return value;
   })
   .then((value) => {
-    console.log("👦 Resolved value: ", value); // 1st Promise
+    console.log("👦 [7]", value); // 🐵 1st Promise
   });
 
-console.log("🦖 [3] Sync process");
+console.log("🦖 [3] MAINLINE(End): Sync");
 ```
 
 ↓ このコードから `then()` メソッドのコールバック関数内の `console.log()` をなくして値だけを繋いでみます。
 
 ```js
 // chainValueNameArrow.js
-console.log("🦖 [1] Sync process");
+console.log("🦖 [1] Sync");
 
 const returnPromise = (resolvedValue, order) => {
   return new Promise((resolve) => {
-    console.log(`👻 ${order} This line is Synchronously executed`);
+    console.log(`👻 ${order} (a)sync`);
     resolve(resolvedValue);
   });
 };
@@ -106,16 +108,16 @@ returnPromise("1st Promise", "[2]")
   .then((value) => console.log("👦 [last] Resolved value: ", value));
   // 文字列 "1st Promise" を最後までつなげる
 
-console.log("🦖 [3] Sync process");
+console.log("🦖 [3] Sync");
 ```
 
 コード自体に特別な意味は無いですが、アロー関数の省略形でこのようなことができるということを意識するためにやっています。これを実行すると次の出力を得ます。値が最後まで連鎖できていることがわかります。
 
 ```sh
 ❯ deno run chainValueNameArrow.js
-🦖 [1] Sync process
-👻 [2] This line is Synchronously executed
-🦖 [3] Sync process
-👦 [last] Resolved value:  1st Promise
+🦖 [1] Sync
+👻 [2] (a)sync
+🦖 [3] Sync
+👦 [last] Resolved value: 1st Promise
 ```
 
