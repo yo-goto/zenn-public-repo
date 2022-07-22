@@ -594,18 +594,18 @@ type BooleanProp = {
 }
 ```
 
-`Array<Type>` のように型変数を使えるようにするには型定義の際に `<>` を型名の後ろにつけて適当な名前の型変数を付けてあげます。こういった型は "Generic Object Type" と呼ばれています。
+`Array<Type>` のように型変数を使えるようにするには型定義の際に `<>` を型名の後ろにつけて適当な名前の型変数を付けてあげます。こういった型は "**Generic Object Type(ジェネリックオブジェクト型)**" と呼ばれています。
 
 ```ts
 type GeneralProp<YourType> = { // 型変数の名前はなんでもよい
   data: YourType;
 };
 
-// type StringProp = { data: string }; と同じ型注釈
+// type StringProp = { data: string }; と同じ型で型注釈
 const strProp: GeneralProp<string> = {
   data: "文字列",
 }; 
-// type NumberProp = { data: number }; と同じ型注釈
+// type NumberProp = { data: number }; と同じ型で型注釈
 const numProp: GeneralProp<number> = {
   data: 42,
 }; 
@@ -814,16 +814,16 @@ function strOrNum(
   param: string | number
 ): void {
   if (typeof param === "string") {
-    console.log(param.toUpperCase());
     // param: string として CFA で解析される
+    console.log(param.toUpperCase());
   } else if (typeof param === "number") { 
     // string 型でないなら number 型
-    console.log(Math.floor(param));
     // param: number として CFA で解析される
+    console.log(Math.floor(param));
   } else {
+    // param: never として CFA で解析される
     console.log(param); 
     //          ^^^^^ never 型(決して観測されない)
-    // param: never として CFA で解析される
   }
 }
 ```
