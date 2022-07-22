@@ -12,7 +12,7 @@ aliases: [ch_コールバック関数の同期実行と非同期実行]
 このチャプターではコールバック関数の誤解しやすい点について解説しておきます。
 
 # 同期か非同期か
-[『Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで Promise インスタンスの基本的な作成方法が分かったところで重要なことを解説します。
+『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで Promise インスタンスの基本的な作成方法が分かったところで重要なことを解説します。
 
 `new Promise(executor)` の `Promise()` コンストラクタ関数の引数として渡した `executor` 関数ですが、このコールバック関数は「**同期的に**」実行されます。次のコードでは完全に上から下に順番にコードが実行されていきます。
 
@@ -29,6 +29,10 @@ console.log("🦖 [3] MAINLINE: Sync");
 ```
 
 ちなみに **"非同期処理"について考える時には、必ず"同期処理"と一緒に考えないと意味がない** ので、考えたい当該部分のコードを同期的に実行される `console.log()` で囲んでいます。
+
+:::message
+この本では、スクリプトの記述開始と終了ポイントには必ずコンソール出力する文字列に `MAINLINE` と書くようにしています。ちなみに `MAINLINE` は [IBM のチュートリアル](https://developer.ibm.com/tutorials/learn-nodejs-the-event-loop/) から取ってきた単語です。また、グローバルスコープで呼び出される `console.log()` でも `MAINLINE` の文字列をいれています。
+:::
 
 これを実行すると次のように出力されます。
 

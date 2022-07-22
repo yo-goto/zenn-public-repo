@@ -12,12 +12,14 @@ aliases: [ch_Promise コンストラクタと Executor 関数]
 
 Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript の一部ではなくブラウザやランタイムの環境が提供する機能)の処理の結果として返されるパターンが多いですが、Promise そのものは**ビルトインオブジェクト**であり、ECMAScript (JavaScript の言語コア) の一部であることを忘れないようにしてください。
 
-また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "Promise-based API" のことを指しており、Promise 自体が API であるわけではないので注意してください。
+また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "Promise-based API" のことを指しており、Promise 自体が API であるわけではないので注意してください。他の解説によっては、Promise の静的メソッドである `Promise.all()` などを指している場合もあります。
 
 # Promise コンストラクタ
 コード上では `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise
+
+`deno` コマンドで [REPL 環境](https://ja.wikipedia.org/wiki/REPL) を立ち上げて少しテストしてみると次のようになります。
 
 ```sh
 ❯ deno
@@ -29,6 +31,11 @@ undefined
 > typeof promise
 "object"
 > promise instanceof Promise
+true
+# Promise.reoslve() でつくっても同じ
+> const np = Promise.resolve(1);
+undefined
+> np instanceof Promise
 true
 ```
 
@@ -55,9 +62,9 @@ const promise = new Promise(executor);
 :::message alert
 『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで解説したとおり、非同期 API には種類があり、`setTimeout()` は**タスクベースの非同期 API** です。
 
-基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` を使っていくのが割と一般的だと思いますが、タスクベースの非同期 API と Promise と絡めて考えると混乱することになるので、最初はあえて使わずに説明してきます(ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します)。
+基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` を使っていくのが割と一般的だと思いますが、タスクベースの非同期 API と Promise を絡めて考えると混乱することになるので、最初はあえて使わずに説明してきます(ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します)。
 
-実はコンストラクタ内で利用することで、後の方のチャプターで解説する "Promisification" という手法になるのですが、これを最初に知ってしまうと学習を進める過程で**確実に混乱します**。
+実は Promise コンストラクタ内で `setTimeout()` などのタスクベースの非同期 API を利用することで、後のチャプターで解説する "[Promisification](12-epasync-wrapping-macrotask)" という手法になるのですが、これを最初に知ってしまうと学習を進めてく過程で**混乱する可能性が高いです**(自分は混乱しました)。
 :::
 
 JavaScript では「関数は値」なのでこのように関数を他の値のように引数として渡すことができます。「コールバック関数」はこのように他の関数に引数として渡される関数のことを指します。
