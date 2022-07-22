@@ -415,8 +415,9 @@ type StrsLength2 = {
 };
 ```
 
-メソッド構文は [Call Signature](https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures) とも呼ばれます。
+アロー関数のように書くアロー関数構文は戻り値の方をアロー記号の後に記述します。メソッド構文は [Call Signature](https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures) とも呼ばれています。
 
+:::details メソッドの型注釈
 オブジェクトのメソッドの型注釈は上で見たアロー関数の形に似た型注釈をする場合が多いですが、JS ではメソッドの定義方法も次のようにいくつかり、その方法に基づいて型注釈を行えます。
 
 ```js:JavaScript
@@ -474,7 +475,9 @@ const myobj: MyObj = {
   method3: (str) => { return str.length; },
 };
 ```
+:::
 
+:::details typeof 型演算子
 型エイリアスでメソッドを持つオブジェクトの型を１から作成してみましたが、定義したオブジェクトから型を抽出して別の場所で使い回すようなこをとしたい場合もあります。そのような場合には `typeof` 型演算子(typeof type operator)を使って変数から型を抽出できます。
 
 ```ts
@@ -495,6 +498,16 @@ type ReusingType2 = {
   method3: (str: string) => number;
 };
 ```
+
+もちろんオブジェクトの型だけでなく、配列などが代入されているものなどもこの `typeof` 型演算子で型を抽出できます。
+
+```ts
+// 空配列で初期化
+const numarr: number[] = [];
+type NumArr = typeof numarr;
+// number[] 型が抽出される
+```
+:::
 
 # ジェネリクス
 
