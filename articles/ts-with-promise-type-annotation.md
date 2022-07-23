@@ -88,7 +88,7 @@ TypeScript はより良い JavaScript を書くためのリンターに過ぎま
 
 (もちろん型の再利用や Narrowing など TypeScript に特化した難しさはありますが)こういう恐れすぎない心持ちのもとで学習を進めていきます。非同期処理についても JavaScript から始めて型無しで学んだあとで、「より堅牢なコードを書くために TypeScript による型注釈を加えて扱うデータに対しての具象性を高めていく」という考えのもとで進めていきます。
 
-実際、JavaScript と TypeScript の境界線がどこにあるのかを意識することでスッキリと理解できる場合が多いです。また、何か分からないことがでてきた場合も、問題を解決するために調べる必要のあるレイヤーがどれか分かることは非常に重要です。TypeScript についてわからないと思っていたことが実は ECMAScript のシンタックスだったり(その場合は Mdn で調べる)、ECMAScript の関数が分からないと思っていたらその関数は JavaScript 実行環境が独自定義する API だったり(その場合はランタイム環境のマニュアルや API ドキュメントで調べる)、型ガード関数で TypeScript 独自の書き方で型の解析に利用するものだったり(その場合は TypeScript Handbook で調べる)と、境界線が分かっていないと調べる領域を間違ってしまう場合があります。 
+実際、**JavaScript と TypeScript の境界線がどこにあるのかを意識することでスッキリと理解できる場合が多いです**。また、何か分からないことがでてきた場合も、問題を解決するために調べる必要のあるレイヤーがどれか分かることは非常に重要です。TypeScript についてわからないと思っていたことが実は ECMAScript のシンタックスだったり(その場合は Mdn で調べる)、ECMAScript の関数が分からないと思っていたらその関数は JavaScript 実行環境が独自定義する API だったり(その場合はランタイム環境のマニュアルや API ドキュメントで調べる)、あるいは型ガード関数という TypeScript 独自の書き方で型の解析に利用するものだったり(その場合は TypeScript Handbook で調べる)と、境界線が分かっていないと調べる領域を間違ってしまう場合があるのでかなり効率が悪くなってしまいます。
 
 そういったことを踏まえて、JavaScript をすでに知っている学習者は TypeScript 公式ハンドブックの『TypeScript for JavaScript Programmers』の項目を読むことで JavaScript から TypeScript にする方法の概要を短い時間で学ぶことができます。TypeScript に特化した機能がなんなのか分かってしまえば、学ぶべき量がそこまで多くないことが分かります(もちろん少なくはないですが、TypeScript だけで学ぼうとする場合よりも遥かに少ないことが認識できます)。
 
@@ -1196,7 +1196,7 @@ interface Promise<T> {
 :::message
 ECMAScript のシンタックスとして具体的な型に依存しないタイプのプロトタイプメソッドはこのように型が抽象化、あるいは一般化されたものとして型定義が用意されています。今日の JavaScript には `Map`、`Set` といったデータのコレクションを表現するためのビルトインオブジェクトが存在しています。予想されるように `Array<T>` や `Promise<T>` と同じくこれらのコレクションのデータ型はジェネリクスで `Map<K, V>` や `Set<T>` として一般化されて型定義されています。
 
-また、`.d.ts` という拡張子のファイルは型定義ファイルと呼ばれるものです。TypeScript が提供する型や npm のパッケージ配布を行うために作成されます。
+また、`.d.ts` という拡張子のファイルは[型定義ファイル](https://typescriptbook.jp/reference/declaration-file)と呼ばれるものです。TypeScript が提供する型や npm のパッケージ配布を行うために作成されます。
 :::
 
 :::details JSDoc の補足
@@ -1317,22 +1317,23 @@ async function dTimer(msg, time, option = {}) {
 今までは返り値の型がシンプルなものしか見てきませんでしたが、この場合には例外補足の際に分岐するので、それぞれの節で返される値の型を合成する必要がでてきます。
 
 ```ts:TypeScript
-import { 
-  delay, 
-  DelayOptions 
+import {
+  delay,
+  DelayOptions,
 } from "https://deno.land/std@0.145.0/async/mod.ts";
 
 async function dTimer(
-  msg: string, 
-  time: number, 
+  msg: string,
+  time: number,
   option: DelayOptions = {}
-): Promise<string|void> { // ユニオン型を入れ込んだ Promise 型
+): Promise<string | void> {
+  // ユニオン型を入れ込んだ Promise 型
   try {
     await delay(time, option);
     console.log(`${time}[ms]が経過しました`);
     return msg; // string 型を返却
   } catch (err) {
-    console.log("タイマーはキャンセルされました" ,err)
+    console.log("タイマーはキャンセルされました", err);
     // 何も返却しない void 型
   }
 }
@@ -1342,7 +1343,7 @@ const signal = controller.signal;
 const rTimes = [200, 100, 300];
 
 (async () => {
-  const promises = rTimes.map((time) =>
+  const promises: Promise<string | void>[] = rTimes.map((time) =>
     dTimer(`${time}[ms]のタイマー`, time, { signal })
   );
   const winner = await Promise.race(promises);
@@ -1351,14 +1352,15 @@ const rTimes = [200, 100, 300];
   await Promise.allSettled(promises);
   console.log("タイマーの競争が終了しました");
 })();
+
 ```
 
 `catch` 節で何も `return` していないので返り値が何もない場合の `void` 型と通常の成功時の返り値である `string` 型を合成したユニオン型 `string | void` を `Promise<Type>` の型引数として指定してあげています。また、`delay()` のオプションとして渡す引数の型として `DelayOptions` も import するようにします。
 
 他には、３つの API のエンドポイントからデータフェッチする関数を考えみると次のような感じになるでしょうか。
 
-```ts
-const urls = [
+```ts:TypeScript
+const urls: stirng[] = [
   "https://jsonplaceholder.typicode.com/todos/1",
   "https://jsonplaceholder.typicode.com/todos/2",
   "https://jsonplaceholder.typicode.com/todos/3",
@@ -1412,7 +1414,7 @@ function reutrnMultipleValue() {
 
 この戻り値を型注釈するためにタプル型と呼ばれる型の書き方で注釈します。
 
-```ts:タプルの型注釈
+```ts:TypeScript(タプルの型注釈)
 function reutrnMultipleValue(): [number, string, boolean] {
   return [42, "文字列", true]; 
 }
@@ -1444,7 +1446,7 @@ const tuple: [number, string, boolean] = [42, "文字列", true];
 
 タプル型の値を返すことで、async 関数利用時の try-catch を大量に書くのを防ぎます。基本は async 関数に例外補足を閉じ込めて標準化してデータフェッチの成功時には `[data, null]` を返し、失敗時には `[null, error]` を返すようにするというパターンです。
 
-```js
+```js:JavaScript
 async function fetcher(url) {
   try {
     const response = await fetch(url);
@@ -1460,7 +1462,7 @@ async function fetcher(url) {
 
 返り値を受ける側は配列の分割代入を使います。
 
-```js
+```js:JavaScript
 (async () => {
   let todos = [];
 
@@ -1476,7 +1478,7 @@ async function fetcher(url) {
 
 JavaScript だと簡単ですが、返り値の型注釈をしっかりしようとすると以外とうまくいきません。一応型エラーにならずに動くのがこの型注釈です。
 
-```ts
+```ts:TypeScript
 async function fetcher(
   url: string
 ): Promise<[Todo|null, null|unknown]> {
