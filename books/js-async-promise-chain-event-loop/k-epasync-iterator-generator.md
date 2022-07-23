@@ -837,9 +837,479 @@ async function* asyncGenFn(url) {
 
 非同期ジェネレータ関数はこのように async/await の知識さえあれば、あとはイテラブルとジェネレータを理解するだけで理解できます。
 
-イテレータとイテラブルとジェネレータ関数についてはこちらの kura07 さんの記事でも非常にわかりやすく解説されているので参考にしてください。
+# 型注釈と型定義
 
-https://qiita.com/kura07/items/cf168a7ea20e8c2554c6
+第４章の最終チャプター『[Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
 
-https://qiita.com/kura07/items/d1a57ea64ef5c3de8528
+## イテレータとイテラブルの型注釈
+
+イテレータとイテラブルの型注釈にはそれぞれ専用の型が存在しています。『[Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』のチャプターで見たように `Promise<Type>` と同じくジェネリクスで型が定義された `Iterator<Type>` と `Iterable<Type>` が存在しているのでこの型を使って型注釈を行います。
+
+とはいえ、自分でイテレータやイテラブルを作ることはあまりないかもしれませんが、自分で再び作成してみると型について理解できます。
+
+JavaScript で反復子プロトコル(iterator protocol)と反復可能プロトコル(iterable protocol)を両方実装しているオブジェクトを定義すると次のようになりました。
+
+```js:JavaScript
+const iterableObject = {
+  [Symbol.iterator]() { 
+    let count = 0;
+
+    const iterator = {
+      next() { 
+        const iteratorResult = (count < 3)
+          ? { value: ++count, done: false }
+          : { value: count, done: true };
+
+        // イテレータリザルトを返す
+        return iteratorResult;
+      }
+    };
+    // イテレータを返す
+    return iterator;
+  }
+};
+```
+
+これと `Iterator<Type>` と `Iterable<Type>` という２つのジェネリクス型を使って型注釈してみます。この２つの型の型引数は省略できませんので、何らかの型を指定しておく必要があります。型引数には `next()` メソッドから返ってくるイテレータリザルトの `value` プロパティの値の型を指定します。
+
+上のコードでは、`value` の値は数値だったので `number` 型を型引数として両方に指定した上で型注釈します。また、イテレータから返るイテレータリザルトのオブジェクトにも専用のジェネリクス型 `IteratorResult<Type>` が存在しているのでそれにも `number` 型を型引数として指定します。
+
+```ts:TypeScript
+const iterable: Iterable<number> = {
+  [Symbol.iterator](): Iterator<number> {
+    // このメソッドからはイテレータが返るので
+    // 返り値の型注釈は Iterator<number>
+    let count = 0;
+
+    const iterator: Iterator<number> = {
+      next(): IteratorResult<number> {
+        // value プロパティの値の方は number
+        const iteratorResult: IteratorResult<number> = (count < 3)
+          ? { value: ++count, done: false }
+          : { value: undefined, done: true };
+        
+        return iteratorResult;
+      }
+    };
+    return iterator;
+  }
+};
+```
+
+このようにイテラブルについてはしっかり型注釈をしておかないと型エラーになります。ただしこの場合は、メソッドの返り値まで型注釈してしまうのは冗長なので、省略しておきます。
+
+```ts:メソッドの返り値の型注釈は省略
+// イテラブルオブジェクトには Iterable 型
+const iterable: Iterable<number> = {
+  [Symbol.iterator]() {
+    let count = 0;
+
+    // イテレータには Iterator 型
+    const iterator: Iterator<number> = {
+      next() {
+        // イテレータリザルトには IteratorResult 型
+        const iteratorResult: IteratorResult<number> = (count < 3)
+          ? { value: ++count, done: false }
+          : { value: undefined, done: true };
+        
+        return iteratorResult;
+      }
+    };
+    return iterator;
+  }
+};
+```
+
+もう少し具体的な使い方を見てから型定義について考えましょう。例えば、イテラブルオブジェクトは spread 構文の利用ができたので、イテラブルオブジェクトを引数にとって配列として変換して返すようなジェネリック関数(generic function)の型注釈などは次のようになります。
+
+```ts
+// ジェネリック関数
+function arrayConverter<Type>(
+  param: Iterable<Type> // 型変数でリンク
+): Type[] { // 型変数でリンク
+  return [...param];
+  // イテラブルオブジェクトは spread 構文が使える
+}
+
+const str = "ABC";
+// 文字列はイテラブルオブジェクトなので引数として渡せる
+const strArray = arrayConverter<string>(str);
+// typeof 型演算子で型を抽出してみる
+type StringArray = typeof strArray;
+// string[] の型が抽出される
+```
+
+:::message alert
+ジェネレータ(generator)やジェネレータ関数(generator function)と、ジェネリクス(generics)やジェネリクス関数(generics function)は名前が似ていますが、関係の無い別物なので注意してください。
+:::
+
+## イテレータとイテラブルの型定義
+
+さて、こういったイテラブルに関する型定義は `lib.es2015.iterable.d.ts` に記載されています。
+
+```ts:lib.es2015.iterable.d.ts
+interface IteratorYieldResult<TYield> {
+    done?: false;
+    value: TYield;
+}
+
+interface IteratorReturnResult<TReturn> {
+    done: true;
+    value: TReturn;
+}
+
+type IteratorResult<T, TReturn = any> = IteratorYieldResult<T> | IteratorReturnResult<TReturn>;
+
+interface Iterator<T, TReturn = any, TNext = undefined> {
+    // NOTE: 'next' is defined using a tuple to ensure we report the correct assignability errors in all places.
+    next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
+    return?(value?: TReturn): IteratorResult<T, TReturn>;
+    throw?(e?: any): IteratorResult<T, TReturn>;
+}
+
+interface Iterable<T> {
+    [Symbol.iterator](): Iterator<T>;
+}
+```
+
+こういった型は複数の型が関連して定義されているため、一気に理解するのは難しいです。イテレータリザルト→イテレータ→イテラブルの順番にみていきます。
+
+まずは、イテレータが持つ `next()` メソッド返されるイテレータリザルトのオブジェクトの型を見てみましょう。
+
+```ts
+let count = 0;
+
+// イテレータ(iterator ptorocol を満たすオブジェクト)
+const iterator = {
+  next() {
+    // イテレータリザルトは IteratorResult 型
+    // value プロパティの値が数値なので型引数に number を指定
+    const iteratorResult: IteratorResult<number> = (count < 3)
+      ? { value: ++count, done: false }
+      : { value: undefined, done: true };
+    return iteratorResult;
+    // イテレータリザルトを返す
+  },
+};
+
+console.log(iterator.next());
+// => { value: 1, done: false }
+console.log(iterator.next());
+// => { value: 2, done: false }
+console.log(iterator.next());
+// => { value: 3, done: false }
+console.log(iterator.next());
+// => { value: undfined, done: ture }
+```
+
+型エイリアスで定義された `IteratorResult<T, TReturn = any>` 型には実は２つの型変数が `T` と `TReturn` 使われていますが、片方の `TReturn` はデフォルト型引数として `any` が指定されているので、型注釈する際には省略できるようになっています。
+
+```ts
+// IteratorYiedlReturn と IteratorReturnResult のユニオン型
+type IteratorResult<T, TReturn = any> = IteratorYieldResult<T> | IteratorReturnResult<TReturn>;
+```
+
+この型定義を見ると、`IteratorResult<T, TReturn = any>` の型は `IteratorYieldResult<T>` と `IteratorReturnResult<TReturn>` という２つの型のユニオン型であることが分かります。
+
+ジェネリクス関数では型変数には型をリンクする機能がありましたが、型定義の際にも同じことが言えます。`IteratorResult<T, Teturn = any>` のジェネリクスに使われている型変数 `T` と `Treturn` はユニオン型を構成する２つの型である `IteratorYieldResult` と `IteratorReturnResult` の型変数としても使われています。
+
+ユニオン型の構成要素たる２つの型の型定義は以下のようになっています。
+
+```ts
+// TYield の型は value プロパティの値の型
+interface IteratorYieldResult<TYield> {
+    done?: false; // optional property
+    value: TYield;
+}
+
+// TReturn の型は value プロパティの値の型
+interface IteratorReturnResult<TReturn> {
+    done: true;
+    value: TReturn;
+}
+```
+
+イテレータリザルトは `IteratorResult` 型で型注釈できますが、この型は実質的に上の２つの型のどちらかなので、そのままユニオン型でも型注釈できます。
+
+```ts
+let count = 0;
+
+const iterator = {
+  next() {
+    const iteratorResult: IteratorYieldResult<number> | IteratorReturnResult<undefined> = (count < 3)
+      ? { value: ++count, done: false }
+      : { value: undefined, done: true };
+    return iteratorResult;
+    // イテレータリザルトを返す
+  },
+};
+```
+
+２つの型のユニオン型になっているのは、反復処理が終了したときに `next()` から返るイテレータリザルトの `done` プロパティが `true` となり、`value` プロパティの値自体は `undefined` とかでいいからです。
+
+それなら次のように定義してもよいですが、汎用性のためにオプショナルプロパティや `true` や `false` といった真偽値のリテラル型を使った２つの型の合成として定義している訳です。
+
+```ts
+interface IteratorResult<T> = { done?: boolean; value: T | undefined };
+```
+
+`T | any` や `T | undefined` よりも２つの型変数 `TYield` と `TReturn` が絡むようにした方が使いやすいです。
+
+ここだけ見てもまだあまり意味がわからないと思うので、`next()` メソッドでイテレータリザルトを返すイテレータの型定義を見てみましょう。
+
+```ts
+interface Iterator<T, TReturn = any, TNext = undefined> {
+    // NOTE: 'next' is defined using a tuple to ensure we report the correct assignability errors in all places.
+    next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
+    return?(value?: TReturn): IteratorResult<T, TReturn>;
+    throw?(e?: any): IteratorResult<T, TReturn>;
+}
+```
+
+イテレータは反復子プロトコル(iterator protocol)を満たすので `next()` メソッドを持っていましたが、実は `return()` メソッドと `throw()` メソッドも持つことができます。ただし、`?` でオプショナルプロパティ(メソッド)として型定義されているので必ずしも実装する必要はありません。
+
+また、`Iterator<Type>` と思ってものも型変数が３つあり、最初の型変数意外の２つはデフォルト型引数が指定されています。型注釈として利用する際には基本的にはこの２つは省略できます。そして、最初の型変数 `T` は `next()` メソッドの返り値の型 `IteratorResult<T, TRerun>` とリンクしています。`IteratorResult` の最初の型変数 `T` には `next()` メソッドの返り値であるイテレータリザルトの `value` プロパティの値の型を指定する必要があったので、型変数 `T` でリンクしている `Iterator` の型引数にも同じ型を指定することになります。
+
+```ts
+let count = 0;
+
+// 同じ number 型を型引数として指定する
+const iterator: Iterator<number> = {
+  next() {
+    // 同じ number 型を型引数として指定する
+    const iteratorResult: IteratorResult<number> =
+      count < 3
+        ? { value: ++count, done: false }
+        : { value: undefined, done: true };
+    return iteratorResult;
+  },
+};
+```
+
+イテレータの型が分かった所で、`[Symbol.iterator]()` メソッドでイテレータを返すイテラブルオブジェクトの型を `Iterable<Type>` をみていきます。とりあえずは `[Symbol.iterator]()` メソッドで上のイテレータを返すイテラブルオブジェクトの実装を行っておきましょう。
+
+```ts
+const iterableObject = {
+  [Symbol.iterator]() {
+    let count = 0;
+    
+    // イテレータ(iterator ptorocol を満たすオブジェクト)
+    const iterator: Iterator<number> = {
+      next() {
+        const iteratorResult: IteratorResult<number> =
+          count < 3
+            ? { value: ++count, done: false }
+            : { value: undefined, done: true };
+        return iteratorResult;
+        // イテレータリザルトを返す
+      },
+    };
+    return iterator;
+    // イテレータを返す
+  }
+}
+
+// イテラブルオブジェクトは for...of 構文で反復子が可能
+for (const v of iterableObject) {
+  console.log(v);
+}
+```
+
+イテラブルオブジェクトの型は次のように型定義されていました。
+
+```ts
+interface Iterable<T> {
+    [Symbol.iterator](): Iterator<T>;
+}
+```
+
+`Iterable<T>` 型のオブジェクトは `[Symbol.iterator]()` メソッドで `Itrator<T>` 型のオブジェクトを返すということが定義されています。
+
+イテレータとイテレータリザルトの型同士の関係と同じ用に型変数 `T` でリンクさせていますね。従って、イテレータにイテレータリザルトの `value` プロパティの値の型を指定したように、さらにリンクしているイテラブルの型の型引数にもその値の型を指定することになります。
+
+イテラブルオブジェクトの型注釈は以下のようになります。
+
+```ts
+// 同じ number 型を型引数として指定する
+const iterableObject: Iterable<number> = {
+  [Symbol.iterator]() {
+    let count = 0;
+
+    // 同じ number 型を型引数として指定する
+    const iterator: Iterator<number> = {
+      next() {
+        // 同じ number 型を型引数として指定する
+        const iteratorResult: IteratorResult<number> =
+          count < 3
+            ? { value: ++count, done: false }
+            : { value: undefined, done: true };
+        return iteratorResult;
+      },
+    };
+    return iterator;
+  },
+};
+
+for (const v of iterableObject) {
+  console.log(v);
+}
+```
+
+型変数がカスケードするようになっているため、`number` という型引数が上から下のすべての場所で使われています。
+
+これでイテラブルオブジェクトの型注釈が完成です。型定義も１つずつ見ていけばおそるるに足りません。
+
+## ジェネレータ関数の型注釈と型定義
+
+ジェネレータ関数の型注釈はまずはジェネレータ関数から返るジェネレータオブジェクトの型定義を知る必要があります。ジェネレータオブジェクトもイテラブルオブジェクトのように `Generator<Type>` というジェネリクス型が存在しています。ジェネリクスとジェネレータは名前が似ていますが別の単語であり、それぞれに概念的な関係は無いので注意してください。
+
+`Generator<Type>` の型定義は `lib.es2015.generator.ts` に存在しています。
+
+```ts:lib.es2015.generator.ts
+interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterator<T, TReturn, TNext> {
+  next(...args: [] | [TNext]): IteratorRestult<T, TReturn>;
+  return(value: TReturn): IteratorResult<T, TReturn>;
+  throw(e: any): IteratorResult<T, TReturn>;
+  [Symbol.iterator](): Generator<T, TReturn, TNext>;  
+}
+```
+
+結構複雑に見えますが、一つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extention)です。オブジェクトの型を拡張してみると分かりやすいですが、拡張元のオブジェクトのプロパティを持つような型を新しく定義できます。
+
+```ts
+interface Animal {
+  name: string;
+}
+// Animal 型を拡張した Bear 型(この場合はより詳細にした)
+interface Bear extends Animal {
+  honey: boolean;
+}
+
+const abstractAnimal = {
+  name: "動物",
+};
+const bear: Bear = {
+  name: "熊",
+  honey: true,
+}
+```
+
+ということで、`Generator` 型は `Iterator` 型を拡張した型となります。比べてみると所有するメソッドの型定義はほとんど同じですが、ジェネレータの方には `[Symbol.iteraotr]()` メソッドが追加されており、そこからさらにジェネレータオブジェクト型の値が返ることが分かります。
+
+```ts
+interface Iterator<T, TReturn = any, TNext = undefined> {
+    next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
+    // optional method
+    return?(value?: TReturn): IteratorResult<T, TReturn>; 
+    // optional method
+    throw?(e?: any): IteratorResult<T, TReturn>; 
+}
+
+// Genrator は Iterator 型の拡張
+interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterator<T, TReturn, TNext> {
+    next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
+    return(value: TReturn): IteratorResult<T, TReturn>;
+    throw(e: any): IteratorResult<T, TReturn>;
+    // Generator 型のオブジェクトが返る
+    [Symbol.iterator](): Generator<T, TReturn, TNext>;
+}
+```
+
+ジェネレータオブジェクトはイテレータであり、イテラブルでもあったので、このようにイテレータリザルトを返す `next()` メソッドを持ち、イテレータを返す `[Symbol.iterator]()` メソッドの両方を実装する型となっています。
+
+型定義についてより具体的に見ていきましょう。
+
+
+`Generator<T = unknown, TReturn = any, TNext = unknown>` というようにジェネリクス型としてインターフェイスで定義されてるので、この `T`、`TReturn`、`TNext` はそれぞれ型引数です。何を指定するかは以下のようになっています。
+
+- `T` : `yield` する値の型
+- `TReturn` : `return` する値の型
+- `TNext` : `next` メソッドの引数にタプルを与える場合の型
+
+イテレータとイテラブルの型定義でみたものとまったく同じです。
+
+このようなジェネリクス型による型定義によって、型引数が内部的にリンクしていることが分かります。トップにあるインターフェイスで定義された `Geneartor<T = unknown, TReturn = any, TNext = unknown>` で定義された３つの型変数 `T`、`Teturn`、`TNext` は内部で型定義されている `next()` や `return()` メソッドの型定義に使われている `IteratorResult<Tyep>` などにカスケードして利用されています。
+
+基本的にはイテレータリザルトの `value` プロパティの値の型となる第一型引数のみを気にすればよいです。
+
+そして、`Geneartor<T = unknown, TReturn = any, TNext = unknown>` というように３つの型変数にはすべてデフォルト型引数が指定されています。通常、`Array<Type>` や `Promise<Type>` といったジェネリクス型は型引数を指定する必要がありましがた、ジェネレータ型の型変数に対してはすべてデフォルト型引数が指定されているので型引数を省略して型注釈をすることが可能です。
+
+JavaScript で以下のようなジェネレータ関数があったとします。
+```js:JavaScript
+function* genFn(n) {
+  n++;
+  yield n;
+  n++;
+  yield n;
+  n++;
+  yield n;
+}
+for (const v of genFn(0)) console.log(v);
+```
+
+ジェネレータ関数からはジェネレータオブジェクトが返るので、このジェネレータ関数を型注釈する際には、以下のように返り値の型は `Generator` とすることができます。この場合はデフォルト型引数どおり `Generator<unknown, any, unknown>` として型注釈を行ったことになります。
+
+```ts:TypeScript
+function* genFn(
+  n: number
+): Generator { // Generator<unknown, any, unknown> となる
+  n++;
+  yield n;
+  n++;
+  yield n;
+  n++;
+  yield n;
+}
+```
+
+`function*` というようにジェネレータ関数として定義しているので、この型注釈をしなくても型推論されます。というかこの場合は型注釈を省略して型推論させた方がましです。`yield` される値の型から `Generator<T, TReturn, TNext>` の第一型引数として `T` に指定されるべき型が推論されます。
+
+```ts
+function* genFn(
+  n: number
+) { // Genrator<number, void, unknown> として推論される
+  n++;
+  yield n; // number 型
+  n++;
+  yield n; // number 型
+  n++;
+  yield n; // number 型
+}
+```
+
+明示的に `yield` される値の型を指定したいなら、その型を `Genrator` 型の第一型引数に指定します。
+
+```ts
+function* genFn(
+  n: number
+): Generator<number> { // Genrator<number, void, unknown> として推論される
+  n++;
+  yield n; // number 型
+  n++;
+  yield n; // number 型
+  n++;
+  yield n; // number 型
+}
+```
+
+ジェネレータ関数から `yield` される値が１つの型でないなら、もちろんリテラル型を型引数に指定する必要があります。
+
+```ts
+function* genMultiType(): Generator<number | string | boolean> { // 
+  yield 42;
+  yield "ABC";
+  yield true;
+}
+```
+
+このような場合に `Genrator` の型注釈を省略してしまうと、ジェネレータ型の第一型引数の型がそれぞれの値のリテラル型のユニオン型として型推論されてしまいます。
+
+```ts
+// Generator<true | 42 | "ABC", void, unknown> として型推論される
+function* genMultiType() {
+  yield 42;
+  yield "ABC";
+  yield true;
+}
+```
 
