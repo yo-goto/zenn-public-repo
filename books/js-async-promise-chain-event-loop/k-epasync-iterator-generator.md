@@ -1174,7 +1174,11 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 }
 ```
 
-結構複雑に見えますが、一つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extention)です。オブジェクトの型を拡張してみると分かりやすいですが、拡張元のオブジェクトのプロパティを持つような型を新しく定義できます。
+結構複雑に見えますが、一つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extention)です。
+
+https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces
+
+オブジェクトの型を拡張してみると分かりやすいですが、拡張元のオブジェクトのプロパティを持つような型を新しく定義できます。
 
 ```ts
 interface Animal {
@@ -1232,9 +1236,7 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 
 基本的にはイテレータリザルトの `value` プロパティの値の型となる第一型引数のみを気にすればよいです。
 
-そして、`Geneartor<T = unknown, TReturn = any, TNext = unknown>` というように３つの型変数にはすべてデフォルト型引数が指定されています。通常、`Array<Type>` や `Promise<Type>` といったジェネリクス型は型引数を指定する必要がありましがた、ジェネレータ型の型変数に対してはすべてデフォルト型引数が指定されているので型引数を省略して型注釈をすることが可能です。
-
-JavaScript で以下のようなジェネレータ関数があったとします。
+例えば、JavaScript で以下のようなジェネレータ関数があったとします。
 ```js:JavaScript
 function* genFn(n) {
   n++;
@@ -1262,7 +1264,9 @@ function* genFn(
 }
 ```
 
-`function*` というようにジェネレータ関数として定義しているので、この型注釈をしなくても型推論されます。というかこの場合は型注釈を省略して型推論させた方がましです。`yield` される値の型から `Generator<T, TReturn, TNext>` の第一型引数として `T` に指定されるべき型が推論されます。
+`function*` というようにジェネレータ関数として定義しているので、この型注釈をしなくても型推論されます。というのも、`Geneartor<T = unknown, TReturn = any, TNext = unknown>` というように３つの型変数にはすべてデフォルト型引数が指定されています。通常、`Array<Type>` や `Promise<Type>` といったジェネリクス型は型引数を指定する必要がありましたが、ジェネレータ型の型変数に対してはすべてデフォルト型引数が指定されているので型引数を省略して型注釈をすることが可能です。
+
+というか、この場合は型注釈を省略して型推論させた方がましです。`yield` される値の型から `Generator<T, TReturn, TNext>` の第一型引数として `T` に指定されるべき型が推論されるので、ほとんど型の情報が無いに等しいからです。
 
 ```ts
 function* genFn(
