@@ -15,12 +15,12 @@ Promise の状態と運命(State & Fate) | |
 マイクタスク(Microtask)
 タスク(Task)
 コールスタック(Call stack)
-シングルスレッド
-イベントループ
-V8 エンジン
+シングルスレッド(Single thread)
+イベントループ(Event loop)
+V8 エンジン(V8 Engine)
 関数実行コンテキスト(FEC)
 グローバルコンテキスト(GEC)
 Executor 関数
-非同期 API
+非同期 API(Asynchronous API)
 Web APIs
 環境(Environment)
