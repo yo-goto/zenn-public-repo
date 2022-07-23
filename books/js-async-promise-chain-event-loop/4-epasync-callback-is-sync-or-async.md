@@ -45,7 +45,7 @@ console.log("🦖 [3] MAINLINE: Sync");
 
 Promise は「**非同期処理の結果**を表現するビルトインオブジェクト」ですが、このように Promise コンストラクタに渡すコールバック関数は「**同期的に**」実行されます。つまり、完全に上から下へ行を移動するように実行されています。
 
-今度は、上のコードに少し追加したものを考えてみます。「非同期処理」である Promise チェーンです。
+今度は、上のコードに少し追加したものを考えてみます。「非同期処理」であるプロミスチェーン(Promise chain)です。
 
 ```js:thenCallbackIsAsync.js
 // thenCallbackIsAsync.js
@@ -56,6 +56,7 @@ const promise = new Promise((resolve) => {
   resolve('Resolved!');
 });
 
+// Promise chain
 promise.then((value) => {
   console.log('👦 [4] Async');
   console.log('👦 [5] Resolved value:', value);
@@ -83,9 +84,7 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 
 しかし、マイクロタスクキューにあるこのコールバック関数はすぐに実行されません。コードの実行を考える上で、イベントループではスクリプトの評価によるすべての同期処理が最初のタスクとなり、その最中はコールスタック上に匿名のグローバルコンテキストが一番下に積まれている訳です。
 
-コードの行をまた下に行くと、`console.log` に出会うので同期的にそれを実行します。この実行が終わった時点で、すべての同期処理が終わり、グローバルコンテキストがコールスタック上からポップします。
-
-これによってコールスタックが空になり、「**マイクロタスクのチェックポイント**」です。別の言い方では「**単一タスクが完了したら、すべてのマイクロタスクを処理する**」です。
+コードの行をまた下に行くと、`console.log` に出会うので同期的にそれを実行します。この実行が終わった時点で、すべての同期処理が終わり、グローバルコンテキストがコールスタック上からポップします。これによってコールスタックが空になり、「**マイクロタスクのチェックポイント**」です。別の言い方では「**単一タスクが完了したら、すべてのマイクロタスクを処理する**」です。
 
 というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
@@ -96,14 +95,14 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 - [thenCallbackIsAsync.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGhlbkNhbGxiYWNrSXNBc3luYy5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwoKY29uc3QgcHJvbWlzZSA9IG5ldyBQcm9taXNlKHJlc29sdmUgPT4gewogIGNvbnNvbGUubG9nKCJbMl0gVGhpcyBsaW5lIGlzIFN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICByZXNvbHZlKCJSZXNvbHZlZCEiKTsKfSk7Cgpwcm9taXNlLnRoZW4odmFsdWUgPT4gewogIGNvbnNvbGUubG9nKCJbNF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7Cn0pOwoKY29uc29sZS5sb2coIlszXSBTeW5jIHByb2Nlc3MiKTsK)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
-このように Promise チェーンにおいて `.then()` メソッドのコールバックは Promise インスタンスがすでに履行(Fullfilled)状態であっても一旦はマイクロタスクキューへと送られてしまうので、どんなときでもそのコールバックの実行は非同期的になってしまいます。
+このように Promise chain において `.then()` メソッドのコールバックは Promise インスタンスがすでに履行(Fullfilled)状態であっても一旦はマイクロタスクキューへと送られてしまうので、どんなときでもそのコールバックの実行は非同期的になってしまいます。
 
 まとめると、次の２つは対比的な実行となります。
 
 - `Promise()` コンストラクタの引数として渡すコールバック関数(`executor`)は「**同期的に**」実行される
 - `then()` メソッドの引数として渡すコールバック関数は「**非同期的に**」実行される
 
-これに気付いていないと「Promise は同期的に実行される」とか「Promise チェーンは非同期的に実行される」とかの**言葉に惑わされて混乱する**ことになります。
+これに気付いていないと「Promise は同期的に実行される」とか「Promise chain は非同期的に実行される」とかの**言葉に惑わされて混乱する**ことになります。
 
 # コールバック関数はいつ実行される?
 このことについて、少し一般化して考えてみます。

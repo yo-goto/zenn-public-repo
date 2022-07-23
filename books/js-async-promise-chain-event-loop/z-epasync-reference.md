@@ -128,7 +128,7 @@ aliases: [ch_参考文献]
 
 - [JavaScript Promiseの本](https://azu.github.io/promises-book/#then-return-new-promise)
 
-## [Promise チェーンで値を繋ぐ](7-epasync-pass-value-to-the-next-chain)
+## [Promise chain で値を繋ぐ](7-epasync-pass-value-to-the-next-chain)
 
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 
@@ -137,7 +137,7 @@ aliases: [ch_参考文献]
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises)
 
-## [Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)
+## [Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)
 
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises)
@@ -170,7 +170,7 @@ aliases: [ch_参考文献]
 
 # [第３章 - async 関数と await 式の挙動](sec-03-epasync)
 
-## [Promise チェーンから async 関数へ](14-epasync-chain-to-async-await)
+## [Promise chain から async 関数へ](14-epasync-chain-to-async-await)
 
 - [文と式 · JavaScript Primer #jsprimer](https://jsprimer.net/basic/statement-expression/#expression)
 

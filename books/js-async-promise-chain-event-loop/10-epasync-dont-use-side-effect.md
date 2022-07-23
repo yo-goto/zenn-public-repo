@@ -6,7 +6,7 @@ aliases: [ch_コールバックで副作用となる非同期処理]
 # このチャプターについて
 このチャプターは、別のチャプター『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』の続きとしての内容となります。
 
-`then()` メソッドのコールバックにおいて、単なる Promise インスタンスを返すだけでなく、非同期 API や Promise チェーンなどによって最終的に Promise インスタンスが返る場合を考えます。
+`then()` メソッドのコールバックにおいて、単なる Promise インスタンスを返すだけでなく、非同期 API や Promise chain などによって最終的に Promise インスタンスが返る場合を考えます。
 
 # 副作用とは
 このチャプターの本題に入る前に「**副作用(Side Effect)**」とは何かを簡単に説明しておきます。
@@ -64,7 +64,7 @@ https://www.youtube.com/watch?v=e-5obm1G_FY&list=TLGGz_fwguCfqL8yMDA3MjAyMg
 
 (2) と (3) を混同してしまう場合に気をつけてください。`then()` メソッドのコールバック関数で Promise を使った非同期処理を行う場合には必ず Promise インスタンスを `return` するようにしてください。`then()` メソッドのコールバック関数内部で、非同期処理を使用する場合に、`return` をして Promise インスタンスを返していない場合、その非同期処理は「**副作用(Side Effect)**」となります。この場合、次の `then()` メソッドのコールバック関数へ値を繋ぐことができなくなり、そもそも意図した実行順番にならなくなる場合があります。
 
-次のコードの例では、Promise チェーンで値が繋がりません。
+次のコードの例では、Promise chain で値が繋がりません。
 
 ```js
 //  promiseShouldBeReturned-non.js
@@ -126,7 +126,7 @@ console.log("🦖 [4] Sync");
 
 従って、値を正しく繋げたい場合には、副作用ではなく `return` をつけるようにしましょう。
 
-今度は、もう少し簡単にしてみます。これまで２つのメインとなる Promise チェーンで考えていましたが、ここでは１つにします。その代わりに、Promise チェーン内部であえてネストを作ります。再びテストとして次のコードで `[A-G]` までの文字がどのような順番で出力されるか考えてみてください。
+今度は、もう少し簡単にしてみます。これまで２つのメインとなる Promise chain で考えていましたが、ここでは１つにします。その代わりに、Promise chain 内部であえてネストを作ります。再びテストとして次のコードで `[A-G]` までの文字がどのような順番で出力されるか考えてみてください。
 
 ```js
 // promiseShouldBeReturnedAddThen-right.js
@@ -159,7 +159,7 @@ returnPromise("1st Promise", "[B]")
 console.log("🦖 [G] Sync");
 ```
 
-「then メソッドのコールバックで Promise インスタンスを返す」や「[Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)」のチャプターでネストは経験したので正解できましたか?
+「then メソッドのコールバックで Promise インスタンスを返す」や「[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)」のチャプターでネストは経験したので正解できましたか?
 
 :::details 答え
 答えは、「A → B → G → C → D → E → F」となります。
@@ -179,14 +179,14 @@ console.log("🦖 [G] Sync");
 ```
 :::
 
-`return returnPromise("2nd Promise", "[D]").then(callback)` の部分において Promise チェーンをネストさせていますが、ここで `return` しているのは最終的に `then(callback)` で返ってくる Promise インスタンスでした。
+`return returnPromise("2nd Promise", "[D]").then(callback)` の部分において Promise chain をネストさせていますが、ここで `return` しているのは最終的に `then(callback)` で返ってくる Promise インスタンスでした。
 
 そして、`then()` メソッドのコールバック関数内にて返すものとして Promise インスタンスを選択した場合には、それが解決してから(実行が完了してから)次の `then()` メソッドのコールバック関数が実行されるという話でした。
 
 # returnしないと非同期処理の完了を待てない
 もう少し複雑化してみましょう。あとで代わりに Promise-based な非同期 API である `fetch()` 関数を使用した説明も行います。
 
-次のコードでは、今までのコードでメインとなる Promise チェーンを１つにした上で、`returnPromise()` 関数内で Promise チェーンを行うように改造しました。つまり Promise チェーンをネストさせています。
+次のコードでは、今までのコードでメインとなる Promise chain を１つにした上で、`returnPromise()` 関数内で Promise chain を行うように改造しました。つまり Promise chain をネストさせています。
 
 Promise インスタンスを返す処理は常に `return` するべきですが、このコードではあえて `return` させていません。
 
@@ -248,7 +248,7 @@ console.log("🦖 [H] Sync");
 - [promiseShouldBeReturnedNest.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LmpzCmNvbnNvbGUubG9nKCJbQS0xXSBTeW5jIHByb2Nlc3MiKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIsIG5leHRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgY29uc29sZS5sb2coYCR7b3JkZXJ9IFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgJHtuZXh0T3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICByZXR1cm4gdmFsdWU7CiAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0QtNV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCIybmQgUHJvbWlzZSIsICJbRS02XSIsICJbRi03XSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ctOF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSC0zXSBTeW5jIHByb2Nlc3MiKTs%3D)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
 
-Promise インスタンスを返すような処理を `return` しない場合に事項順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise チェーンを伸ばしています。実行順番を予想してみてください。
+Promise インスタンスを返すような処理を `return` しない場合に事項順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise chain を伸ばしています。実行順番を予想してみてください。
 
 ```js
 // promiseShouldBeReturnedNest-3rd.js
@@ -304,14 +304,14 @@ console.log("🦖 [N] Sync");
 ```
 :::
 
-注目してほしいのは、`[H]` と `[I]` の順番です。H が終わっていないのに、I が実行されていますね。上のコードでは Microtask queue へと連続で Microtask をどんどん送っていますが、その送る順番が `return` をしなかったことで、`returnPromise("2nd Promise", "[F]", "[G]", "[H]");` 内部の Promise チェーンが 2 番目の `then()` メソッドのコールバックが終わって Call stack が空になった習慣に、`returnPromise("1st Promise", "[B]", "[C]", "[D]").then(cb1).then(cb2)` のコールバック `cb2` がキューへと送られてしまうためです。
+注目してほしいのは、`[H]` と `[I]` の順番です。H が終わっていないのに、I が実行されていますね。上のコードでは Microtask queue へと連続で Microtask をどんどん送っていますが、その送る順番が `return` をしなかったことで、`returnPromise("2nd Promise", "[F]", "[G]", "[H]");` 内部の Promise chain が 2 番目の `then()` メソッドのコールバックが終わって Call stack が空になった習慣に、`returnPromise("1st Promise", "[B]", "[C]", "[D]").then(cb1).then(cb2)` のコールバック `cb2` がキューへと送られてしまうためです。
 
 言葉で説明するのが難しいので、実際に見てみてください。
 
 - [promiseShouldBeReturnedNest-3rd.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LTNyZC5qcwpjb25zb2xlLmxvZygiW0EtMV0gU3luYyBwcm9jZXNzIik7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyLCBzZWNvbmRPcmRlciwgdGhpcmRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgICBjb25zb2xlLmxvZyhgJHtvcmRlcn0gVGhpcyBsaW5lIGlzIChBKVN5bmNocm9ub3VzbHkgZXhlY3V0ZWRgKTsKICAgICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7c2Vjb25kT3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICAgIHJldHVybiB2YWx1ZTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7dGhpcmRPcmRlcn0gQWRkaXRpb25hbCBuZXN0ZWQgY2hhaW5gKTsKICAgICAgcmV0dXJuIHZhbHVlOwogICAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIsICJbRC01XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0UtNl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVyblByb21pc2UoIjJuZCBQcm9taXNlIiwgIltGLTddIiwgIltHLThdIiwgIltILTEwXSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ktOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbTi0zXSBTeW5jIHByb2Nlc3MiKTsK)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
 
-とにかく、Promise インスタンスを返すような処理は Promise チェーンにおいて、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
+とにかく、Promise インスタンスを返すような処理は Promise chain において、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
 
 ```js
 // promiseShouldBeReturnedNest-3rdReturn.js
@@ -398,10 +398,10 @@ returnPromise("1st Promise", "[2]", "[4]")
 console.log("[3] Sync process");
 ```
 
-# Promise チェーンの目的
-もうすこし一般化して考えてみます。Promise チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
+# Promise chain の目的
+もうすこし一般化して考えてみます。Promise chain では正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
 
-今まで `then()` メソッドのコールバックで同期処理をして、また次の `then()` メソッドのコールバックをしていたため、そもそも、今までの Promise チェーンは本質的にあまり意味の無い行為でした。例えば、『[Promise チェーンで値を繋ぐ](7-epasync-pass-value-to-the-next-chain)』のチャプターで見た次のコードですが、本来このように無駄にチェーンを長くする必用など基本的にはありません。
+今まで `then()` メソッドのコールバックで同期処理をして、また次の `then()` メソッドのコールバックをしていたため、そもそも、今までの Promise chain は本質的にあまり意味の無い行為でした。例えば、『[Promise chain で値を繋ぐ](7-epasync-pass-value-to-the-next-chain)』のチャプターで見た次のコードですが、本来このように無駄にチェーンを長くする必用など基本的にはありません。
 
 ```js
 // chainValueName.js
@@ -435,7 +435,7 @@ returnPromise("🐵 1st Promise", "[2]")
 console.log("🦖 [3] MAINLINE(End): Sync");
 ```
 
-↓ いらない Promise チェーンをなくしてみます。
+↓ いらない Promise chain をなくしてみます。
 
 ```js
 // chainValueName-kai.js
@@ -457,11 +457,11 @@ returnPromise("1st Promise", "[2]").then((value) => {
 console.log("🦖 [3] Sync");
 ```
 
-Promise チェーンを利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Proimse インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。
+Promise chain を利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Proimse インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。
 
 ## 非同期処理を逐次的に行う
 
->Promise チェーンでは正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
+>Promise chain では正しく処理を連鎖させることで逐次的(順番に)に一連の処理を行うことができます。
 
 このように言いましたが、`chainValueName-kai.js` で見たように同期処理なら１つの `then()` メソッドのコールバック関数内にすべて書いてしまえばそれですべて順番に行えます。
 
@@ -506,11 +506,11 @@ doAsyncTask()
 
 データ取得が完了していないので、`data` は `undefiend` で渡されてしまいます。そしてまた時間をかけて(undefined なので実際に時間はかかるかどうかはわかりませんが)とにかく、存在しないデータを加工して、次の処理へと移行し、再び存在しないデータを `doSthAsyncC()` で加工して、出力してしまっています。
 
-結果として Promise インスタンスを返す非同期処理を順番に行うには、Promise チェーンを正しく構築しないといけません。Promise インスタンスを返す非同期処理を逐次的に(順番に)実行させるには次のよう返ってくるはずの Promise インスタンスを `return` をさせます。
+結果として Promise インスタンスを返す非同期処理を順番に行うには、Promise chain を正しく構築しないといけません。Promise インスタンスを返す非同期処理を逐次的に(順番に)実行させるには次のよう返ってくるはずの Promise インスタンスを `return` をさせます。
 
 ```js
 // 非同期処理 doAsyncTask() が完了したら何かする
-// 正しい Promise チェーン
+// 正しい Promise chain 
 doAsyncTask()
   .then(() => {
     // Prosise インスタンスを返す関数
@@ -527,7 +527,7 @@ doAsyncTask()
   });
 ```
 
-これで、非同期処理 A が終わってから次の非同期処理 B を行い、そして B が終わってから次の非同期処理 C を行い、C が終わってからコンソールに出力できています。さらに、Promise チェーンにおいて値を繋いでいることがわかります。
+これで、非同期処理 A が終わってから次の非同期処理 B を行い、そして B が終わってから次の非同期処理 C を行い、C が終わってからコンソールに出力できています。さらに、Promise chain において値を繋いでいることがわかります。
 
 `return` をつけることで確実にそれぞれの非同期処理が完了してから次にいくことができています。
 
@@ -535,7 +535,7 @@ doAsyncTask()
 
 ```js
 // 非同期処理 doAsyncTask() が完了したら何かする
-// 正しい Promise チェーン
+// 正しい Promise chain 
 doAsyncTask()
   .then(() => doSthAsyncA(path))
   .then(data => doSthAsyncB(data))
@@ -620,7 +620,7 @@ doAsyncTask()
   });
 ```
 
-結論はもう言ってしまったのですが、Promise チェーンのもう 1 つの用途である「Proimse インスタンスから解決値を取り出して処理する」について解説します。この項目については「非同期処理を逐次的に行う」の項目とかぶる部分があります。
+結論はもう言ってしまったのですが、Promise chain のもう 1 つの用途である「Proimse インスタンスから解決値を取り出して処理する」について解説します。この項目については「非同期処理を逐次的に行う」の項目とかぶる部分があります。
 
 非同期処理を逐次的に行う例として非同期 API `fetch()` メソッドを利用して例をあげます。
 
@@ -699,11 +699,11 @@ fetch(localUrl)
   });
 ```
 
-`response.text()` は Promise インスタンスを返します。そして実際に解決されれる値、つまりテキストデータの文字列に対して何か処理を行ったり、コンソールに表示させたりするためには、一度 Promise チェーンで次の `then()` メソッドのコールバックへ渡しすために `return` する必要があります。
+`response.text()` は Promise インスタンスを返します。そして実際に解決されれる値、つまりテキストデータの文字列に対して何か処理を行ったり、コンソールに表示させたりするためには、一度 Promise chain で次の `then()` メソッドのコールバックへ渡しすために `return` する必要があります。
 
-これは、`response.json()` なども同じで Promise インスタンスを返すような処理については Promise チェーンで値を繋いでから何かします。
+これは、`response.json()` なども同じで Promise インスタンスを返すような処理については Promise chain で値を繋いでから何かします。
 
-ところで、『[Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise チェーンのネストは基本的にはアンチパターンであると言いましたが、ネストが深くならないなら、別にやっても問題は無いです。ただネストを行う場合にはエラーハンドリングに気をつけましょう。
+ところで、『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise chain のネストは基本的にはアンチパターンであると言いましたが、ネストが深くならないなら、別にやっても問題は無いです。ただネストを行う場合にはエラーハンドリングに気をつけましょう。
 
 ```js
 fetch(localUrl)
@@ -720,7 +720,7 @@ fetch(localUrl)
   });
 ```
 
-Promise インスタンスから解決値を取り出す方法としては、実はもう１つ await 式がありますが、詳細はここでは解説しません。『[Promise チェーンから async 関数へ](14-epasync-chain-to-async-await)』のチャプターで詳しく解説します。
+Promise インスタンスから解決値を取り出す方法としては、実はもう１つ await 式がありますが、詳細はここでは解説しません。『[Promise chain から async 関数へ](14-epasync-chain-to-async-await)』のチャプターで詳しく解説します。
 
 ```js
 // async function 内部で Promise インスタンスから直接値を取り出す

@@ -1,6 +1,6 @@
 ---
-title: "Promise チェーンはネストさせない"
-aliases: [ch_Promise チェーンはネストさせない]
+title: "Promise chain はネストさせない"
+aliases: [ch_Promise chain はネストさせない]
 ---
 
 # このチャプターについて
@@ -9,9 +9,9 @@ aliases: [ch_Promise チェーンはネストさせない]
 このチャプターでの古い内容に基づいた解説を新しい解説で置き換えました。実行コンテキストとマイクロタスクのチェックポイントを使って解説しています。
 :::
 
-このチャプターでは、Promise チェーンにおけるネストについて、アンチパターンとしての話と、原理的な話を行います。
+このチャプターでは、Promise chain におけるネストについて、アンチパターンとしての話と、原理的な話を行います。
 
-# Promise チェーンをネストしてみる
+# Promise chain をネストしてみる
 前のチャプターでは、`then()` メソッドのコールバックにおいて、Promise インスタンスを `return` した場合は、「Promise インスタンスが `resolve` された値が次の `then()` メソッドのコールバック関数の引数として渡される」という話でした。
 
 だだし、次のように場合はどうなるでしょうか? 
@@ -100,11 +100,11 @@ returnPromise("1st Promise", "2")
 
     return returnPromise("2nd Promise", "6").then(callbackNext);
     // 返される Promise インスタンスが履行状態なので then のコールバック関数が直ちにマイクロタスクキューへと送られる
-  }) // ここで返される Promise チェーンはまだ待機状態
+  }) // ここで返される Promise chain はまだ待機状態
   .then(cb2);
 ```
 
-さて、ここが混乱しやすいところですが、Promise チェーンにおいて `then()` メソッドのコールバック関数内で、`return` によって Promise インスタンスを返した場合はその解決値(resolve された値)が次の `then()` メソッドのコールバック関数の引数として渡されます。
+さて、ここが混乱しやすいところですが、Promise chain において `then()` メソッドのコールバック関数内で、`return` によって Promise インスタンスを返した場合はその解決値(resolve された値)が次の `then()` メソッドのコールバック関数の引数として渡されます。
 
 いまコールバック関数内で `return` しているのは `returnPromise("2nd Promise", "6")` ではなく、`returnPromise("2nd Promise", "6").then(callbackNext)` なので、`then(callbackNext)` で返される Promise インスタンスの resolve した値が `then(cb2)` のコールバック関数 `cb2` の引数として渡されるはずです。
 
@@ -132,7 +132,7 @@ returnPromise("3rd Promise", "3")
 
     return returnPromise("4th Promise", "8").then(callbackNext2);
     // 返される Promise インスタンスが履行状態なので then のコールバック関数が直ちにマイクロタスクキューへと送られる
-  }) // ここで返される Promise チェーンはまだ待機状態
+  }) // ここで返される Promise chain はまだ待機状態
   .then(cb4);
 ```
 
@@ -207,13 +207,13 @@ returnPromise("1st Promise", "2")
 👦 Resolved value: from [10] callback
 ```
 
-分かりにくいですが、結局普通の Promise チェーンと同じ出力の順番になります。JS Visuzalizer で可視化してみたので実際にそうなることを確認してみてください。
+分かりにくいですが、結局普通の Promise chain と同じ出力の順番になります。JS Visuzalizer で可視化してみたので実際にそうなることを確認してみてください。
 
 - [promiseNest.js - JS Visuzalizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZU5lc3QuanMKY29uc29sZS5sb2coJ1sxXSBTeW5jIHByb2Nlc3MnKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIpID0%2BIHsKICByZXR1cm4gbmV3IFByb21pc2UoKHJlc29sdmUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKGBbJHtvcmRlcn1dIFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pOwp9OwoKcmV0dXJuUHJvbWlzZSgnMXN0IFByb21pc2UnLCAnMicpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygnWzVdIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCcpOwogICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICByZXR1cm4gcmV0dXJuUHJvbWlzZSgnMm5kIFByb21pc2UnLCAnNicpCiAgICAgIC50aGVuKCh2YWx1ZSkgPT4gewogICAgICAgIGNvbnNvbGUubG9nKCdbOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICAgICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICAgICAgcmV0dXJuICdmcm9tIFs5XSBjYWxsYmFjayc7CiAgICAgIH0pOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygnWzExXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQnKTsKICAgIGNvbnNvbGUubG9nKCdSZXNvbHZlZCB2YWx1ZTogJywgdmFsdWUpOwogIH0pOwpyZXR1cm5Qcm9taXNlKCczcmQgUHJvbWlzZScsICczJykKICAudGhlbigodmFsdWUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKCdbN10gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICBjb25zb2xlLmxvZygnUmVzb2x2ZWQgdmFsdWU6ICcsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCc0dGggUHJvbWlzZScsICc4JykKICAgICAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICAgICAgY29uc29sZS5sb2coJ1sxMF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICAgICAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7CiAgICAgICAgcmV0dXJuICdmcm9tIFsxMF0gY2FsbGJhY2snOwogICAgICB9KTsKICB9KQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coJ1sxMl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgICBjb25zb2xlLmxvZygnUmVzb2x2ZWQgdmFsdWU6ICcsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCdbNF0gU3luYyBwcm9jZXNzJyk7)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
-# Promise チェーンのネストはアンチパターン
-このように `then()` メソッドをネストさせるようなやり方は特に意味がある場合を除いて、流れがわかりづらくなってしまうので通常は避けるべきアンチパターンとなります。このネストはフラットにでき、Promise チェーンはなるべくネストが浅くなるようにフラットにするのが推奨されます。
+# Promise chain のネストはアンチパターン
+このように `then()` メソッドをネストさせるようなやり方は特に意味がある場合を除いて、流れがわかりづらくなってしまうので通常は避けるべきアンチパターンとなります。このネストはフラットにでき、Promise chain はなるべくネストが浅くなるようにフラットにするのが推奨されます。
 
 実際にネストを解消してみます。
 
@@ -342,5 +342,5 @@ console.log('🦖 [4] Sync');
 👦 Resolved value: from [10] callback
 ```
 
-Promise チェーンはこのようにネストさせずに流れを見やすくします。
+Promise chain はこのようにネストさせずに流れを見やすくします。
 

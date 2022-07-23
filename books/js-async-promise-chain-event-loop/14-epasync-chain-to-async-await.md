@@ -1,13 +1,13 @@
 ---
-title: "Promise チェーンから async 関数へ"
-aliases: [ch_Promise チェーンから async 関数へ]
+title: "Promise chain から async 関数へ"
+aliases: [ch_Promise chain から async 関数へ]
 ---
 
 # このチャプターについて
 Prosmise チェーンが分かったことでようやく async/await に入ることができます。このチャプターでは、async/await を学習する上での注意点や意識すべき点などについて解説します。
 
 :::message
-イベントループと絡めた具体的な挙動については次のチャプターを確認してください。このチャプターで理解しにくい点がある場合は次のチャプターの内容を見てから戻ってくるのもいいかもしれません。
+イベントループと絡めた具体的な挙動については次のチャプターを確認してください。このチャプターで理解しにくい点がある場合にも次のチャプターの内容を見てから戻ってくるのもいいかもしれません。
 :::
 
 # Async function
@@ -21,7 +21,7 @@ asynchronous の発音記号は `/eɪsɪ́ŋkr(ə)nəs/` ですので、`async` 
 
 まず、非同期関数(Async function)は**どんな時も必ず Promise インスタンスを返す関数**です。
 
-非同期関数の定義には `async` キーワードを使用します。そして、Promise インスタンスを返すわけですから、Promise チェーンが可能です。
+非同期関数の定義には `async` キーワードを使用します。そして、Promise インスタンスを返すわけですから、Promise chain が可能です。
 
 ```js:通常の関数定義
 // returnStringInAsync.js
@@ -35,7 +35,7 @@ alwaysReturnPromise()
   .finally(() => console.log("👍 チェーン最後に実行"));
 ```
 
-ちゃんと Promise チェーンが出来ていますね。
+ちゃんと Promise chain が出来ていますね。
 
 ```sh:実行結果
 # V8 エンジンで実行してみる
@@ -84,7 +84,7 @@ Async function 内部で何も `return` しなくても、必ず Promise イン�
 
 そして、`fetch()` は「非同期処理」の説明の代表となるように await 式での解説でもよく使われます。そして、await 式は「非同期処理の完了を待つ」という話でしたね。
 
-次のコードを見ると違和感があるはずです。一方の非同期関数は非同期 API である `fech()` を await していますが、もう一方の非同期関数は Promise チェーンを await しています。
+次のコードを見ると違和感があるはずです。一方の非同期関数は非同期 API である `fech()` を await していますが、もう一方の非同期関数は Promise chain を await しています。
 
 ```js
 async function returnRespnose(url) {
@@ -97,7 +97,7 @@ async function returnText(url) {
 }
 ```
 
-`const response = await fetch(url)` の場合は非同期処理の完了を待つというよりも、環境に委任した並列的作業を待つという感じになるので、「非同期処理を待つ」とは違った印象を受けるのが自然ですね。ただし、`const text = await fetch(url).then((res) => res.text())` というような場合は `then()` のコールバック関数が完了するのを待っていますし、実際には Promise チェーンで最終的に返ってくる Promise インスタンスが解決されるの待つので、明らかに「非同期処理を待つ」と言えます。
+`const response = await fetch(url)` の場合は非同期処理の完了を待つというよりも、環境に委任した並列的作業を待つという感じになるので、「非同期処理を待つ」とは違った印象を受けるのが自然ですね。ただし、`const text = await fetch(url).then((res) => res.text())` というような場合は `then()` のコールバック関数が完了するのを待っていますし、実際には Promise chain で最終的に返ってくる Promise インスタンスが解決されるの待つので、明らかに「非同期処理を待つ」と言えます。
 
 ```js
 async function returnRespnose(url) {
@@ -144,7 +144,7 @@ function promiseTimer(delay) {
 
 「待つ」という言葉から直感的に想起するのは「そこで完全に処理が止まる」ということですが、そんなことが起きてしまったらメインスレッドを「ブロッキング」することになり、『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで説明した「非同期処理(というテーマ)」の目的である「環境が並列的にバックグラウンドで作業している間もメインスレッドをブロッキングすることなく別の作業を続けられるようにすること」が崩れてしまうことになります。
 
-async/await は Promise チェーンを変形することで書くことができますし、内部的にも Promise の処理に基づいています(これについては『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説します)。そして、**Promise チェーンを学習してきましたが、ブロッキングなんて起きていませんでしたよね**。await 式の「待つ」は非同期 API の作業を起点とした一連の作業「A(非同期 API の作業) したら B(コールバック関数) する、B したら C(コールバック関数) する」という逐次処理を行う時に、 A が終わっていないのに B はできないので、非同期 API の作業を環境が終わらせるまで順番的に A の次に行いたい B という作業を行わないで、**別の作業をメインスレッドで続ける**ということを意味します。「非同期 API の並列的作業である A がバックグラウンドで環境が処理している間は、その非同期関数の内の処理は一時的に停止させて、別のことをやる」というのが「async/await でできること」であり「やりたいこと」です。
+async/await は Promise chain を変形することで書くことができますし、内部的にも Promise の処理に基づいています(これについては『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説します)。そして、**Promise chain を学習してきましたが、ブロッキングなんて起きていませんでしたよね**。await 式の「待つ」は非同期 API の作業を起点とした一連の作業「A(非同期 API の作業) したら B(コールバック関数) する、B したら C(コールバック関数) する」という逐次処理を行う時に、 A が終わっていないのに B はできないので、非同期 API の作業を環境が終わらせるまで順番的に A の次に行いたい B という作業を行わないで、**別の作業をメインスレッドで続ける**ということを意味します。「非同期 API の並列的作業である A がバックグラウンドで環境が処理している間は、その非同期関数の内の処理は一時的に停止させて、別のことをやる」というのが「async/await でできること」であり「やりたいこと」です。
 
 ```js
 (async function immediateFn() {
@@ -183,16 +183,16 @@ console.log(
   [^いつどこで完了する]: 予備知識があまり無い状態で async/await から学んでしまうとこの現象が起きる可能性が高いと予想しています。「async/await は非同期処理を同期的に書けるようにした」という文言を見かけたことがあると思いますが、「非同期 API による並列的作業」や「関数の外へ制御を戻す」といった情報が抜け落ちている場合には「ブロッキングするのか？」というように混乱させられることになります。
 
 :::message
-中断した後にどうやって再開するのか疑問に思われるかもしれませんが、その手段はもう知っています。イベントループでのマイクロタスクの処理です。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで説明しますが、await 式は「待っている」作業が完了するとマイクロタスクを発行します。このマイクロタスクがイベントループにおいて Promise チェーンで見たのと同じように処理される訳です。
+中断した後にどうやって再開するのか疑問に思われるかもしれませんが、その手段はもう知っています。イベントループでのマイクロタスクの処理です。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで説明しますが、await 式は「待っている」作業が完了するとマイクロタスクを発行します。このマイクロタスクがイベントループにおいて Promise chain で見たのと同じように処理される訳です。
 :::
 
 ということで実際にはすべての処理が完全停止するわけではないので、非同期関数を単体で考えてもほとんど意味がないわけです。『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)』のチャプターでも非同期処理を考えるときは必ず同期処理と一緒に考えないといけないということは言いましたが、**非同期処理そのものの意味が生じるのは他のコードとの関係性があってのこと**です。
 
-話を戻しますが、`fetch()` API は Promise-based な非同期 API であり、`fetch()` メソッドからは Promise インスタンスが処理の結果として返ってきます。そして、`await fetch(url).then(res => res.text())` のように Promise チェーンを await 式で評価する場合でも、結局は Promise チェーンから返ってくる Promise インスタンスを評価していますね。
+話を戻しますが、`fetch()` API は Promise-based な非同期 API であり、`fetch()` メソッドからは Promise インスタンスが処理の結果として返ってきます。そして、`await fetch(url).then(res => res.text())` のように Promise chain を await 式で評価する場合でも、結局は Promise chain から返ってくる Promise インスタンスを評価していますね。
 
-本質的には async/await と Promise チェーンは全く同じです。Promise のシステムに基づき Promise インスタンスを扱います。Promise インスタンスを介してマイクロタスクを連鎖的に発行し、それらがイベンループ上で連続的に処理されることで逐次処理を実現します。
+本質的には async/await と Promise chain は全く同じです。Promise のシステムに基づき Promise インスタンスを扱います。Promise インスタンスを介してマイクロタスクを連鎖的に発行し、それらがイベンループ上で連続的に処理されることで逐次処理を実現します。
 
-ということで、以下のコードで async/await と Promise チェーンの両方を書いていますが、意味はほほとんど同じです。
+ということで、以下のコードで async/await と Promise chain の両方を書いていますが、意味はほほとんど同じです。
 
 ```js
 // awaitMeansSudpendForSequential.js
@@ -225,7 +225,7 @@ console.log("[1] 🦖 同期: タイミングがずれない");
 console.log("[4] 🦖 同期: タイミングがずれない");
 ```
 
-Promise チェーンでブロッキングが起きていなかった様に async/await でもブロッキングは起きません。「待つ」間には別の処理がメインスレッドで実行されています。実際に上のコードを実行すると順番は次のようになります。
+Promise chain でブロッキングが起きていなかった様に async/await でもブロッキングは起きません。「待つ」間には別の処理がメインスレッドで実行されています。実際に上のコードを実行すると順番は次のようになります。
 
 ```sh
 ❯ deno run --allow-net awaitMeansSuspendForSequential.js
@@ -239,9 +239,9 @@ Github Philosophy: It's not fully shipped until it's fast.
 Github Philosophy: It's not fully shipped until it's fast.
 ```
 
-## Promise チェーンを async/await で書き直す
+## Promise chain を async/await で書き直す
 
-async/await は Promise チェーンで書き直せますので、シンタックスシュガーであると言われます。実際にはそれ以上のもの(デバッグなどで得られる効能が Promise チェーンよりも高いなどの性質がある)ですが、現時点では Promise チェーンと完全に同等であると考えてください。本質的な部分は同じです。
+async/await は Promise chain で書き直せますので、シンタックスシュガーであると言われます。実際にはそれ以上のもの(デバッグなどで得られる効能が Promise chain よりも高いなどの性質がある)ですが、現時点では Promise chain と完全に同等であると考えてください。本質的な部分は同じです。
 
 例えば次のコードを考えてみましょう。
 
@@ -271,9 +271,9 @@ fetchData(githubApi)
 console.log("[2] 🦖 MAINLINE: End");
 ```
 
-Promise チェーンも async/await もマイクロタスクを連鎖的に発行してイベントループで処理されるのは同じです。
+Promise chain も async/await もマイクロタスクを連鎖的に発行してイベントループで処理されるのは同じです。
 
-上記の Promise チェーンは次のように async/await で書き直すことができます。
+上記の Promise chain は次のように async/await で書き直すことができます。
 
 ```js
 const githubApi = "https://api.github.com/zen";
@@ -447,21 +447,20 @@ console.log("[4]");
 
 # Callback hell → Promise chain → async/await
 
-より俯瞰的な視点で Promise チェーンから async 関数への変形を見てみます。
+より俯瞰的な視点で Promise chain から async 関数への変形を見てみます。
 
 次の JSConf EU で行われた Shelley Vohr 氏による『Asynchrony: Under the Hood』の公演動画を 23:36 ~ のところから視聴してみてください。Callback hell → Promise chain → async/await の変形が視覚的に示されていて変形のイメージをつかめます。
 
 https://youtu.be/SrNQS8J67zc
 
 :::message
-ここではシンプルに Promise チェーンから async 関数へと変形でき同じものであることをイメージできることが重要です。
-最初は変換を意識してみると理解しやすいですが、実際に使用する際には Promise を扱っていることだけ意識しておけばいいと思います。
+ここではシンプルに Promise chain から async 関数へと変形でき同じものであることをイメージできることが重要です。最初は変換を意識してみると理解しやすいですが、実際に使用する際には Promise を扱っていることだけ意識しておけばいいと思います。
 :::
 
 以下、動画で示されているコード変形について見ていきます。
 Promise が無かった時代、非同期処理はコールバックベース API などで次のように、「A したら B する、B したら C する」というような逐次的な処理を行っていました。
 
-ただし、見て分かるようにコールバックではネストが増えていくにつれてコードを把握するのが困難になります。このような形式は忌避の意味合いを込めて "**Callback hell**" と呼ばれています。
+ただし、見て分かるようにコールバックではネストが増えていくにつれてコードを把握するのが困難になります。このような形式は忌避の意味合いを込めて "**Callback hell**" (コールバック地獄)と呼ばれています。
 
 ```js:Callback hell
 getData(a => {
@@ -481,7 +480,7 @@ getData(a => {
 
 https://en.wikipedia.org/wiki/Pyramid_of_doom_(programming)
 
-Promise の登場により、Callback hell を作らずに、非同期の逐次的な処理を Promise チェーンで実現できるようになりました。
+Promise の登場により、Callback hell を作らずに、非同期の逐次的な処理を Promise chain で実現できるようになりました。
 
 この時点では Callback hell から Promise chain へと変わったことで、**そもそもタスクベースの逐次処理からマイクロタスクベースの逐次処理へと変わっている**ことに注意してください。`getData()` と `getMoreData()` は Promise を返してくる非同期処理であると認識してください。
 
@@ -494,7 +493,7 @@ getData()
   .then(e => console.log(e));
 ```
 
-さらに、ループや try/catch などの古典的で平凡な処理を非同期処理と共にでできるように **Promise のシステムに基づいた拡張的な機能**として登場した async/await により、上の Promise チェーンを下のように変形できるようになりました。async/await は Promise に基づいているので、Promise チェーンと同じ様に Promise の状態に応じて連鎖的にマイクロタスクを発行している点に注意してください。Promise チェーンの時と同じ様に、`getData()` と `getMoreData()` は Promise を返してくる非同期処理であると認識してください。
+さらに、ループや try/catch などの古典的で平凡な処理を非同期処理と共にでできるように **Promise のシステムに基づいた拡張的な機能**として登場した async/await により、上の Promise chain を下のように変形できるようになりました。async/await は Promise に基づいているので、Promise chain と同じ様に Promise の状態に応じて連鎖的にマイクロタスクを発行している点に注意してください。Promise chain の時と同じ様に、`getData()` と `getMoreData()` は Promise を返してくる非同期処理であると認識してください。
 
 ```js:async/await
 (async () => {
@@ -506,11 +505,11 @@ getData()
 })();
 ```
 
-Callback hell で見たようにコールバックスタイルのものと Promise チェーンはタスクとマイクロタスクというように裏の仕組み自体が違うのに対して、Promise チェーンと async/await は同じく、Promise インスタンスを使用してマイクロタスクを発行するものであることを意識することが重要です。
+Callback hell で見たようにコールバックスタイルのものと Promise chain はタスクとマイクロタスクというように裏の仕組み自体が違うのに対して、Promise chain と async/await は同じく、Promise インスタンスを使用してマイクロタスクを発行するものであることを意識することが重要です。
 
 # async/await は Promise に基づき Promise を扱う
 
-繰り返しますが、async/await は Promise チェーンのシンタックスシュガーであるため、Promise インスタンスを取り扱っているという意識を持つことが重要です。
+繰り返しますが、async/await は Promise chain のシンタックスシュガーであるため、Promise インスタンスを取り扱っているという意識を持つことが重要です。
 
 async/await で Promise を意識するための重要なポイントは２つあります。
 
@@ -527,7 +526,7 @@ async/await で Promise を意識するための重要なポイントは２つ�
 async function empty() {}
 ```
 
-非同期関数からは必ず Promise インスタンスが返ってくるので、返り値である Promise インスタンスに対して今まで通り Promise チェーンが構築できます。
+非同期関数からは必ず Promise インスタンスが返ってくるので、返り値である Promise インスタンスに対して今まで通り Promise chain が構築できます。
 
 ```js
 // 即時実行
@@ -545,7 +544,7 @@ async function empty() {}
 履行状態の Promise | 履行状態 | `return` した Promise の履行値
 拒否状態の Promise | 拒否状態 | `return` した Promise の拒否理由
 
-`return` で Promise インスタンスを返した場合は Promise チェーンにおいて `then()` メソッドで Promise インスタンスを返した場合と同じ様に、非同期関数から返ってくる Promise インスタンス自体の状態も `return` した Promise インスタンスと同じになり、Promise が持つ値も `return` した Promise インスタンスの履行値や拒否理由となります。
+`return` で Promise インスタンスを返した場合は Promise chain において `then()` メソッドで Promise インスタンスを返した場合と同じ様に、非同期関数から返ってくる Promise インスタンス自体の状態も `return` した Promise インスタンスと同じになり、Promise が持つ値も `return` した Promise インスタンスの履行値や拒否理由となります。
 
 何も `return` しない場合には、非同期関数から返ってくる Promise インスタンスは同期的に `undefined` で履行されます(なぜこうなるのかは次のチャプターで説明します)。
 
@@ -563,7 +562,7 @@ async function empty() {}
 })();
 ```
 
-ちなみに、永遠に Pending 状態の Promise インスタンスを `return` した場合などは今までの Promise チェーンと同じように、次の `then()` メソッドのコールバックなどを実行できません(`then()` メソッドはチェーンしている Promise インスタンスの状態が遷移した時に一度だけ実行されるから、永遠に Pending 状態なら絶対に実行されない)。
+ちなみに、永遠に Pending 状態の Promise インスタンスを `return` した場合などは今までの Promise chain と同じように、次の `then()` メソッドのコールバックなどを実行できません(`then()` メソッドはチェーンしている Promise インスタンスの状態が遷移した時に一度だけ実行されるから、永遠に Pending 状態なら絶対に実行されない)。
 
 ```js
 (async function pendingPromise() {

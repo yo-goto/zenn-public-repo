@@ -67,7 +67,7 @@ JavaScript はメインスレッドという単一スレッド(シングルス�
 非同期 API を起点とした一連の処理手順を正しく保証するためには、適切な Promise chain の構築や await 式の配置を行う必要があります。それらを適切に行うことで、意図した処理の順序付けや並列化により効率化して処理を制御できます。並列化する際には、実際には非同期 API 処理を並列化していることに注意してください。
 
 :::details 参照チャプター
-- 『[Promise チェーンから async 関数へ](14-epasync-chain-to-async-await)』
+- 『[Promise chain から async 関数へ](14-epasync-chain-to-async-await)』
 - 『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』
 - 『[Promise の静的メソッドと並列化](17-epasync-static-method)』
 - 『[反復処理の制御](19-epasync-async-loop)』

@@ -138,7 +138,7 @@ randomTimer("1st", "[A-1]")
   });
 ```
 
-ネストが入っていて見づらいので、『[Promise チェーンはネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで見た通り、なるべくネストさせないようにフラットに変形すると次のようになります。
+ネストが入っていて見づらいので、『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで見た通り、なるべくネストさせないようにフラットに変形すると次のようになります。
 
 ```js:ネストをフラットにしたchain
 randomTimer("1st", "[A-1]")

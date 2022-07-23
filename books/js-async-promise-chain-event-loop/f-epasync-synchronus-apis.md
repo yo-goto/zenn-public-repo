@@ -65,7 +65,7 @@ console.log("[3]");
 
 そのため、最後の `console.log()` がファイルの書き込み・読み出しの完了が終わってから実行されています。
 
-一方、非同期 API を利用した場合はどうなるでしょうか。Deno の非同期 API である `Deno.writeTextFile()` と `Deno.readTextFile()` はそれぞれ Promise インスタンスを返してきますので、Promise チェーンが構築できます(API の名前の最後に `Sync` がついていないことに注意してください)。
+一方、非同期 API を利用した場合はどうなるでしょうか。Deno の非同期 API である `Deno.writeTextFile()` と `Deno.readTextFile()` はそれぞれ Promise インスタンスを返してきますので、Promise chain が構築できます(API の名前の最後に `Sync` がついていないことに注意してください)。
 
 ```js:apiAsync.js(非同期APIを利用したコード)
 // apiAsync.js
@@ -134,7 +134,7 @@ Deno.writeTextFile(path, inputData) // [A]
 もちろん、現実的にはエラーハンドリングが付き纏うので完全な保証ではないです。上の例も説明のために例外処理を省いていますので注意してください。
 :::
 
-Callback 形式なら適切にネストさせることで、Promise チェーンなら適切に連鎖させることで、async/await なら適切に await することで、コード全体での順序では**時間的に非連続であったとしても注目している特定の範囲内に存在するコードの実行と完了の順番を保証させます**。
+Callback 形式なら適切にネストさせることで、Promise chain なら適切に連鎖させることで、async/await なら適切に await することで、コード全体での順序では**時間的に非連続であったとしても注目している特定の範囲内に存在するコードの実行と完了の順番を保証させます**。
 
 ちなみに、Callback-based API や Promise-based API の処理オーダー(順番)が重要であることは実は Node API Document の fs の項目に直接的に言及されています。
 

@@ -84,7 +84,7 @@ function promiseResolve(v) {
 
 変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。非同期関数はどんなときでも、Promise インスタンスを返します。非同期関数の処理が一時停止して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
 
-再び、非同期関数の処理が再開し、最終的に非同期関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise チェーンなどで利用できるようになります。
+再び、非同期関数の処理が再開し、最終的に非同期関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise chain などで利用できるようになります。
 
 `implicit_promise = createPromise()` は後から解決される Promise インスタンス `implicit_promise` を作成し、`reoslvePromise(implicit_promise, w)` では作成したその Promise インスタンスを後から `w` で解決しています。細かい実装は分からないので、ここではそういうものだと考えてください。
 
@@ -218,7 +218,7 @@ async/await では最初の `await` 式でのみ暗黙的に async 関数から�
 
 `peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。
 
-この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で非同期関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。`then()` メソッドのようにマイクロタスクが発行されるので、Promise チェーンで考えれば理解できるはずです。
+この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で非同期関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。`then()` メソッドのようにマイクロタスクが発行されるので、Promise chain で考えれば理解できるはずです。
 
 ## await 式が２個ある場合
 
@@ -373,7 +373,7 @@ Promise.resolve()
 console.log("🦖 [2] MAINLINE: End");
 ```
 
-今回も即時実行で関数を実行します。非同期関数からは Promise インスタンスが必ず返ってくるので、`then()` メソッドで Promise チェーンを構築できます。
+今回も即時実行で関数を実行します。非同期関数からは Promise インスタンスが必ず返ってくるので、`then()` メソッドで Promise chain を構築できます。
 
 それではマイクロタスクについて考えてみましょう。
 
@@ -582,7 +582,7 @@ console.log("🦖 [3] MAINLINE: End");
 
 ## await promise chain の場合
 
-次は、既に履行状態の Promise インスタンスではなく、履行するまで１つマイクロタスクが必要な Promise チェーンを await してみましょう。
+次は、既に履行状態の Promise インスタンスではなく、履行するまで１つマイクロタスクが必要な Promise chain を await してみましょう。
 
 ```js:foo9
 async function foo9() {
@@ -667,7 +667,7 @@ console.log("🦖 [2] MAINLINE: End");
 👦 [8] <7-Async> MICRO: then
 ```
 
-というわけで、Promise チェーンを await するとチェーンの数だけマイクロタスクが必要となります。
+というわけで、Promise chain を await するとチェーンの数だけマイクロタスクが必要となります。
 
 ## return 42 の場合
 
@@ -917,7 +917,7 @@ console.log("🦖 [2] MAINLINE: End");
 👻 [6] <6-Async> MICRO: then after async function 42
 ```
 
-この場合、`return await Promise.resolve()` に比べて１つマイクロタスクが多く発生するので、このような結果となっています。`42` という値が Promise チェーンで値として繋げていることも分かりますね。
+この場合、`return await Promise.resolve()` に比べて１つマイクロタスクが多く発生するので、このような結果となっています。`42` という値が Promise chain で値として繋げていることも分かりますね。
 
 ここで注目すべきは、`return await Promise.resolve(42)` の場合と `return Promise.resolve(42)` の場合の違いです。
 
@@ -1265,7 +1265,7 @@ console.log("🦖 [2] MAINLINE: End");
 Rejected 状態の Promise インスタンスにチェーンされている `then()` メソッドの**コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
 
 :::message
-『[catch メソッドと finally メソッド](h-epasync-catch-finally)』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise チェーンの実行となります。
+『[catch メソッドと finally メソッド](h-epasync-catch-finally)』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise chain の実行となります。
 :::
 
 ```sh
@@ -1423,11 +1423,11 @@ V8 の舞台裏を見ることで async/await の挙動が理解できたと思�
 
 もちろん async/await を理解できるようになるには、今までの知識として Promise とイベントループ、マイクロタスクの概念が必要不可欠です。ここまで学習してきたことによって async/await が理解できるようになったことを忘れないでください。
 
-await 式によって非同期関数内の実行フローが分割され制御が行ったり来たりしますが、それは Promise チェーンでの連鎖的なマイクロタスク発行による逐次実行と同じです。非同期関数では処理再開を告げるマイクロタスクとして `PromiseReactionJob` がコールスタックに積まれ、非同期関数の関数実行コンテキストが再びプッシュされてコールスタックのトップになることで実行再開となります。
+await 式によって非同期関数内の実行フローが分割され制御が行ったり来たりしますが、それは Promise chain での連鎖的なマイクロタスク発行による逐次実行と同じです。非同期関数では処理再開を告げるマイクロタスクとして `PromiseReactionJob` がコールスタックに積まれ、非同期関数の関数実行コンテキストが再びプッシュされてコールスタックのトップになることで実行再開となります。
 
 非同期処理の本質的な部分は**イベントループにおけるタスクとマイクロタスクの処理**です。
 
-Promise チェーンも async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** です。
+Promise chain も async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** です。
 
 V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています。
 

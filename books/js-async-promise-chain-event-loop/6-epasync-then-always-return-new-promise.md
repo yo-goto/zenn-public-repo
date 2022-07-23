@@ -9,7 +9,7 @@ aliases: [ch_then メソッドは常に新しい Promise を返す]
 このチャプターでの古い内容に基づいた解説を新しい解説で置き換えました。実行コンテキストとマイクロタスクのチェックポイントを使って解説しています。
 :::
 
-このチャプターでは、Promise チェーンでの注意点である `then()` メソッドの特長について解説しておきます。
+このチャプターでは、Promise chain での注意点である `then()` メソッドの特長について解説しておきます。
 # then メソッドから返ってくる Promise インスタンス
 前のチャプターから続いて、`then()` メソッドをそれぞれもう 1 つずつ増やしてみます。
 
@@ -90,7 +90,7 @@ console.log("🦖 [H] Sync");
 
 この２つは**全く別の Promise インスタンス**となります。
 
-Promise チェーンにおいて、各 `then()` メソッドにおいて返ってくる Promise インスタンスは**それぞれ別のモノ**であるということを意識してください。
+Promise chain において、各 `then()` メソッドにおいて返ってくる Promise インスタンスは**それぞれ別のモノ**であるということを意識してください。
 
 # Promise インスタンスの状態
 ここで話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
@@ -103,7 +103,7 @@ Promise チェーンにおいて、各 `then()` メソッドにおいて返っ�
 Promise の状態(State)と運命(Fate)などの基本概念については、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターを参照してください。
 :::
 
-`Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise チェーンでは `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
+`Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise chain では `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
 
 そして、`then(cb)` で返ってくる Promise インスタンスが履行状態へと移行するのは登録されているコールバック `cb` が実行が完了した時点です。
 
@@ -232,7 +232,7 @@ const promise = new Promise(res => {
 # ...
 ```
 
-３番目が肝心です。`then()` メソッドで返ってくる Promise インスタンスは `Promise.resolve()` で返ってくる Promise インスタンスとは別物であり、Promise チェーンにおいて前の Promise インスタンスが待機状態から履行状態に移行して初めてコールバック関数をマイクロタスクキューへと送ります。そして、マイクロタスクキューへと送られたコールバック関数が Call stack へと送られて実行が完了して初めてそのコールバックをキューに送った `then()` メソッドから返ってくる Promise インスタンスが履行状態へと移行します。
+３番目が肝心です。`then()` メソッドで返ってくる Promise インスタンスは `Promise.resolve()` で返ってくる Promise インスタンスとは別物であり、Promise chain において前の Promise インスタンスが待機状態から履行状態に移行して初めてコールバック関数をマイクロタスクキューへと送ります。そして、マイクロタスクキューへと送られたコールバック関数が Call stack へと送られて実行が完了して初めてそのコールバックをキューに送った `then()` メソッドから返ってくる Promise インスタンスが履行状態へと移行します。
 
 `console.log("[Pending status]", Promise.resolve("Resolved but").then(callback))` は同期的に実行されますが、この時点において、`Promise.resolve()` 自体から返ってくる Promise インスタンスが履行状態であったとしても `Promise.resolve().then(callback)` から最終的に返ってくる Promise インスタンスは待機状態であり、出力される Promise インスタンスは待機状態のものとなります。
 
@@ -293,7 +293,7 @@ Resolved but
 # ...
 ```
 
-この "Resolved but" という文字列は `Promise.resolve("Resolved but").then(value => console.log(value))` で履行状態の Promise の解決値が Promise チェーンで `value` として繋がれているので、このタイミングでその値が出力されています。
+この "Resolved but" という文字列は `Promise.resolve("Resolved but").then(value => console.log(value))` で履行状態の Promise の解決値が Promise chain で `value` として繋がれているので、このタイミングでその値が出力されています。
 
 最後に `Promise.reject()` で拒否状態にした Pormise インスタンスについてエラー補足などを行っていなかったので、未補足であるとして Deno の場合は最後に次のような出力が行われます。
 

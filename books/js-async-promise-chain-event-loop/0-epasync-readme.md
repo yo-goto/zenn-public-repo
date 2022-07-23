@@ -98,16 +98,16 @@ chapters:
   - g-epasync-resolve-reject # resolve 関数と reject 関数の使い方
   - 5-epasync-multiple-promises # 複数の Promise を走らせる
   - 6-epasync-then-always-return-new-promise # then メソッドは常に新しい Promise を返す
-  - 7-epasync-pass-value-to-the-next-chain # Promise チェーンで値を繋ぐ
+  - 7-epasync-pass-value-to-the-next-chain # Promise chain で値を繋ぐ
   - 8-epasync-return-promise-in-then-callback # then メソッドのコールバックで Promise インスタンスを返す
-  - 9-epasync-dont-nest-promise-chain # Promise チェーンはネストさせない
+  - 9-epasync-dont-nest-promise-chain # Promise chain はネストさせない
   - 10-epasync-dont-use-side-effect # コールバックで副作用となる非同期処理
   - 11-epasync-omit-return-by-arrow-shortcut # アロー関数で return を省略する
   - h-epasync-catch-finally # catch メソッドと finally メソッド
   - 12-epasync-wrapping-macrotask # 古い非同期APIをPromiseでラップする
   - 13-epasync-loop-is-nested # イベントループは内部にネストしたループがある
   - sec-03-epasync # 第３章
-  - 14-epasync-chain-to-async-await # Promise チェーンから async 関数へ
+  - 14-epasync-chain-to-async-await # Promise chain から async 関数へ
   - 15-epasync-v8-converting # V8 エンジンによる async/await の内部変換
   - 16-epasync-top-level-async # Top-level await
   - sec-04-epasync # 第４章 - 制御と型注釈

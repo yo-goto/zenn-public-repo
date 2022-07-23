@@ -105,7 +105,7 @@ promise
   .finally(() => console.log("👍 チェーン最後に実行"));
 ```
 
-また、Promise チェーンにおいて、`then()` メソッドに登録したコールバック関数も従っている Promise インスタンスの状態が変化した場合にたった一度だけ呼び出されます。それゆえ、一番最初に呼び出される `resolve()` や `reject()` 以外はまったく何も起きませんし、効果もありません。
+また、Promise chain において、`then()` メソッドに登録したコールバック関数も従っている Promise インスタンスの状態が変化した場合にたった一度だけ呼び出されます。それゆえ、一番最初に呼び出される `resolve()` や `reject()` 以外はまったく何も起きませんし、効果もありません。
 
 # Promise コンストラクタにおける例外発生
 ただし、`throw new Error()` をコールバックの中で行った場合にも、それ以降のコードが実行されないことに注意してください。
@@ -165,7 +165,7 @@ returnPromise()
 
 `return resolve("履行値")` でも返り値は特に意味がなく、`resolve()` している値が重要となります。
 
-`return` での返り値は何の意味もないので、次のようにした場合は、`returnPromise()` 関数から返ってくる Promise インスタンスの状態が永遠に Pending 状態となり Promise チェーンの処理は行うことができません。
+`return` での返り値は何の意味もないので、次のようにした場合は、`returnPromise()` 関数から返ってくる Promise インスタンスの状態が永遠に Pending 状態となり Promise chain の処理は行うことができません。
 
 ```js
 // forEverPending.js
