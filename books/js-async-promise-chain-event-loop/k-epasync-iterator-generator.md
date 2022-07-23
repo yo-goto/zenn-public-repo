@@ -839,11 +839,11 @@ async function* asyncGenFn(url) {
 
 # 型注釈と型定義
 
-第４章の最終チャプター『[Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
+第４章の最終チャプター『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
 
 ## イテレータとイテラブルの型注釈
 
-イテレータとイテラブルの型注釈にはそれぞれ専用の型が存在しています。『[Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』のチャプターで見たように `Promise<Type>` と同じくジェネリクスで型が定義された `Iterator<Type>` と `Iterable<Type>` が存在しているのでこの型を使って型注釈を行います。
+イテレータとイテラブルの型注釈にはそれぞれ専用の型が存在しています。『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』のチャプターで見たように `Promise<Type>` と同じくジェネリクスで型が定義された `Iterator<Type>` と `Iterable<Type>` が存在しているのでこの型を使って型注釈を行います。
 
 とはいえ、自分でイテレータやイテラブルを作ることはあまりないかもしれませんが、自分で再び作成してみると型について理解できます。
 

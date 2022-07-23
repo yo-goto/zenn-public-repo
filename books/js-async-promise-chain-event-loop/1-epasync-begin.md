@@ -213,7 +213,7 @@ JS Visualizer では実装ミスとも言える点や勘違いしやすい点が
 - 2022-07-18
   - 新チャプター『[イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)』を追加
 - 2022-07-12
-  - 新チャプター『[Promise の型注釈](j-epasync-ts-promise-type-annotation)』を追加
+  - 新チャプター『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』を追加
 - 2022-06-30
   - 新チャプター「await 式の配置による制御」を追加
   - 新チャプター「反復処理の制御」を追加

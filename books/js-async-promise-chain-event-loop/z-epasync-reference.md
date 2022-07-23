@@ -225,7 +225,7 @@ aliases: [ch_参考文献]
 - [Symbol.asyncIterator - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator)
 - [AsyncGenerator - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator)
 
-## [Promise の型注釈](j-epasync-ts-promise-type-annotation)
+## [TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)
 
 - [Promise / async / await | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/promise-async-await)
 - [タプル (tuple) | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/values-types-variables/tuple)

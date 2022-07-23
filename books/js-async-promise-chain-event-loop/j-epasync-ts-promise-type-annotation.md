@@ -1,5 +1,5 @@
 ---
-title: "Promise の型注釈"
+title: "TypeScript における Promise の型注釈"
 ---
 
 # このチャプターについて

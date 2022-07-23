@@ -80,7 +80,7 @@ TypeScirpt は JavaScript に型システムを導入した言語ですが、本
 TypeScript によって上乗せされる型情報は本質的には非同期処理と関係がないものですが、モダンな開発では扱うデータの具象性を上げて堅牢でスケーラブルなコードを書くために学ぶ必要があります。
 
 :::details 参照チャプター
-- 『[Promise の型注釈](j-epasync-ts-promise-type-annotation)』
+- 『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』
 :::
 
 # まとめ
