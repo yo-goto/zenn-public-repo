@@ -1174,7 +1174,7 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 }
 ```
 
-結構複雑に見えますが、一つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extention)です。
+結構複雑に見えますが、１つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extention)です。
 
 https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces
 
@@ -1249,7 +1249,7 @@ function* genFn(n) {
 for (const v of genFn(0)) console.log(v);
 ```
 
-ジェネレータ関数からはジェネレータオブジェクトが返るので、このジェネレータ関数を型注釈する際には、以下のように返り値の型は `Generator` とすることができます。この場合はデフォルト型引数どおり `Generator<unknown, any, unknown>` として型注釈を行ったことになります。
+ジェネレータ関数からはジェネレータオブジェクトが返るので、このジェネレータ関数を型注釈する際には、以下のように返り値の型は `Generator` とできます。この場合はデフォルト型引数どおり `Generator<unknown, any, unknown>` として型注釈を行ったことになります。
 
 ```ts:TypeScript
 function* genFn(
@@ -1296,13 +1296,13 @@ function* genFn(
 }
 ```
 
-ジェネレータ関数から `yield` される値が１つの型でないなら、もちろんリテラル型を型引数に指定する必要があります。
+ジェネレータ関数から `yield` される値の型が同一のものでないなら、もちろんリテラル型を型引数に指定する必要があります。
 
 ```ts
-function* genMultiType(): Generator<number | string | boolean> { // 
-  yield 42;
-  yield "ABC";
-  yield true;
+function* genMultiType(): Generator<number | string | boolean> { // 第一型引数をリテラル型に
+  yield 42; // number 型
+  yield "ABC"; // string 型
+  yield true; // boolean 型
 }
 ```
 
@@ -1316,4 +1316,106 @@ function* genMultiType() {
   yield true;
 }
 ```
+
+## 非同期ジェネレータ関数の型注釈と型定義
+
+ジェネレータ関数と同様に非同期ジェネレータ関数からは非同期ジェネレータオブジェクトというオブジェクトが返ってきます。これにも `AsyncGenerator` という型がジェネリクスで定義されています。非同期ジェネレータ関数や非同期イテレータなどは ES2018 で追加された機能ということで、`lib.es2018.**.d.ts` に型定義されています。
+
+```ts:lib.es2018.asyncgenerator.d.ts
+interface AsyncGenerator<T = unknown, TReturn = any, TNext = unknown> extends AsyncIterator<T, TReturn, TNext> {
+    // NOTE: 'next' is defined using a tuple to ensure we report the correct assignability errors in all places.
+    next(...args: [] | [TNext]): Promise<IteratorResult<T, TReturn>>;
+    return(value: TReturn | PromiseLike<TReturn>): Promise<IteratorResult<T, TReturn>>;
+    throw(e: any): Promise<IteratorResult<T, TReturn>>;
+    [Symbol.asyncIterator](): AsyncGenerator<T, TReturn, TNext>;
+}
+```
+
+非同期イテラブルや非同期イテレータも同様に専用の型があり、上の `AsyncGenerator` の定義に使われていますね。
+
+```ts:lib.es2018.asyncIterable.d.ts
+interface AsyncIterator<T, TReturn = any, TNext = undefined> {
+    // NOTE: 'next' is defined using a tuple to ensure we report the correct assignability errors in all places.
+    next(...args: [] | [TNext]): Promise<IteratorResult<T, TReturn>>;
+    return?(value?: TReturn | PromiseLike<TReturn>): Promise<IteratorResult<T, TReturn>>;
+    throw?(e?: any): Promise<IteratorResult<T, TReturn>>;
+}
+
+interface AsyncIterable<T> {
+    [Symbol.asyncIterator](): AsyncIterator<T>;
+}
+```
+
+通常のイテレータ `Iteartor` やジェネレータオブジェクト `Generator` の型定義と大差ありません、次のように比較してみれば分かりますが、ただ中身がそれぞれ `Promise<Type>` でラップされているだけです。
+
+```ts
+interface Iterator<T, TReturn = any, TNext = undefined> {
+    next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
+    return?(value?: TReturn): IteratorResult<T, TReturn>; 
+    throw?(e?: any): IteratorResult<T, TReturn>; 
+}
+interface Iterable<T> {
+    [Symbol.iterator](): Iterator<T>;
+}
+interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterator<T, TReturn, TNext> {
+    next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
+    return(value: TReturn): IteratorResult<T, TReturn>;
+    throw(e: any): IteratorResult<T, TReturn>;
+    [Symbol.iterator](): Generator<T, TReturn, TNext>;
+}
+
+interface AsyncIterator<T, TReturn = any, TNext = undefined> {
+    next(...args: [] | [TNext]): Promise<IteratorResult<T, TReturn>>;
+    return?(value?: TReturn | PromiseLike<TReturn>): Promise<IteratorResult<T, TReturn>>;
+    throw?(e?: any): Promise<IteratorResult<T, TReturn>>;
+}
+interface AsyncIterable<T> {
+    [Symbol.asyncIterator](): AsyncIterator<T>;
+}
+// AsyncGenerator は AsyncIterator 型の拡張
+interface AsyncGenerator<T = unknown, TReturn = any, TNext = unknown> extends AsyncIterator<T, TReturn, TNext> {
+    next(...args: [] | [TNext]): Promise<IteratorResult<T, TReturn>>;
+    return(value: TReturn | PromiseLike<TReturn>): Promise<IteratorResult<T, TReturn>>;
+    throw(e: any): Promise<IteratorResult<T, TReturn>>;
+    [Symbol.asyncIterator](): AsyncGenerator<T, TReturn, TNext>;
+}
+```
+
+通常のジェネレータオブジェクトと変わらず、とりあえずは `yield` で返る値の型としての第一型引数だけ気にしておけばよいでしょう。非同期ジェネレータ関数の型注釈はジェネレータ関数とほとんど変わりませんし、考え方も同じです。
+
+```ts
+const endpoint = "https://api.github.com/zen";
+
+async function* asyncGen(
+  url: string
+) { // AsyncGenerator<string, void, unknown> となる
+  const res = await fetch(url);
+  const text: string = await res.text();
+  yield text;
+  yield "Github says..." + text;
+  yield "I restpect" + text;
+}
+
+// 非同期ジェネレータ関数をイテレーションするなら for await...of
+for await (const v of asyncGen(endpoint)) {
+  console.log(v);
+}
+```
+
+明示的に型注釈するならこうです。
+
+```ts
+async function* asyncGen(
+  url: string
+): AsyncGenerator<string> { 
+  const res = await fetch(url);
+  const text: string = await res.text();
+  yield text;
+  yield "Github says..." + text;
+  yield "I restpect" + text;
+}
+```
+
+ジェネレータ関数など使う機会がそこまで多くないかもしれませんが、ビルトインメソッドやビルトインオブジェクトの型定義などを調べて理解するプロセスが少し分かったので、こういった見方で他のビルトインの型定義も理解できるはずです。
+
 
