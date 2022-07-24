@@ -52,7 +52,7 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Iteration_protoco
 この規約を満たすようなオブジェクトをイテレータ(iterator)と呼びます。実際に最小限でイテレータをつくってみると次のようになります。
 
 ```js
-// イテレータ(iterator ptorocol を満たすオブジェクト)
+// イテレータ(iterator protocol を満たすオブジェクト)
 const iterator = {
   next() { // メソッドの短縮記法
     const iteratorResult = { 
@@ -979,7 +979,7 @@ interface Iterable<T> {
 ```ts
 let count = 0;
 
-// イテレータ(iterator ptorocol を満たすオブジェクト)
+// イテレータ(iterator protocol を満たすオブジェクト)
 const iterator = {
   next() {
     // イテレータリザルトは IteratorResult 型
@@ -1093,7 +1093,7 @@ const iterableObject = {
   [Symbol.iterator]() {
     let count = 0;
     
-    // イテレータ(iterator ptorocol を満たすオブジェクト)
+    // イテレータ(iterator protocol を満たすオブジェクト)
     const iterator: Iterator<number> = {
       next() {
         const iteratorResult: IteratorResult<number> =
@@ -1417,5 +1417,4 @@ async function* asyncGen(
 ```
 
 ジェネレータ関数など使う機会がそこまで多くないかもしれませんが、ビルトインメソッドやビルトインオブジェクトの型定義などを調べて理解するプロセスが分かったと思うので、こういった見方で他のビルトインの型定義も理解できるはずです(型定義についてはもちろん JavaScript での書き方を正しく知っておくことも重要です)。
-
 
