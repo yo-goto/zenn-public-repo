@@ -945,7 +945,9 @@ type StringArray = typeof strArray;
 
 ## イテレータとイテラブルの型定義
 
-さて、こういったイテラブルに関する型定義は `lib.es2015.iterable.d.ts` に記載されています。
+さて、こういったイテラブルに関する型定義は `lib.es2015.iterable.d.ts` に記載されています。ちなみに、TypeScript から提供される ECMAScript のビルトインオブジェクトやビルトインメソッドなどの型定義は次のリポジトリから閲覧できます。
+
+https://github.com/microsoft/TypeScript/tree/main/lib
 
 ```ts:lib.es2015.iterable.d.ts
 interface IteratorYieldResult<TYield> {
