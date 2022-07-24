@@ -853,7 +853,7 @@ chalktest@1.0.0 /Users/roshi/Projects/ChalkTest
 
 ちなみにこういった複数個インストールされている同一バージョンのパッケージのことを[rush](https://rushjs.io)のドキュメントでは **npmドッペルゲンガー** (npm doppelganger) と呼ぶ。
 
-一方、もう一度 `npm ls` で論理的依存ツリーを見てみみると deduped(重複排除)されたパッケージがいくつかあることが分かる。
+一方、もう一度 `npm ls` で論理的依存ツリーを見てみると deduped(重複排除)されたパッケージがいくつかあることが分かる。
 
 ```shell
 $ npm ls strip-ansi
