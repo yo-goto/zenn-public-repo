@@ -14,8 +14,6 @@ Promise のコードについての具体的な解説はチャプター『[Promi
 
 https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md
 
-不安な場合にはオリジナルを参照してじっくり考えてみてください。
-
 :::message alert
 `then()` メソッドを持つ Promise ライクなオブジェクト "Thenable" については混乱をさけるために意図的に省いています。
 :::
@@ -49,7 +47,7 @@ Fate の概念は非常に分かりづらいので図にしてみました。
 
 中央の `?` が書かれた Promise インスタンスは他の Promise インスタンスに従っています。つまり、他の Promise インスタンスで resolve されて、`Promise.resolve(promise)` や `promise.then(callback)` において `.then(callback)` メソッドで返ってくる Promise インスタンスなどが該当します。このインスタンスは Pending 状態であっても、従っている Promise インスタンスが Settled になることで連鎖的に状態(State)が遷移するため、このインスタンスの運命(Fate)は Resolved となっています。
 
-左の黄色の Promise インスタンスに対して何かしらの操作(resolve や reject) を行うとそのインスタンスの状態に影響があるので、この Promise インスタンスは Unresolved といえます(非常に分かりづらいですね😅)。まあ、知っていたとしてもそこまで役にたたない知識ではあるかもしれません。
+左の黄色の Promise インスタンスに対して何かしらの操作(resolve や reject) を行うとそのインスタンスの状態に影響があるので、この Promise インスタンスは Unresolved といえます(非常に分かりづらいですね😅)。まあ、知っていたとしても活用する場面がすくないので、とりあえず Fate については「ふーん」ぐらいの気分で理解しておいて必要になったらちゃんと理解するぐらいの気持ちで十分です。
 
 Unresolved な Promise インスタンスは必然的に Pending 状態です。上で述べたように、Pending 状態である Promise インスタンスのすべてが Unresolved ではないことに注意してください。
 
@@ -59,17 +57,13 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 
 とは言え、基本的には英語でもややこしく、"resolve" と言ったときに、単に fullfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fullfill であり、これは単に履行状態にするという意味で捉えることができます。
 
-動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` メソッドの挙動が `reject()` に比べて複雑で、再帰性が関与してくるからです。
-
-`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promise インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap ができないため単純に Rejected 状態に遷移します。
+動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` メソッドの挙動が `reject()` に比べて複雑で、再帰性が関与してくるからです。`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promise インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap ができないため単純に Rejected 状態に遷移します。
 
 :::message
-Unwrapping については『resolve 関数と reject 関数の使い方』で解説しています。そちらを参照してください。
+Unwrapping については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』で解説しています。そちらを参照してください。
 :::
 
-難しいですが、Fate の概念は他の文章を読むときには役立ちます。または、`Promise.fullfill()` というメソッドが存在せずに `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。
-
-あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。
+難しいですが、Fate の概念は他の文章を読むときには役立つことがあります。または、`Promise.fullfill()` というメソッドが存在せずに `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。
 
 動詞や名詞などの意味合いの違いは次の Stack overflow の解答がわかりやすいです。上の図もこちらに記載されているものを参考に作成しました。
 

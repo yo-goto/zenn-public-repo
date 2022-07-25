@@ -507,7 +507,7 @@ urls.forEach(async (url) => {
     .then((res) => res.json())
     .then((json) => console.log(json))
     .catch((err) => console.error(err));
-  // このコールバックの実行から返される Promise インスタンスは補足されていない
+  // このコールバックの実行から返される Promise インスタンスが補足できない
 });
 ```
 
@@ -518,7 +518,7 @@ urls.forEach(async (url) => {
 `forEach()` での順序付けは方法が思いつきませんが(コールバック関数を async 化した時点で既に意図通りになりません)、`forEach()` をなんとか使って並列化した上で制御することはできます。とにかく **async 関数の実行によって返される Promise インスタンスを取得できることが重要**です。
 
 :::message
-`forEach()` で `reduce()` のように Promise chain を繋げるパターンもあるらしいので、それで逐次処理はできそうです。
+`forEach()` で `reduce()` のように Promise chain をどんどん繋げていくパターンもあるらしいので、順序付けた逐次処理はそれでできそうです。
 :::
 
 このチャプターの冒頭の方で書いた方法ですが、配列を用意しておいて、その配列に async 関数や非同期 API の chain から返ってくる Promise インスタンスをいれておくことで別のところから制御できるようになります。
@@ -567,7 +567,7 @@ const urls = [
 
 ## async callback と map
 
-async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスのは配列を作成できます。
+async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスの配列をしっかりと作成できます。
 
 ```js
 // Promsie インスタンスの配列を作成する
@@ -576,15 +576,15 @@ const promises = urls.map(async (url) => {
     const response = await fetch(url);
     const text = await response.text();
     console.log(text);
-    // この場合は返り値はないので undefined で履行した Promise インスタンスが返る
+    // return される値が無いので undefined で履行した Promise インスタンスがコールバックから返る
   } catch(err) {
     console.log(err);
-    // この場合は返り値はないので undefined で履行した Promise インスタンスが返る
+    // return される値が無いので undefined で履行した Promise インスタンスがコールバックから返る
   }
 });
 ```
 
-これは次のように async 関数として切り出して `map()` のコールバックで起動させると変わりません。
+これは次のように async 関数として外部に切り出して `map()` のコールバックで起動させると変わりません。
 
 ```js
 async function fetchThenConsole(url) {
@@ -597,6 +597,7 @@ async function fetchThenConsole(url) {
   }
 }
 
+// コールバック内で async 関数を起動して返ってくる Promise インスタンスを集めた配列を作成
 const promises = urls.map(url => fetchThenConsole(url));
 ```
 
@@ -611,15 +612,15 @@ const promises = urls.map(url => fetchThenConsole(url));
 ## for...in
 `for...in` はオブジェクトのプロパティを反復するために作られたものですが、この方法にはいくつかの問題があるため、デバッグ目的以外には基本的に使いません。
 
-オブジェクトの反復処理をしたい場合にはオブジェクト列挙のための静的メソッドである `Object.keys()` や `Object.values()`、`Object.entries()` などを利用して配列を作り出し反復処理を行います。
+オブジェクトの反復処理をしたい場合にはオブジェクト列挙のための静的メソッドである `Object.keys()` や `Object.values()`、`Object.entries()` などを利用して配列を作り出すことによって反復処理を行います。
 
 ## イテラブルオブジェクトの反復処理
 
-残り２つの `for...of` と `for await...of` はイテレータや非同期イテレータが絡みます。次のチャプターで詳しく解説しますが「イテラブル(iterable=反復可能)なオブジェクト」に対して各ループで変数を割り当てて反復処理ができます。
+残り２つの `for...of` と `for await...of` はイテラブル(iterable)や非同期イテラブル(async iterable)が絡みます。『[イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)』のチャプターで詳しく解説しますが「イテラブル(iterable=反復可能)なオブジェクト」に対して各ループで反復対象となる要素に変数を割り当てて反復処理ができます。
 
 ビルトインオブジェクトでイテラブルなものとして代表的なのは配列です。次のように API のエンドポイントの URL 配列があるときには、`for...of` の構文で反復処理が可能です。
 
-```js
+```js:forOfIteration.js
 const urls = [
   "https://jsonplaceholder.typicode.com/todos/1",
   "https://jsonplaceholder.typicode.com/todos/2",
@@ -669,5 +670,5 @@ async function fetchThenConsole(url) {
 すべての非同期処理が完了しました
 ```
 
-`for await...of` は非同期ジェネレータ関数などを使うので次のチャプターで解説します。
+`for await...of` は非同期ジェネレータ関数などを使うので詳しくは『[イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)』のチャプターで解説します。
 

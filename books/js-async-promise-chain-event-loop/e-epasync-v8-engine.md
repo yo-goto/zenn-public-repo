@@ -101,7 +101,7 @@ $ jsvu
 
 jsvu は V8 エンジンのみだけでなく、あらゆる JavaScript エンジンのインストールができます。次のサポートバージョンのエンジンがインストールできるようになっています。上記コマンドを実行すると、インストールできるもののリストが表示されるので V8 を選択してインストールします。
 
-![jsvu support versions](/images/js-async/img_jsvu_supportVersion.jpg)
+![jsvu support versions](/images/js-async/img_jsvu_supportVersion.jpg)*[GoogleChromeLabs/jsvu](https://github.com/GoogleChromeLabs/jsvu) より引用*
 
 ## d8
 
@@ -204,7 +204,7 @@ https://github.com/v8/v8/tree/main/src/libplatform
 
 この辺りがデフォルトのイベントループでしょうか。
 
-https://github.com/v8/v8/blob/main/src/libplatform/default-platform.cc#L148-L165
+https://github.com/v8/v8/blob/0ed101e0152476aa8891b10f47574628d929f3ce/src/libplatform/default-platform.cc#L147-L164
 
 V8 単体で Promise 関連の処理からマイクロタスクを発行することもできますし、「**単一タスクの実行後にすべてのマイクロタスクを処理する**」というルールも完全にみたされていることがわかります。
 
