@@ -194,8 +194,7 @@ console.log(
 
 ということで、以下のコードで async/await と Promise chain の両方を書いていますが、意味はほほとんど同じです。
 
-```js
-// awaitMeansSudpendForSequential.js
+```js:relAsyncAwait.js
 const url = "https://api.github.com/zen";
 
 console.log("[1] 🦖 同期: タイミングがずれない");
@@ -203,13 +202,20 @@ console.log("[1] 🦖 同期: タイミングがずれない");
 (async function immediateFn() {
   console.log("[2] 👻 💙 同期: タイミングがずれない");
   const response = await fetch(url);
-  // 環境に委任した並列的作業が終わってから次の行の処理にすすみたいので、一旦この関数内の処理は一時的に停止して次(関数外の別の処理)に進む
+  // 環境に委任した並列作業が終わってから次の行の処理にすすみたいので、
+  //一旦この関数内の処理は一時的に停止して次(関数外の別の処理)に進む
   console.log("[5] 🦄 💙 非同期: タイミングがずれる");
   const text = await response.text();
   console.log("Github Philosophy:", text);
 })();
 
-// この２つのブロックはほとんど同じことを意味している
+console.log("[4] 🦖 同期: タイミングがずれない");
+```
+
+```js:relPromiseChain.js
+const url = "https://api.github.com/zen";
+
+console.log("[1] 🦖 同期: タイミングがずれない");
 
 {
   // わかりやすくするために敢えてブロックにしている
@@ -225,18 +231,21 @@ console.log("[1] 🦖 同期: タイミングがずれない");
 console.log("[4] 🦖 同期: タイミングがずれない");
 ```
 
-Promise chain でブロッキングが起きていなかった様に async/await でもブロッキングは起きません。「待つ」間には別の処理がメインスレッドで実行されています。実際に上のコードを実行すると順番は次のようになります。
+Promise chain でブロッキングが起きていなかった様に async/await でもブロッキングは起きません。「待つ」間には別の処理がメインスレッドで実行されています。実際に上の２つのコードを実行すると出力順番はまったく同じようになります。
 
 ```sh
-❯ deno run --allow-net awaitMeansSuspendForSequential.js
+❯ deno run -A relAsyncAwait.js
 [1] 🦖 同期: タイミングがずれない
 [2] 👻 💙 同期: タイミングがずれない
-[3] 👻 💚 同期:  タイミングがずれない
-[4] 🦖 同期: タイミングがずれない
-[6] 🦄 💚 非同期: タイミングがずれる
-[5] 🦄 💙 非同期: タイミングがずれる
-Github Philosophy: It's not fully shipped until it's fast.
-Github Philosophy: It's not fully shipped until it's fast.
+[3] 🦖 同期: タイミングがずれない
+[4] 🦄 💙 非同期: タイミングがずれる
+[5] 🐱 Github Philosophy: Mind your words, they are important.
+❯ deno run -A relPromiseChain.js
+[1] 🦖 同期: タイミングがずれない
+[2] 👻 💚 同期:  タイミングがずれない
+[3] 🦖 同期: タイミングがずれない
+[4] 🦄 💚 非同期: タイミングがずれる
+[5] 🐱 Github Philosophy: Mind your words, they are important.
 ```
 
 ## Promise chain を async/await で書き直す
