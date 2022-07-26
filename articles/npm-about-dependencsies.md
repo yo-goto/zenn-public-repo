@@ -324,7 +324,7 @@ DAG と Tree の構造は下図のように異なる。
 
 | DAG | Tree | 
 |---|---|
-| ![DAG](https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Directed_acyclic_graph_3.svg/2560px-Directed_acyclic_graph_3.svg.png) | ![Tree](https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Sorted_binary_tree.svg/1920px-Sorted_binary_tree.svg.png) | 
+| ![DAG](/images/npm-dependencies/img_DAGStructure2.png) | ![Tree](/images/npm-dependencies/img_treeStructure.png) | 
 
 そもそも"非循環依存関係の原則"(**Acyclic dependencies principle**)というソフトウェアデザイン原則が存在しているらしい。
 これは「パッケージの依存関係は閉路を持たないようにする」という原則で、パッケージ作成などを行う際にはこの原則に従うことで、閉路(cycle)を作成しないように、つまり DAG にするようにデザインしなくてはいけないとのこと(パッケージだけでなくコンポーネントについてもこの原則が適用される)。
