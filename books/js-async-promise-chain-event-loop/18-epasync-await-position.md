@@ -781,7 +781,7 @@ https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
 
 すでに `abort` イベントが発火されていれば拒否状態の Promise を返し、そうでなければ基本的なタイマー処理を開始します。`singal?.abortEventListener("abort", arbot, { once: true })` によって `abort` イベントをリスンして、通知を受ければアロー関数で定義された `abort` 関数を実行し `clearTimeout()` でタイマーのキャンセルを行います。`?.` 記号は JavaScript の[オプショナルチェーンチェーンという演算子](https://jsprimer.net/basic/object/#optional-chaining-operator)で、プロパティのアクセス元が `null` や `undefined` のときもエラーを発生させずにすみます。
 
-これを自分で実装すると中々手間がかかりますが、すでに std として提供されているのでこのタイマーを使わせてもらいます。型定義を見ると第二引数に `fetch()` と同じ様に `{ signal }` を渡すことができるようになっています。
+これを自分で実装すると中々手間がかかりますが、すでに std として提供されているのでこのタイマーを使わせてもらいます。型定義を見ると第二引数に `fetch()` と同じ様に `{ signal }` を渡すことができるようになっています(TypeScript での型定義については『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターで詳しく解説します)。
 
 ```ts:delayの型定義
 function delay(ms: number, options?: DelayOptions): Promise<void>;
@@ -793,9 +793,9 @@ interface DelayOptions {
 }
 ```
 
-std を使うには URL から名前付きで import できます。
+std を使うには URL から名前付きで import できます。次のように TypeScript ではなく JavaScript で書く際にも型定義の恩恵を受けて利用できます。
 
-```js
+```js:JavaScript
 import { delay } from "https://deno.land/std@0.145.0/async/mod.ts";
 
 (async () => {
@@ -814,6 +814,13 @@ const signal = controller.signal;
 const rTimes = [200, 100, 300];
 // タイマーの遅延時間[ms]を収めた配列(どれが早く終わるか競争させる)
 
+// delay をラップして新しいレイヤーを作る
+async function dTimer(msg, time, option = {}) {
+  await delay(time, option);
+  console.log(`${time}[ms]が経過しました`);
+  return msg;
+}
+
 (async () => {
   // map メソッドでタイマーの並列化(停止できるようにすべてのタイマーに signal を渡しておく)
   const promises = rTimes.map((time) =>
@@ -825,13 +832,6 @@ const rTimes = [200, 100, 300];
   console.log("raceの結果:", winner);
   console.log("タイマーの競争が終了しました");
 })();
-
-// delay をラップして新しいレイヤーを作る
-async function dTimer(msg, time, option = {}) {
-  await delay(time, option);
-  console.log(`${time}[ms]が経過しました`);
-  return msg;
-}
 ```
 
 `rTimes` 配列に格納した遅延時間のどれが早く終るか競争させてみると、次の実行結果が得られます。
@@ -873,6 +873,16 @@ raceの結果: 100[ms]のタイマー
 競争終了前にキャンセルのメッセージを通知させたければ、`console.log("タイマーの競争が終了しました");` の前に `dTimer()` から返ってくる Promise インスタンスが Settled となるのを await 式で評価して待ちます。
 
 ```js
+async function dTimer(msg, time, option = {}) {
+  try {
+    await delay(time, option);
+    console.log(`${time}[ms]が経過しました`);
+    return msg;
+  } catch (err) {
+    console.log("タイマーはキャンセルされました" ,err)
+  }
+}
+
 (async () => {
   const promises = rTimes.map((time) =>
     dTimer(`${time}[ms]のタイマー`, time, { signal })
@@ -884,16 +894,6 @@ raceの結果: 100[ms]のタイマー
   // ここで再度 await してすべての dTimer の完了を待ってから出力
   console.log("タイマーの競争が終了しました");
 })();
-
-async function dTimer(msg, time, option = {}) {
-  try {
-    await delay(time, option);
-    console.log(`${time}[ms]が経過しました`);
-    return msg;
-  } catch (err) {
-    console.log("タイマーはキャンセルされました" ,err)
-  }
-}
 ```
 
 再度 await することでキャンセルされた `dTimer()` の処理の完了を待ってから終了通知のメッセージを出力できます。
