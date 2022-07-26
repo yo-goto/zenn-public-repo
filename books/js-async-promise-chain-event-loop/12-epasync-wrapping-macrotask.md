@@ -78,11 +78,11 @@ https://ja.javascript.info/promisify
 
 Deno 環境などではほとんどすべての非同期 API が Promise インスタンスを返しますし、`setTimeout()` でさえも Promise で手動ラップする必要も実はなく、Promise を返すタイマーが Standard library の１つとして提供されています。
 
-https://deno.land/std@0.137.0/async#delay
+https://deno.land/std@0.145.0/async#delay
 
 Node 環境でも Promise-based な非同期 API が色々提供されており、Promise を返すタイマー処理も存在しています。
 
-https://nodejs.org/dist/latest-v18.x/docs/api/timers.html#timers-promises-api
+https://nodejs.org/dist/v18.2.0/docs/api/timers.html#timers-promises-api
 
 とは言っても内部で、Promise でラップしていることもありますし、手動でラップする方法を学んでおいて損はないので解説します。単純に `new Promise()` でラップするだけです。
 
