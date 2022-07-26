@@ -53,6 +53,8 @@ Promise について詳しくなることで非同期処理を柔軟に書ける
 
 第４章では Promise の静的メソッドと await 式の配置による複数処理や反復処理の制御方法を学び、最終的には TypeScript での型注釈まで行えるようにします。
 
+第４章の後には非同期処理のテーマに関しての[まとめと総括のチャプター](y-epasync-conclusion)を設けているので、そちらを見つつ他のチャプターの学習をすすめていくのもよいでしょう。
+
 :::message
 リアルタイムで学習した内容を反映させたり、勘違いしていた内容についての大規模な修正を追加したこともあり、以前は古い知見に基づいたチャプターと更新された新しい知見に基づいたチャプターが入り混じった構成になっていましたが、現時点ではすべてのチャプターを新しい知見に基づく解説に統一しました。
 
@@ -140,7 +142,7 @@ deno 1.20.4
 
 https://deno.land/x/deno@v1.20.4
 
-Deno ではデフォルトで TypeScript を設定無しにすぐに実行できるので、**最終的に TypeScript で Promise の型を考える**ために使っているという側面もあります。Deno を使うことで JavaScript に型情報の操作を加えた TypeScript へとスムーズに移行していくことができます[^DenoのTS]。そういう訳で、この本の第４章最終チャプターでは JavaScript から TypeScript への移行の方法と Promise の型注釈についても解説します。
+Deno ではデフォルトで TypeScript を設定無しにすぐに実行できるので、**最終的に TypeScript で Promise の型を考える**ために使っているという側面もあります。Deno を使うことで JavaScript に型情報の操作を加えた TypeScript へとスムーズに移行していくことができます[^DenoのTS]。そういう訳で、この本の[第４章最終チャプター](j-epasync-ts-promise-type-annotation)では JavaScript から TypeScript への移行の方法と Promise の型注釈についても解説します。
 
   [^DenoのTS]: Deno は V8 エンジンでの JavaScript をベースにしつつ、型の世界(TypeScript)へと簡単に立ち入ることができる環境なので段階的に「型情報の操作」に関する学習を進めることができます。また、node で利用する [ts-node](https://typestrong.org/ts-node/) などの追加パッケージが必要なく TypeScript ファイルをコマンドラインから実行できます。
 
@@ -214,20 +216,20 @@ JS Visualizer では実装ミスとも言える点や勘違いしやすい点が
 - 2022-07-12
   - 新チャプター『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』を追加
 - 2022-06-30
-  - 新チャプター「await 式の配置による制御」を追加
-  - 新チャプター「反復処理の制御」を追加
-  - 新チャプター「参考文献」を追加
+  - 新チャプター『[await 式の配置による制御](18-epasync-await-position)』を追加
+  - 新チャプター『[反復処理の制御](19-epasync-async-loop)』を追加
+  - 新チャプター『[参考文献](z-epasync-reference)』を追加
 - 2022-06-26
-  - 新チャプター「Promise の静的メソッドと並列化」を追加
+  - 新チャプター『[Promise の静的メソッドと並列化](17-epasync-static-method)』を追加
 - 2022-06-16
   - 章分けのためのチャプターを追加
 - 2022-06-15
-  - 新チャプター「同期 API とブロッキング」を追加
+  - 新チャプター『[同期 API とブロッキング](f-epasync-synchronus-apis)』を追加
 - 2022-06-06
   - すべてのチャプターの説明を新しい知見に基づく内容に書き換え完了
-  - 新チャプター「エピローグ」を追加
+  - 新チャプター『[あとがき](y-epasync-conclusion)』を追加
 - 2022-05-28
-  - 新チャプター「Top-level await」を追加
+  - 新チャプター『[Top-level await](16-epasync-top-level-async)』を追加
 - 2022-05-22
   - いくつかチャプターでの説明を加筆
 - 2022-05-21
@@ -235,34 +237,35 @@ JS Visualizer では実装ミスとも言える点や勘違いしやすい点が
 - 2022-05-14
   - 全体を完成
   - 新チャプター追加
-    - ch「catch メソッドと finally メソッド」を追加
-    - ch「Promise chain から async 関数へ」を追加
-    - ch「V8 エンジンによる async/await の内部変換」を追加
+    - 『[catch メソッドと finally メソッド](h-epasync-catch-finally)』を追加
+    - 『[Promise chain から async 関数へ](14-epasync-chain-to-async-await)』を追加
+    - 『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』を追加
 - 2022-05-06
   - 新チャプター追加
-    - ch「コールスタックと実行コンテキスト」を追加
-    - ch「それぞれのイベントループ」を追加
-    - ch「タスクキューとマイクロタスクキュー」を追加
-    - ch「V8 エンジン」を追加
-    - ch「非同期 API と環境」を追加
-    - ch「resolve 関数と reject 関数の使い方」を追加
-  - ch「古い非同期 API を Promise でラップする」を改修
-  - ch「イベントループは内部にネストしたループがある」を改修
+    - 『[コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)』を追加
+    - 『[それぞれのイベントループ](c-epasync-what-event-loop)』を追加
+    - 『[タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)』を追加
+    - 『[V8 エンジン](e-epasync-v8-engine)』を追加
+    - 『[非同期 API と環境](f-epasync-asynchronous-apis)』を追加
+    - 『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』を追加
+  - 『[古い非同期 API を Promise でラップする](12-epasync-wrapping-macrotask)』を改修
+  - 『[イベントループは内部にネストしたループがある](9-epasync-dont-nest-promise-chain)』を改修
 - 2022-05-03
-  - ch「コールバックで副作用となる非同期処理」に「副作用とは」の項目を追加
-  - 新チャプター「Promise の基本概念」を追加
+  - 『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』に「副作用とは」の項目を追加
+  - 新チャプター『[Promise の基本概念](a-epasync-promise-basic-concept)』を追加
 - 2022-04-23
-  - ch「コールバックで副作用となる非同期処理」を大幅追記
+  - 『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』を大幅追記
 - 2022-04-21
   - JavaScript Visuzalizer で共有したコードが文字化けしていたので修正
-  - ch「Event loop の概要と注意点」を大幅に修正追記
+  - 『[Event loop の概要と注意点](2-epasync-event-loop)』を大幅に修正追記
     - それに伴い Event loop のステップについて各所を修正
-  - ch「Promise コンストラクタと Executor 関数」で関数式とアロー関数の補足を追加
-  - ch「コールバック関数の同期実行と非同期実行」で「コールバック関数はいつ実行される?」の項目を追加
-  - ch「then メソッドは常に新しい Promise を返す」で「Promise の状態を確かめる」の項目を追加
-  - ch「Promise chain で値を繋ぐ」で「チェーンの最後まで値を繋ぐ」の項目を追加
-  - ch「Promise chain はネストさせない」で「fetch の例[作成中]」の項目を追加
-  - ch「Event loop は内部にネストしたループがある」を追加
+  - 新チャプター追加
+    - 『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』で関数式とアロー関数の補足を追加
+  - 『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)』で「コールバック関数はいつ実行される?」の項目を追加
+  - 『[then メソッドは常に新しい Promise を返す](6-epasync-then-always-return-new-promise)』で「Promise の状態を確かめる」の項目を追加
+  - 『[Promise chain で値を繋ぐ](7-epasync-pass-value-to-the-next-chain)』で「チェーンの最後まで値を繋ぐ」の項目を追加
+  - 『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』で「fetch の例」の項目を追加
+  - 『[Event loop は内部にネストしたループがある](13-epasync-loop-is-nested)』を追加
   - その他全体的に加筆修正
   - コードの表記を修正
 :::

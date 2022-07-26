@@ -8,9 +8,9 @@ aliases: [ch_V8 エンジンによる async/await の内部変換]
 
 仕様を直接見るよりも、V8 エンジンでどうなっているかを見た方が分かりやすいので V8 からアプローチします。前のチャプターで見たとおり、async/await では若干謎の挙動が存在しています。V8 エンジンの内部変換コードを見ることでその謎は解決できます。
 
-このチャプターの内容は基本的にはこちらの記事と同じ内容となるので、すでに読まれた方はスキップしてもらって構いません。
-
-https://zenn.dev/estra/articles/asyncawait-v8-converting
+:::message
+このチャプターは『[V8エンジンによる内部変換コードでasync/awaitの挙動を理解する](https://zenn.dev/estra/articles/asyncawait-v8-converting)』の記事と同じ内容になるので、すでに読まれた方はスキップしてもらって構いません。
+:::
 
 # V8 エンジンによる内部変換コード
 さて、このチャプターでは V8 開発チームの Maya Lekova 氏と Benedikt Meurer 氏によるプレゼン動画『Holding on to your Performance Promises』と、それに基づく V8 エンジン公式サイトのブログ記事『Faster async functions and promises』を元にして async/await の V8 エンジンでの内部変換コードを見ていきます。

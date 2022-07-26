@@ -1,5 +1,7 @@
 ---
 title: "イテレータとイテラブルとジェネレータ関数"
+aliases: [ch_イテレータとイテラブルとジェネレータ関数]
+tags: [" #JavaScript/async  "]
 ---
 
 # このチャプターについて
@@ -56,8 +58,8 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Iteration_protoco
 const iterator = {
   next() { // メソッドの短縮記法
     const iteratorResult = { 
-      value: 42, 
-      done: false 
+      value: 42, // イテレータリザルトが持つべきプロパティ
+      done: false // イテレータリザルトが持つべきプロパティ
     };
     return iteratorResult;
     // イテレータリザルトを返す
@@ -73,7 +75,8 @@ console.log(iterator.next());
 :::message
 ちなみにメソッドの定義方法は以下のような書き方があります。上の書き方はメソッドの短縮記法と呼ばれるものです。
 
-```js:メソッドの定義方法
+```js
+// オブジェクトのメソッドの定義方法は３つ
 const obj = {
   method1: function() { 
     // function キーワードを使ったメソッド定義
@@ -104,10 +107,7 @@ const iterableObject = {
     const iterator = {
       // 短縮記法でメソッド定義
       next() { 
-        const iteratorResult = {
-          value: 42,
-          done: false
-        };
+        const iteratorResult = { value: 42, done: false };
         // イテレータリザルトを返す
         return iteratorResult;
       }
@@ -143,7 +143,7 @@ const iterableObject = {
         // 三項演算子で返すものを条件づけ
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
-          : { value: count, done: true };
+          : { value: undefined, done: true };
 
         // イテレータリザルトを返す
         return iteratorResult;
@@ -165,8 +165,8 @@ const iterator = iterableObject[Symbol.iterator]();
 console.log(iterator.next()); //  => { value: 1, done: false } 
 console.log(iterator.next()); //  => { value: 2, done: false }
 console.log(iterator.next()); //  => { value: 3, done: false }
-console.log(iterator.next()); // => { value: 3, done: true }
-console.log(iterator.next()); //  => { value: 3, done: true }
+console.log(iterator.next()); // => { value: undefined, done: true }
+console.log(iterator.next()); //  => { value: undefined, done: true }
 ```
 
 このような感じで `next()` メソッドを次々に実行することで反復的に値をインクリメントする処理を行っていくことができます。反復処理において `value` プロパティと `done` プロパティは以下のようなものとして機能することを認識しておくと良いでしょう。
@@ -178,7 +178,7 @@ console.log(iterator.next()); //  => { value: 3, done: true }
 
 ## for...of
 
-先程定義したイテラブルオブジェクトを実際に `while` ループで反復処理してみます。
+先程定義したイテラブルオブジェクトを実際に `while` ループで `done` プロパティが `true` になるまで反復処理を行ってみましょう。
 
 ```js:sympleIterable.js
 const iterableObject = {
@@ -188,7 +188,7 @@ const iterableObject = {
       next() { 
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
-          : { value: count, done: true };
+          : { value: undefined, done: true };
         return iteratorResult;
       }
     };
@@ -214,7 +214,7 @@ while (true) {
 3
 ```
 
-反復処理を行うのに以下のように色々書かないといけないのは面倒です。
+このように反復処理プロトコルを実装しているオブジェクトに反復処理を行うのに以下のように色々書かないといけないのは面倒です。
 
 ```js
 const myIterator = iterableObject[Symbol.iterator]();
@@ -226,7 +226,7 @@ while (true) {
 }
 ```
 
-そこで ES2015 で追加された `for...of` の構文を利用します。この構文は上のような処理の手続きをまとめて行ってくれるのでイテレータから値を反復して取り出すのが簡単にできます。
+そこで ES2015 で追加された `for...of` の構文を利用します。この構文は上のような処理の手続きをまとめて行ってくれるのでイテレータから値を反復して取り出すのが簡単にできます(実際には、「`for...or` 構文が使えるのがイテラブルオブジェクト」という認識で良いです)。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...of
 
@@ -250,7 +250,7 @@ const iterableObject = {
       next() { 
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
-          : { value: count, done: true };
+          : { value: undefined, done: true };
         return iteratorResult;
       }
     };
@@ -341,7 +341,7 @@ C
 */
 ```
 
-配列がイテラブルであることから、オブジェクトのプロパティに対して反復処理を行いたいときも一度 `Object.keys()` や `Object.values()` などのオブジェクトの静的メソッドを使って一旦配列にすることで `for...of` で反復処理ができるようになります。
+配列がイテラブルであることから、オブジェクトのプロパティに対して反復処理を行いたいときも `Object.keys()` や `Object.values()` などのオブジェクトの静的メソッドを使って一旦配列にすることで `for...of` で反復処理ができるようになります。
 
 ```js
 const fruits = {

@@ -20,6 +20,8 @@ https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop
 
 :::message
 非同期処理の本質的な部分は JavaScript で見てきたもので十分なので、このチャプターは「非同期処理での型注釈を通して逆に TypeScript を理解してみよう」という試みになります。
+
+また、このチャプターは『[TypeScript の基礎から Promise の型注釈まで駆け登る](https://zenn.dev/estra/articles/ts-with-promise-type-annotation)』の記事と同じ内容になるので、すでに読まれた方はスキップしてもらって構いません。
 :::
 
 # TypeScript について
