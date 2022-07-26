@@ -1326,7 +1326,6 @@ const rTimes = [200, 100, 300];
   await Promise.allSettled(promises);
   console.log("タイマーの競争が終了しました");
 })();
-
 ```
 
 `catch` 節で何も `return` していないので返り値が何もない場合の `void` 型と通常の成功時の返り値である `string` 型を合成したユニオン型 `string | void` を `Promise<Type>` の型引数として指定してあげています。また、`delay()` のオプションとして渡す引数の型として `DelayOptions` も import するようにします。
