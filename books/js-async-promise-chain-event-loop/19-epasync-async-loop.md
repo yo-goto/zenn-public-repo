@@ -612,6 +612,8 @@ const promises = urls.map(url => fetchThenConsole(url));
 ## for...in
 `for...in` はオブジェクトのプロパティを反復するために作られたものですが、この方法にはいくつかの問題があるため、デバッグ目的以外には基本的に使いません。
 
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...in
+
 オブジェクトの反復処理をしたい場合にはオブジェクト列挙のための静的メソッドである `Object.keys()` や `Object.values()`、`Object.entries()` などを利用して配列を作り出すことによって反復処理を行います。
 
 ## イテラブルオブジェクトの反復処理
