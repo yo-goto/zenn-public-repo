@@ -140,7 +140,7 @@ TypeScript のコンパイラは賢いので型注釈を省略してもある程
 
 ```ts
 const str3 = "文字列リテラル"; // TypeScript
-// 文字列リテラルなので string 型であることはあきらかであり推論できる
+// 文字列リテラルで初期化しているのは明らかであり、型注釈は省略できる
 ```
 
 型を省略してもそのコードから型を推論して自動的に型情報が得られるこの機能を型推論(type inference)と言います。上のような変数宣言では初期値から型が推論されます。
@@ -302,7 +302,7 @@ const mycube: Cube = {
 
 ```ts
 // 既に存在している string 型に別名を付ける
-type MyString = string; 
+type MyString = string;
 // string 型として型注釈をしているのと同じ
 const mystr: MyString = "文字列";
 ```
@@ -400,7 +400,7 @@ Promise.resolve(1.1) // 数値なので number 型が通知される
   // コールバック関数の型注釈は省略できる
 ```
 
-コールバックで使うときなどは上で見たように contextual typing の仕組みによって型注釈を省略できる場合がありますが、それ以外の場合でアロー関数を定義する際の型注釈は次のようになります。通常の関数宣言の型注釈と大差ありません。
+コールバックで使うときなどは上で見たように Contextual typing の仕組みによって型注釈を省略できる場合がありますが、それ以外の場合でアロー関数を定義する際の型注釈は次のようになります。通常の関数宣言の型注釈と大差ありません。
 
 ```ts
 const arrowStrsLength1 = (str1: string, str2: string): number => {
@@ -506,7 +506,7 @@ const myobj: MyObj = {
 :::
 
 :::details typeof 型演算子
-型エイリアスでメソッドを持つオブジェクトの型を１から作成してみましたが、定義したオブジェクトから型を抽出して別の場所で使い回すようなこをとしたい場合もあります。そのような場合には `typeof` 型演算子(typeof type operator)を使って変数から型を抽出できます。
+型エイリアスでメソッドを持つオブジェクトの型を１から作成してみましたが、定義したオブジェクトから型を抽出して別の場所で使い回すようなことをしたい場合もあります。そのような場合には `typeof` 型演算子(typeof type operator)を使って変数から型を抽出できます。
 
 ```ts
 const objWithArrowFn = {
@@ -534,6 +534,86 @@ type ReusingType2 = {
 const numarr: number[] = [];
 type NumArr = typeof numarr;
 // number[] 型が抽出される
+```
+:::
+
+:::details 分割代入引数と残余引数の型注釈
+
+オブジェクトや配列を引数として取る関数において、引数にとるオブジェクトのプロパティや配列の要素について分割代入して関数内部でプロパティや要素を変数で扱かえるようにしたいときには分割代入の構文を関数の引数で使う「分割代入引数(destructuring assignment parameter)」の書き方が使えます。
+
+```js:JavaScript
+// オブジェクトの分割代入引数
+function destObj({ a, b }) {
+  // オブジェクトのプロパティに変数を割り当てる
+  console.log(a, b);
+}
+
+// 配列の分割代入引数
+function destArr([a, b]) {
+  // 配列要素に変数を割り当てる
+  console.log(a, b);
+}
+
+destObj({ a: 1, b: 2 }); // => 1 2
+destArr([1, 2]); // => 1 2
+```
+
+分割代入引数について型注釈を行う際には次のようにします。オブジェクトの分割代入引数では、オブジェクトリテラルの型注釈と同じようにし、配列の分割代入引数では配列の型注釈となります。
+
+```ts:TypeScript
+// オブジェクトの分割代入引数
+function destObj(
+  { a, b }: { a: number; b: number; }
+): void {
+  console.log(a, b);
+}
+
+// 配列の分割代入引数
+function destArr(
+  [a, b]: number[]
+): void {
+  console.log(a, b);
+}
+
+destObj({ a: 1, b: 2 }); // => 1 2
+destArr([1, 2]); // => 1 2
+```
+
+関数の引数を可変長引数にしたい場合には、残余引数を使って以下のように書けました。
+```js:JavaScript
+// 残余引数による可変長引数
+function rest(...params) {
+  // 関数内部では params は配列として濃縮されている
+  console.log(params);
+}
+
+rest(1, 2, 3); // => [1, 2, 3]
+```
+
+実際に関数内では可変長引数として渡した複数の引数は配列として濃縮されているので、型注釈をする際には残余引数に対して配列の型注釈を行います。
+
+```ts:TypeScript
+function restNum(...params: number[]) {
+  // 関数内部では params は配列として濃縮されている
+  console.log(params);
+}
+function restStr(...params: string[]) {
+  // 関数内部では params は配列として濃縮されている
+  console.log(params);
+}
+
+restNum(1, 2, 3); // => [1, 2, 3]
+restStr("A", "B", "C"); // => ["A", "B", "C"]
+```
+
+型を一般化したい場合には、後で解説するジェネリクス関数にすることで実現できます。
+```ts
+function restGeneric<Type>(...params: Type[]) {
+  console.log(params);
+}
+
+restGeneric<number>(1, 2, 3); // => [1, 2, 3]
+restGeneric<string>("A", "B", "C"); // => ["A", "B", "C"]
 ```
 :::
 
@@ -632,11 +712,11 @@ type GeneralProp<YourType> = { // 型変数の名前はなんでもよい
 // type StringProp = { data: string }; と同じ型で型注釈
 const strProp: GeneralProp<string> = {
   data: "文字列",
-}; 
+};
 // type NumberProp = { data: number }; と同じ型で型注釈
 const numProp: GeneralProp<number> = {
   data: 42,
-}; 
+};
 ```
 
 型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
@@ -660,7 +740,7 @@ function returnArrEl(arr) {
 // 引数の型注釈を行わない
 function returnArrEl(
   arr //: any (暗黙的に any 型として推論される)
-) { 
+) {
   return arr[0];
 }
 ```
@@ -672,7 +752,7 @@ function returnArrEl(
 ```ts
 function returnArrEl(
   arr: number[]
-): number { 
+): number {
   return arr[0];
 }
 
