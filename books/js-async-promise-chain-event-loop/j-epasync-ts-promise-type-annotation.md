@@ -46,7 +46,7 @@ TypeScript はより良い JavaScript を書くためのリンターに過ぎま
 
 そして、TypeScript の非同期処理は **JavaScript の非同期処理のコードに型情報を上乗せしたもの** であり、本質的には Promise や async/await といった JavaScript(ECMAScript) の非同期シンタックスやその処理を実現するためのイベントループの機構、ランタイム(JS エンジン)を埋め込んでいる環境とそこから提供される非同期 API を[理解すれば良い訳です](https://zenn.dev/estra/articles/js-async-programming-roadmap)。つまり、**「非同期処理」を理解するために必要な知識そのものと TypeScript には殆ど関係性がありません**。
 
-私見では以下のような「型の情報操作機能(type manipulation)」が JavaScript に追加されたものが TypeScript であると認識しています。
+私見では以下のような「型の情報操作機能(Type manipulation)」が JavaScript に追加されたものが TypeScript であると認識しています。
 
 - 型情報の定義(Type defining)
 - 型情報の付与(Type annotation)
@@ -103,7 +103,7 @@ TypeScript では既存の JavaScript コードに型の情報を付与してい
 
 ```ts
 const str1 = "文字列"; // JavaScript
-const str2: string = "文字列の型注釈を追加"; // TypeScript 
+const str2: string = "文字列の型注釈を追加"; // TypeScript
 //          ^^^^^^ string 型の型注釈
 //                 str2 は string 型だよとコンパイラに伝えているだけ
 ```
@@ -213,7 +213,7 @@ const narr: number[] = [1, 2, 3];
 //          ^^^^^^^^ 明示的に number 型の値をもつ配列だと型注釈
 const sarr: string[] = ["A", "B", "C"];
 //          ^^^^^^^^ 明示的に string 型の値をもつ配列だと型注釈
-const barr = [true, false]; 
+const barr = [true, false];
 //    ^^^^   ^^^^^^^^^^^^^ boolean[] として推論される
 ```
 
@@ -330,7 +330,7 @@ function consoleStr(
 戻り値の型注釈を省略しても `return` 文の値から型推論されるので大丈夫です。`return` 文が無ければ基本的には `void` 型です。
 
 ```ts
-function consoleStr(str: string) { 
+function consoleStr(str: string) {
   console.log(str);
 }
 ```
@@ -342,7 +342,7 @@ const floats: number[] = [1.1, 2.2, 3.3];
 
 const floors = floats.map(function (item) {
   // floats は number[] 型なのでその要素は number 型であり、コールバックの入力値の型は number 型として通知される
-  return Math.floor(item); 
+  return Math.floor(item);
   // Math.floor は number 型なら利用できる静的メソッド
 });
 console.log(floors); // => [ 1, 2, 3 ]
@@ -356,9 +356,9 @@ const floors = floats.map(function (item: number): number {
 });
 ```
 
-このようなプロセスは関数のコンテキストが自身の型を通知することから **contextual typing** と呼ばれます。
+このようなプロセスは関数のコンテキストが自身の型を通知することから **Contextual typing** と呼ばれます。
 
-アロー関数でも同じです。contextual typing によって型注釈は省略できます。
+アロー関数でも同じです。Contextual typing によって型注釈は省略できます。
 
 ```ts
 const floors = floats.map((item) => {
@@ -426,11 +426,11 @@ type StrsLength2 = {
 const obj = {
   prop: 42,
   // functionキーワードによるメソッド定義
-  method1: function(str) { return str.length; }, 
+  method1: function(str) { return str.length; },
   // 短縮記法によるメソッド定義
-  method2(str) { return str.length; }, 
+  method2(str) { return str.length; },
   // アロー関数によるメソッド定義
-  method3: (str) => { return str.length; }, 
+  method3: (str) => { return str.length; },
 };
 ```
 
@@ -459,10 +459,10 @@ const obj = {
 type MyObj = {
   prop: number;
   // Function field (省略記法の書き方)
-  method1(str: string): number; 
+  method1(str: string): number;
   method2(str: string): number;
   // Arrow function field (アロー関数の書き方)
-  method3: (str: string) => number; 
+  method3: (str: string) => number;
 };
 ```
 
@@ -802,7 +802,7 @@ function strOrNum(
 }
 ```
 
-こういったコードの構造に基づいて値の型をより具体的に推定できるようにすることを(型の範囲をより具体的なものに狭めることから) **Narrowing** と呼びます(あるいはその現象そのものを Narrwing と呼びます)。つまり、型情報の選別やフィルターを行う行為がコードを書く上でも必要となります。
+こういったコードの構造に基づいて値の型をより具体的に推定できるようにすることを(型の範囲をより具体的なものに狭めることから) **Narrowing(型の絞り込み)** と呼びます(あるいはその現象そのものを Narrwing と呼びます)。つまり、型情報の選別やフィルターを行う行為がコードを書く上でも必要となります。
 
 https://www.typescriptlang.org/docs/handbook/2/narrowing.html
 
@@ -818,13 +818,13 @@ function strOrNum(
   if (typeof param === "string") {
     // param: string として CFA で解析される
     console.log(param.toUpperCase());
-  } else if (typeof param === "number") { 
+  } else if (typeof param === "number") {
     // string 型でないなら number 型
     // param: number として CFA で解析される
     console.log(Math.floor(param));
   } else {
     // param: never として CFA で解析される
-    console.log(param); 
+    console.log(param);
     //          ^^^^^ never 型(決して観測されない)
   }
 }
@@ -1064,7 +1064,7 @@ JavaScript では async 関数は `async` キーワードが付いているた�
 function generalPromise<Type>( // Type は型変数
   param: Type // 入力と出力の型がリンク
 ): Promise<Type> { // 入力と出力の型がリンク
-  return Promise.resolve(param); 
+  return Promise.resolve(param);
   // 引数で履行する Promise インスタンスを返却
 }
 ```
@@ -1136,11 +1136,11 @@ type Animal2 = { // 代入
 ```ts
 // 関数の型と unedfined 型と null 型のユニオン型
 type OnFullfilled<T, TResult1> = ((value: T) => TResult1 | PromiseLike<TResult1>)
-  | undefined 
+  | undefined
   | null;
 // 関数の型と unedfined 型と null 型のユニオン型
-type OnRejcted<TReulst2> = ((reason: any) => TResult2 | PromiseLike<TResult2>) 
-  | undefined 
+type OnRejcted<TReulst2> = ((reason: any) => TResult2 | PromiseLike<TResult2>)
+  | undefined
   | null;
 
 // 型変数はリンクしているので注意
@@ -1179,7 +1179,7 @@ ECMAScript のシンタックスとして具体的な型に依存しないタイ
 ```js
 /**
  * 人物の名前を引数にとって挨拶文を出力する関数
- * 
+ *
  * @param {(string|string[])} [sombody=John Doe] - 人物の名前または名前の配列
  **/
 function sayHello(somebody) {
@@ -1380,7 +1380,7 @@ https://typescriptbook.jp/reference/values-types-variables/tuple
 
 ```js:JavaScript
 function reutrnMultipleValue() {
-  return [42, "文字列", true]; 
+  return [42, "文字列", true];
   // 色々な型の値が要素となった配列を返す
 }
 ```
@@ -1389,7 +1389,7 @@ function reutrnMultipleValue() {
 
 ```ts:TypeScript(タプルの型注釈)
 function reutrnMultipleValue(): [number, string, boolean] {
-  return [42, "文字列", true]; 
+  return [42, "文字列", true];
 }
 ```
 
@@ -1543,7 +1543,7 @@ async function fetcher(
 
 ```ts
 function compare(
-  a: number, 
+  a: number,
   b: number
 ): number { // ただの数値型
   return a === b
@@ -1556,7 +1556,7 @@ a と b の数値を比較して等しいなら `0` を返して、a の方が�
 
 ```ts
 function compare(
-  a: number, 
+  a: number,
   b: number
 ): -1 | 0 | 1 { // リテラル型のユニオン型
   return a === b
