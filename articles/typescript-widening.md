@@ -420,13 +420,14 @@ https://github.com/Microsoft/TypeScript/pull/10676
 
 Literal Widening の具体的な機能やルールは以下のものであると言及されています。いくつかを抜粋しています。
 
-- The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
-- The type of a string or numeric literal occurring in an _expression_ is a widening literal type.
-- The type of a string or numeric literal occurring in a _type_ is a non-widening literal type.
-- The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
-- The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
-- The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
-- The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
+>- The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
+>- The type of a string or numeric literal occurring in an _expression_ is a widening literal type.
+>- The type of a string or numeric literal occurring in a _type_ is a non-widening literal type.
+>- The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
+>- The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
+>- The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
+>- The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
+>
 >([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より抜粋引用)
 
 長いので、全部いきなり理解するのは難しいですがすこしずつ見ていきます。まずはこれですが、式内でのリテラル値の型は常にリテラル型になるといっていますね。
