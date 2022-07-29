@@ -101,8 +101,7 @@ function fn(s = 5, t = true) {}
 
 # let 宣言とリテラル型
 
-Wideing の前にリテラル型(Literal type)を知っておく必要
-があるので、解説しておきます。
+Wideing の前にリテラル型(Literal type)を知っておく必要があるので、解説しておきます。
 
 JavaScript にはプリミティブ型の値や、配列やオブジェクトなどを表現するための様々なリテラルがあります。
 
@@ -488,7 +487,7 @@ const o2: { kind: 0 } = { kind: 0 };
 //    ^^: { kind: 0 } というリテラル型のプロパティの値を持つオブジェクトの型として明示的に型注釈する場合
 ```
 
-このように型注釈を省略せずに明示的に施すことによって Widening をしないように制御できます。型注釈を施すことで Widening をしないようにできます。
+このように省略せずに明示的に型注釈を施すことによって Widening をしないように抑制できます。
 
 ```ts:Widening を抑制
 let str: "text" = "text";
@@ -498,12 +497,12 @@ let arr: [1, 2, 3] = [1, 2, 3];
 let obj: { a: "text"; b: 42 } = { a: "text", b: 42 };
 ```
 
-ただ、Deno 環境でこのようなリテラル型の型注釈をする [prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const) というリンタールールで以下のように注意されてしまいます。
+ただし、Deno 環境でこのようなリテラル型の型注釈をしてしまうと [prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const) というリンタールールで以下のように注意されてしまいます。
 
 >Expected a `const` assertion instead of a literal type annotation
 >Remove a literal type annotation and add `as const`
 
-リテラル型として型注釈するのではなく、型アサーション(Type assertion)を使って、`as const` を付けろという注意です。
+リテラル型として型注釈するのではなく、**型アサーション(Type assertion)** を使って、`as const` を付けろという注意です。
 
 型アサーションについては公式ドキュメントの以下の項目に記載されています。
 
@@ -511,13 +510,13 @@ https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertio
 
 型アサーションはコンパイラが型推論するよりもプログラマの方がより具体的な型を知っており、そのように具体的な型であるとコンパイラに伝えたい場合に利用します。Widening の場合も、プログラマがより具体的なリテラル型であると伝えたい場合には型アサーションをして Widening を抑制します。
 
-そのようなリテラル型として変数を宣言する場合には以下の３つの方法があると "prefer-as-const" のルールには記載されています。
+そして、Widening を抑制するために明示的にリテラル型として変数を宣言する場合には以下の３つの方法があると "prefer-as-const" のルールには記載されています。
 
 - (1) 明示的に型注釈
 - (2) 通常の型アサーション(`as "foo"` または `<"foo">`)
 - (3) const アサーション(`as const`)
 
-```ts
+```ts:リテラル型として明示する方法
 // (1) 明示的に型注釈
 let str1: "text" = "text";
 
