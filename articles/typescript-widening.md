@@ -2,7 +2,7 @@
 title: "TypeScript の Widening"
 emoji: "🕺"
 type: "tech"
-topics: ["javascript", "typescript", "deno"]
+topics: ["typescript", "deno"]
 published: true
 date: 2022-07-29
 url: "https://zenn.dev/estra/articles/typescript-widening"
@@ -616,7 +616,7 @@ console.log(str.toUpperCase());
 console.log(Math.floor(num));
 ```
 
-この話は自分の推測では Widening に直接的に位関係あると思っていたのですが、調べてみたらそこまで直接的に関係なく、これは単純にそれぞれのリテラル型は Widening で一般化されて広げられるような `string` や `number` といった型の部分集合の型(subtype)にあたるとのことでした。subtype であるゆえに、文字列リテラル型の変数の値は `string` 型の変数に代入できます(その逆はできません)。
+この話は自分の推測では Widening に直接的にかなり関係あると思っていたのですが、調べてみたらそこまで関係なく、これは単純にそれぞれのリテラル型は Widening で一般化されて広げられるような `string` や `number` といった型の部分集合の型(subtype)にあたるとのことでした。subtype であるゆえに、文字列リテラル型の変数の値は `string` 型の変数に代入できます(その逆はできません)。
 
 ```ts
 const strLiteral = "text" as const;
@@ -625,7 +625,11 @@ const str: string = strLiteral;
 // 文字列リテラル型は string 型の subtype なので string 型の変数に代入可能
 ```
 
-実際に TypeScript のリポジトリの次の Pull Request で明言されています。
+型には互換性(compatibility)の概念があるため、この話題はこの話題で深堀りする必要正がありそうです。
+
+https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment
+
+文字列リテラル型が `string` 型の subtype であることは実際に TypeScript のリポジトリの次の Pull Request で明言されています。
 
 >A string literal type can be considered **a subtype of the `string` type**. This means that a string literal type is assignable to a plain `string`, but not vice-versa.
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用、太字は筆者強調)
