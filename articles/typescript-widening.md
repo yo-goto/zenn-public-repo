@@ -291,18 +291,18 @@ const arr = [1, 2, 3];
 const obj = { a: "text", b: 42 };
 ```
 
-もちろん型推論が働きますが、`const` 宣言によってプリミティブ値で初期化した際には、その変数は `string` や `number` といった一般的な型で推論はされません。**実は初期化に使ったリテラルのリテラル型として型推論がされています**。
+もちろん型推論が働きますが、`const` 宣言によってプリミティブ値で初期化した際には、その変数は `string` や `number` といった一般的な型で推論はされません。実は**変数の初期化に使ったリテラル値のリテラル型として型推論がされています**。
 
 ```ts:リテラル型で型推論されている
 const str = "text";
-//    ^^^ "text" という文字列のリテラル型として型推論される
+//    ^^^ "text" という文字列リテラルのリテラル型として型推論される
 const num = 42;
 //    ^^^ 42 という数値リテラルのリテラル型として型推論される
 const bool = true;
 //    ^^^^ true という真偽値リテラルのリテラル型として型推論される
 ```
 
-実は型注釈を省略していると次のようにリテラル型で型注釈しているのと近い状態で型推論がされています(厳密にはそれらは同じでないことが重要になりますが、いまは置いておきます)。
+初期化の際に型注釈を省略していると次のようにリテラル型で型注釈しているのと近い状態で型推論がされることになります(**厳密にはそれらは同じでない**ことが重要になりますが、いまは置いておきます)。
 
 ```ts
 const str: "text" = "text";
@@ -313,7 +313,7 @@ const bool: true = true;
 //          ^^^^ true という真偽値リテラルのリテラル型として型注釈
 ```
 
-一方で、配列リテラルやオブジェクトリテラルの場合には `let` 宣言時と同じ用に型推論がされるので注意してください。
+一方で、配列リテラルやオブジェクトリテラルの場合には `let` 宣言時と同じ様に型推論がされるので注意してください。
 
 ```ts
 const arr = [1, 2, 3];
@@ -349,7 +349,7 @@ obj.a = "error"; // [Error]
 // Type '"error"' is not assignable to type '"text"'.
 ```
 
-`const` 宣言でプリミティブ値を初期化した際に型注釈を省略していると、それぞれの初期化に使った値のリテラル型として型推論がされるという話でしたが、このままだと `string` 型や `number` 型といった一般的な型の変数のプロトタイプメソッドやそれらの型を受け入れる関数やメソッドなどが使えないのではないかと疑問に持つはずです。
+`const` 宣言でプリミティブ型の値を使って初期化した際に型注釈を省略していると、それぞれの初期化に使った値のリテラル型として型推論がされるという話でした。しかし、このままだと `string` 型や `number` 型といった一般的な型の変数のプロトタイプメソッドやそれらの型を受け入れる関数やメソッドなどが使えないのではないかと疑問に持つはずです。
 
 ```ts:TypeScript
 const str = "text";
@@ -431,12 +431,12 @@ Literal Widening の具体的な機能やルールは以下のものであると
 
 長いので、全部いきなり理解するのは難しいですがすこしずつ見ていきます。まずはこれですが、式内でのリテラル値の型は常にリテラル型になるといっていますね。
 
-- The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
+>- The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
 
 次の２つは今まで見てきた `const` と `let` の宣言での違いについてです。
 
-- The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
-- The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
+>- The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
+>- The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
 
 変数が mutable になる場所では、推論される方はより一般的なものとして拡大(Widening)されます。具体的に言えば、`const` で宣言した変数の値を `let` で宣言した変数の初期化に使う時に Widening が起こり、変数の型は `string` や `number` などの一般的な型に拡大されて型推論されるというわけです。
 
@@ -468,8 +468,8 @@ let c: "foo" | "bar" = cond ? "foo" : "bar";
 
 `const` 宣言時に配列やオブジェクトの場合はリテラル型が関与した型としてみなされなかったことも言及されていますね。
 
-- The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
-- The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
+>- The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
+>- The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
 
 プロパティの値や配列要素の値など、具体的なリテラル型となるところを型が拡大されて型推論されます。
 
@@ -537,7 +537,7 @@ let c = <2> 2; // 型アサーション
 let d = { foo: 1 as 1 }; // 型アサーション
 ```
 
-`as const` という const アサーションでは書き方を統一できて分かりやすいので推奨されるというわけです。というこで、"prefer-as-const" のリンタールールでは以下のようなコードが有効となります。
+`as const` という const アサーションでは書き方を統一できて分かりやすいので推奨されるというわけです。ということで、"prefer-as-const" のリンタールールでは以下のようなコードが有効となります。
 
 ```ts:有効となるコード
 let a = 2 as const;
@@ -625,7 +625,7 @@ const str: string = strLiteral;
 // 文字列リテラル型は string 型の subtype なので string 型の変数に代入可能
 ```
 
-型には互換性(compatibility)の概念があるため、この話題はこの話題で深堀りする必要正がありそうです。
+型には互換性(compatibility)などの概念があるため、この話題はこの話題で深堀りする必要性がありそうです。
 
 https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment
 
@@ -634,7 +634,14 @@ https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-
 >A string literal type can be considered **a subtype of the `string` type**. This means that a string literal type is assignable to a plain `string`, but not vice-versa.
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用、太字は筆者強調)
 
-それ故に、subtype であるリテラル型を一般化した `string` や `number` 型などで使えるプロトタイプメソッドや、静的メソッド、それらの一般的な型の変数を引数にとる関数などでもリテラル型を受け入れることができるというわけです。ただし、`toUpperCase()` などのプロトタイプメソッドで返ってくる値を `const` 宣言した変数に代入しようとすると、結局は拡張された `string` 型の変数となります。
+それ故に、subtype であるリテラル型を一般化した `string` や `number` 型などで使えるプロトタイプメソッドや、静的メソッド、それらの一般的な型の変数を引数にとる関数などでもリテラル型を受け入れることができるというわけです。
+
+同じ PR 内で、文字列リテラル型は `string` 型と同一のプロパティ(プロトタイプメソッドなど)を持ち、`+` などの演算子のとの互換性があることが明言されています。
+
+>String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
+>([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
+
+ただし、`toUpperCase()` などのプロトタイプメソッドで返ってくる値を `const` 宣言した変数に代入しようとすると、結局は拡張された `string` 型の変数となります。
 
 ```ts
 const strLiteral = "text";
@@ -659,8 +666,69 @@ const strLiteralUnion: "text" | "mytext" = str; // [Error]
 参考文献
 https://mariusschulz.com/blog/string-literal-types-in-typescript#string-literal-types-vs-strings
 
+# Collective type と Unit type
+
+実は `"text"` や `42`、`true` といった具体的なリテラルの値から作られるリテラル型に対して `string` や `number`、`boolean` といった一般的な型は **集合型(Collective type)** と呼ばれることがあります。
+
+https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
+
+現時点最新の公式ドキュメントには記載されていませんが、古いバージョンでは Collective type について言及されています。あるいは Playground の [Literals のサンプル](https://www.typescriptlang.org/play/?q=69#example/literals)にも記載されています。
+
+>**A literal is a more concrete sub-type of a collective type**. What this means is that "Hello World" is a string, but a string is not "Hello World" inside the type system.
+>([TypeScript: Handbook - Literal Types](https://www.typescriptlang.org/docs/handbook/literal-types.html) より引用)
+
+リテラル型は集合型の具体的なサブタイプである旨が記載されていますね。
+
+実際、型は値の集合であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。つまり、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の要素としてみなせます。
+
+>Type 型とは：型とは、値の集合であり、その集合に対して実行できることの集合である。
+>少しわかりにくいと思うのでいくつか例を示しましょう。
+>
+>- boolean type は、全ての boolean 値（といっても二つしかないが。true と false の二つである）の集合であり、この集合に対して実行できる操作の集合である。
+>- number type は全ての数値の集合であり、この集合に対して実行できる操作の集合である(例えば `+, -, *, /, %, ||, &&, ?`)である。これらの集合に対して実行できる操作には、.toFixed, .toPrecision, .toString といったものも含まれる。
+>- string type は全ての文字列の集合であり、それに対して事項できる操作の集合である。(例えば `+ , || , や &&` ) .concat や .toUpperCase などが含まれる。
+>
+>([合法 TypeScript 第3章 Type の全て](https://uncle-javascript.com/valid-typescript-chapter3) より引用)
+
+そして、集合型(Collection type)に対して、単位型(Unit type)という概念もあることが数値リテラル型などのプルリクエストで言及されています。
+
+>All literal types as well as the `null` and `undefined` types are considered **unit types**. **A unit type is a type that has only a single value**.
+>([Number, enum, and boolean literal types by ahejlsberg · Pull Request #9407 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/9407) より引用、太字は筆者強調)
+
+単位型(Unit type)は、単一の値のみを持つ型であり、すべてのリテラル型は `null` 型や `undefined` 型と同じく単位型であると見なされるとのことです。
+
+`string` 型は単位型である文字列リテラル型の集合型であり、各文字列リテラル型は `string` 型のサブタイプということです。これは他のリテラル型とその型を Widening した集合型にも言えます。実際、`boolean` 型は `true` と `false` という真偽値リテラル型のユニオン型、つまり `true | false` という型と等しいことも明言されています。
+
+>The predefined `boolean` type is now equivalent to the union type `true | false`.
+>([Number, enum, and boolean literal types by ahejlsberg · Pull Request #9407 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/9407) より引用)
+
+こういった話はリテラル型だけではなく、タプル型と通常の配列型の関係においても言えることです。配列要素の型が同じであれば、タプル型は通常の配列型の変数に代入できます。
+
+>A tuple type is assignable to a compatible array type.
+>([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
+
+```ts
+let a1: number[] = [42];
+let t1: [number] = [43];
+
+// タプル型を配列型に代入するのは OK
+a1 = t1; // OK
+
+let a2: number[] = [44];
+let t2: [number] = [45];
+
+// 配列型をタプル型に代入するのは NG
+t2 = a2; // [Error]
+// Type 'number[]' is not assignable to type '[number]'.
+```
+
+このような変数から別の変数へ代入できるかどうかを Assignability(代入可能性) と呼びます。関連して subtypable や comparable などの概念も派生的にあるそうです。
+
+>Assignability is the function that determines whether one variable can be assigned to another. It happens when the compiler checks assignments and function calls, but also return statements.
+>([TypeScript-New-Handbook/Assignability.md at master · microsoft/TypeScript-New-Handbook](https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md) より引用)
+
 # 終わり
-Widening についてはまだいくつかルールがあるので、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
+Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
 
 Widening の対となる Narrowing については次回の記事で書こうと思います。
 
