@@ -599,6 +599,13 @@ for (let i = start; i <= end; i = i + 1) {
 }
 ```
 
+もしも、あえて `const` 宣言で型を一般的な `string` 型などとしたい場合には明示的に型注釈するか、型アサーションにするかという話にもなりますが、明示的な型注釈は省略するようにリンタールール "no-inferrable-types" に注意されるので、`as string` というように型アサーションにします。
+
+```ts
+const str = "text" as string;
+//    ^^^: string 型 として型アサーション(文字列リテラル型としての型推論を抑制する)
+```
+
 参考文献
 https://sandersn.github.io/manual/Widening-and-Narrowing-in-Typescript.html
 
@@ -634,9 +641,49 @@ https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-
 >A string literal type can be considered **a subtype of the `string` type**. This means that a string literal type is assignable to a plain `string`, but not vice-versa.
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用、太字は筆者強調)
 
-それ故に、subtype であるリテラル型を一般化した `string` や `number` 型などで使えるプロトタイプメソッドや、静的メソッド、それらの一般的な型の変数を引数にとる関数などでもリテラル型を受け入れることができるというわけです。
+文字列リテラル型は `string` 型に代入可能であることから、`string` 型を受け入れる静的メソッドや、`string` 型の変数を引数にとる関数などでも文字列リテラル型を受け入れることができるというわけです。
 
-同じ PR 内で、文字列リテラル型は `string` 型と同一のプロパティ(プロトタイプメソッドなど)を持ち、`+` などの演算子のとの互換性があることが明言されています。
+即時実行関数で考えてみると分かりやすいかもしれません。関数の引数に変数を渡す際には代入が行われることになりますが、その際に文字列リテラル型の変数から `string` 型の変数に代入することになります。この代入が可能なのは文字列リテラル型が `string` 型の subtype であり代入可能(assignable)だからです。
+
+```ts
+const strLiteral = "text" as const;
+//    ^^^^^^^^^^: "text" 文字列リテラル型
+
+// 文字列リテラル型が string 型に代入可能(assignable)
+(function acceptString(param: string) {
+  console.log(param.toUpperCase());
+  //          ^^^^^: string 型
+})(strLiteral);
+// ^^^^^^^^^^ "text" 文字列リテラル型
+// 引数として渡す際には代入が行われている
+```
+
+逆に、`string` 型は文字列リテラル型に代入できないため、次のように特定の文字列リテラル型を引数として受け入れる関数は文字列の変数を渡そうとすると型エラーとなります。
+
+```ts
+const justStr = "text" as string;
+//    ^^^^^^^ string 型 (型アサーション)
+
+// string 型は文字列リテラル型に代入できないので型エラー
+(function acceptLiteral(param: "text") {
+  console.log(param.toUpperCase());
+  //          ^^^^^: "text" 文字列リテラル型
+})(justStr); // [Error]
+// Argument of type 'string' is not assignable to parameter of type '"text"'
+```
+
+これは一般的な型である `string` の型として注釈されている変数の値は、より具体的な型である文字列リテラル型やそれを使ったユニオン型などには代入できない、というわけです。
+
+```ts
+// string 型であると明示的に型注釈
+const str: string = "text";
+
+// より一般的な string 型の値を具体的なリテラル型のユニオン型には代入できない
+const strLiteralUnion: "text" | "mytext" = str; // [Error]
+// Type 'string' is not assignable to type '"text" | "mytext"'.
+```
+
+また、同じ PR 内で、文字列リテラル型は `string` 型と同一のプロパティ(プロトタイプメソッドなど)を持ち、`+` などの演算子のとの互換性があることが明言されています。
 
 >String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
@@ -652,16 +699,20 @@ const strUpper = strLiteral.toUpperCase();
 //    ^^^^^^^^: string 型として型推論される
 ```
 
-逆に一般的な型である `string` の型として注釈されている変数の値は、より具体的な型である文字列リテラル型やそれを使ったユニオン型などには代入できないわけです。
+`+` 演算子などで文字列リテラル型の値同士を結合しても同じことになります。
 
 ```ts
-// string 型であると明示的に型注釈
-const str: string = "text";
+const strLiteral1 = "text";
+//    ^^^^^^^^^^^: "text" 文字列リテラル型として型推論
+const strLiteral2 = "TEXT";
+//    ^^^^^^^^^^^: "Text" 文字列リテラル型として型推論
 
-// より一般的な string 型の値を具体的なリテラル型のユニオン型には代入できない
-const strLiteralUnion: "text" | "mytext" = str; // [Error]
-// Type 'string' is not assignable to type '"text" | "mytext"'.
+// + 演算子で結合した値は Widening された string 型となる
+const strJoin = strLiteral1 + strLiteral2;
+//    ^^^^^^^: string 型
 ```
+
+文字列リテラル型と `string` 型の比較で説明しましたが、数値リテラル型と `number` 型、真偽値リテラル型と `boolean` 型についても同じことが言えます。
 
 参考文献
 https://mariusschulz.com/blog/string-literal-types-in-typescript#string-literal-types-vs-strings
@@ -677,7 +728,7 @@ https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
 >**A literal is a more concrete sub-type of a collective type**. What this means is that "Hello World" is a string, but a string is not "Hello World" inside the type system.
 >([TypeScript: Handbook - Literal Types](https://www.typescriptlang.org/docs/handbook/literal-types.html) より引用)
 
-リテラル型は集合型の具体的なサブタイプである旨が記載されていますね。
+リテラル型は集合型の具体的な subtype である旨が記載されていますね。
 
 実際、型は値の集合であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。つまり、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の要素としてみなせます。
 
@@ -697,12 +748,12 @@ https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
 
 単位型(Unit type)は、単一の値のみを持つ型であり、すべてのリテラル型は `null` 型や `undefined` 型と同じく単位型であると見なされるとのことです。
 
-`string` 型は単位型である文字列リテラル型の集合型であり、各文字列リテラル型は `string` 型のサブタイプということです。これは他のリテラル型とその型を Widening した集合型にも言えます。実際、`boolean` 型は `true` と `false` という真偽値リテラル型のユニオン型、つまり `true | false` という型と等しいことも明言されています。
+`string` 型は単位型である文字列リテラル型の集合型であり、各文字列リテラル型は `string` 型の subtype ということです。これは他のリテラル型とその型を Widening した集合型にも言えます。実際、`boolean` 型は `true` と `false` という真偽値リテラル型のユニオン型、つまり `true | false` という型と等しいことも明言されています。
 
 >The predefined `boolean` type is now equivalent to the union type `true | false`.
 >([Number, enum, and boolean literal types by ahejlsberg · Pull Request #9407 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/9407) より引用)
 
-こういった話はリテラル型だけではなく、タプル型と通常の配列型の関係においても言えることです。配列要素の型が同じであれば、タプル型は通常の配列型の変数に代入できます。
+こういった話はリテラル型だけではなく、タプル型と通常の配列型の関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能(assignable)です。
 
 >A tuple type is assignable to a compatible array type.
 >([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
