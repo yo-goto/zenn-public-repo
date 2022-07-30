@@ -675,8 +675,8 @@ const justStr = "text" as string;
 これは一般的な型である `string` の型として注釈されている変数の値は、より具体的な型である文字列リテラル型やそれを使ったユニオン型などには代入できない、というわけです。
 
 ```ts
-// string 型であると明示的に型注釈
-const str: string = "text";
+const str = "text" as string;
+//    ^^^: string 型であると型アサーション
 
 // より一般的な string 型の値を具体的なリテラル型のユニオン型には代入できない
 const strLiteralUnion: "text" | "mytext" = str; // [Error]
