@@ -473,7 +473,7 @@ set --local list_functions (command find . -type f -depth "-3" -path "./function
 - (3) さらに探索するディレクトリの階層を最大で 3 階層という制限を `-depth "-3"` というプライマリを使って、念のために与えておきます(`find . -type f -depth "-3"`)。
 - (4) 最後に `-path PATTERN` というプライマリを使って、探すパターンを指定します。例えば、カレントディレクトリの直下にある `functions` というディレクトリ内に存在する拡張子が `.fish` であるファイルの場合には指定する PATTERN として `./functions/*.fish` という風になります。`*` はワイルドカードで任意の文字列を表します。
 
-これで、最終的な `find . -type f -depth "-3" -path "./functions/*.fish"` が完成しました。同じ用に `completions` と `conf.d` ディレクトリについても `find` します。
+これで、最終的な `find . -type f -depth "-3" -path "./functions/*.fish"` が完成しました。同じ様に `completions` と `conf.d` ディレクトリについても `find` します。
 
 見つけることができた fish file が各ディレクトリにおいて 0 個でない場合にはそれらのファイルを `soruce` させます。`source` の処理には見つけた個数分処理させる必要があり、さらにこの処理は他のオプション分岐でも活用できるので `__source-fish_times` という名前のヘルパー関数として独立させます。
 

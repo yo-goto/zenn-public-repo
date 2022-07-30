@@ -847,7 +847,7 @@ $fish_user_paths[3]: |/Users/roshi/.deno/bin|
 $fish_user_paths[4]: |/opt/homebrew/bin|
 ```
 
-また、同じ用にコマンドラインからやる場合には 1 回のみ使用するのに限って OK です。永続的なパスが通ります。
+また、同じ様にコマンドラインからやる場合には 1 回のみ使用するのに限って OK です。永続的なパスが通ります。
 
 ```shell:コマンドライン
 ❯ set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
