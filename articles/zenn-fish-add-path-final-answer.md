@@ -77,8 +77,8 @@ https://fishshell.com/docs/current/cmds/fish_add_path.html
 
 ドキュメントを見ると fish 側としてはインタラクティブな使用を推している感じですが、`config.fish` に記載する使用方法も用意されていました。
 
->It is (by default) safe to use fish_add_path in config.fish, or it can be used once, interactively, and the paths will stay in future because of universal variables. 
->`fish_add_path` は `config.fish` 内において(デフォルトで)安全に使用することができ、インタラクティブに一度だけ使用することも可能です。ユニバーサル変数のおかげで、パスは将来も維持されます。  
+>It is (by default) safe to use fish_add_path in config.fish, or it can be used once, interactively, and the paths will stay in future because of universal variables.
+>`fish_add_path` は `config.fish` 内において(デフォルトで)安全に使用することができ、インタラクティブに一度だけ使用することも可能です。ユニバーサル変数のおかげで、パスは将来も維持されます。
 >[fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html#cmd-fish-add-path) より引用
 
 ## (A) コマンドラインで 1 回だけ実行する
@@ -133,7 +133,7 @@ https://fishshell.com/docs/current/cmds/fish_add_path.html
 
 ## (B) config.fish に記載する
 
-環境変数だけでなく `PATH` も一緒にファイルで管理したい場合はこちらの方法を行います。`~/.config/fish/config.fish` に `fish_add_path TARGET` を記載するだけです。 
+環境変数だけでなく `PATH` も一緒にファイルで管理したい場合はこちらの方法を行います。`~/.config/fish/config.fish` に `fish_add_path TARGET` を記載するだけです。
 
 ```shell:config.fish
 # homebrew 用
@@ -157,7 +157,7 @@ https://fishshell.com/docs/current/index.html#configuration-files
 
 `fish_add_path` 関数が賢いのは、指定したコンポーネント(パス)が `$PATH` に存在している場合は再度追加せずに重複を防ぎ、`$PATH` 内のコンポーネント位置を保つことが可能である点です。
 
->If a component already exists, it is not added again and stays in the same place unless the --move switch is given.  
+>If a component already exists, it is not added again and stays in the same place unless the --move switch is given.
 >[fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html) より引用
 
 上記のコードの例では、パスに何も入れていない状態から fish を立ち上げた場合に、4 つのコンポーネントが上から順番に追加された状態でセッション内の `$PATH` に保持されていることを保証できます。コンポーネントはファイルの上から次のような順番になっています。
@@ -253,7 +253,7 @@ fish のシェル変数には主に３つのスコープがあります。
 	- グローバル変数は現在の fish セッションに固有であり、`set -e` コマンドで明示的に要求されない限り決して消えません。
 	- `set -g` または `set --global` で明示的にセットできます。
 - ローカル
-	- ローカル変数は現在の fish セッションに固有であり、特定のコマンドブロックに関連付けられています。その特定のブロックがスコープがスコープ外になると変数は自動的に削除されます。コマンドのブロックは、for, while, if, function, begin, switch などから始まり、end コマンドで終了する一連のコマンドです。
+	- ローカル変数は現在の fish セッションに固有であり、特定のコマンドブロックに関連付けられています。その特定のブロックのスコープがスコープ外になると変数は自動的に削除されます。コマンドのブロックは、for, while, if, function, begin, switch などから始まり、end コマンドで終了する一連のコマンドです。
 	- `set -l` または `set --local` で明示的にセットできます。
 
 変数の定義・修正・利用時には以下の基本的なスコープルールが適用されます。
@@ -279,7 +279,7 @@ https://fishshell.com/docs/current/language.html#variable-scope
 >    echo $baz # prints nothing because $baz went out of scope
 >end
 >```
->`set` and `read` learned a new option, `--function`, to set a variable in the function’s top scope. This should be a more familiar way of scoping variables and avoids issues with `--local`, which is actually block-scoped ([#565](https://github.com/fish-shell/fish-shell/issues/565), [#8145](https://github.com/fish-shell/fish-shell/issues/8145)):  
+>`set` and `read` learned a new option, `--function`, to set a variable in the function’s top scope. This should be a more familiar way of scoping variables and avoids issues with `--local`, which is actually block-scoped ([#565](https://github.com/fish-shell/fish-shell/issues/565), [#8145](https://github.com/fish-shell/fish-shell/issues/8145)):
 > [Release fish 3.4.0 (released March 12, 2022)](https://github.com/fish-shell/fish-shell/releases/tag/3.4.0) より引用
 :::
 
@@ -359,13 +359,13 @@ set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
 まず、前提として `PATH` という環境変数はグローバル変数です。
 fish shell の開発者の一人が次のように述べています。
 
->[ridiculousfish commented on 20 Feb 2013](https://github.com/fish-shell/fish-shell/issues/527#issuecomment-13811988)  
+>[ridiculousfish commented on 20 Feb 2013](https://github.com/fish-shell/fish-shell/issues/527#issuecomment-13811988)
 >It strikes me that PATH ought never to be a universal variable, because it must be inherited from the environment. That is, if someone sets PATH in bash and then invokes fish, fish ought to respect that, and not overwrite it a universal value.
 >`PATH` はユニバーサル変数ではなくグローバル変数です。`PATH` は環境そのものから継承されるので、ユニバーサル変数であってはならず、bash で `PATH` を設定して fish を呼び出す場合 fish はそのパスを尊重してユニバーサルな値を上書きしないようにします。
 
 そもそも、fish shell は起動時にすべての環境変数を読み込みそれらをグローバル変数に変換しているとのことです。
 
->[krobelus commented on 11 Dec 2020](https://github.com/fish-shell/fish-shell/issues/7539#issuecomment-742647069)  
+>[krobelus commented on 11 Dec 2020](https://github.com/fish-shell/fish-shell/issues/7539#issuecomment-742647069)
 >The global PATH is here because when fish starts, it reads all environment variables and turns them into global variables.
 (historical reasons.. maybe one day we can merge global and universal scopes).
 
@@ -386,11 +386,11 @@ $LANG[1]: |ja_JP.UTF-8|
 
 :::message
 シェル変数は "export" することで、環境変数として利用できるようになります。環境変数であることは、ローカル・グローバル・ユニバーサルといったスコープ自体とは関係なく、シェル変数の特定の状態を指します。なので、シェル変数自体はグローバル・ローカル・ユニバーサルのスコープに関わらず、あらゆるスコープでエクスポートできます。スコープによって変わるのは、その環境変数がどのように利用できかという点です。
-参考: [fish Documents: How do I set or clear an environment variable?](https://fishshell.com/docs/current/faq.html#how-do-i-set-or-clear-an-environment-variable)  
+参考: [fish Documents: How do I set or clear an environment variable?](https://fishshell.com/docs/current/faq.html#how-do-i-set-or-clear-an-environment-variable)
 
 スコープによる挙動の違いは次のようになります。
 - シェル変数がグローバルまたはユニバーサルでエクスポートされている場合は、すべての関数がその変数にアクセスでき、それぞれの変数の保持はスコープ通りになる。
-- シェル変数がグローバルでもユニバーサルでもないがエクスポートされている場合は、呼び出された関数は関数にローカルなその変数のコピーを受け取る(関数によってそれらの値が変更されたとしてもコピー元の値は変わらない)  
+- シェル変数がグローバルでもユニバーサルでもないがエクスポートされている場合は、呼び出された関数は関数にローカルなその変数のコピーを受け取る(関数によってそれらの値が変更されたとしてもコピー元の値は変わらない)
 
 参考: [faho commented on 25 Aug 2016](https://github.com/fish-shell/fish-shell/issues/1091#issuecomment-242213527)
 
@@ -429,7 +429,7 @@ Scope Shadowing の問題。
 
 変数のスコープルールとして "inside out" つまりローカルからグローバル、そして最後にユニバーサルという優先順位でサーチが行われるため、グローバルな環境変数と同一名のユニバーサルな環境変数があった場合、グローバル環境変数が優先されて参照されます。 これにってユニバーサルな環境変数の値を変更してもグローバルな環境変数が存在するため、変更が反映されないという "scope shadowing" と呼ばれる問題が引き起こされます。  
 
->Environment variables such as EDITOR or TZ can be set universally using set -Ux. However, if there is an environment variable already set before fish starts (such as by login scripts or system administrators), it is imported into fish as a global variable. **The variable scopes are searched from the "inside out", which means that local variables are checked first, followed by global variables, and finally universal variables**.  
+>Environment variables such as EDITOR or TZ can be set universally using set -Ux. However, if there is an environment variable already set before fish starts (such as by login scripts or system administrators), it is imported into fish as a global variable. **The variable scopes are searched from the "inside out", which means that local variables are checked first, followed by global variables, and finally universal variables**.
 >[fish Documents: Why doesn't set -Ux (exported universal variables) seem to work?](https://fishshell.com/docs/current/faq.html#why-doesn-t-set-ux-exported-universal-variables-seem-to-work) より引用
 
 ```shell
@@ -442,16 +442,16 @@ global
 ❯ set -e NEWVAR; echo $NEWVAR
 universal
 ❯ set -e NEWVAR; echo $NEWVAR
-```  
+```
 
-参考: [zanchey commented on 22 May 2013](https://github.com/fish-shell/fish-shell/issues/806#issuecomment-18267479)  
+参考: [zanchey commented on 22 May 2013](https://github.com/fish-shell/fish-shell/issues/806#issuecomment-18267479)
 :::
 
 `set -U` と `set -Ux` の違いは、`-x` によって環境変数という状態にするか否かですが、どちらもユニバーサルスコープで定義するため、結局はグローバルスコープに定義された `PATH` からシャドーされてどちらもパスが通りません。
 
 また、公式ドキュメントでは以下のように `config.fish` ではユニバーサル変数へ値を追加しないようにと注意書きがなされています。
 
->Do not append to universal variables in config.fish, because these variables will then get longer with each new shell instance. Instead, simply set them once at the command line.  
+>Do not append to universal variables in config.fish, because these variables will then get longer with each new shell instance. Instead, simply set them once at the command line.
 > [fish documents: More on universal variables](https://fishshell.com/docs/current/language.html#more-on-universal-variables)
 
 ユニバーサル変数のセットは 1 回だけ行えば永続化・伝播します。従って、そのような操作をする場合には、代わりにコマンドラインから行うようにとも書かれていますね。
@@ -471,7 +471,7 @@ https://github.com/fish-shell/fish-shell/issues/806
 この scope shadowing の問題から、`config.fish` 内において環境変数の定義をする場合には、グローバルスコープでの export `set -gx` の使用を推奨しています。`PATH` 以外の環境変数においては次のように `config.fish` に記載するのが良いです。
 
 ```shell:config.fish
-set -gX EDITOR vim
+set -gx EDITOR vim
 ```
 
 :::message alert
@@ -825,7 +825,7 @@ set -U fish_user_paths $HOME/.deno/bin $CARGO_HOME/bin /opt/homebrew/bin
 set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
 ```
 
->$fish_user_paths is now automatically deduplicated to fix a common user error of appending to it in config.fish when it is universal ([#8117](https://github.com/fish-shell/fish-shell/issues/8117)). fish_add_path remains the recommended way to add to $PATH.  
+>$fish_user_paths is now automatically deduplicated to fix a common user error of appending to it in config.fish when it is universal ([#8117](https://github.com/fish-shell/fish-shell/issues/8117)). fish_add_path remains the recommended way to add to $PATH.
 >[Release fish 3.4.0 (released March 12, 2022)](https://github.com/fish-shell/fish-shell/releases/tag/3.4.0) より引用
 
 ただし、`fish_user_path` 関数が依然として推奨方法であるとのことです。
@@ -885,7 +885,7 @@ $fish_user_paths[4]: |/opt/homebrew/bin|
 
 ```shell:config.fish
 if status --is-login
-    set -gx PATH ~/linux/bin $PATH 
+    set -gx PATH ~/linux/bin $PATH
 end
 ```
 
@@ -901,13 +901,13 @@ https://github.com/fish-shell/fish-shell/issues/5456
 
 推奨ではないですが、実は fish は他のシェルとの互換のために `export`(bash 用) と `setenv`(csh 用) という関数を提供しており、これらを使って環境変数を設定できるそうです。しかし、ビルトインの `set` コマンドの使用を推奨しているためか、ドキュメントに記載されていません。開発者の一人である、faho 氏が issue で言及しているのを発見しました。
 
->[faho commented on 3 Feb 2016](https://github.com/fish-shell/fish-shell/issues/2704#issuecomment-178749261)  
+>[faho commented on 3 Feb 2016](https://github.com/fish-shell/fish-shell/issues/2704#issuecomment-178749261)
 >There's an additional point:
 >```shell
 >> type set
 >set is a builtin
 >> type setenv
->setenv is a function with definition 
+>setenv is a function with definition
 >[...]
 >> type export
 >export is a function with definition
@@ -1024,27 +1024,27 @@ set -g testvalue 1234
 :::details 参考: Bash における環境変数
 >When a program is invoked it is given an array of strings called the environment. This is a list of name-value pairs, of the form name=value.
 >
->Bash provides several ways to manipulate the environment. On invocation, the shell scans its own environment and creates a parameter for each name found, automatically marking it for export to child processes. Executed commands inherit the environment. The export and ‘declare -x’ commands allow parameters and functions to be added to and deleted from the environment. If the value of a parameter in the environment is modified, the new value becomes part of the environment, replacing the old. The environment inherited by any executed command consists of the shell’s initial environment, whose values may be modified in the shell, less any pairs removed by the unset and ‘export -n’ commands, plus any additions via the export and ‘declare -x’ commands.  
+>Bash provides several ways to manipulate the environment. On invocation, the shell scans its own environment and creates a parameter for each name found, automatically marking it for export to child processes. Executed commands inherit the environment. The export and ‘declare -x’ commands allow parameters and functions to be added to and deleted from the environment. If the value of a parameter in the environment is modified, the new value becomes part of the environment, replacing the old. The environment inherited by any executed command consists of the shell’s initial environment, whose values may be modified in the shell, less any pairs removed by the unset and ‘export -n’ commands, plus any additions via the export and ‘declare -x’ commands.
 >
 >プログラムが呼び出された際に "環境"(environment) と呼ばれる文字列の配列がプログラムに与えられます。これは `name=value` 形式の name-value のペアのリストです。
 >
->Bash はこの環境を操作するための方法をいくつか提供しています。シェルが呼び出される際には、シェルは自身の環境をスキャンし、見つかった name ごとにパラメータを作成し、自動的にそれらを子プロセスにエクスポートできるようにマークを付けます。`export` と `declare -x` のコマンドによって、環境からパラメータと関数が追加や削除されることが許可されます。パラメータの値が環境において修正された場合、新しい値は古い値を置き換えて環境の一部となります。あらゆる実行されたコマンド(executed command)によって継承された環境は、シェルの初期環境から構成されます。その環境の値はシェル内で修正可能ですが、`unset` と `export -n` コマンドによって削除されたペアと `export` と `declare -x` コマンドによる追加は含まれません。  
+>Bash はこの環境を操作するための方法をいくつか提供しています。シェルが呼び出される際には、シェルは自身の環境をスキャンし、見つかった name ごとにパラメータを作成し、自動的にそれらを子プロセスにエクスポートできるようにマークを付けます。`export` と `declare -x` のコマンドによって、環境からパラメータと関数が追加や削除されることが許可されます。パラメータの値が環境において修正された場合、新しい値は古い値を置き換えて環境の一部となります。あらゆる実行されたコマンド(executed command)によって継承された環境は、シェルの初期環境から構成されます。その環境の値はシェル内で修正可能ですが、`unset` と `export -n` コマンドによって削除されたペアと `export` と `declare -x` コマンドによる追加は含まれません。
 >[Bash refarence](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Environment) より引用
 :::
 
 ## ユニバーサル変数の廃止?
-scope shadowing やら、今まで述べたようなアンチパターンにおけるグローバル変数・ユニバーサル変数・環境変数との混同などがあるため、いっそのことユニバーサル変数を廃止し別のメカニズムで置き換えようという議論もあります。  
+scope shadowing やら、今まで述べたようなアンチパターンにおけるグローバル変数・ユニバーサル変数・環境変数との混同などがあるため、いっそのことユニバーサル変数を廃止し別のメカニズムで置き換えようという議論もあります。
 
-https://github.com/fish-shell/fish-shell/issues/7317  
-https://github.com/fish-shell/fish-shell/issues/7379  
+https://github.com/fish-shell/fish-shell/issues/7317
+https://github.com/fish-shell/fish-shell/issues/7379
 
-開発者の一人である ridiculousfish 氏がユニバーサル変数のスコープを除去し、ユニバーサル変数をグローバル変数にするというプルリクエストを投下していました(そもそもフィードバックを得るためで、結局は棄却というか、自分で取り下げていましたが)。  
-https://github.com/fish-shell/fish-shell/pull/8455  
+開発者の一人である ridiculousfish 氏がユニバーサル変数のスコープを除去し、ユニバーサル変数をグローバル変数にするというプルリクエストを投下していました(そもそもフィードバックを得るためで、結局は棄却というか、自分で取り下げていましたが)。
+https://github.com/fish-shell/fish-shell/pull/8455
 
 
 以下、ユニバーサル変数の問題点と環境変数についての会話を抜粋。
 
->[ridiculousfish commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issue-1057599268)  
+>[ridiculousfish commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issue-1057599268)
 >This PR addresses the "scope confusion" aspect of universal variables, as discussed in [#7317](https://github.com/fish-shell/fish-shell/issues/7317) and [#7379](https://github.com/fish-shell/fish-shell/issues/7379). It is a major change, so would go in after 3.4.0 release.
 >Today, there is a universal variable scope above the global scope, which causes confusion:
 >
@@ -1057,25 +1057,25 @@ https://github.com/fish-shell/fish-shell/pull/8455
 >
 >1. 値がそれぞれ異なる場合に、グローバル変数がユニバーサル変数をシャドーする可能性がある。
 >2. `set` をトップレベルで呼び出す際にユニバーサル変数が存在しているとそれを修正し、そうでなければ、グローバル変数として作成する。どちらになるかというのは、必ずしも明確ではありません。
->3. ユニバーサル変数をエクスポートした場合、ネストされた fish shell のインスタンスは環境変数を継承しますが、それらはグローバル変数になります。これは非常に深刻なので、一般的なケースを防ぐためのハック方法があるほどです。  
+>3. ユニバーサル変数をエクスポートした場合、ネストされた fish shell のインスタンスは環境変数を継承しますが、それらはグローバル変数になります。これは非常に深刻なので、一般的なケースを防ぐためのハック方法があるほどです。
 
 
->[andmis commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973170023)  
+>[andmis commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973170023)
 >Have you considered making it illegal to set universal variables as exportable, and warning when launching a fish instance if there is an environment variable whose name collides with that of a universal variable?
 >
 >ユニバーサル変数を export 可能であるものとしてセット出来るの禁止して、変数名がユニバーサル変数名と衝突している環境変数がある場合に fish インスタンスの起動時に警告を出すようにしてみるのはどうですか?
 
->[ridiculousfish commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973299305)  
+>[ridiculousfish commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973299305)
 >Exported universal variables are very useful, e.g. `$EDITOR`, so we certainly want to preserve that.
 >
 >例えば `$EDITOR` など、エクスポートされたユニバーサル変数をはとても役に立つ。なのでこの機能は維持したいと思っています。
 
->[andmis commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973359992)  
+>[andmis commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973359992)
 >Interesting -- I do set `-gx EDITOR vim` in my `config.fish`. But I made that decision a long time ago before I really knew my way around fish, and particularly before I even understood what universal variables are. Is there a reason to make things like `EDITOR`, `PYTHONPATH`, etc., universal instead of setting them as `-gx` in `config.fish`?
 >
 >興味深いですね。私の場合は `config.fish` 内にて `set -gx EDITOR` を行っています。しかし、この決定をしたのは私が fish の仕組みについてよく知るずっと以前のことで、なんならユニバーサル変数がどんなものなか理解する前でしたよ。`EDITOR` や `PYTHONPATY` といったものについて `config.fish` で `-gx` として設定するのではなく、ユニバーサルにしてしまうことに何らかの理由があるのですか?
 
->[kopischke commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973868803)  
+>[kopischke commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973868803)
 >Changing global state. Changes to global variables set in `config.fish` need that file to be edited and only take effect when it is read, i.e. effectively when (re-)launching your shell. Changes to universal variables only need a `set` command to be applied to all running instances of fish. I think the utility of that is obvious, but in practice there are scope shadowing issue between universal and global variables, which is why uvars being replaced by another mechanism is being discussed.
 >
 >グローバル変数の状態の変更が問題です。`config.fish` 内でセットされたグローバル変数を変更するためには、ファイルを編集する必要がありますし、そのファイル読み込まれて初めて変更が反映されます。つまり、シェルを(再)起動したときにのみ変更が有効になります。ユニバーサル変数への変更では、すべての実行中の fish インスタンスに変更が適用されるのに必要なのは `set` コマンドを実行するだけです。この利便性については明らかだと思いますが、現実的にはユニバーサル変数とグローバル変数の間においてスコープシャドーイングの問題があり、そういうわけでユニバーサル変数(uver)は別のメカニズムに置き換えられるべきかの議論が行われています。
@@ -1085,7 +1085,7 @@ https://github.com/fish-shell/fish-shell/pull/8455
 他の issue も含めて全体的に見ると、結局のところユニバーサル変数が取り除かれることは無さそうです。
 
 :::message
-ユニバーサルスコープの環境変数  
+ユニバーサルスコープの環境変数
 
 ユニバーサル変数のエクスポートにもそれなりに利点があるそうです、例えば次の引用を見てください。
 
@@ -1123,7 +1123,7 @@ fish_add_path $VOLTA_HOME/bin
 コマンドラインからパスを追加して、`PATH` 以外の環境変数を `config.fish` で定義したり、その逆ももちろん可能です。
 
 :::message
-環境変数を削除するには、`config.fish` の場合はコードを削除したりコメントアウトしてください。`PATH` だけはユニバーサル変数によって永続化されているため、`config.fish` から `fish_add_path` 関数の部分を削除などした後にコマンドラインからユニバーサル変数 `fish_user_paths` に登録されている要素を明示的に削除します。  
+環境変数を削除するには、`config.fish` の場合はコードを削除したりコメントアウトしてください。`PATH` だけはユニバーサル変数によって永続化されているため、`config.fish` から `fish_add_path` 関数の部分を削除などした後にコマンドラインからユニバーサル変数 `fish_user_paths` に登録されている要素を明示的に削除します。
 
 削除の方法もいくつかありますが、簡単なのがインデックスを確認して削除する方法です。
 
