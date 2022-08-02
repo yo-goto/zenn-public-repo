@@ -492,7 +492,7 @@ export default async function noAwait() {
 
 これを理解するために、『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで見た何もしない async 関数をもう一度考えてみましょう。
 
-```js:何もしない非同期関数
+```js:何もしない async 関数
 async function empty() {}
 ```
 
@@ -558,7 +558,7 @@ export default async function noAwait() {
   // 順序付ける場合
   await asyncFn(); // この範囲内で完了が担保されている
   await asyncFn(); // この範囲内で完了が担保されている
-  console.log("😎 この範囲内で利用する非同期関数の完了が担保");
+  console.log("😎 この範囲内で利用する async 関数の完了が担保");
 }
 ```
 
@@ -570,7 +570,7 @@ export default async function noAwait() {
     asyncFn(),
   ]);
   // この範囲内で完了が担保されている
-  console.log("😎 この範囲内で利用する非同期関数の完了が担保");
+  console.log("😎 この範囲内で利用する async 関数の完了が担保");
 }
 ```
 

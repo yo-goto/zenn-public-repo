@@ -7,15 +7,15 @@ aliases: [ch_Top-level await]
 
 このチャプターでは、async/await の学習においてトラップとなる Top-level await について簡単に解説しておきます。
 
-Top-level await は新しい機能(ES2022 で導入)であり、await 式が非同期関数(async function)の外側で使えるようになります。ただし、初学者がこの機能について学んでしまうことで、**「同期」と「非同期」の概念が分からなくなってしまいます**(個人的な経験です)。したがって、非同期関数について理解できてから学習するようにしてください。
+Top-level await は新しい機能(ES2022 で導入)であり、await 式が async 関数の外側で使えるようになります。ただし、初学者がこの機能について学んでしまうことで、**「同期」と「非同期」の概念が分からなくなってしまいます**(個人的な経験です)。したがって、async 関数について理解できてから学習するようにしてください。
 
 # Top-level await とは
 
-通常、await 式は非同期関数(async function)内でのみしか利用できません(かつてはそうでした)。Top-level await の導入によってその制限は一部緩和されました。
+通常、await 式は async 関数内でのみしか利用できません(かつてはそうでした)。Top-level await の導入によってその制限は一部緩和されました。
 
-まずは、次のような非同期関数について考えてみます。
+まずは、次のような async 関数について考えてみます。
 
-```js:非同期関数
+```js:async 関数
 // simpleAsyncAwait.js
 console.log("🦖 [1] MAINLINE: Start");
 const url = "https://api.github.com/zen";
@@ -36,7 +36,7 @@ const url = "https://api.github.com/zen";
 console.log("🦖 [3] MAINLINE: End");
 ```
 
-Top-level await では上のコードのように非同期関数を定義することなく、ファイル直下に次のように書くことができます。これにより、Promise を返す非同期 API などから処理結果の値を簡単にとりだすことができます。
+Top-level await では上のコードのように async 関数を定義することなく、ファイル直下に次のように書くことができます。これにより、Promise を返す非同期 API などから処理結果の値を簡単にとりだすことができます。
 
 ```js:Top-level await
 // simpleTopLevelAwait.js
@@ -66,7 +66,7 @@ Deno では最初から単一ファイルで Top-level await が使用できま�
 
 # Top-level await の実行順序
 
-Deno ランタイム環境において、上記２つのコードの実行順序を考えてみましょう。まず、非同期関数の場合の `simpleAsyncAwait.js` は今までの知識で予測がつきます。`fetch()` でネットワーク接続をするので、Deno で実行するには `--allow-net` のフラグが必要になります。
+Deno ランタイム環境において、上記２つのコードの実行順序を考えてみましょう。まず、async 関数の場合の `simpleAsyncAwait.js` は今までの知識で予測がつきます。`fetch()` でネットワーク接続をするので、Deno で実行するには `--allow-net` のフラグが必要になります。
 
 ```sh
 ❯ deno run --allow-net simpleAsyncAwait.js
@@ -78,7 +78,7 @@ Deno ランタイム環境において、上記２つのコードの実行順序
 
 今まで通りですね。
 
-一方、Top-level await の場合はそうはいきません。実は、**Top-level await を使用しているファイル全体が１つの大きな非同期関数のように機能します**。
+一方、Top-level await の場合はそうはいきません。実は、**Top-level await を使用しているファイル全体が１つの大きな async 関数のように機能します**。
 
 https://v8.dev/features/top-level-await
 
@@ -89,7 +89,7 @@ https://v8.dev/features/top-level-await
 Top-level await を使用したモジュール自体を `import` する他のモジュールはそれ自体のコードの評価を開始する前に待機することになり、Top-level await が導入される前に比べて、モジュールの実行順序が複雑になります。
 :::
 
-というわけで、**このファイルのみを考えると**ファイル全体が非同期関数と同じ様になるので、同期実行であった部分が非同期関数内の処理と同じになります。
+というわけで、**このファイルのみを考えると**ファイル全体が async 関数と同じ様になるので、同期実行であった部分が async 関数内の処理と同じになります。
 
 ```js:Top-level await
 // simpleTopLevelAwait.js
@@ -105,7 +105,7 @@ try {
   console.log(error); 
 }
 
-// このファイル全体が１つの大きな非同期関数となるので await 式の評価が終わってから実行される
+// このファイル全体が１つの大きな async 関数となるので await 式の評価が終わってから実行される
 console.log("🦖 [D] MAINLINE: End");
 ```
 
@@ -121,7 +121,7 @@ console.log("🦖 [D] MAINLINE: End");
 
 Deno では Top-level await が何もせずに最初から使えてしまうため、この実行順序について非常に混乱しました。Top-level await を含む単一ファイルを実行すると、**await 処理が同期的に実行されて見えるため**(実際このファイル単体の実行でみれば同期的に実行されていると言える)、「await 式は同期実行される😵‍💫？」という混乱が個人的にありました。
 
-非同期関数の解説でも、たまに Async function の定義を書くのを省いて次のように書いてしまっている場合があります。初学者がこれを見ると非常に混乱するので気をつけてください。
+async 関数の解説でも、たまに関数定義を書くのを省いて次のように書いてしまっている場合があります。初学者がこれを見ると非常に混乱するので気をつけてください。
 
 ```js
 // top-level await か async/await で後の話が変わってくる
@@ -130,11 +130,11 @@ try {
   const text = await response.text();
   console.log("👦 [C] MICRO: Github Philosophy>>", text);
 } catch (error) {
-  console.log(error); 
+  console.log(error);
 }
 ```
 
-ファイル全体が大きな１つの非同期関数のように振る舞うことを認識できれば同じように考えることができるのですが、これに気づかないと訳がわからなくなってしまいます。
+ファイル全体が大きな１つの async 関数のように振る舞うことを認識できれば同じように考えることができるのですが、これに気づかないと訳がわからなくなってしまいます。
 
 # モジュールの実行順序への影響
 
