@@ -1,5 +1,7 @@
 ---
 title: "TypeScript における Promise の型注釈"
+aliases: [ch_TypeScript における Promise の型注釈]
+tags: [" #JavaScript/async  "]
 ---
 
 # このチャプターについて
