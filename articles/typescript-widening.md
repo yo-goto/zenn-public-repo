@@ -6,8 +6,11 @@ topics: ["typescript", "deno"]
 published: true
 date: 2022-07-29
 url: "https://zenn.dev/estra/articles/typescript-widening"
-tags: [" #type/zenn "]
-aliases: [記事_TypeScript の Widening]
+tags: [" #type/zenn #TypeScript/inference "]
+aliases: [
+  記事_TypeScript の Widening,
+  Widening, 型の拡大
+]
 ---
 
 # はじめに
@@ -892,7 +895,7 @@ const strLiteralUnion: "text" | "mytext" = str; // [Error]
 >String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
 
-ただし、`toUpperCase()` などのプロトタイプメソッドで返ってくる値を `const` 宣言した変数に代入しようとすると、結局は拡張された `string` 型の変数となります。
+ただし、`toUpperCase()` などのプロトタイプメソッドで返ってくる値を `const` 宣言した変数に代入しようとすると、結局は拡大された `string` 型の変数となります。これは `toUpperCase()` メソッドの返り値の型が `string` 型として決まっているからでしょう。
 
 ```ts
 const strLiteral = "text";
@@ -955,6 +958,8 @@ type SeussFish = `${Quantity | Color} fish`;
 参考文献
 https://mariusschulz.com/blog/string-literal-types-in-typescript#string-literal-types-vs-strings
 
+# 演算子のオペランドと演算結果の型
+
 演算結果の値の型が拡大されて返るのは、オブジェクトや配列についても同じです。プロパティの値や配列要素の値を使って何かしらの演算がされた場合には Widening された結果が返ってきます。演算によって返却される値は `string` や `number` などの一般的な型となります。
 
 ```ts
@@ -1011,6 +1016,37 @@ let literalUnion = Math.random() < 0.5
 type LiteralUnion = typeof literalUnion;
 // type LiteralUnion = "text" | 42;
 ```
+
+そもそも、こういったビルトインの演算子にはオペランドの型が決められており、さらに演算の結果としての式の評価値の型も決まっています。そういった演算子の型についての情報はアーカイブされて更新の止まった仕様書から読み取れます。その仕様書は TypeScript のリポジトリの `docs` に存在しています。
+
+https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#418-unary-operators
+
+例えば二項演算子としての `+` 演算子のオペランドの型は TypeScript v1.8 の時点では次のようになっていました(オペランドの対象として[BigInt](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#bigint)などが加わった以外は演算子の型なので現在でも大してかわっていないと推測しています、というか情報が最新のドキュメントにはどこにもない)。２つのオペランドの型の組み合わせから演算結果となる値の型が分かります(数値リテラル型などが導入される前)。
+
+![プラス演算子の型](/images/typescript-widen-narrow/img_plusOperatorType.jpg)*[TypeScript/spec-ARCHIVED.md at main · microsoft/TypeScript](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#418-unary-operators) より引用*
+
+オペランドの一方が `string` 型なら演算結果は `string` 型となり、両方のオペランドの型が `number` 型のときに演算結果は `number` 型となります(まあ、これは JavaScript での演算がわかっていれば当たり前の内容ですね)。
+
+従って、値の初期化においても演算子を使って何かしらの式をつくって初期化すればその型は一般的な型となり、**その結果がリテラル型になるようなことはなさそうです**。例えば二項演算子としての `+` 演算子の演算結果は２つのオペランドが数値リテラルなら結果の型は `number` 型となります。
+
+```ts
+const added = 1 + 2; // 演算結果は number 型
+//    ^^^^^: number 型として型推論される
+
+const num1 = 1; // 1 数値リテラルとして型推論される
+const num2 = 2; // 2 数値リテラルとして型推論される
+
+const more = num1 + num2; // 演算結果は number 型
+//    ^^^^: number 型として型推論される
+```
+
+考え方としては、こういった演算においても例えば `number` 型の subtype である数値リテラル型はオペランドとして受け入れられて、演算の結果として決まった `number` 型の値が生み出されるとして考えられるでしょう。
+
+また、単項演算子を使った式の評価値で初期化する場合にも型はリテラル型ではなく拡大されて一般化した `number` 型などになります。結果として値の型は拡大しますが、Widening の機能というよりも演算の結果の型が決まっているからと考えた方がよいでしょう。
+
+式や演算子の型については中々情報が得られないのですが、uhyo さんの次の記事で詳しく解説されていましたので参考にしてください。
+
+https://qiita.com/uhyo/items/6acb7f4ee73287d5dac0
 
 # Collective type と Unit type
 
@@ -1076,5 +1112,5 @@ t2 = a2; // [Error]
 # 終わり
 Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
 
-Widening の対となる Narrowing については次回の記事で書こうと思います。
+Widening の対となる Narrowing については次回以降の記事で書こうと思います。
 
