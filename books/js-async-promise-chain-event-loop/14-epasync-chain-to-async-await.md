@@ -121,6 +121,10 @@ Fn(); // すぐ呼び出し
 })();
 ```
 
+:::message
+このチャプターでは、即時実行時に無名関数でよいものもあえて名前をつけて若入りやすくしている場合があります。
+:::
+
 ## async 関数内部は同期処理
 
 『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async#同期か非同期か)』のチャプターで見たように **Promise コンストラクタ内部は同期処理**であり、`then()` で chain してはじめて非同期になりました。
@@ -355,8 +359,8 @@ function promiseTimer(delay) {
 
 async/await は Promise chain を変形することで書くことができますし、内部的にも Promise の処理に基づいています(これについては『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説します)。そして、**Promise chain を学習してきましたが、ブロッキングなんて起きていませんでしたよね**。await 式の「待つ」は非同期 API の作業を起点とした一連の作業「A(非同期 API の作業) したら B(コールバック関数) する、B したら C(コールバック関数) する」という逐次処理を行う時に、 A が終わっていないのに B はできないので、非同期 API の作業を環境が終わらせるまで順番的に A の次に行いたい B という作業を行わないで、**別の作業をメインスレッドで続ける**ということを意味します。「非同期 API の並列的作業である A がバックグラウンドで環境が処理している間は、その async 関数の内の処理は一時的に停止させて、別のことをやる」というのが「async/await でできること」であり「やりたいこと」です。
 
-```js
-(async function immediateFn() {
+```js:immediate.js
+(async () => {
   console.log("😎 async 関数の処理を開始します");
   const url = "https://api.github.com/zen";
 
@@ -408,7 +412,7 @@ const url = "https://api.github.com/zen";
 
 console.log("[1] 🦖 同期: タイミングがずれない");
 
-(async function immediateFn() {
+(async () => {
   console.log("[2] 👻 💙 同期: タイミングがずれない");
   const response = await fetch(url);
   // 環境に委任した並列作業が終わってから次の行の処理にすすみたいので、
@@ -869,7 +873,7 @@ V8 で実行すると以下の出力を得ます。
 最後に実行される
 ```
 
-async 関数(async function)では古典的な例外補足の方法として try/catch/finally を使用できます。
+async 関数では古典的な例外補足の方法として try/catch/finally を使用できます。
 
 ```js
 // awaitRejectPromise-kai.js
