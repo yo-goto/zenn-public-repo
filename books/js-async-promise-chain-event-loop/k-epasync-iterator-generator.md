@@ -440,7 +440,7 @@ Promise.resolve() // 同期的に直ちに解決される
 console.log("[1] MAINLINE");
 ```
 
-このようなコードを実行すると、`Promise.resolve()` で同期的に直ちに履行する Promsie インスタンスに chain されている `then()` に登録されているコールバック関数の方が先に処理されることになります。
+このようなコードを実行すると、`Promise.resolve()` で同期的に直ちに履行する Promise インスタンスに chain されている `then()` に登録されているコールバック関数の方が先に処理されることになります。
 
 ```sh
 ❯ deno run promiseAllTest.js
@@ -650,7 +650,7 @@ console.log(gen.next()); // => { value: undefined, done: true }
 ```
 
 上のジェネレータ関数を `yield` のみで書くと次のようになります。`yield*` はイテラブルなオブジェクトの要素に対する連続的な `yield` を
-yield await Promsie.resolve(2);表現していると捉えられます。
+yield await Promise.resolve(2);表現していると捉えられます。
 
 ```js
 function* genFnA() {
@@ -830,7 +830,7 @@ async function* asyncGenFn(start, end) {
 
 非同期ジェネレータ関数の意味は「ジェネレータ関数の内部で `await` 式が利用できるようになった」程度で十分です。実際、ジェネレータ関数で `yield` だけでなく `await` 式も使えるようになっただけです。
 
-ジェネレータ関数の内部で Promsie-based API などを利用したいときはこの非同期ジェネレータ関数が役立つことになります。
+ジェネレータ関数の内部で Promise-based API などを利用したいときはこの非同期ジェネレータ関数が役立つことになります。
 
 ```js
 async function* asyncGenFn(url) {

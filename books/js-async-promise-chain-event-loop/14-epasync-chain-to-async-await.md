@@ -36,9 +36,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/asy
 >An async function is a function declared with the async keyword, and the await keyword is permitted within it. The async and await keywords enable asynchronous, promise-based behavior to be written in a cleaner style, avoiding the need to explicitly configure promise chains.
 >([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用)
 
-「async 関数は `async` キーワードを使って宣言された関数であり、関数内部での `await` キーワードの使用が認められている。`async` と `await` のキーワードを使用することで、よりクリーンなスタイルで、明示的に Promsie chain を構成することなく Promise-based な非同期の振る舞いを書けるようにする」という旨が記載されています。
+「async 関数は `async` キーワードを使って宣言された関数であり、関数内部での `await` キーワードの使用が認められている。`async` と `await` のキーワードを使用することで、よりクリーンなスタイルで、明示的に Promise chain を構成することなく Promise-based な非同期の振る舞いを書けるようにする」という旨が記載されています。
 
-そして、async 関数は**どんな時も必ず Promise インスタンスを返す関数**です。return される値が明示的に Promsie ではない場合も Promise インスタンスでラップされて返却されます。
+そして、async 関数は**どんな時も必ず Promise インスタンスを返す関数**です。return される値が明示的に Promise ではない場合も Promise インスタンスでラップされて返却されます。
 
 >**Async functions always return a promise**. If the return value of an async function is not explicitly a promise, **it will be implicitly wrapped in a promise**.
 >([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用、太字は筆者強調)

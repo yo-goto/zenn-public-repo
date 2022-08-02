@@ -307,9 +307,9 @@ console.log("ジェネレータ関数内のすべての処理を終了");
 ジェネレータ関数内のすべての処理を終了
 ```
 
-async/await では最初の await 式でのみ暗黙的に async 関数から返される Promise インスタンスを `yield` していると考えることができます。それ以降は await 式による評価のたびに一時停止しますが、呼び出し元に値を返しません。最終的に async 関数内の処理がすべて完了すると async 関数内で `return` されている値で最初に返した Promsie インスタンスを履行します。
+async/await では最初の await 式でのみ暗黙的に async 関数から返される Promise インスタンスを `yield` していると考えることができます。それ以降は await 式による評価のたびに一時停止しますが、呼び出し元に値を返しません。最終的に async 関数内の処理がすべて完了すると async 関数内で `return` されている値で最初に返した Promise インスタンスを履行します。
 
-あるいは async 関数内部でジェネレータが使われているとも考えることができます。実際、async/await が ECMAScript に導入されるまではこのジェネレータ関数と Promsie インスタンスを組み合わせて async 関数のようなものつくっていたそうです。async 関数を使ったコードを Babel や TypeScript で古い JavaScript にトランスパイルする際にはジェネレータ関数と Promise インスタンスを組み合わせて実現しています。
+あるいは async 関数内部でジェネレータが使われているとも考えることができます。実際、async/await が ECMAScript に導入されるまではこのジェネレータ関数と Promise インスタンスを組み合わせて async 関数のようなものつくっていたそうです。async 関数を使ったコードを Babel や TypeScript で古い JavaScript にトランスパイルする際にはジェネレータ関数と Promise インスタンスを組み合わせて実現しています。
 
 - 参考: [async await - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/future-javascript/async-await)
 

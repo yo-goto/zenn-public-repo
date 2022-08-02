@@ -18,7 +18,7 @@ aliases: [記事_TypeScript の基礎から Promise の型注釈まで駆け登�
 
 この記事は JavaScript の非同期処理を学習した人間が Promise や非同期処理を介して逆に TypeScript の型注釈を理解しようという特殊な試みの記事になります。
 
-実は Promsie の型注釈や TypeScript の非同期処理の解説については以下のように既にいくつも有用なリソースがあります。
+実は Promise の型注釈や TypeScript の非同期処理の解説については以下のように既にいくつも有用なリソースがあります。
 
 - [Promise / async / await | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/reference/promise-async-await)
 - [イベントループと TypeScript の型から理解する非同期処理](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop)

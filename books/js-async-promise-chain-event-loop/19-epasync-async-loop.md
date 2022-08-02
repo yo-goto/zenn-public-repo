@@ -570,7 +570,7 @@ const urls = [
 async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスの配列をしっかりと作成できます。
 
 ```js
-// Promsie インスタンスの配列を作成する
+// Promise インスタンスの配列を作成する
 const promises = urls.map(async (url) => {
   try {
     const response = await fetch(url);
