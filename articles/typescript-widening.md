@@ -1221,7 +1221,7 @@ let undefinedLet = undefined;
 
 subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory)ではこのような型を **Top type** と呼ぶそうです。
 
-https://en.wikipedia.org/wiki/Bottom_type
+https://en.wikipedia.org/wiki/Top_type
 
 逆に最下位となる型は TypeScript では `never` 型であり、型理論ではこのような型を **Bottom type(ボトム型、ゼロ型、空型)** と呼ぶそうです。
 
@@ -1290,11 +1290,46 @@ graph LR
   obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
-左が supertype で、右が suptype の方向となります。そして、Widening が起きる方向は subtype → supertype の方向であり、代入可能となるのも subtype → supertype の方向で、逆は型エラーとなります。この図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると subtype → supertype で代入可能である一方で、supertype → subtype で代入できないとういうのが上の階層図と一致しているので納得できます。
+左が supertype で、右が suptype の方向となります。そして、Widening が起きる方向は subtype → supertype の方向であり、代入可能となるのも subtype → supertype の方向で、逆は型エラーとなります。
+
+```ts
+let strLiteral = "text" as const;
+let str: string;
+let strBox: String;
+let Obj: Object;
+let myany: any;
+let myunknown: unknown;
+
+// subtype → supertype で代入していくと型エラーにならない
+str = strLiteral;
+strBox = str;
+Obj = strBox;
+myany = Obj;
+myunknown = myany;
+```
+
+この図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると subtype → supertype で代入可能である一方で、supertype → subtype で代入できないとういうのが上の階層図と一致しているので納得できます。
 
 ![型の互換性](/images/typescript-widen-narrow/img_ts_type_compatibility.png)*[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability) より引用*
 
-ただし、`any` 型は型チェックを放棄するので、例外的にすべての型に代入可能であり、自身の subtype である型にも代入できます。
+ただし、`any` 型は型チェックを放棄するので、例外的にすべての型に代入可能であり、自身の subtype である型にも代入できます。ただし Bottom type である `never` 型には `never` 型以外は何も代入できなので `any` 型は代入できません。
+
+```ts
+// any 型は型チェックしなくなるので assignable の概念もなくなってすべての型の変数に代入できてしまう
+const test = 42 as any;
+let myany: undefined = test;
+let str: string = test;
+
+// ただし Bottom type である never 型には代入できない
+let mynever: never = test; // [Error]
+// Type 'any' is not assignable to type 'never'
+```
+
+
+参考文献
+https://knmts.com/as-a-engineer-52/
+https://qiita.com/dico_leque/items/06ac5837b7a333c5c8da
+https://gist.github.com/laughinghan/31e02b3f3b79a4b1d58138beff1a2a89
 
 # 終わり
 Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
