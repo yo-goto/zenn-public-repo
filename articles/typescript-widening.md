@@ -965,7 +965,36 @@ const strLiteralUnion: "text" | "mytext" = str; // [Error]
 // Type 'string' is not assignable to type '"text" | "mytext"'.
 ```
 
-また、同じ PR 内で、文字列リテラル型は `string` 型と同一のプロパティ(プロトタイプメソッドなど)を持ち、`+` などの演算子のとの互換性があることが明言されています。
+型には親子関係のようなものが存在しており、文字列リテラル型と `string` 型の関係は subtype と supertype です。
+
+supertype とは subtype の逆で派生元となる型のことです。つまり、`stirng` 型は `"text"` という文字列リテラル型の supertype です。Literal widening で起きるのは subtype である文字列リテラル型からプリミティブ型の supertype である `string` 型への拡大です。
+
+supertype と subtype の話はリテラル型だけではなく、タプル型と通常の配列型などの関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能あるいは割当可能(assignable)です。
+
+>A tuple type is assignable to a compatible array type.
+>([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
+
+```ts
+let a1: number[] = [42];
+let t1: [number] = [43];
+
+// タプル型を配列型に代入するのは OK
+a1 = t1; // OK
+
+let a2: number[] = [44];
+let t2: [number] = [45];
+
+// 配列型をタプル型に代入するのは NG
+t2 = a2; // [Error]
+// Type 'number[]' is not assignable to type '[number]'.
+```
+
+このような変数から別の変数へ代入できるかどうかを Assignability(割当可能性) と呼びます。関連して subtypable や comparable などの概念も派生的にあるそうです。
+
+>Assignability is the function that determines whether one variable can be assigned to another. It happens when the compiler checks assignments and function calls, but also return statements.
+>([TypeScript-New-Handbook/Assignability.md at master · microsoft/TypeScript-New-Handbook](https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md) より引用)
+
+文字列リテラル型の話に戻りますが、同じ PR 内は、文字列リテラル型は `string` 型と同一のプロパティ(プロトタイプメソッドなど)を持ち、`+` などの演算子のとの互換性があることが明言されています。
 
 >String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
@@ -1123,85 +1152,9 @@ const more = num1 + num2; // 演算結果は number 型
 
 https://qiita.com/uhyo/items/6acb7f4ee73287d5dac0
 
-# Collective type と Unit type
-
-実は `"text"` や `42`、`true` といった具体的なリテラルの値から作られるリテラル型に対して、通常はプリミティブ型(Primitive type)と呼ばれる `string` や `number`、`boolean` といった一般的な型は **集合型(Collective type)** と呼ばれることがあります。
-
-https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
-
-現時点最新の公式ドキュメントには記載されていませんが、古いバージョンでは Collective type について言及されています。あるいは Playground の [Literals のサンプル](https://www.typescriptlang.org/play/?q=69#example/literals)にも記載されています。
-
->**A literal is a more concrete sub-type of a collective type**. What this means is that "Hello World" is a string, but a string is not "Hello World" inside the type system.
->([TypeScript: Handbook - Literal Types](https://www.typescriptlang.org/docs/handbook/literal-types.html) より引用)
-
-リテラル型は集合型の具体的な subtype である旨が記載されていますね。
-
-実際、型は値の集合であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。つまり、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の要素としてみなせます。
-
->Type 型とは：型とは、値の集合であり、その集合に対して実行できることの集合である。
->少しわかりにくいと思うのでいくつか例を示しましょう。
->
->- boolean type は、全ての boolean 値（といっても二つしかないが。true と false の二つである）の集合であり、この集合に対して実行できる操作の集合である。
->- number type は全ての数値の集合であり、この集合に対して実行できる操作の集合である(例えば `+, -, *, /, %, ||, &&, ?`)である。これらの集合に対して実行できる操作には、.toFixed, .toPrecision, .toString といったものも含まれる。
->- string type は全ての文字列の集合であり、それに対して事項できる操作の集合である。(例えば `+ , || , や &&` ) .concat や .toUpperCase などが含まれる。
->
->([合法 TypeScript 第3章 Type の全て](https://uncle-javascript.com/valid-typescript-chapter3) より引用)
-
-Microsoft Developers の Youtube チャンネルの以下の動画にて TypeScript 開発者の Anders Hejlsberg 氏(この記事で参照しているプルリクエストは大体この方)による公演でも説明されていました。型が値の集合であることが理解できます。
-
-https://youtu.be/hDACN-BGvI8?t=1592
-
-そして、集合型(Collection type)に対して、単位型(Unit type)という概念もあることが数値リテラル型などのプルリクエストで言及されています。
-
->All literal types as well as the `null` and `undefined` types are considered **unit types**. **A unit type is a type that has only a single value**.
->([Number, enum, and boolean literal types by ahejlsberg · Pull Request #9407 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/9407) より引用、太字は筆者強調)
-
-単位型(Unit type)は、単一の値のみを持つ型であり、すべてのリテラル型は `null` 型や `undefined` 型と同じく単位型であると見なされるとのことです。
-
-https://en.wikipedia.org/wiki/Unit_type
-
-`string` 型は単位型である文字列リテラル型の集合型であり、各文字列リテラル型は `string` 型の subtype ということです。これは他のリテラル型とその型を Widening した集合型にも言えます。実際、`boolean` 型は `true` と `false` という真偽値リテラル型のユニオン型、つまり `true | false` という型と等しいことも明言されています。
-
->The predefined `boolean` type is now equivalent to the union type `true | false`.
->([Number, enum, and boolean literal types by ahejlsberg · Pull Request #9407 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/9407) より引用)
-
-あるいは Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#unit-types)』の項目にも記載されていました。
-
->**Unit types are subtypes of primitive types that contain exactly one primitive value**. For example, the string "foo" has the type "foo".
->(中略)
->When needed, the compiler widens — **converts to a supertype** — the unit type to the primitive type, such as "foo" to string. This happens when using mutability, which can hamper some uses of mutable variables:
->([TypeScript: Documentation - TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#unit-types) より引用)
-
-supertype とは subtype の逆で派生元となる型のことです。つまり、`stirng` 型は `"text"` という文字列リテラル型の supertype です。Literal widening で起きるのは subtype である文字列リテラル型からプリミティブ型の supertype である `string` 型への拡大です。
-
-supertype と subtype の話はリテラル型だけではなく、タプル型と通常の配列型の関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能あるいは割当可能(assignable)です。
-
->A tuple type is assignable to a compatible array type.
->([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
-
-```ts
-let a1: number[] = [42];
-let t1: [number] = [43];
-
-// タプル型を配列型に代入するのは OK
-a1 = t1; // OK
-
-let a2: number[] = [44];
-let t2: [number] = [45];
-
-// 配列型をタプル型に代入するのは NG
-t2 = a2; // [Error]
-// Type 'number[]' is not assignable to type '[number]'.
-```
-
-このような変数から別の変数へ代入できるかどうかを Assignability(割当可能性) と呼びます。関連して subtypable や comparable などの概念も派生的にあるそうです。
-
->Assignability is the function that determines whether one variable can be assigned to another. It happens when the compiler checks assignments and function calls, but also return statements.
->([TypeScript-New-Handbook/Assignability.md at master · microsoft/TypeScript-New-Handbook](https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md) より引用)
-
 # 一般的な Widening
 
-これまで見てきたのは Unit type たるリテラル型とその型を一般化した Collective type の関係性、つまり "Literal widening" という機能についてでしたが、[Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening) という機能そのものが指し示すのは `null` 型と `undefined` 型が `any` 型として拡大される機能のことです(この機能の方が Literal widening よりも古い)。
+これまで見てきたのは文字列リテラル型や数値リテラル型とその型を一般化した `string` 型や `number` 型などの関係性、つまり "Literal widening" という機能についてでしたが、本来的な [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening) という機能そのものが指し示すのは `null` 型と `undefined` 型が `any` 型として拡大される機能のことです(この機能の方が Literal widening よりも古い)。
 
 `--strictNullChecks` のオプションを有効にしないと以下のように `null` 型と `undefined` 型は変数が mutable な場所で `any` 型として拡大されます。
 
@@ -1219,117 +1172,9 @@ let undefinedLet = undefined;
 
 # 型の集合と階層性
 
-subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory)ではこのような型を **Top type** と呼ぶそうです。
+こちらについては別の記事にしました。
 
-https://en.wikipedia.org/wiki/Top_type
-
-逆に最下位となる型は TypeScript では `never` 型であり、型理論ではこのような型を **Bottom type(ボトム型、ゼロ型、空型)** と呼ぶそうです。
-
-https://en.wikipedia.org/wiki/Bottom_type
-
-公式 Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目でも `unknown` 型が top type で `never` 型が bottom type であると明示されています。
-
-![unknown & never type](/images/typescript-widen-narrow/img_ts_handbook_toptype_bottomtype.jpg)*[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types) より引用*
-
-型は値の集合なので、TypeScirpt のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合です。全体集合を `unknown` 型としてみなすと以下のような図が書けます。それぞれの型は部分集合であり、ユニオン型(`A | B`)は `A ∪ B` という和集合で、インターセクション型(`A & B`)は `A ∩ B` という積集合としてみなせます。
-
-![top type & bottom type](/images/typescript-widen-narrow/img_typescript_unknown_never_type.jpg)
-
-参考文献
-https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c5799ad/
-
-そして、subtype と supertype の関係を辿ると以下のような関係図(Type hierarchy)もできあがります。ただ完全に正確ではないかもしれないので注意してください。`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しています。
-
-```mermaid
-graph LR
-  U[unknown]
-  N[never]
-  A[any]
-  O["Object, { }"]
-  obj[object]
-  U --> A
-  A --> void --> undefined --> N
-  A --> null --> N
-  A --> O --> Number & String & Boolean & BigInt & Symbol & obj
-  subgraph Primitive
-    subgraph Unit[Unit type]
-      undefined
-      null
-      nl
-      sl
-      bl
-      bil
-      us
-    end
-    subgraph Col[Collective type]
-      number
-      string
-      boolean
-      bigint
-      symbol
-    end
-    subgraph Wrap[Wrapper]
-      Number
-      String
-      Boolean
-      BigInt
-      Symbol
-    end
-    Number --> number --> nl[number literal]
-    String --> string --> sl[string literal]
-    Boolean --> boolean --> bl[boolean literal]
-    BigInt --> bigint --> bil[bigint literal]
-    Symbol --> symbol --> us[unique symbol]
-  end
-  nl[number literal] --> N
-  sl[string literal] --> N
-  bl[boolean literal] --> N
-  bil[bigint literal] --> N
-  us[unique symbol] --> N
-  obj --> Function --> N
-  obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
-```
-
-左が supertype で、右が suptype の方向となります。そして、Widening が起きる方向は subtype → supertype の方向であり、代入可能となるのも subtype → supertype の方向で、逆は型エラーとなります。
-
-```ts
-let strLiteral = "text" as const;
-let str: string;
-let strBox: String;
-let Obj: Object;
-let myany: any;
-let myunknown: unknown;
-
-// subtype → supertype で代入していくと型エラーにならない
-str = strLiteral;
-strBox = str;
-Obj = strBox;
-myany = Obj;
-myunknown = myany;
-```
-
-この図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると subtype → supertype で代入可能である一方で、supertype → subtype で代入できないとういうのが上の階層図と一致しているので納得できます。
-
-![型の互換性](/images/typescript-widen-narrow/img_ts_type_compatibility.png)*[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability) より引用*
-
-ただし、`any` 型は型チェックを放棄するので、例外的にすべての型に代入可能であり、自身の subtype である型にも代入できます。ただし Bottom type である `never` 型には `never` 型以外は何も代入できなので `any` 型は代入できません。
-
-```ts
-// any 型は型チェックしなくなるので assignable の概念もなくなってすべての型の変数に代入できてしまう
-const test = 42 as any;
-let myany: undefined = test;
-let str: string = test;
-
-// ただし Bottom type である never 型には代入できない
-let mynever: never = test; // [Error]
-// Type 'any' is not assignable to type 'never'
-```
-
-
-参考文献
-https://knmts.com/as-a-engineer-52/
-https://qiita.com/dico_leque/items/06ac5837b7a333c5c8da
-https://gist.github.com/laughinghan/31e02b3f3b79a4b1d58138beff1a2a89
+https://zenn.dev/estra/articles/typescript-type-set-hierarchy
 
 # 終わり
 Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
