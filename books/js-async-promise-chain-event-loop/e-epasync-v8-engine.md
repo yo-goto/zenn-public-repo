@@ -7,6 +7,7 @@ aliases: [ch_V8 エンジンについて]
 V8 エンジンは Chrome, Node, Deno のそれぞれの環境で利用されている JavaScript エンジンです。V8 について知っておくと理解できることがいくつかあります。
 
 このチャプターでは、V8 エンジンについての基礎知識や、V8 エンジンをローカルで使う方法などについて解説します。
+
 # V8エンジン
 
 まず V8 とは何かを確認しておきます。
@@ -18,7 +19,7 @@ https://v8.dev/
 
 V8 は **Google が提供するオープンソースの JavaScript エンジン**であり、C++ で書かれており、基本的に Chrome で利用されています。
 
-重要なこととして、V8 エンジンは JavaScript の標準化された言語機能の仕様である **ECMAScript を実装しています**。他の環境ではこの JavaScript エンジンを埋め込んだ上で API などを提供することでその環境において JavaScript を実行できるようにしています。その他には、V8 は WebAssembly エンジンとしても利用できます。
+重要なこととして、V8 エンジンは JavaScript の標準化された言語機能の仕様である **ECMAScript を実装しています**。他の環境や C++ アプリケーションではこの JavaScript エンジンを埋め込んだ上で API などを提供することでその環境において JavaScript を実行できるようにしています。Deno では [rusty_v8](https://github.com/denoland/rusty_v8) という Rust バインディングによって V8 エンジンの C++ API を Rust で操作できるようにしているようです。その他には、V8 は WebAssembly エンジンとしても利用できます(ECMASCript と同様に WebAssembly も実装しています)。
 
 ## V8 の役割
 
@@ -96,7 +97,7 @@ export PATH="${HOME}/.jsvu:${PATH}"
 パスを通したら、次のコマンドで JavaScript エンジンをインストールします。
 
 ```sh
-$ jsvu 
+$ jsvu
 ```
 
 jsvu は V8 エンジンのみだけでなく、あらゆる JavaScript エンジンのインストールができます。次のサポートバージョンのエンジンがインストールできるようになっています。上記コマンドを実行すると、インストールできるもののリストが表示されるので V8 を選択してインストールします。
@@ -109,14 +110,14 @@ https://v8.dev/docs/d8
 
 >d8 is V8’s own developer shell.
 >
->**d8 is useful for running some JavaScript locally or debugging changes you have made to V8**. Building V8 using GN for x64 outputs a d8 binary in out.gn/x64.optdebug/d8. You can call d8 with the --help argument for more information about usage and flags.
+>**d8 is useful for running some JavaScript locally or debugging changes you have made to V8**.
 >([上記ページ](https://v8.dev/docs/d8)より引用、太字は筆者強調)
 
 d8 は V8 エンジンで利用でき、ローカル環境で JavaScript の実行をテストできます。`v8` コマンドで立ち上がる REPL もこの d8 となります。
 
 jsvu で V8 エンジンがインストールできたら `v8` コマンドが使えるようになっています。実際に使用してみます。
 
-```sh
+```sh:コマンドライン
 # REPL を立ち上げて色々なオブジェクトについて見てみる
 ❯ v8
 V8 version 10.3.125
@@ -150,7 +151,7 @@ function Promise() { [native code] }
 
 JavaScript エンジンにはそれを埋め込む環境が提供する Web APIs などは通常含まれませんが、最低限の Web API もどきは提供されているようです。
 
-- `console.log()` などの Console API は提供されている
+- `console.log()` などの Console API は提供されている(スタンドアロンでテストするためにも必要)
 - `setTimeout()` は存在するが `setInvertal()` は提供されていない
 - Promise は ECMAScript のビルトインオブジェクトなのでもちろん存在する
 - `queueMicrotask()` は Web API なので提供されていない
@@ -166,12 +167,12 @@ console.log("[1] 🦖 MAINELINE: Start [GEC]");
 setTimeout(() => {
   console.log("[3] ⏰ TIMERS: timeout 5000ms");
   // 遅延時間を長くしてもこちらが先にタスクとして処理される
-}, 5000); 
+}, 5000);
 
 setTimeout(() => {
   console.log("[4] ⏰ TIMERS: timeout 0 ms");
-  // 遅延時間 0 ms 
-}); 
+  // 遅延時間 0 ms
+});
 
 console.log("[2] 🦖 MAINELINE: End [GEC]");
 ```
@@ -186,7 +187,7 @@ V8 コマンドでは `deno run` や `node` とまったく同じ様にスクリ
 [4] ⏰ TIMERS: timeout 0 ms
 ```
 
-出力順番を見ると、遅延時間を指定しても意味がなく、直ちにタスクとして処理されていることが分かりますね。時間を図るというのは作業自体は環境が別スレッドでバックグラウンド行う機能ですから、ここでは存在していません。
+出力順番を見ると、遅延時間を指定しても意味がなく、直ちにタスクとして処理されていることが分かりますね。時間を図るというのは作業自体は JavaScript エンジンではなく環境が並列的にバックグラウンド行う機能ですから、ここでは存在していません(Node 環境ならポーリングの機構によってソートされたタイマーで有効期限の切れたものを一括処理しています)。
 
 ここまで来てお気づきだと思いますが、実は V8 エンジンにはタスクとマイクロタスクを扱うことのできるデフォルトのイベントループが存在しています。
 
@@ -194,7 +195,7 @@ V8 コマンドでは `deno run` や `node` とまったく同じ様にスクリ
 Chrome, Node, Deno ではデフォルトのイベントループに対して他のライブラリ(Libevent, Libuv, Tokio)を使って非同期 I/O などの仕組みを挿入しています。
 :::
 
-V8 エンジンのミラーリポジトリの `V8/src/libplatfor` のディレクトリなど見てみると分かります。
+V8 エンジンのミラーリポジトリの `V8/src/libplatform` のディレクトリなど見てみると分かります。
 
 https://github.com/v8/v8/tree/main/src/libplatform
 
@@ -202,7 +203,7 @@ https://github.com/v8/v8/tree/main/src/libplatform
 
 ![V8 src](/images/js-async/img_v8srclibGit.jpg)
 
-この辺りがデフォルトのイベントループでしょうか。
+おそらく、この辺りがデフォルトのイベントループでしょうか。
 
 https://github.com/v8/v8/blob/0ed101e0152476aa8891b10f47574628d929f3ce/src/libplatform/default-platform.cc#L147-L164
 
