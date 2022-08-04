@@ -151,10 +151,9 @@ const vA: A = obj; // エラーとならないで受け入れられる
 
 ということで、`{ a: "st" }` という型は `{ a: "st"; c: number; d: string }` など `a: "st"` 以外の任意のプロパティを持つオブジェクトの型の集合であることが分かります。
 
-剰余プロパティチェックについては以下の uhyo さんの記事が非常に分かりやす解説されていたので参考にしてください。
+余剰プロパティチェックについては uhyo さんの以下の記事で非常に分かりやす解説されていたので参考にしてください。ユニオン型が OR 演算によることものであることについても解説されています。
 
 https://qiita.com/uhyo/items/b1f806531895cb2e7d9a
-
 
 # 型の階層性
 
@@ -181,7 +180,7 @@ https://en.wikipedia.org/wiki/Bottom_type
 参考文献
 https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c5799ad/
 
-そして、subtype と supertype の関係を辿ると以下のような型の階層図(Type hierarchy)もできあがります。ただし、以下の図は mermaid で記述したものですが、以下の図は完全に正確ではないかもしれないので注意してください(複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しています。
+そして、subtype と supertype の関係を辿ると以下のような型の階層図(Type hierarchy)もできあがります。ただし、以下の図は mermaid で記述したものですが、全貌図としては完全に正確ではないかもしれないので注意してください(複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しています。
 
 ```mermaid
 graph LR
@@ -233,7 +232,7 @@ graph LR
   obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
-左が supertype で、右が suptype の方向となります。subtype は supertype の型の変数へ代入可能です。
+左が supertype で、右が suptype の方向となります。そして subtype の型の変数は supertype の型の変数へ代入可能です。
 
 >スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a)とも言われる。記号 `<:` を用いて `subtype <: supertype` と表記される。
 >([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
@@ -243,17 +242,17 @@ graph LR
 ```ts
 const literal = "text" as const;
 let str: string;
-let strWrapper: String;
-let myObject: Object;
-let myAny: any;
-let myUnknown: unknown;
+let Str: String;
+let Obj: Object;
+let an: any;
+let unk: unknown;
 
 // subtype → supertype で代入していくと型エラーにならない
 str = literal;
-strWrapper = str;
-myObject = strWrapper;
-myAny = myObject;
-myUnknown = myAny;
+Str = str;
+Obj = Str;
+an = Obj;
+unk = an;
 ```
 
 この図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると subtype → supertype で代入可能である一方で、supertype → subtype で代入できないとういうのが上の階層図と一致しているので納得できます(`any` 型は例外)。
@@ -271,12 +270,12 @@ subytype 互換性を拡張したものが代入(assignment)可能性であり�
 
 ```ts
 // any 型は型チェックしなくなるので assignable の概念もなくなってすべての型の変数に代入できてしまう
-const test = 42 as any;
-let myany: undefined = test;
-let str: string = test;
+const numAsAny = 42 as any;
+let und: undefined = numAsAny;
+let str: string = numAsAny;
 
 // ただし Bottom type である never 型には代入できない
-let mynever: never = test; // [Error]
+let nev: never = numAsAny; // [Error]
 // Type 'any' is not assignable to type 'never'
 ```
 
@@ -290,8 +289,8 @@ let nev: never = 1 as never;
 let str: string = nev;
 let strArray: string[] = nev;
 let strLiteral: "text" = nev; // リテラル型にも代入可能
-let myAny: any = nev;
-let mynever: never = nev; // never 型自身に代入できる
+let an: any = nev;
+let nev2: never = nev; // never 型自身に代入できる
 ```
 
 参考文献
