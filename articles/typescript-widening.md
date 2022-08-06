@@ -1164,11 +1164,23 @@ const nullConst = null;
 const undefinedConst = undefined;
 //    ^^^^^^^^^^^^^^: undefined 型として型推論
 
-let nullLet = null;
+let nullLet = nullConst;
 //  ^^^^^^^: any 型として拡大されて型推論
-let undefinedLet = undefined;
+let undefinedLet = undefinedConst;
 //  ^^^^^^^^^^^^: any 型として拡大されて型推論
 ```
+
+ただし、`--strictNullChecks` があろうとなかろうと、Literal Widening と同じ様に mutable な場所で直接値を代入すると `any` 型として拡大されます。
+
+```ts
+let n = null;
+//  ^: any 型として拡大されて型推論される
+let u = undefined;
+//  ^: any 型として拡大されて型推論される
+```
+
+参考文献
+https://sandersn.github.io/manual/Widening-and-Narrowing-in-Typescript.html
 
 # 型の集合と階層性
 
