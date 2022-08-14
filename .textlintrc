@@ -11,8 +11,8 @@
         "allowFullWidthQuestion": true
       },
       "no-doubled-joshi": {
-         "strict": false,
-         "allow": ["か"]
+        "strict": false,
+        "allow": ["か"]
       }
     },
     "preset-ja-spacing": {
