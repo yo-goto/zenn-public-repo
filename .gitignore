@@ -1,8 +1,10 @@
 # general
 .DS_Store
+*.code-workspace
 
 # folder
 node_modules/
 .cache/
 
+# contents
 books/obsdmd-begin/
