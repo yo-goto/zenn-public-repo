@@ -1,18 +1,10 @@
 {
   "name": "zenn-repo",
-  "version": "1.0.0",
-  "description": "* [📘 How to use](https://zenn.dev/zenn/articles/zenn-cli-guide) * [📘 Markdown guide](https://zenn.dev/zenn/articles/markdown-guide)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "PADAone's zenn repo",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yo-goto/Zenn-repo.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/yo-goto/Zenn-repo/issues"
   },
