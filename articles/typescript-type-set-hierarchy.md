@@ -58,7 +58,7 @@ graph LR
   A["supertype(上位)"] --> B["subtype(下位)"]
 ```
 
-TypeScript で採用されているこういった型の仕組みは Subtyping と呼ばれるそうです。
+TypeScript で採用されているこういった型の仕組みは Subtyping と呼ばれるそうです。より具体的には [Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system) (property-based type system) です。
 
 https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)
 
