@@ -23,7 +23,7 @@ https://zenn.dev/estra/articles/zenn-source-fish-plugin
 また、コマンドラインからコマンドが呼び出される際には次のような優先順位がありました。
 
 ```
-Function > Builtin > External command 
+Function > Builtin > External command
 ```
 
 しかし、これらの「実体は何なのか」ということがまだ不明だったのでそれぞれについて追加で調べてみました。この記事は、自分用のまとめと**実際にコマンドを使用した調査**などを含むので長くなります。お急ぎの方は最後の[まとめ](#まとめ)の項目をご覧ください。
@@ -35,13 +35,13 @@ Function > Builtin > External command
 
 :::details changelog
 - 2022/02/28
-    - シンボリックリンクと Homebrew についての記述を追加、それに応じて外部コマンドの記載を修正
-    - UNIX command についての記述を追加
+  - シンボリックリンクと Homebrew についての記述を追加、それに応じて外部コマンドの記載を修正
+  - UNIX command についての記述を追加
 - 2022/03/01
-    - Homebrew そのものについての記述を追記
-    - 環境について明言化
-    - function と completion のサーチ対象となる特殊変数についての記述を追加
-    - External command の区分けについて記述を追加
+  - Homebrew そのものについての記述を追記
+  - 環境について明言化
+  - function と completion のサーチ対象となる特殊変数についての記述を追加
+  - External command の区分けについて記述を追加
 :::
 
 # Function
@@ -450,7 +450,7 @@ python3 is /opt/homebrew/bin/python3
 /opt/homebrew/bin/troff:                     Mach-O 64-bit executable arm64
 ```
 
-参考: 
+参考:
 https://qiita.com/tk3fftk/items/8b389c0e4b1f9c64ebe3
 https://kinacom.hatenablog.jp/entry/2016/06/29/180854
 
