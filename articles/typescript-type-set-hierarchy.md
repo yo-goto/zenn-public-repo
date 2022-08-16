@@ -22,7 +22,7 @@ aliases: [
 
 https://zenn.dev/estra/articles/typescript-widening
 
-Narrowing の解説に入る前に(Widening を深く理解するためにも)必要な知識や考え方がいくつかあると思ったので、今回は型の集合性と階層性について見ていきたいと思います(短いですが内容的に切り出しても興味深いので)。ただ、集合論や圏論、型理論については詳しくないので間違っているところがあるかもしれません(調べられた範囲で解説しています)。
+Narrowing の記事を書く前に(Widening を深く理解するためにも)必要な知識や考え方がいくつかあると思ったので、今回は型の集合性と階層性について見ていきたいと思います(短いですが内容的に切り出しても興味深いので)。ただ、集合論や圏論、型理論については詳しくないので間違っているところがあるかもしれません(調べられた範囲で解説しています)。
 
 この記事の最後で「代入可能性(別の型の変数同士で代入できるかどうか」について解説しますが、**集合と階層の概念で考えることで見通しが非常によくなり、型一般についてもスッキリと理解できることが多くなります**。また、`never` や `unknown` といったいまいち分かりづらい型についても、なぜ存在しているのか、どういった位置にあるのかが理解しやすくなります。
 
@@ -58,6 +58,8 @@ graph LR
   A["supertype(上位)"] --> B["subtype(下位)"]
 ```
 
+２つの型の関係を簡易的に判別するには、受け入れる値の範囲が広く型の制約(条件)が緩いものが supertype で、受け入れる値の範囲が狭く型の制約がより厳しいものが subtype です。もちろん、supertype と subtype の関係性にない場合もありえます(`number` と `string` を比較した場合など)。
+
 TypeScript で採用されているこういった型の仕組みは Subtyping と呼ばれるそうです。より具体的には [Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system) (property-based type system) です。
 
 https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)
@@ -71,7 +73,7 @@ https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%8
 >([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/サブタイピング_(計算機科学)) より引用、太字は筆者強調)
 :::
 
-実際、型は値(各リテラル)の集合(より厳密に言えば値と利用できる操作の集合)であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。つまり、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の要素としてみなせます。
+実際、型は値(各リテラル)の集合(より厳密に言えば値と利用できる操作の集合)であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の要素としてみなせます。
 
 >Type 型とは：型とは、値の集合であり、その集合に対して実行できることの集合である。
 >少しわかりにくいと思うのでいくつか例を示しましょう。
@@ -107,11 +109,21 @@ Unit type は単一のプリミティブ値を持つプリミティブ型の sub
 
 # 型の集合性
 
-Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、Microsoft Developers の以下の Youtube の動画にて TypeScript の開発者である Anders Hejlsberg 氏(この記事や前の記事で参照しているプルリクエストは大体この方の作成)による公演でも説明されていました(26:32~あたりから)。
+Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、比喩では無く公式ドキュメントの『TypeScript for Java/C# Programmers』のページの『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』の項目で明言されています。
+
+>In TypeScript, it’s better to think of **a type as a set of values that share something in common**. **Because types are just sets**, a particular value can belong to many sets at the same time.
+>([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
+
+TypeScript では型を集合として考えることで直感的に理解することができるとも記載されていますね。
+
+>**TypeScript provides a number of mechanisms to work with types in a set-theoretic way**, and you’ll find them more intuitive if you think of types as sets.
+>([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
+
+型が集合であることは、Microsoft Developers の以下の動画にて TypeScript の開発者である Anders Hejlsberg 氏(この記事や前の記事で参照しているプルリクエストは大体この方の作成)が直々に説明していました(26:32~あたりから)。
 
 https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
 
-公演の解説を参考に図を作成してみました。
+実際に型が集合であることを説明するために、この公演の解説を参考に図を作成してみました。
 
 まず、型は各リテラル値によって作られるリテラル型(Unit type)によって構成されています。これが集合の元となります。`null` 型や `undefined` 型も単一の値によって作られるので Unit type です。そして同じ種類のリテラル型の集合が Collective type たる `string` 型や `number` 型を構成します。
 
@@ -153,7 +165,7 @@ const v_AOrB3: Union = { a: "st", b: 42 };
 const v_AandB: Intersection = { a: "st", b: 42 };
 ```
 
-型システム一般においてもインターセクション型(Intersection type)は $\sigma\cap\tau$ として、ユニオン型(Union type)は $\sigma\cup\tau$ として表記されます。積と和なのは明らかです。
+型システム一般においてもインターセクション型(Intersection type)は $\sigma\cap\tau$ として、ユニオン型(Union type)は $\sigma\cup\tau$ として表記されます。集合の積と和の表現と同じですね。
 
 ![型システムでの表記](/images/typescript-widen-narrow/img_typeSystem_notation.png)*[Type system - Wikipedia](https://en.wikipedia.org/w/index.php?title=Type_system#Specialized_type_systems) より引用*
 
@@ -177,13 +189,25 @@ const obj = { a: "st" as const, c: "anything" };
 const vA: A = obj; // エラーとならないで受け入れられる
 ```
 
-ということで、`{ a: "st" }` という型は `{ a: "st"; c: number; d: string }` など `a: "st"` 以外の任意のプロパティを持つオブジェクト(あるいはオブジェクトリテラル型)の集合であることが分かります。実際にこれが可能なのは、TypeScript が [Structural Type System(構造的部分型)](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#structural-type-system) というシステムを採用しているからです。
+ということで、`{ a: "st" }` という型は `{ a: "st"; c: number; d: string }` など `a: "st"` 以外の任意のプロパティを持つオブジェクト(あるいはオブジェクトリテラル型)の集合であることが分かります。
+
+このことからも上図だとインターセクション型として表現されている `{ a: "st"; b: 42 }` という型はより制約(条件)が緩い `{ a: st }` 型や `{ b: 42 }` 型の部分集合であることが分かります。
+
+```ts
+type A = { a: "st" };
+type B = { b: 42 };
+type AB = { a: "st"; b: 42 }; // A & B (A と B の条件を満たす)
+
+const ab: AB = { a: "st", b: 42 };
+const a: A = ab; // A という型の範疇
+const b: B = ab; // B という型の範疇
+```
+
+実際にこのような代入が可能なのは、TypeScript が [構造的部分型(Structural Type System)](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#structural-type-system) というシステムを採用しているからです。
 
 余剰プロパティチェックについては uhyo さんの以下の記事で非常に分かりやすく解説されていたので参考にしてください。ユニオン型が OR 演算によって生成されるということについても解説されています。
 
 https://qiita.com/uhyo/items/b1f806531895cb2e7d9a
-
-また、型の集合性については公式 Handbook の『TypeScript for Java/C# Programmers』の『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』にも記載されていたので興味があれば読んでみてください。
 
 # 型の階層性
 
@@ -215,21 +239,22 @@ graph LR
   U[unknown]
   N[never]
   A[any]
-  O["Object, {}"]
+  V[void]
+  O["Object, { }"]
   obj[object]
   U --> A
-  A --> void --> undefined --> N
+  A --> V --> undefined --> N
   A --> null --> N
   A --> O --> Number & String & Boolean & BigInt & Symbol & obj
   subgraph Primitive
     subgraph Unit[Unit type]
       undefined
       null
-      nl
-      sl
-      bl
-      bil
-      us
+      nl[number literal]
+      sl[string literal]
+      bl[boolean literal]
+      bil[bigint literal]
+      us[unique symbol]
     end
     subgraph Col[Collective type]
       number
@@ -251,16 +276,16 @@ graph LR
     BigInt --> bigint --> bil[bigint literal]
     Symbol --> symbol --> us[unique symbol]
   end
-  nl[number literal] --> N
-  sl[string literal] --> N
-  bl[boolean literal] --> N
-  bil[bigint literal] --> N
-  us[unique symbol] --> N
+  nl --> N
+  sl --> N
+  bl --> N
+  bil --> N
+  us --> N
   obj --> Function --> N
   obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
-左が supertype で、右が suptype の方向となります。一番左に位置している `unknwon` 型がすべての型の supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の subtype であり Bottom type です。
+左が supertype で、右が suptype の方向となります。一番左に位置している `unknwon` 型がすべての型の supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の subtype であり Bottom type です(より正確に書こうとするとすべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています)。
 
 そして subtype の型の変数は supertype の型の変数へ代入可能です。
 
@@ -278,7 +303,7 @@ let an: any;
 let unk: unknown;
 
 // subtype → supertype の方向で代入していくと型エラーにならない
-str = literal; // str が supertype(string型) で literal(文字列リテラル型) が subtype
+str = literal; // str が supertype(string型) で literal が subtype(文字列リテラル型)
 Str = str;
 Obj = Str;
 an = Obj;
@@ -292,7 +317,8 @@ graph LR
   U[unknown]
   N[never]
   A[any]
-  O["Object, {}"]
+  V[void]
+  O["Object, { }"]
   obj[object]
   subgraph Primitive
     u[undefined]
@@ -301,7 +327,7 @@ graph LR
   end
   objs[オブジェクト型配下]
   U --> A
-  A --> void --> u --> N
+  A --> V --> u --> N
   A --> n --> N
   A --> O --> P & obj
   P --> N
@@ -318,12 +344,12 @@ const obj2: Object = {};
 const OBJ2: {} = obj2;
 ```
 
-明言されている箇所が見つからないので個人予測ですが、`Object` 型は `{}` 型よりも厳密な振る舞いをするのでより制約が強いということで `Object` 型が subtype かと思います。
+公式で明言されている箇所が見つからないので個人予測ですが、`Object` 型は `{}` 型よりも厳密な振る舞いをするのでより制約が強いということで `Object` 型が subtype かと思います。
 
 参考
 https://stackoverflow.com/questions/49464634/difference-between-object-and-object-in-typescript
 
-これらの `Object` 型、`{}` 型、`object` 型は通常使うことはほとんど無いと思います。明示的にそれらの型で型注釈しようとすると Deno 環境だとリンタールールの１つである "[ban-types](https://lint.deno.land/?q=ban-types#ban-types)" に注意されます。
+これらの `Object` 型、`{}` 型、`object` 型は通常使うことはほとんど無いと思いますが、明示的にそれらの型で型注釈しようとすると Deno 環境だとリンタールールの１つである "[ban-types](https://lint.deno.land/?q=ban-types#ban-types)" に別の型注釈をするように注意されます。
 
 具体的にそれぞれがどんか型かを説明すると、`Object` 型は `null` と `undefined` 以外のすべての値(プリミティブ型とオブジェクト型に含まれるあらゆる型)が代入可能な型です。`unknown` 型と `any` 型の subtype であり、それら以外のすべての型の supertype です。この型で型注釈するとエディタで Deno のリンターによって次のように注意されます。
 
