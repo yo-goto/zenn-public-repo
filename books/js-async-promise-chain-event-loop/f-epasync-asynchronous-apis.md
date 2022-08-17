@@ -380,7 +380,7 @@ console.log("sync"); // 環境が提供する API(同期的に実行される)
 fetch("https://api.github.com/zen") // Promise インスタンスが返ってくる
   .then((response) => { // コールバック関数(非同期的に実行される)
     return response.text()
-  }) 
+  })
   .then((text) => { // コールバック関数(非同期的に実行される)
     console.log(text)
   });
@@ -492,15 +492,22 @@ Promise-based API は Promise インスタンスを返すため、Promise を介
 
 async 関数については『[Promise chain から async 関数へ](14-epasync-chain-to-async-await)』のチャプターで詳しく解説しますが、async 関数というのは内部に await 式がある時に限って「非同期」となります(以下のコードでは `console.log()` の引数の番号が実行した際の出力の順番になります)。
 ```js
-console.log("[1]");
+console.log("🦖 [1]");
 // async 関数の即時実行(アロー関数での書き方)
 (async () => {
-  console.log("[2]");
+  console.log("🐵 [2]");
   await 1;
-  console.log("[4]");
+  console.log("👻 [4]");
 })();
 // await 式があれば async 関数は完了せずにその外の処理が行われるので「非同期」の現象が起きている
-console.log("[3]");
+console.log("🦕 [3]");
+
+/* 出力結果
+🦖 [1]
+🐵 [2]
+🦕 [3]
+👻 [4]
+*/
 ```
 
 :::details 即時実行関数の補足
@@ -548,37 +555,58 @@ Fn(); // すぐ呼び出し
 
 次のように await 式が関数内部に無ければそのまま完了してから関数の次の処理が行われるので「同期」です。
 ```js
-console.log("[1]");
+console.log("🦖 [1]");
 (async () => {
-  console.log("[2]");
+  console.log("🐵 [2]");
   1;
-  console.log("[3]");
+  console.log("👻 [3]");
 })();
 // await 式が無ければ async 関数が完了してからその外の処理が行われるのでこの場合は「同期」である
-console.log("[4]");
+console.log("🦕 [4]");
+
+/* 出力結果
+🦖 [1]
+🐵 [2]
+👻 [3]
+🦕 [4]
+*/
 ```
 
 Promise も後続の `then()` メソッドがある場合、つまり Promise chain となっている場合に限って「非同期」となります。
 ```js
-console.log("[1]");
+console.log("🦖 [1]");
 new Promise(resolve => {
-  console.log("[2]");
+  console.log("🐵 [2]");
   resolve();
-}).then(() => console.log("[4]"));
+}).then(() => console.log("👻 [4]"));
 // Promise chain の処理は完了せずにその外の処理が行われるので「非同期」の現象が起きている
-console.log("[3]");
+console.log("🦕 [3]");
+
+/* 出力結果
+🦖 [1]
+🐵 [2]
+🦕 [3]
+👻 [4]
+*/
 ```
 
 単一の Promise インスタンスをそのまま生成するだけでは「非同期」にはなりません。
 ```js
-console.log("[1]");
+console.log("🦖 [1]");
 new Promise(resolve => {
-  console.log("[2]");
+  console.log("🐵 [2]");
   resolve();
-  console.log("[3]")
+  console.log("👻 [3]")
 });
 // Promise の処理が完了してからその外の処理が行われるのでこの場合は「同期」である
-console.log("[4]");
+console.log("🦕 [4]");
+
+/* 出力結果
+🦖 [1]
+🐵 [2]
+👻 [3]
+🦕 [4]
+*/
 ```
 
 「非同期(asynchronous)」の性質を常に発現しうるのは「非同期 API」ですが、その処理を単体で視た時に実際に「非同期」になっているかは分かりません。例えば、次のような短いスクリプトファイルであれば後続の処理が無いのでこの処理を見ても「非同期」であるとは言えません。
