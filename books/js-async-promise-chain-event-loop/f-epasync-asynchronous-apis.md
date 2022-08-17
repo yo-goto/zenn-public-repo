@@ -430,7 +430,7 @@ console.log("[2] 🦖 sync");
 >Many modern Web APIs are promise-based, including WebRTC, Web Audio API, Media Capture and Streams, and many more.
 >([How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion) より引用)
 
-Mdn でも、非同期 API の理想は Promise インスタンスを返す関数(つまり、Promise-based API)であると示唆されています。
+MDN でも、非同期 API の理想は Promise インスタンスを返す関数(つまり、Promise-based API)であると示唆されています。
 
 >理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります。顕著な例としては `setTimeout()` 関数があります。
 >([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)

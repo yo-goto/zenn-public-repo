@@ -74,7 +74,7 @@ Promise について詳しくなることで非同期処理を柔軟に書ける
 
 https://jsprimer.net/basic/async/
 
-もちろん、Mdn のドキュメントも必須です。何か細かいことを知りたくなったら、Mdn のドキュメントを読んでください。場合によっては英語版も読む必要があります[^mdnについて]。
+もちろん、MDN のドキュメントも必須です。何か細かいことを知りたくなったら、MDN のドキュメントを読んでください。場合によっては英語版も読む必要があります[^mdnについて]。
 
   [^mdnについて]: MDN のドキュメントは未翻訳の箇所に重要なことが書かれていたり、翻訳時点でのドキュメントよりも分かりやすい最新版などが確認できる場合があるため、両方確認した方がいいです。この本でも英語版ドキュメントからの引用がいくつかあります。
 
@@ -167,7 +167,7 @@ hello world!
 hello world!
 ```
 
-自分はこの方法を「[コマンドライン JavaScript](x-epasync-epilogue#コマンドラインから始める-javascript)」と呼んでいますが、Mdn では「[JavaScript シェル](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Shells)」と呼ばれているそうです。
+自分はこの方法を「[コマンドライン JavaScript](x-epasync-epilogue#コマンドラインから始める-javascript)」と呼んでいますが、MDN では「[JavaScript シェル](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Shells)」と呼ばれているそうです。
 
 後のチャプターで詳しく解説しますが、Chrome ブラウザ環境や Node, Deno といったランタイム環境において**イベントループの本質的な部分(抽象的な動作メカニズム)は共通しています**。とはいえ環境による違いもあるので、それについても解説しておきました。つまりこの本では、代表的な複数の環境において JavaScript の非同期処理を包括的に考えます。
 
