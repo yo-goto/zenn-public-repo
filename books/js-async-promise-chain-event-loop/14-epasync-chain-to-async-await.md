@@ -31,19 +31,21 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 
-それ故に非同期関数という呼称はなるべく避けて async 関数という言葉を多用してきます。MDN ではなんと説明されているか見てみましょう。
+それ故に非同期関数という呼称はなるべく避けて async 関数という言葉を多用してきます。
+
+それでは、async 関数が MDN でどのように説明されているか見てみましょう。
 
 >An async function is a function declared with the async keyword, and the await keyword is permitted within it. The async and await keywords enable asynchronous, promise-based behavior to be written in a cleaner style, avoiding the need to explicitly configure promise chains.
 >([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用)
 
 「async 関数は `async` キーワードを使って宣言された関数であり、関数内部での `await` キーワードの使用が認められている。`async` と `await` のキーワードを使用することで、よりクリーンなスタイルで、明示的に Promise chain を構成することなく Promise-based な非同期の振る舞いを書けるようにする」という旨が記載されています。
 
-そして、async 関数は**どんな時も必ず Promise インスタンスを返す関数**です。return される値が明示的に Promise ではない場合も Promise インスタンスでラップされて返却されます。
+そして、async 関数は**どんな時も必ず Promise インスタンスを返す関数**であり、return される値が明示的に Promise ではない場合も Promise インスタンスでラップされて返却されることも言及されています。
 
 >**Async functions always return a promise**. If the return value of an async function is not explicitly a promise, **it will be implicitly wrapped in a promise**.
 >([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用、太字は筆者強調)
 
-async 関数の定義には `async` キーワードを頭について関数宣言を行います。そして、Promise インスタンスを返すわけですから、Promise chain が可能です。
+それでは具体的なコードを見ていきます。async 関数の定義には `async` キーワードを頭に付けて関数宣言を行います。そして、Promise インスタンスを返すわけですから、Promise chain が可能です。
 
 ```js:通常の関数定義
 // returnStringInAsync.js
@@ -175,7 +177,7 @@ MDN の説明でもあったように、`async` と `await` の２つのキー�
 >**The async and await keywords enable asynchronous, promise-based behavior** to be written in a cleaner style, avoiding the need to explicitly configure promise chains.
 >([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用、太字は筆者強調)
 
-『[非同期 API と環境](f-epasync-asynchronous-apis#非同期という概念)』のチャプターでも、async 関数が「非同期」の性質を発揮するのは async 関数内部に await 式がある時のみと言っていましたね。実際、**最初の await 式の前は同期処理であり**、最初の await 式の時点からはじめて非同期となります。async 関数内部は await 式によって分割されており、最初の await 式までは同期的に処理されることが MDN でも明言されています。await 式が存在していなければ同期的に完了することになります。
+『[非同期 API と環境](f-epasync-asynchronous-apis#非同期という概念)』のチャプターでも、async 関数が「非同期」の性質を発揮するのは async 関数内部に await 式がある時のみと言っていましたね。実際、**最初の await 式の前は同期処理であり**、最初の await 式の時点からはじめて非同期となります。async 関数内部は await 式によって分割されており、最初の await 式までは同期的に処理されることが MDN でも明言されています。つまり、await 式が存在していなければ同期的に完了することになります。
 
 >The body of an async function can be thought of **as being split by zero or more await expressions**. **Top-level code, up to and including the first await expression (if there is one), is run synchronously. In this way, an async function without an await expression will run synchronously**. If there is an await expression inside the function body, however, the async function will always complete asynchronously.
 >([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用、太字は筆者強調)
@@ -279,7 +281,7 @@ console.log("🦖 [3] sync");
 
 # await 式
 
-さて、async 関数について導入したので、もう１人の登場人物である await 式について見ていきましょう。
+さて、async 関数について導入したので、もう１人の登場人物である await 式について詳しく見ていきましょう。
 
 async 関数では内部で await 式を使って「**非同期処理の完了を待つ**」ことができると解説されることが多いですが、この「待つ」は非常に混乱させるワードなので注意してください。
 

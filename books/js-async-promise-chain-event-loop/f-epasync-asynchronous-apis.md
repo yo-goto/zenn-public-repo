@@ -216,6 +216,9 @@ Chrome では実際に以下のような複数のプロセスが作成されま�
 
 実際、JavaScript の非同期処理でよく語られるシングルスレッドは現実のブラウザ環境(Chrome)では「Renderer Process の Main thread」のことであり、`fetch(url)` のネットワーク接続やリクエストなどの処理を行っているのは「Browser process の Network thread」です。
 
+参考
+https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-ui-developers
+
 そもそも最初に見てもらった『What the heck is the event loop anyway?』では「**一度に複数のことができるのはブラウザがランタイム以上のものであるからで、ブラウザから提供される Web APIs は実質的にスレッドである**」ということが実は語られていました。
 
 >Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. **The reason we can do things concurrently is that the browser is more than just the Runtime**. So, remember this diagram, **the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads**, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in.
@@ -246,7 +249,7 @@ Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エ
 非同期処理そのものは確かに並列処理ではありませんが、「**API を介して環境に委任した作業はバックグラウンドで並列に行われ、それが完了したら何かをメインスレッドで非同期的に行う**」というように、環境全体では「非同期 API」+「非同期処理」として「並列」と「非同期」の**両方が組み合わさって起きている**という仕組みを理解する必要があります。
 
 :::message alert
-実際には「並列(parallel)」とは言い切れないパターンがあったりしますが、**JavaScript (JS エンジン)の視点で考えれば別のところで同時に起きていること**を理解するには「並列」として便宜的に考えないと理解が進まないというジレンマがあります。厳密な定義の並列(parallel)を使って一般的に説明しようとすると使えなくなってしまうので、**お茶を濁すしかない**というのが実情な気がしています。
+実際には「並列(parallel)」とは言い切れないパターンがあったりしますが、**JavaScript (JS エンジン)の視点で見れば別のところで同時に起きていること**を理解するには「並列」として便宜的に考えないと理解が進まないというジレンマがあります。厳密な定義の並列(parallel)を使って一般的に説明しようとすると使えなくなってしまうので、**お茶を濁すしかない**というのが実情な気がしています。
 
 つまり、「同時に複数のことをできる」からと言って必ずしも複数スレッドを利用した厳密な「並列(parallel)」ではない訳です。『What the heck is the event loop anyway?』でも「**一度に複数のことができるのはブラウザがランタイム以上のものであるからで、ブラウザから提供される Web APIs は実質的にスレッドである**」という話がされていましたが、あくまで「実質的に」という注釈がつきます。Node などでは複数のスレッドをセットにしたスレッドプールを利用することがあるので実際「並列(parallel)」と言ってもよいものやポーリング際にまとめて有効期限の切れたタイマーを一括処理するなどがあるのでかなりややこしい話になっています。基本的に JS の文脈で語られる「並列」という言葉は信用せずに話半分に聞いておく程度がいいかもしれません。
 
