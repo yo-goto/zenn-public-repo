@@ -22,7 +22,7 @@ aliases: [
 
 https://zenn.dev/estra/articles/typescript-widening
 
-Narrowing の記事を書く前に(Widening を深く理解するためにも)必要な知識や考え方がいくつかあると思ったので、今回は型の集合性と階層性について見ていきたいと思います(短いですが内容的に切り出しても興味深いので)。ただ、集合論や圏論、型理論については詳しくないので間違っているところがあるかもしれません(調べられた範囲で解説しています)。
+Narrowing の記事を書く前に(Widening を深く理解するためにも)必要な知識や考え方がいくつかあると思ったので、今回は型の集合性と階層性について見ていきたいと思います(短いですが内容的に切り出しても興味深いので)。ただ、集合論や圏論、型理論については全然詳しくないので間違っているところがあるかもしれません(調べられた範囲で解説しています)。
 
 この記事の最後で「代入可能性(別の型の変数同士で代入できるかどうか」について解説しますが、**集合と階層の概念で考えることで見通しが非常によくなり、型一般についてもスッキリと理解できることが多くなります**。また、`never` や `unknown` といったいまいち分かりづらい型についても、なぜ存在しているのか、どういった位置にあるのかが理解しやすくなります。
 
@@ -109,17 +109,21 @@ Unit type は単一のプリミティブ値を持つプリミティブ型の sub
 
 # 型の集合性
 
-Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、比喩では無く公式ドキュメントの『TypeScript for Java/C# Programmers』のページの『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』の項目で明言されています。
+Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、公式ドキュメントの『TypeScript for Java/C# Programmers』のページの『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』の項目で明言されています。
 
 >In TypeScript, it’s better to think of **a type as a set of values that share something in common**. **Because types are just sets**, a particular value can belong to many sets at the same time.
 >([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
 
-TypeScript では型を集合として考えることで直感的に理解することができるとも記載されていますね。
+(可能な操作や演算などの体系などが)共通している値の集合が型であり、それぞれの値は複数の集合(型)に属すことができることが言及されていますね。
+
+TypeScript ではこのように型を集合として考えることで直感的に理解することができるとも記載されています。
 
 >**TypeScript provides a number of mechanisms to work with types in a set-theoretic way**, and you’ll find them more intuitive if you think of types as sets.
 >([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
 
-型が集合であることは、Microsoft Developers の以下の動画にて TypeScript の開発者である Anders Hejlsberg 氏(この記事や前の記事で参照しているプルリクエストは大体この方の作成)が直々に説明していました(26:32~あたりから)。
+他の言語を含めて包括的に型が一般的に集合として扱えるかどうかは別として、TypeScirpt 自体は型を集合論的に扱える仕組みを提供するようにデザインされているわけです。実際、ある値が特定の型の変数に代入可能であるかどうかは、その集合(型の範疇)に属しているかで決まります。
+
+そして、型が集合であること(あるいはそのように扱えること)は、Microsoft Developers の以下の動画にて TypeScript の開発者である Anders Hejlsberg 氏(この記事や前の記事で参照しているプルリクエストは大体この方の作成)が直々に説明していました(26:32~あたりから)。
 
 https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
 
@@ -139,7 +143,7 @@ https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
 
 ![集合型の和集合](/images/typescript-widen-narrow/img_typeSet_3.png)
 
-空集合は `never` 型であり、各リテラル型の積集合や異なる集合型の積集合をインターセクション型で作ろうとすると `never` 型となります。そして型の全体集合は `unknown` 型となります(`unknown` 型がなぜ全体集合になるかは後述する階層性で見れば分かります)。
+空集合(値を持たない型)は `never` 型であり、各リテラル型の積集合や異なる集合型の積集合をインターセクション型で作ろうとすると `never` 型となります。そして型の全体集合は `unknown` 型となります(`unknown` 型がなぜ全体集合になるかは後述する階層性で見れば分かります)。
 
 ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
@@ -163,6 +167,9 @@ const v_AOrB2: Union = { b: 42 };
 const v_AOrB3: Union = { a: "st", b: 42 };
 
 const v_AandB: Intersection = { a: "st", b: 42 };
+
+// インターセクション型はユニオン型に含まれる部分集合なので代入可能
+const v_AOrB: Union = v_AandB;
 ```
 
 型システム一般においてもインターセクション型(Intersection type)は $\sigma\cap\tau$ として、ユニオン型(Union type)は $\sigma\cup\tau$ として表記されます。集合の積と和の表現と同じですね。
@@ -420,7 +427,7 @@ let u = undefined;
 subytype 互換性を拡張したものが代入(assignment)互換性であり、具体的には、`any` 型から様々な型に代入できることと `any` 型に様々な型を代入できるというルールが追加されていることが記載されていますね(`enum` についての言及は無視しています)。
 
 :::message
-他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます(any 型についてルールが追加された subtype と supertype の関係の部分的な言い換えにすぎないです)。
+他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます(any 型についてのルールが追加された subtype-supertype 関係性の部分的な言い換えにすぎないです)。
 
 - すべての型は自身の型へ代入可能
 - `any` 型と `unknown` 型はそれら自身への代入可能な型は同じだが、`unknown` 型は `any` 型の除いて他の型へ代入することはできない
@@ -464,7 +471,7 @@ const u: undefined = undefined;
 const v: void = u;
 ```
 
-ただ、Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目では `void` 型の説明が "a subtype of `undefined` intended for use as a return type." となっているのですが、古い仕様書を見ると `void` 型は `undefined` 型の supertype として明記してあるのでこれは公式ドキュメントのミスだと思われます。たぶんミスだろうということでプルリクエストを作成しました(バージョン更新によって supertype が subtype になるような仕様変更は流石にないと思います)。
+このような代入関係から明らかに `void` 型が supertype であり、`undefined` 型が subtype なのですが、Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目では `void` 型の説明が "a subtype of `undefined` intended for use as a return type." となっています。ただし、[アーカイブされた古い仕様](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#325-the-void-type)を見ると `void` 型は `undefined` 型の supertype として明記してあるのでこれは現在の公式ドキュメントのミスだと思われます。おそらくミスだろうということでプルリクエストを作成しました(バージョン更新によって supertype と subtype が入れ替わってしまうような仕様変更は流石にないと思います)。
 
 https://github.com/microsoft/TypeScript-Website/pull/2470
 
