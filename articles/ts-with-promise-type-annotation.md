@@ -832,7 +832,7 @@ function returnArrEl<Type>( // Type は型変数
 }
 ```
 
-ジェネリック関数においてこのように複数の型を型変数で拘束してパラメータ化できるため、この場合の型変数 `Type` を型パラメータ(type parameter)と呼びます。
+ジェネリック関数においてこのように複数の型を型変数でパラメータ化できるため、この場合の型変数 `Type` を型パラメータ([Type parameter](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#type-parameters))と呼びます。`extends` を併用することで特定の条件を満たす型へと拘束することも可能です。
 
 このようなジェネリック関数として定義することでより一般的な処理となる関数を書くことができます。呼び出す際に型引数(type argument)として実際に存在している型名を指定することで型を明示できます。`Array<string>` のように配列の型注釈をするのと同じように関数を使用する際に具体的な型引数を指定するわけです。
 

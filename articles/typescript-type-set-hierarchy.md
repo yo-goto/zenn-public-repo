@@ -121,7 +121,7 @@ TypeScript ではこのように型を集合として考えることで直感的
 >**TypeScript provides a number of mechanisms to work with types in a set-theoretic way**, and you’ll find them more intuitive if you think of types as sets.
 >([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
 
-他の言語を含めて包括的に型が一般的に集合として扱えるかどうかは別として、TypeScirpt 自体は型を集合論的に扱える仕組みを提供するようにデザインされているわけです。実際、ある値が特定の型の変数に代入可能であるかどうかは、その集合(型の範疇)に属しているかで決まります。
+TypeScirpt 自体は型を集合論的に扱える仕組みを提供するようにデザインされているわけです。実際、ある値が特定の型の変数に代入可能であるかどうかは、その集合(型の範疇)に属しているかで決まります。
 
 そして、型が集合であること(あるいはそのように扱えること)は、Microsoft Developers の以下の動画にて TypeScript の開発者である Anders Hejlsberg 氏(この記事や前の記事で参照しているプルリクエストは大体この方の作成)が直々に説明していました(26:32~あたりから)。
 
