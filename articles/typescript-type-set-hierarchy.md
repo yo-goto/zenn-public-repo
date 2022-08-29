@@ -28,6 +28,14 @@ Narrowing の記事を書く前に(Widening を深く理解するためにも)�
 
 この記事の最後で「代入可能性(別の型の変数同士で代入できるかどうか」について解説しますが、**集合と階層の概念で考えることで見通しが非常によくなり、型一般についてもスッキリと理解できることが多くなります**。また、`never` や `unknown` といったいまいち分かりづらい型についても、なぜ存在しているのか、どういった位置にあるのかが理解しやすくなります。
 
+:::details ChangeLog
+大きな変更のみトラッキングしています。
+
+- 2022-08-30
+  - 見出し構成を変更
+  - extends についての記述を追加
+:::
+
 # 型の集合性
 
 ## Collective type と Unit type
@@ -191,7 +199,7 @@ const vA: A = { a: "st", c: "anything" };
 // Object literal may only specify known properties, and 'c' does not exist in type 'A'.
 ```
 
-実はこれは型システムにおける違反検知の型チェックエラーではなくて、**余剰プロパティチェック(excess property cehecks)** という別のエラーです。TypeScript の型システム的には問題なくても、エラーとして検知してくれるものです。型システム上は問題ないので、別の変数を経由させることでエラーとならなくなります。
+実はこれは型システムにおける違反検知の型チェックエラーではなくて、**余剰プロパティチェック(excess property checks)** という別のエラーです。TypeScript の型システム的には問題なくても、エラーとして検知してくれるものです。型システム上は問題ないので、別の変数を経由させることでエラーとならなくなります。
 
 ```ts
 type A = { a: "st" };
@@ -222,13 +230,45 @@ https://qiita.com/uhyo/items/b1f806531895cb2e7d9a
 
 ## extends での判別
 
-話は変わって、ユーティリティ型である `Exclude<UnionType, ExcludedMembers>` 型などを[自分で実装すると](https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.ja.md)理解できますが、`extends` キーワードを使った条件型(Conditional type)は型変数がユニオン型だと分配法則によって条件判定をユニオン型の要素に対してイテレーションします。
+話は少し変わりますが、`extends` キーワードでの型の集合性について考えてみたいと思います。
+
+`extends` はインタフェース型の継承に利用するキーワードで、構造的部分型においてプロパティが増えるたびに継承元に対して subtype となっていくことがわかりやすいでしょう。
+
+```ts
+interface Animal {
+  name: string;
+}
+
+interface Duck extends Animal {
+  sound: string
+}
+// { name: string; sound: string; }
+
+interface Donald extends Duck {
+  color: string;
+}
+// { name: string; sound: string; color: string; }
+
+const don: Donald = {
+  name: "ドナルド",
+  sound: "guwa",
+  color: "blue",
+};
+const duc: Duck = don;
+const ani: Animal = duc;
+```
+
+`Donald` は `Duck` の subtype であり、`Duck` は `Animal` の subtype です。
+
+`extends` の基本が分かったところで、少し応用的な話に移ります。
+
+ユーティリティ型である `Exclude<UnionType, ExcludedMembers>` 型などを[自分で実装すると](https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.ja.md)理解できるのですが、`extends` キーワードを使った条件型(Conditional type)は型変数がユニオン型だと分配法則によって条件判定をユニオン型を構成する各要素に対してイテレーションします。
 
 ```ts
 type MyExclude<T, U> = T exntends U ? never : T;
 
 type Test = MyExclude<1 | 2 | 3, 2>;
-// type Test = 1 | 3
+// = 1 | 3
 
 /* イテレーション
 T extends U ? never : T
@@ -240,9 +280,9 @@ T extends U ? never : T
 // 1 | never => 1
 ```
 
-参考:
-- [Exclude<UnionType, ExcludedMembers> | TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
-- [Distributive Conditional Types | TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
+- 参考:
+  - [Exclude<UnionType, ExcludedMembers> | TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
+  - [Distributive Conditional Types | TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
 
 次のように `U` もユニオン型になった場合はどうでしょうか?
 
@@ -265,7 +305,7 @@ T extends U ? never : T
 */
 ```
 
-`T extends U` では型パラメータ `T` を `U` という型パラメータで制約をかけるので、`U` が supertype で `T` が subtype となります。
+`T extends U` では型パラメータ `T` を `U` という型パラメータで制約をかけるので、`U` が supertype で `T` が subtype となるか、あるいは `T` が `U` そのものとなります。この制約は `T` 型が `U` 型の条件を満たせばよいだけです。
 
 ```mermaid
 graph RL
@@ -274,7 +314,35 @@ graph RL
   U -->|extends| T
 ```
 
-`extends` での条件部が `true` になるか `false` になるかは一見分かりづらいですが、集合で考えることでスッキリと理解できます。subtype は supertype の部分集合です。特にユニオン型では、それを構成する各メンバーはユニオン型自体の部分集合(subset)となります。
+プリミティブ型だと分かりづらいですが、オブジェクト型だと `extends` で型を制約(constrain)することが分かりやすくなります。`extends` キーワードによる型パラメータの制約は条件型以外にもジェネリック型やジェネリック関数などでも利用できるので、次のように型パラメータ `Type` を `{ length: number }` というプロパティを持つオブジェクトの型で制約すると、その制約条件を満たす値しか引数として受け付けません。制約を設けずに `Type` だけにしてしまうと型の範囲が広すぎて引数に渡す変数が `length` プロパティを持つことを保証できませんが、逆に制約を設けることで関数内の変数が `length` プロパティを持つことを保証できます。
+
+```ts
+// 制約条件 { length: number } を満たす値のみを引数として受け取る(満たさなければ型エラー)
+function longer<Type extends { length: number }> (
+  a: Type,
+  b: Type
+): Type {
+  if (a.length > b.length) {
+    // length プロパティを持っていることが保証されている
+    return a;
+  } else {
+    return b;
+  }
+};
+```
+
+`length` プロパティは少し特殊で、文字列や配列などの値はこのプロパティをもともと持っており引数として渡すことができるので、以下のようなコードが有効となります。
+
+```ts
+longer("st", "str"); // 文字列は length プロパティを持つ
+// => "str"
+longer([1, 2], [1, 2, 3]); // 配列は length プロパティを持つ
+// => [1, 2, 3]
+longer({ length: 42 }, { length: 53, name: "obj" });
+// => { length: 53, name: "obj" }
+```
+
+話を条件型に戻すと、`extends` での条件部がユニオン型に関するものだと `true` になるか `false` になるかは一見分かりづらいですが、集合で考えることでスッキリと理解できます。subtype は supertype の部分集合です。特にユニオン型では、それを構成する各メンバーはユニオン型自体の部分集合(subset)となります。
 
 ![typeSet_6](/images/typescript-widen-narrow/img_typeSet_6.png)
 
@@ -298,24 +366,30 @@ graph RL
 3 extends 1 &#124; 3 | true  | never
 4 extends 1 &#124; 3 | false | 4
 
-ということで、`MyExclude<Uni1, Uni2>` で最終的に返される型はイテレーション結果を合成したユニオン型となるので、`never | 2 | never | 4` つまり最終的には `MyExclude<1 | 2 | 3 | 4, 1 | 3>` から `2 | 4` が返されます。
+ということで、`MyExclude<Uni1, Uni2>` で最終的に返される型はイテレーション結果を合成したユニオン型となるので、`never | 2 | never | 4` つまり `2 | 4` というユニオン型が返されます。
 
-ジェネリクスの利用時に型引数そのものに `extends` キーワードで制約をかける際にも集合で考えると、制約元の型集合内で条件を満たす部分集合であると理解できます(制約元の型そのものでもよいです)。
+単純なジェネリクスの利用時に型引数そのものに `extends` キーワードで制約をかける際にも集合で考えると、制約元の型集合内で条件を満たす部分集合であると理解できます(条件を満たしていれば良いので、制約元の型そのものでもよいです)。
 
-ちなみに `extends` による型パラメータの制約機能は [TypeScript 1.8 で導入された機能](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-8.html#type-parameters-as-constraints)であり、型理論ではF-有界量化([F-bounded quantification](https://en.wikipedia.org/wiki/Bounded_quantification#F-bounded_quantification))と呼ばれるそうです。
+この `extends` による型パラメータの制約機能は [TypeScript 1.8 で導入された機能](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-8.html#type-parameters-as-constraints)であり、型理論では一般にF-有界量化([F-bounded quantification](https://en.wikipedia.org/wiki/Bounded_quantification#F-bounded_quantification))と呼ばれる類のものだそうです。
 
-有界量化(Bounded quantification)自体は Wikipedia だと以下のような概念として解説されています。公式 Handbook でも Wikipedia の記事自体が言及されているので概ねあっているはずです。
+有界量化(Bounded quantification)自体は Wikipedia だと以下のような概念として解説されています。公式 Handbook でも Wikipedia の記事自体が言及されているので基本的にはあっているはずです。
 
 >In type theory, bounded quantification (also bounded polymorphism or constrained genericity) refers to universal or existential quantifiers **which are restricted ("bounded") to range only over the subtypes of a particular type**. Bounded quantification is **an interaction of parametric polymorphism with subtyping**.
 >([Bounded quantification - Wikipedia](https://en.wikipedia.org/wiki/Bounded_quantification) より引用、太字は筆者強調)
 
 専門用語が多すぎるので分かりづらいですが、簡易的に意訳すると特定の型の subtype の領域にのみ制限する記法のことです(間違ってたらすみません)。これでジェネリクスとサブタイピングの相互作用を表現します。
 
+考え方としては、考慮すべき型の領域として境界(boundary)を設けることでジェネリクスなどでの型パラメータがとり得る型(値)の範囲を制限して使いやすくしているだけです。そして型が値の集合であることを知っていると、境界内の領域はすなわち集合の領域そのものとなります。`T extends U` という条件を図で表現すると次のような感じです。
+
+![img_typeSet_7](/images/typescript-widen-narrow/img_typeSet_7.png)
+
+型パラメータ `T` は境界(制約)を規定する `U` 型の領域内のあらゆる範囲を動くことができ、その範囲であればどのような subtype でも良いわけです(もちろん `U` そのものでもよい)。１つの supertype に対して subtype は複数ありえるので上のような図となります。
+
 # 型の階層性
 
 ## Top type と Bottom type
 
-subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory)ではこのような型を **Top type(トップ型)** と呼ぶそうです。
+subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります(集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory)ではこのような型を **Top type(トップ型)** と呼ぶそうです。
 
 https://en.wikipedia.org/wiki/Top_type
 
@@ -323,7 +397,7 @@ https://en.wikipedia.org/wiki/Top_type
 
 https://en.wikipedia.org/wiki/Bottom_type
 
-公式 Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目でも `unknown` 型が top type で `never` 型が bottom type であると明示されています。
+公式 Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目でも `unknown` 型が Top type で `never` 型が Bottom type であると明示されています。
 
 ![unknown & never type](/images/typescript-widen-narrow/img_ts_handbook_toptype_bottomtype.jpg)*[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types) より引用*
 
@@ -576,6 +650,8 @@ const v: void = u;
 
 https://github.com/microsoft/TypeScript-Website/pull/2470
 
+ちなみに、Subtyping 一般においては subtype であるかの評価や定義には包摂([subsumption](https://en.wikipedia.org/wiki/Subtyping#Subsumption))という概念が利用されるそうです。
+
 # 参考
 
 型の階層性についての参考文献
@@ -589,5 +665,11 @@ https://github.com/microsoft/TypeScript-Website/pull/2470
 
 :::message
 TypeScript の型階層図はネットで探してそこまで見つからないので、代わりに別の言語を使って「[Scala type hierarchy](https://www.google.com/search?q=Scala+type+hierarchy&tbm=isch)」などでググると型の階層図の画像が多く見れます。集合についても他の言語で調べた方が詳しい情報が得られます。
+
+型理論等は専門用語や数学的な記法が多くてとっつきづらいのですが、触りだけでも有用な知識(あるいは必要不可欠な知識)がいくつかあるみたいなので初心者向けに解説されているもの等あるといいなと思いますね🤔
+
+公式 Handbook も『Types as Sets』の項目では型を集合論的に考えることを推奨している感じがあるので、型理論とはいかずとも集合論をベースにした上でクラスじゃなくてプリミティブ型と普通のオブジェクト型を中心とした型システムの解説書などがあるといいなとも思います。
+
+未読ですが目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしています。
 :::
 
