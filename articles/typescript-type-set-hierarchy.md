@@ -12,7 +12,9 @@ aliases: [
   型の集合性,
   型の階層性,
   型の階層図,
-  Type hierarchy
+  Type hierarchy,
+  代入可能性,
+  assignability,
 ]
 ---
 
@@ -26,7 +28,9 @@ Narrowing の記事を書く前に(Widening を深く理解するためにも)�
 
 この記事の最後で「代入可能性(別の型の変数同士で代入できるかどうか」について解説しますが、**集合と階層の概念で考えることで見通しが非常によくなり、型一般についてもスッキリと理解できることが多くなります**。また、`never` や `unknown` といったいまいち分かりづらい型についても、なぜ存在しているのか、どういった位置にあるのかが理解しやすくなります。
 
-# Collective type と Unit type
+# 型の集合性
+
+## Collective type と Unit type
 
 前回記事で解説した "Literal Widening" は `"text"` や `42`、`true` などのリテラルから作られるリテラル型は、変数が mutable になる場所では `string` 型といった一般的な型に拡大されて型推論されるという話でした。
 
@@ -107,7 +111,7 @@ https://en.wikipedia.org/wiki/Unit_type
 
 Unit type は単一のプリミティブ値を持つプリミティブ型の subtype であり、文字列リテラル型 `"foo"` は `string` 型の subtype である旨が記載されていますね。そして、mutable な場所で Widening が起きるときには subtype から派生元の supertype へと変換されるとも書いてあります。
 
-# 型の集合性
+## Types as Sets
 
 Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、公式ドキュメントの『TypeScript for Java/C# Programmers』のページの『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』の項目で明言されています。
 
@@ -216,7 +220,100 @@ const b: B = ab; // B という型の範疇
 
 https://qiita.com/uhyo/items/b1f806531895cb2e7d9a
 
+## extends での判別
+
+話は変わって、ユーティリティ型である `Exclude<UnionType, ExcludedMembers>` 型などを[自分で実装すると](https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.ja.md)理解できますが、`extends` キーワードを使った条件型(Conditional type)は型変数がユニオン型だと分配法則によって条件判定をユニオン型の要素に対してイテレーションします。
+
+```ts
+type MyExclude<T, U> = T exntends U ? never : T;
+
+type Test = MyExclude<1 | 2 | 3, 2>;
+// type Test = 1 | 3
+
+/* イテレーション
+T extends U ? never : T
+-----------------------
+1 extends 2 =>(false) 1
+2 extends 2 =>(true) never
+*/
+// MyExclude<1,2> | MyExclude<2,2>
+// 1 | never => 1
+```
+
+参考:
+- [Exclude<UnionType, ExcludedMembers> | TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
+- [Distributive Conditional Types | TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
+
+次のように `U` もユニオン型になった場合はどうでしょうか?
+
+もちろん、`1 | 2 | 3 | 4` というユニオン型から `1 | 3` というユニオン型が除外されるので生成される型としては `2 | 4` となりますが、内部的にどのようなことが起きているかは分かりづらいです。
+
+```ts
+type Uni1 = 1 | 2 | 3 | 4;
+type Uni2 = 1 | 3;
+type Test2 = MyExclude<Uni1, Uni2>;
+//             1|2|3|4 ^^^^  ^^^^ 1|3
+// = 2 | 4
+
+/* イテレーション
+T extends U ? never : T
+-----------------------
+1 extends 1|3 => ???
+2 extends 1|3 => ???
+3 extends 1|3 => ???
+4 extends 1|3 => ???
+*/
+```
+
+`T extends U` では型パラメータ `T` を `U` という型パラメータで制約をかけるので、`U` が supertype で `T` が subtype となります。
+
+```mermaid
+graph RL
+  T["T (Subtype)"]
+  U["U (Supertype)"]
+  U -->|extends| T
+```
+
+`extends` での条件部が `true` になるか `false` になるかは一見分かりづらいですが、集合で考えることでスッキリと理解できます。subtype は supertype の部分集合です。特にユニオン型では、それを構成する各メンバーはユニオン型自体の部分集合(subset)となります。
+
+![typeSet_6](/images/typescript-widen-narrow/img_typeSet_6.png)
+
+`1 | 3` というユニオン型は `1` と `3` という２つの数値リテラル型の和集合です。従って、`1` という数値リテラル型はこの和集合に含まれるため、`1 extends 1 | 3` は true であり、条件型からは `never` 型が返されます。
+
+```mermaid
+graph RL
+  U1["1 | 3 (Supertype)"]
+  U2["3 (Subtype)"]
+  U1 -->|extends| U2
+```
+
+`1 | 3` のユニオン型の集合には `2` や `4` といった数値リテラル型は含まれないため、`2 extends 1 | 3` と `4 extends 1 | 3` の条件判定は false となりそれぞれで `2` と `4` という数値リテラル型が返されます。
+
+表にまとめると次のようになります。
+
+条件部 | 判定 | 返却される型
+--|--|--
+1 extends 1 &#124; 3 | true  | never
+2 extends 1 &#124; 3 | false | 2
+3 extends 1 &#124; 3 | true  | never
+4 extends 1 &#124; 3 | false | 4
+
+ということで、`MyExclude<Uni1, Uni2>` で最終的に返される型はイテレーション結果を合成したユニオン型となるので、`never | 2 | never | 4` つまり最終的には `MyExclude<1 | 2 | 3 | 4, 1 | 3>` から `2 | 4` が返されます。
+
+ジェネリクスの利用時に型引数そのものに `extends` キーワードで制約をかける際にも集合で考えると、制約元の型集合内で条件を満たす部分集合であると理解できます(制約元の型そのものでもよいです)。
+
+ちなみに `extends` による型パラメータの制約機能は [TypeScript 1.8 で導入された機能](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-8.html#type-parameters-as-constraints)であり、型理論ではF-有界量化([F-bounded quantification](https://en.wikipedia.org/wiki/Bounded_quantification#F-bounded_quantification))と呼ばれるそうです。
+
+有界量化(Bounded quantification)自体は Wikipedia だと以下のような概念として解説されています。公式 Handbook でも Wikipedia の記事自体が言及されているので概ねあっているはずです。
+
+>In type theory, bounded quantification (also bounded polymorphism or constrained genericity) refers to universal or existential quantifiers **which are restricted ("bounded") to range only over the subtypes of a particular type**. Bounded quantification is **an interaction of parametric polymorphism with subtyping**.
+>([Bounded quantification - Wikipedia](https://en.wikipedia.org/wiki/Bounded_quantification) より引用、太字は筆者強調)
+
+専門用語が多すぎるので分かりづらいですが、簡易的に意訳すると特定の型の subtype の領域にのみ制限する記法のことです(間違ってたらすみません)。これでジェネリクスとサブタイピングの相互作用を表現します。
+
 # 型の階層性
+
+## Top type と Bottom type
 
 subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory)ではこのような型を **Top type(トップ型)** と呼ぶそうです。
 
@@ -239,7 +336,11 @@ https://en.wikipedia.org/wiki/Bottom_type
 参考文献
 https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c5799ad/
 
-そして、subtype と supertype の関係を辿ると以下のような型の階層図(Type hierarchy)もできあがります。ただし、以下の図は [mermaid](https://mermaid-js.github.io/mermaid/#/) で記述したものですが、全貌図としては正確ではないと思うので注意してください(複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています(それらの型は `object` 型傘下の subtype です)。
+## Type hierarchy
+
+そして、subtype と supertype の関係を辿ると以下のような型の階層図(Type hierarchy)もできあがります。
+
+ただし、以下の図は [mermaid](https://mermaid-js.github.io/mermaid/#/) で記述したものですが、全貌図としては正確ではないと思うので注意してください(複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています(それらの型は `object` 型傘下の subtype です)。
 
 ```mermaid
 graph LR
@@ -474,6 +575,8 @@ const v: void = u;
 このような代入関係から明らかに `void` 型が supertype であり、`undefined` 型が subtype なのですが、Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目では `void` 型の説明が "a subtype of `undefined` intended for use as a return type." となっています。ただし、[アーカイブされた古い仕様](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#325-the-void-type)を見ると `void` 型は `undefined` 型の supertype として明記してあるのでこれは現在の公式ドキュメントのミスだと思われます。おそらくミスだろうということでプルリクエストを作成しました(バージョン更新によって supertype と subtype が入れ替わってしまうような仕様変更は流石にないと思います)。
 
 https://github.com/microsoft/TypeScript-Website/pull/2470
+
+# 参考
 
 型の階層性についての参考文献
 - [TypeScriptのコンパイルプロセス / 型の階層構造 - knmts.com](https://knmts.com/as-a-engineer-52/)
