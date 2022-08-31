@@ -135,6 +135,13 @@ TypeScript ではこのように型を集合として考えることで直感的
 
 TypeScirpt 自体は型を集合論的に扱える仕組みを提供するようにデザインされているわけです。実際、ある値が特定の型の変数に代入可能であるかどうかは、その集合(型の範疇)に属しているかで決まります。
 
+:::message
+公式ドキュメントの『Get Started』にリストされている『TS for ~』のドキュメントには実はそこにしか記載されていない内容がいくつかあるので関係無いと思わずに読む必要があります。
+
+- [TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html)
+- [TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html)
+:::
+
 そして、型が集合であること(あるいはそのように扱えること)は、Microsoft Developers の以下の動画にて TypeScript の開発者である Anders Hejlsberg 氏(この記事や前の記事で参照しているプルリクエストは大体この方の作成)が直々に説明していました(26:32~あたりから)。
 
 https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
@@ -384,6 +391,8 @@ graph RL
 ![img_typeSet_7](/images/typescript-widen-narrow/img_typeSet_7.png)
 
 型パラメータ `T` は境界(制約)を規定する `U` 型の領域内のあらゆる範囲を動くことができ、その範囲であればどのような subtype でも良いわけです(もちろん `U` そのものでもよい)。１つの supertype に対して subtype は複数ありえるので上のような図となります。
+
+図では `U` も型パラメータにしていますが、例えば `unknown[]` などをいれて `T extends unknown[]` というように配列型などの具体的な型で拘束して考えてみると良いでしょう。
 
 # 型の階層性
 

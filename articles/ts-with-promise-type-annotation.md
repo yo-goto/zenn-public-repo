@@ -13,10 +13,10 @@ aliases: [記事_TypeScript の基礎から Promise の型注釈まで駆け登�
 # はじめに
 
 :::message alert
-この記事は以 Zenn の Book の方で公開している『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』で収録済みのチャプターから記事として切り出したものになります(チャプター単体でも記事になるものとして判断して公開しています)。
+この記事は Zenn の Book の方で公開している『[イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』で収録済みのチャプターから記事として切り出したものになります(チャプター単体でも記事になるものとして判断して公開しています)。
 :::
 
-この記事は JavaScript の非同期処理を学習した人間が Promise や非同期処理を介して逆に TypeScript の型注釈を理解しようという特殊な試みの記事になります。
+この記事は JavaScript の非同期処理を学習した人間が Promise や非同期処理を介して逆に TypeScript の型注釈を理解しようという試みの記事になります。
 
 実は Promise の型注釈や TypeScript の非同期処理の解説については以下のように既にいくつも有用なリソースがあります。
 
