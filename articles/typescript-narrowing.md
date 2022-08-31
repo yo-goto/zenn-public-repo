@@ -12,23 +12,23 @@ aliases: [記事_TypeScript の Narrowing]
 
 # はじめに
 
-今回の記事では、その Widening(型の拡大) の対となる Narrowing(型の絞り込み) について解説します。Narrowing の方がよく知られている概念であり、パターンが多く解説が大変ですがやっていこうと思います(一部書ききれていないパターンや理解度の低いものもありますが後から追記していきます)。
+今回の記事では、Widening(型の拡大) の対となる Narrowing(型の絞り込み) について解説します。Narrowing の方が Widening よりもよく知られている概念であり、パターンが多く解説が大変ですがやっていこうと思います(一部書ききれていないパターンや理解度の低いものもありますが後から追記していきます)。
 
-基本的には [TypeScript 公式 Handbook](https://www.typescriptlang.org/docs/) の以下の『Narrowing』のページを参照して解説しています。
+:::message
+基本的には TypeScript 公式 Handbook の『[Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)』のページを参照して解説しています。
 
-https://www.typescriptlang.org/docs/handbook/2/narrowing.html
+最新の公式ドキュメント(v2)は**非常にわかりやすい構成でシンプルに TypeScript を理解できるような内容**になっているので英語であっても必ず読むべきおすすめの学習リソースですが、ここに今まで解説してきた対となる概念である『[Widening(型の拡大)](https://zenn.dev/estra/articles/typescript-widening)』と『[型の集合性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』などを加え手考えることでそれぞれについてよりスッキリと理解することが可能になります(特に判定可能なユニオン型などについて)。
+:::
 
-最新の公式ドキュメント(v2)は**非常にわかりやすい構成でシンプルに TypeScript を理解できるような内容**になっていますので英語であっても絶対に読むべきおすすめの学習リソースですが、ここに今までの『[Widening(型の拡大)](https://zenn.dev/estra/articles/typescript-widening)』という対になる概念と『[型の集合性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』などを加えることでよりスッキリと理解することが可能になります(特に判定可能なユニオン型などについて)。
+# 型集合と Narrowing
 
-# ユニオン型と型集合
+おさらいとなりますが[前回の記事](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)では、型は以下の図(*fig 1*)のように具体的な値の集合であると解説しました。単位型(Unit type)である具体的な値から作られるリテラル型の集合によって集合型(Collective type)たる `string` 型や `number` 型、`boolean` 型などのプリミティブ型が構成されます。
 
-[前回の記事](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)では、型は以下の図のように具体的な値の集合であると解説しました。単位型(Unit type)である具体的な値から作られるリテラル型の集合によって集合型(Collective type)たる `string` 型や `number` 型、`boolean` 型などのプリミティブ型が構成されます。
+そして、あらゆる型は、図(*fig 2*)のように全体集合となる `unknown` 型の部分集合であり、`never` 型は空集合としてみなすことができました。
 
-![unit vs collective](/images/typescript-widen-narrow/img_typeSet_1.png)
-
-そして、あらゆる型は、全体集合となる `unknown` 型の部分集合であり、`never` 型は空集合としてみなすことができます。
-
-![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
+fig 1 (型は値の集合) | fig 2 (全体集合と部分集合)
+--|--
+![unit vs collective](/images/typescript-widen-narrow/img_typeSet_1.png) | ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
 各リテラル型の積集合や異なる集合型(Collection type)の積集合をインターセクション型で作ろうとすると共通要素が全く無いので `never` 型となりました。また、`never` 型は空集合ということで、`never` 型そのものと他の型との和集合をユニオン型で作成すると `never` 型は無かったかのようにユニオン型の構成要素として使用した要素の型そのものとなります。
 
@@ -49,7 +49,7 @@ TypeScript ではこのように「**型を集合として扱う**」ことが�
 Narrowing については冒頭で紹介したように公式ドキュメントでわざわざ１ページもさかれて解説されており、特にユニオン型から特定の型へと絞り込む方法が丹念に解説されているのでどれだけ重要かは想像が付きます。
 :::
 
-# Narrowing の必要性
+## Narrowing の必要性
 
 具体的に Narrowing がどのようなものかを見てみます。`number | string` という２つのプリミティブ型から構成されるユニオン型を引数として受け入れる関数を考えます。関数内では、例えば次のような `if` 文などで条件判定して特定のブランチ内でユニオン型よりも具体的な特定のプリミティブ型であると絞り込むことができます。
 
@@ -167,42 +167,36 @@ acceptOptionalStr(); // 引数省略可能
 Optional chaining 演算子を使わずに、`number | string` ユニオンで利用したように `typeof` 演算子を `if` 文の条件として利用して型の絞り込みするなどももちろん可能です。あるいはオプション引数ではなくデフォルト引数とすることででそもそも `undefined` が入り込まないようにするなどの方法もありえます。
 
 ```ts
-{
-  const acceptOptionalStr = (
-    str?: string // string | undefined
-  ) => {
-    if (typeof str === "string") {
-      console.log(str.toUpperCase());
-    }
-  };
-}
-
-{
-  const acceptOptionalStr = (
-    str?: string // string | undefined
-  ) => {
-    if (typeof str === "undefined") {
-      console.log(undefined);
-    } else {
-      console.log(str.toUpperCase());
-    }
-  };
-}
-
-{
-  const acceptOptionalStr = (
-    str = "str" // デフォルト引数
-  ) => {
+function acceptOptionalStr1(
+  str?: string // string | undefined
+) {
+  if (typeof str === "string") {
     console.log(str.toUpperCase());
-  };
-}
+  }
+};
+
+function acceptOptionalStr2(
+  str?: string // string | undefined
+) {
+  if (typeof str === "undefined") {
+    console.log(undefined);
+  } else {
+    console.log(str.toUpperCase());
+  }
+};
+
+function acceptOptionalStr3(
+  str = "str" // デフォルト引数
+) {
+  console.log(str.toUpperCase());
+};
 ```
 
 とにかく、ユニオン型となる場合には構成要素となる複数の型同士で共通して使えるメソッドはかなり限定的になるため関数内部では受け取る引数の型を絞り込んで場合分けする必要がでてきます。
 
 オプション引数のように明示的にユニオン型としなくてもユニオン型となる場合があるので型の絞り込み(Narrowing)が重要であることが理解できたと思います。
 
-# 型範囲の拡大縮小
+## 型範囲の拡大縮小
 
 ユニオン型(Union type)は複数の型を合成した型です。集合論的には複数の集合の和集合(合併: Union)となります。逆にインターセクション型(Intersection type)は集合論的には積集合(共通部分、交差: Intersection)となります。
 
@@ -260,7 +254,7 @@ Widening では基本的にリテラル型から一般的なプリミティブ�
 
 Narrowing では、例えば `toUpperCase()` というメソッドは `string` 型でしか使えないので `string | number` などのユニオン型から型の候補を減らし(reduce)て、型を `string` 型まで絞り込みます。`number` 型でしか使えないメソッドを使いたいなら `number` 型まで絞り込みます。
 
-# 制御フロー解析(CFA)
+## 制御フロー解析(CFA)
 
 ということで、ユニオン型が関数の引数となることで、関数内部で引数に対して利用できるメソッドがそのユニオン型に含まれる型によって変わってくるので場合分けをする必要がでてきます。
 
@@ -283,9 +277,7 @@ function strOrNum(
 
 そして実際には、上のコードでの `if` 節や `switch` や `while` などのコードの構造によって各場所での変数の型を絞り込みます。このようなコードを書くと TypeScript (コンパイラやエディタの拡張機能)はある変数が特定のブランチなどに到達した時点でその型がなんであるか解析をしています。この解析を「[制御フロー解析(Control flow analysis: CFA)](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#control-flow-analysis)」と呼びます。
 
-この CFA ですが、TypeScript 公式のチートシートの１つとして以下のページでまとめられています。
-
-https://www.typescriptlang.org/static/TypeScript%20Control%20Flow%20Analysis-8a549253ad8470850b77c4c5c351d457.png
+ちなみに CFA ですが、TypeScript 公式の[チートシートの１つ](https://www.typescriptlang.org/static/TypeScript%20Control%20Flow%20Analysis-8a549253ad8470850b77c4c5c351d457.png)としてまとめられているのでそちらも確認しておくと良いです。
 
 CFA ではユニオン型の変数の型をいくつかの真偽値のロジックパターンに基づいて型を絞り込んでいきます。基本的には、`if` 節で条件判定しますが、`switch` などを使う場合もあります。
 
@@ -301,7 +293,7 @@ if (typeof input === "string") {
 }
 ```
 
-# 判別可能なユニオン型
+## 判別可能なユニオン型
 
 :::message
 この記事では、Narrowing の基本パターンから始めるまえに集合に基づいて判定可能なユニオン型から解説します。
@@ -313,7 +305,7 @@ if (typeof input === "string") {
 
 ![型システムでの Sum 型の表記](/images/typescript-widen-narrow/img_typeSystem_notation_2.jpg)*[Type system - Wikipedia](https://en.wikipedia.org/w/index.php?title=Type_system#Specialized_type_systems) より引用*
 
-特殊なユニオン型であり、判別可能なユニオン型として定義しておくことで Narrowing がしやすくなるものです。
+具体的には少し特殊なユニオン型であり、オブジェクトの型を合成する際にこの「判別可能なユニオン型」として定義しておくことで Narrowing がしやすくなるものです。
 
 集合論で考えると、判別可能なユニオン型は [Disjoint union(非交和)](https://en.wikipedia.org/wiki/Disjoint_union?oldformat=true) と呼ばれるものになります。２つの集合の和集合をつくった時に共通部分がない、つまり交差(intersection)を持たない和集合のことを指します。"disjoint" とは互いに素であることを意味します。
 
@@ -321,7 +313,7 @@ if (typeof input === "string") {
 
 型は具体的な値の集合で、特にプリミティブ型は具体的なリテラル型の集合としてみなせした。`string` 型と `number` 型は共通部分がないので和集合をつくった際には共通部分がないので自動的に Disjoint union となります。積集合(交差)を作り出そうとインターセクション型で `string` 型と `number` 型を合成しようとすると空集合で値を持たないことを表現する `never` 型となります。
 
-ということで、実は今までのユニオン型の図は正しくなく、交差を持たないのでより正確に図示すると右のようになります。
+ということで、実は今までの左ようなユニオン型の図は正しくなく、交差を持たないのでより正確に図示すると右のようになります。
 
 ![交差を排除して表現](/images/typescript-widen-narrow/img_typeSet_9.png)
 
@@ -460,13 +452,25 @@ type Shape = {
   a?: number; // => number | undefined
 };
 
+// タグ付きユニオン型(判定可能なユニオン型)
 type Sum =
   | { kind: "A"; r: number; }
   | { kind: "B"; l: number; }
   | { kind: "C"; a: number; };
 ```
 
-判別可能なユニオン型(タグ付きユニオン型)は、特定のプロパティの値(リテラル型)から元の型(あるいは集合)を特定することができるので、「判別可能」というわけです。実際、これを使うことによってユニオン型から構成要素の型へと Narrowing して絞り込むことができます。
+この `Sum` というユニオン型が Disjoin union になっているかどうかは構成要素となる型の交差(インターセクション型)を取ってみればわかります。`A`、`B`、`C` の型は互いに素で共通要素となる具体的な値が存在しないので交差を取ると `never` 型となります。
+
+```ts
+type IsNever = A & B & C;
+//   ^^^^^^^: never 型
+```
+
+共通のプロパティの値の型が異なっているので交差が空集合となるようになっています(そうでないオブジェクトの型同士で合成すれば交差がでてきます)。ということで `Sum` 型がタグ付きユニオン型であることが確認できました。
+
+このタグ付きユニオン型は「判別可能なユニオン型」とも呼ばれますが、特定のプロパティの値(リテラル型)から元の型(あるいは集合)を特定することができるので、「判別可能」というわけです。
+
+実際、これを使うことによってユニオン型から構成要素の型へと Narrowing して絞り込むことができます。
 
 ```ts
 function handleShape(shape: Sum) {
@@ -492,11 +496,11 @@ function handleShape(shape: Sum) {
 
 ![タグ付きユニオン型](/images/typescript-widen-narrow/img_typeSet_10.png)
 
-集合の包含関係は図を見ればわかりますが、部分集合(subset)となる型がそれを包含している集合(superset)に対して subtype となります。
+集合の包含関係は図を見ればわかりますが、部分集合(subset)となる型がそれを包含している上位の集合(superset)に対して subtype となります。
 
-`Kind` 型が最も条件が緩いので集合としての範囲が大きく、それに更に条件制約を書けていくとより詳細な型となり subtype へと派生していきます。`Shape`、`Strict`、`Sum` の３つ型を比較してみると、最初に定義した `kind` 以外のプロパティがオプショナルな `Shape` 型は集合としてはかなり大きいことがわかります。つまり制約が緩いわけです。逆にすべてのプロパティを必須にした `Strict` 型はかなり制約がつよく小さいことがわかります。そして `Sum` 型はその中間に位置しており、条件としては `Shape` よりも強く、`Strict` よりも緩くなっています。
+`Kind` 型が最も条件が緩いので集合としての範囲が大きく、それに更に条件制約を書けていくとより詳細な型となり subtype へと派生していきます。`Shape`、`Strict`、`Sum` の３つ型を比較してみると、最初に定義した `kind` 以外のプロパティがオプショナルな `Shape` 型は集合としてはかなり大きいことがわかります。つまり制約が緩いわけです。逆にすべてのプロパティを必須にした `Strict` 型は制約が非常に強く集合が小さいことがわかります。そして `Sum` 型はその中間に位置しており、条件としては `Shape` よりも強く、`Strict` よりも緩くなっています。
 
-図から `Strict` も実は判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype です。ですが、`r`、`l`、`a` の３つのプロパティがすべて必須となっているので、そもそも Narrowing しなくてもプロパティアクセスが可能です。ということは、図形の種類としてもつべきではないプロパティを必ず持たなくてはならないことになるので冗長で無駄ですし、モデルとしてもこの型は不適当です。
+図から `Strict` も実は判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype であり、どちらの型も交差(共通要素9がないことがわかりますね。ですが、`r`、`l`、`a` の３つのプロパティがすべて必須となっているので、そもそも Narrowing しなくてもプロパティアクセスが可能です。ということは、図形の種類としてもつべきではないプロパティを必ず持たなくてはならないことになるので冗長で無駄ですし、モデルとしてもこの型は不適当です。
 
 また `Sum` 型のような定義方法を使うことで別の種類の図形の型をユニオン型の要素として追加したいときに簡単に追加できます。
 
@@ -941,7 +945,7 @@ function isErrorResponse(
 返り値の型注釈を Type predicate にすることによって単に真偽値を返すだけではなく、CFA において型を絞り込んで解析できるようにしています。
 
 :::message
-Type predicate の [predicate](https://en.wikipedia.org/wiki/First-order_logic)) とは日本語で言うと「述語」となります。数理論理学におけるタームから派生して利用されているようです。ここでは型についての情報を記述するための表記方法のようなものだと考えればよいです。
+Type predicate の [predicate](https://en.wikipedia.org/wiki/First-order_logic) とは日本語で言うと「述語」となります。数理論理学におけるタームから派生して利用されているようですが、ここでは型についての情報を記述するための表記方法のようなものだと考えればよいです。
 :::
 
 ユーザー定義型ガード関数は TypeScript v.1.6 で導入された古い機能です。『Overview』の以下の場所に記載されています。
