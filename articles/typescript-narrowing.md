@@ -12,15 +12,17 @@ aliases: [記事_TypeScript の Narrowing]
 
 # はじめに
 
-今回の記事では、Widening(型の拡大) の対となる Narrowing(型の絞り込み) について解説します。Narrowing の方が Widening よりもよく知られている概念であり、パターンが多く解説が大変ですがやっていこうと思います(一部書ききれていないパターンや理解度の低いものもありますが後から追記していきます)。
+この記事では、Widening(型の拡大) の対となる Narrowing(型の絞り込み) について解説します。
 
-:::message
-基本的には TypeScript 公式 Handbook の『[Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)』のページを参照して解説しています。
+Narrowing は多くの記事で型ガード(type guard)と呼ばれる話題に基づいて解説されますが、Narrowing のキーワードで包括的に解説するのが公式ドキュメントでも行われているものです。
 
-最新の公式ドキュメント(v2)は**非常にわかりやすい構成でシンプルに TypeScript を理解できるような内容**になっているので英語であっても必ず読むべきおすすめの学習リソースですが、ここに今まで解説してきた対となる概念である『[Widening(型の拡大)](https://zenn.dev/estra/articles/typescript-widening)』と『[型の集合性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』などを加え手考えることでそれぞれについてよりスッキリと理解することが可能になります(特に判定可能なユニオン型などについて)。
+実際、型ガードよりも、対となる概念である『[Widening(型の拡大)](https://zenn.dev/estra/articles/typescript-widening)』や『[型の集合性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』などを加えて Narrowing として考えた方がそれぞれについてよりスッキリと理解することが可能になります(特に判定可能なユニオン型などについて)。
+
+:::message alert
+Narrowing のパターンそのものについては、長くなるので[別の記事](https://zenn.dev/estra/articles/typescript-narrowing-patterns)にしてまとめることにしました。この記事は集合的に Narrowing がどのようなものであるかを解説します。
 :::
 
-# 型集合と Narrowing
+# 型集合
 
 おさらいとなりますが[前回の記事](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)では、型は以下の図(*fig 1*)のように具体的な値の集合であると解説しました。単位型(Unit type)である具体的な値から作られるリテラル型の集合によって集合型(Collective type)たる `string` 型や `number` 型、`boolean` 型などのプリミティブ型が構成されます。
 
@@ -37,19 +39,26 @@ type StrOrNever = string | never;
 // type StrOrNever = string; と同じ
 ```
 
-`string` 型や `number` 型などのプリミティブ型を合成してユニオン型を作ると以下の図のようにそれぞれの構成要素の型(集合)を合成した和集合を作ります。
+`string` 型や `number` 型などのプリミティブ型を合成してユニオン型を作ると以下の図のようにそれぞれの構成要素の型(集合)を合成した和集合を作ります。包含されている部分集合(subset)はそれを包含している上位の集合(superset)に対して subtype-supertype の関係にあります。
 
 ![集合型の和集合](/images/typescript-widen-narrow/img_typeSet_6.png)
+
+`S` 型が `T` 型の subtype であるとき $S <: T$ と表記します(`S` は `T` によって包摂([subsumption](https://en.wikipedia.org/wiki/Subtyping#Subsumption))されています)。集合としては `S` が `T` に包含されるので $S \subset T$ で表記できます(もちろん厳密には型 `S` と値の集合 `S` は異なるものです)。
 
 この記事のメインテーマである **Narrowing** とは「型の絞り込み」のことですが、「型を絞り込む」というのは特定の変数が上記のようなユニオン型からより扱いやすい具体的なプリミティブ型や特定のオブジェクトリテラルの型へと範囲を絞り込んでいくプロセスや行為のことを指します。
 
 :::message
-TypeScript ではこのように「**型を集合として扱う**」ことが非常に重要となります。型を集合論的に扱いやすくする機能を提供するように TypeScript 自体がデザインされていると[公式ドキュメントで明言されて](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)いますが、その中でもユニオン型は非常に重要な機能です。
+TypeScript ではこのように「**型を集合として扱う**」ことが重要な考え方となります。公式でも推奨されている考え方です。
+
+>In TypeScript, **it’s better to think of a type as a set of values that share something in common**. Because types are just sets, a particular value can belong to many sets at the same time.
+>([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
+
+そもそも型を集合論的に扱いやすくする機能を提供するように TypeScript 自体がデザインされていると公式ドキュメントで明言されていますが、その中でもユニオン型は非常に重要な機能です。
 
 Narrowing については冒頭で紹介したように公式ドキュメントでわざわざ１ページもさかれて解説されており、特にユニオン型から特定の型へと絞り込む方法が丹念に解説されているのでどれだけ重要かは想像が付きます。
 :::
 
-## Narrowing の必要性
+# Narrowing の必要性
 
 具体的に Narrowing がどのようなものかを見てみます。`number | string` という２つのプリミティブ型から構成されるユニオン型を引数として受け入れる関数を考えます。関数内では、例えば次のような `if` 文などで条件判定して特定のブランチ内でユニオン型よりも具体的な特定のプリミティブ型であると絞り込むことができます。
 
@@ -196,7 +205,7 @@ function acceptOptionalStr3(
 
 オプション引数のように明示的にユニオン型としなくてもユニオン型となる場合があるので型の絞り込み(Narrowing)が重要であることが理解できたと思います。
 
-## 型範囲の拡大縮小
+# 型範囲の拡大縮小
 
 ユニオン型(Union type)は複数の型を合成した型です。集合論的には複数の集合の和集合(合併: Union)となります。逆にインターセクション型(Intersection type)は集合論的には積集合(共通部分、交差: Intersection)となります。
 
@@ -246,7 +255,7 @@ Literal Wideing ではこのように具体的な文字列リテラル型(Unit t
 
 従って Widening では、対象となる集合が subset から superset へと範囲が拡大されることになります。supertype-subtype の関係性で考えると、subtype である文字列リテラル型から supertype である `string` 型へと拡大されます。逆に Narrowing では、対象となる集合を superset から subset へと絞り込むことになります。supertype-subtype の関係性で考えると、supertype であるユニオン型から subtype である `string` 型や `number` 型へと絞り込みます。
 
-図にすると以下のような関係性となります。
+集合論的に図示ると以下のような関係となります。
 
 ![narrowing_widening](/images/typescript-widen-narrow/img_typeSet_8.png)
 
@@ -254,7 +263,7 @@ Widening では基本的にリテラル型から一般的なプリミティブ�
 
 Narrowing では、例えば `toUpperCase()` というメソッドは `string` 型でしか使えないので `string | number` などのユニオン型から型の候補を減らし(reduce)て、型を `string` 型まで絞り込みます。`number` 型でしか使えないメソッドを使いたいなら `number` 型まで絞り込みます。
 
-## 制御フロー解析(CFA)
+# 制御フロー解析(CFA)
 
 ということで、ユニオン型が関数の引数となることで、関数内部で引数に対して利用できるメソッドがそのユニオン型に含まれる型によって変わってくるので場合分けをする必要がでてきます。
 
@@ -293,25 +302,79 @@ if (typeof input === "string") {
 }
 ```
 
-## 判別可能なユニオン型
+実際にユニオン型からプリミティブ型を reduce してみます。３つのプリミティブ型と１つのリテラル型(Unit type) `undefined` の計４つの型から構成されるユニオン型から１つずつ型をへらすには以下のようなコードが書けます。
+
+```ts
+// 即時実行して確率で分岐して特定の型の値を取得させる
+const st: undefined | string | number | boolean = (() => {
+  const r = Math.random() * 100;
+  if (r < 30) {
+    return 42;
+  } else if (r < 60) {
+    return "B";
+  } else if (r < 90) {
+    return false;
+  } else {
+    return undefined;
+  }
+})();
+
+// ユニオン型からプリミティブ型を１つずつ reduce して Narrowing する
+if (typeof st === "boolean") {
+  st; // boolean
+} else {
+  st; // string | number | undefined
+  if (typeof st === "undefined") {
+    st; // undefined
+  } else {
+    st; // string | number
+    if (typeof st === "string") {
+      st; // string
+    } else if (typeof st === "number") {
+      st; // number
+    } else {
+      st; // never (空集合)
+    }
+  }
+}
+```
+
+CFA による解析によってエディタ上で変数にホバーすると実際に型が絞り込まれていることが分かります。
+
+これを集合論的に図示すると以下のようになります。型の候補から構成要素となる具体的な型を減らしていって、`undefined` 型も減らすと型の候補にはなにも具体的な型が残っておらず、最終的には空集合 `never` 型になります。
+
+![ユニオン型からreduceの図示](/images/typescript-widen-narrow/img_typeSet_8_sub.png)
+
+Narrowing とはこのように型の広域な集合から条件判定によって候補を絞り込んでいくことに他なりません。図のように `string` 型といったプリミティブ型まで絞り込めばその型のプロトタイプメソッドなどが利用できるようになります。
+
+# 判別可能なユニオン型
 
 :::message
-この記事では、Narrowing の基本パターンから始めるまえに集合に基づいて判定可能なユニオン型から解説します。
-
-基本パターンについて一部未完成の箇所があるのも理由の１つです。すべて補ったら再構成するかもしれません。
+この記事では、Narrowing の基本パターンから始めるまえに集合に基づいて判定可能なユニオン型から解説します。基本パターンについて一部未完成の箇所があるのも理由の１つです。すべて補ったら再構成するかもしれません。
 :::
 
 判別可能なユニオン型(Discriminated union type)あるいはタグ付きユニオン型(Tagged union type) は型システム一般では [Sum 型](https://www.wikiwand.com/en/Sum_type)と呼ばれる類のものであり、$\sigma+\tau$ として表記されます。
 
 ![型システムでの Sum 型の表記](/images/typescript-widen-narrow/img_typeSystem_notation_2.jpg)*[Type system - Wikipedia](https://en.wikipedia.org/w/index.php?title=Type_system#Specialized_type_systems) より引用*
 
-具体的には少し特殊なユニオン型であり、オブジェクトの型を合成する際にこの「判別可能なユニオン型」として定義しておくことで Narrowing がしやすくなるものです。
+具体的には「特殊なユニオン型」であり、オブジェクトの型を合成する際にこの「判別可能なユニオン型」として定義しておくことで Narrowing がしやすくなるものです。
 
-集合論で考えると、判別可能なユニオン型は [Disjoint union(非交和)](https://en.wikipedia.org/wiki/Disjoint_union?oldformat=true) と呼ばれるものになります。２つの集合の和集合をつくった時に共通部分がない、つまり交差(intersection)を持たない和集合のことを指します。"disjoint" とは互いに素であることを意味します。
+集合論で考えると、判別可能なユニオン型は [Disjoint union(非交和)](https://ja.wikipedia.org/wiki/%E9%9D%9E%E4%BA%A4%E5%92%8C) と呼ばれるものになります。非交和(Disjoint union)は２つの集合の和集合をつくった時に共通部分がない、つまり交差(intersection)を持たない和集合のことを指します。"disjoint" とは「互いに素」であることを意味します。
 
 ![disjoin union](/images/typescript-widen-narrow/img_typeSet_11.png)
 
-型は具体的な値の集合で、特にプリミティブ型は具体的なリテラル型の集合としてみなせした。`string` 型と `number` 型は共通部分がないので和集合をつくった際には共通部分がないので自動的に Disjoint union となります。積集合(交差)を作り出そうとインターセクション型で `string` 型と `number` 型を合成しようとすると空集合で値を持たないことを表現する `never` 型となります。
+:::message
+より広域な概念としては直和(direct sum)とも呼ばれるもので、直和は実際には次の２つの概念を指し示します。
+
+- discriminated union(識別された和)
+- disjoint union(非交和)
+
+discrimnated union は集合論では和集合を合成元の集合を特定(判別: discriminate)できるように添字などのタグをつけたものです。判別可能なユニオン型は実際にはこの discriminated union という集合に基づいています。discriminated union は disjoint union でもあるので、型の文脈では両者はほとんど同じものとして考えても大丈夫です(もちろん厳密には違います)。
+
+「直和型」はこの直和から来ています。「TypeScript のユニオン型は直和型ではない」という文言も実は discriminated union と disjoint union の話に繋がります。
+:::
+
+型は具体的な値の集合で、特にプリミティブ型は具体的なリテラル型の集合としてみなせました。`string` 型と `number` 型は共通部分がないので和集合をつくった際には共通部分がないので自動的に Disjoint union となります。積集合(交差)を作り出そうとインターセクション型で `string` 型と `number` 型を合成しようとすると空集合で値を持たないことを表現する `never` 型となります。
 
 ということで、実は今までの左ようなユニオン型の図は正しくなく、交差を持たないのでより正確に図示すると右のようになります。
 
@@ -332,13 +395,13 @@ function padLeft(pad: StrOrNum) {
 }
 ```
 
-実は、判別可能なユニオン型として知られているのはオブジェクトの型についてのユニオン型を考えるときのものです。要するにオブジェクトの型でのユニオン型の作り方のプラクティスの話となりあます。
+実は、判別可能なユニオン型として知られているのはオブジェクトの型についてのユニオン型を考えるときのものです。要するにオブジェクトの型でのユニオン型の作り方のプラクティスの話となります。
 
-異なるプリミティブ型同士をユニオン型として合成すると自動的に Disjoint union になりましたが、オブジェクト型をユニオン型として合成すると Disjoint union になるとは限りません。例えば、`{ a: "st" }` と `{ b: 42 }` というオブジェクトの型を合成すると以下の図のように両方のプロパティを持つ型が交差として出現します。
+異なるプリミティブ型同士をユニオン型として合成すると自動的に Disjoint union になりましたが(正確には disjoint union ではあるが discriminated union ではない)、オブジェクト型をユニオン型として合成すると Disjoint union になるとは限りません。例えば、`{ a: "st" }` と `{ b: 42 }` というオブジェクトの型を合成すると以下の図のように両方のプロパティを持つ型が交差として出現します。オブジェクトリテラルによる型の表現は実際にはそのプロパティと値の型を条件として満たすあらゆるオブジェクトの集合を表現します(他のプロパティを持っていたとしてもその型の範疇となるのは TypeScript が**構造的部分型**のシステムを採用しているからです)。
 
 ![オブジェクトの型合成](/images/typescript-widen-narrow/img_typeSet_5.png)
 
-ということで、オブジェクト型を Disjoin union として合成してタグ付きユニオン型とするにはある方法を取る必要がでてきます。
+ということで、オブジェクト型を Disjoin union として合成してタグ付きユニオン型とするにはある方法を取る必要がでてきます。そして、オブジェクト型の合成で交差(intersection)が出現しないなら、それは disjoint union であり、discriminated union です。逆に disjoin union ではないならそれは discriminated union ではないことになります。
 
 例えばよくある例として図形情報を表現するオブジェクトの型を考えます。具体的には四角形(square)、三角形(triangle)、円(circle)の３つの種類の図形について考えます。図形オブジェクトを受け取ってプロパティとして持たせた属性情報から何かしらの計算をして値を返すような関数を作りたいとします。
 
@@ -494,13 +557,26 @@ function handleShape(shape: Sum) {
 
 それぞれの型を集合論的に図示すると以下のようになります。
 
-![タグ付きユニオン型](/images/typescript-widen-narrow/img_typeSet_10.png)
+![タグ付きユニオン型の図示](/images/typescript-widen-narrow/img_typeSet_10.png)
 
 集合の包含関係は図を見ればわかりますが、部分集合(subset)となる型がそれを包含している上位の集合(superset)に対して subtype となります。
 
 `Kind` 型が最も条件が緩いので集合としての範囲が大きく、それに更に条件制約を書けていくとより詳細な型となり subtype へと派生していきます。`Shape`、`Strict`、`Sum` の３つ型を比較してみると、最初に定義した `kind` 以外のプロパティがオプショナルな `Shape` 型は集合としてはかなり大きいことがわかります。つまり制約が緩いわけです。逆にすべてのプロパティを必須にした `Strict` 型は制約が非常に強く集合が小さいことがわかります。そして `Sum` 型はその中間に位置しており、条件としては `Shape` よりも強く、`Strict` よりも緩くなっています。
 
-図から `Strict` も実は判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype であり、どちらの型も交差(共通要素9がないことがわかりますね。ですが、`r`、`l`、`a` の３つのプロパティがすべて必須となっているので、そもそも Narrowing しなくてもプロパティアクセスが可能です。ということは、図形の種類としてもつべきではないプロパティを必ず持たなくてはならないことになるので冗長で無駄ですし、モデルとしてもこの型は不適当です。
+図から `Strict` も判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype であり、どちらの型も交差(共通要素がないことがわかります。`Sum` 型を抜いて図示すると `Strict` 型は次のように Disjoin union であり交差を持ちません。
+
+![strict型の図示](/images/typescript-widen-narrow/img_typeSet_10_sub.png)
+
+`Strict` 型は実は次のように変形でき、それぞれ異なる文字列リテラル型である共通の `kind` プロパティを持つオブジェクト型の合成であることから、タグ付きユニオン型であることが明らかです。
+
+```ts
+type Strict =
+  | { kind: "A", r: number; l: number; a: number; }
+  | { kind: "B", r: number; l: number; a: number; }
+  | { kind: "C", r: number; l: number; a: number; };
+```
+
+ですが、`r`、`l`、`a` の３つのプロパティがすべて必須となっているので、そもそも Narrowing しなくてもプロパティアクセスが可能です。ということは、図形の種類としてもつべきではないプロパティを必ず持たなくてはならないことになるので冗長で無駄ですし、モデルとしてもこの型は不適当です。
 
 また `Sum` 型のような定義方法を使うことで別の種類の図形の型をユニオン型の要素として追加したいときに簡単に追加できます。
 
@@ -519,13 +595,13 @@ type Sum =
 
 関数内で Narrowing する際にも対応するブランチを増やせばよいだけです。
 
-## Exausitve check
+# Exausitve check
 
 タグ付きユニオン型でそのように要素を増やした時に上の例では４つしかユニオン型の構成要素がないので見た目ですべてを網羅していることが理解できますが、構成要素が例えば１０を超えると見た目で判別するのは難しいですし面倒でしょう。
 
 そこで `never` 型(集合的には空集合)を利用することでタグ付きユニオン型の構成要素となる型すべてを関数内で利用しているかどうかを見た目に頼らずチェックすることができます。
 
-というのも、Narrowing はユニオン型という和集合から合成元の型(集合)を取り除いていく行為でもあります。すべての構成要素となる型を取り除くと空集合、つまり何も要素が無い集合となるので最終的には `never` 型となります。構成要素をすべて列挙しないと `never` 型にすることはできないので、この性質を利用してあえてエラーを起こして網羅しているかのチェックをするのが網羅性チェック(Exaustive check)です。
+というのも、先程述べたとおり Narrowing はユニオン型という和集合から合成元の型(集合)を取り除いていく行為でもあります。すべての構成要素となる型を取り除くと空集合、つまり何も要素が無い集合となるので最終的には `never` 型となります。構成要素をすべて列挙しないと `never` 型にすることはできないので、この性質を利用してあえてエラーを起こして網羅しているかのチェックをするのが網羅性チェック(Exaustive check)です。
 
 再度、タグ付きユニオン型である `Sum` 型を考えてみます。更に `E` 型を加えて見ましょう。
 
@@ -611,457 +687,7 @@ function handleShapeY(shape: Sum) {
 
 # Narrowing のパターン
 
-## 代入による Narrowing
+この話題は実用的(実践的)な話ではありますが、Narrowing については本質的な話ではないと感じたので、別の記事にしてまとめることにしました(未完成な部分も多かったので)。
 
-CFA での典型的な Narrowing パターンの解説に入る前に、もっと基本的な Narrowing について見ておきます。
+https://zenn.dev/estra/articles/typescript-narrowing-patterns
 
-前の記事を見て入れば Widening を知っているわけですが、実はその過程ですでに Narrowing についても知っています。というのも、ユニオン型として `let` 宣言した変数では、具体的な値を代入することでその型が確定することになるので、「[代入(Assignment)](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#assignments)」も Narrowing の１つとしてカウントされます。
-
-TypeScript は代入した際の右辺の値を見て変数の型が絞り込むことによって、その型のプロトタイプメソッドなどを使っても型エラーとならなくなります。ただし、`let` 宣言した変数では再代入が何度でも可能なので、再代入時には変数宣言時に使用した型注釈であるユニオン型の要素の型の値を代入できます。代入以降は再代入した値の型として見なされるので使えるプロトタイプメソッドもその型のものとなります。
-
-```ts
-let unionVal: string | number;
-//            ^^^^^^^^^^^^^^^ ユニオン型として型注釈
-
-unionVal = 1.1; // 代入の行ではエディタ上ではユニオン型
-
-unionVal; // :number (代入以降は number 型として見なされる)
-// 宣言された型はユニオン型なので要素になっている型の値を代入可能
-console.log(unionVal.toPrecision(4)); // => 1.100
-//          ^^^^^^^^: number
-
-// let 宣言の変数は変数宣言時のユニオン型の値を代入可能
-unionVal = "str"; // 代入の行ではエディタ上ではユニオン型
-
-unionVal; // :string (代入以降は string 型として見なされる)
-// 宣言された型はユニオン型なので要素になっている型の値を代入可能
-console.log(unionVal.toUpperCase()); // => STR
-//          ^^^^^^^^: string
-```
-
-また const アサーションによって Widening を抑止するのも Narrowing の一種です。
-
-```ts
-const animal = {
-  name: "bear",
-};
-type Animal = typeof animal;
-// { name: string; } 型が抽出される
-
-const vehicle = {
-  name: "bike" as const, // Narrwoing (Widening を抑制するように文字列リテラル型としてアサーション)
-};
-type Vehicle = typeof vehicle;
-// { name: "bike"; } 型が抽出される
-```
-
-## キーワードを使った Narrowing
-
-以下であげるような話題は Narrowing(型の絞り込み) よりも、Type guard(型ガード) という話題で解説されることが多いですが、Narrowing という目的に沿って解説した方が公式ドキュメントにも沿っているのでそうします。
-
-### typeof 演算子を使った Narrowing
-
-`typeof` 演算子によって変数の型を基本的な判定ができます。`typeof` 演算子で判定できるものは以下のような基本的な型となります。
-
-- `"string"`
-- `"number"`
-- `"bigint"`
-- `"boolean"`
-- `"symbol"`
-- `"undefined"`
-- `"object"`
-- `"function"`
-
-:::message
-配列であるかどうかの判定は後述する `Array.isArray()` という静的メソッドを型ガードとして利用することで可能です。
-:::
-
-実際に Narrowing する際には `if` 文や `switch` で利用します。
-
-```ts
-function testPrimitiveUnion(
-  param: string | number | boolean
-) {
-  if (typeof param === "string") {
-    // CFA で string 型として解析される
-    console.log("変数は string 型として Narrowing されている");
-    console.log(param.toUpperCase());
-    //          ^^^^^: string
-  } else if (typeof param === "number") {
-    // CFA で number 型として解析される
-    console.log("変数は number 型として Narrowing されている");
-    console.log(param.toPrecision(4));
-    //          ^^^^^: number 型
-  } else if (typeof param === "boolean") {
-    // CFA で boolean 型として解析される
-    console.log("変数は boolean 型として Narrowing されている");
-    console.log(param.toString());
-    //          ^^^^^: boolean 型
-  } else {
-    // CFA で never 型として解析される
-    console.log(param);
-    //          ^^^^^: never 型(決して観測されない)
-  }
-}
-```
-
-このような関数を使って値をテストすると次のようになります。
-
-```ts
-testPrimitiveUnion("text");
-testPrimitiveUnion(42);
-testPrimitiveUnion(false);
-
-/*
-変数は string 型として Narrowing されている
-TEXT
-変数は number 型として Narrowing されている
-42.00
-変数は boolean 型として Narrowing されている
-false
- */
-```
-
-このように CFA で型を解析できるように `typeof` 演算子などを使って型を Narrowing する箇所やその行為そのものを型ガード(Type guard)と呼びます。特に `typeof` の場合は typeof 型ガードと呼びます。
-
-```ts
-if (typeof param === "string") { // typeof 型ガード
-  console.log("変数は string 型として Narrowing されている");
-  console.log(param.toUpperCase());
-  //          ^^^^^: string
-}
-```
-
-１つの行で複数の条件を組み合わせて Narrowing することもできます。
-
-```ts
-const strOrNum = Math.random() < 0.5 ? "text" : 42;
-//    ^^^^^^^^ "text" | 42 というリテラル型のユニオン型
-
-const length = (typeof strOrNum === "string" && strOrNum.length) || strOrNum;
-```
-
-プリミティブ値などではこのようにうまくいきますが、`typeof` 演算子では、オブジェクト型の判定はうまく機能しません。というのも JavaScript では、`typeof null` が `"object"` として判定されてしまうからです(過去の仕様の負債です)。
-
-```ts
-const objOrNull = Math.random() < 0.5 ? { a: 42 } : null;
-
-if (typeof objOrNull === "object") {
-  // { a: 42 } でも null でも判定が通ってしまう
-  console.log(objOrNull);
-  //          ^^^^^^^^^: { a: number; } | null (ユニオン型)
-}
-```
-
-このような場合には後述する Truthiness Narrowing が必要となります。
-
-### instanceof 演算子を使った Narrowing
-
-JavaScript には `instanceof` 演算子というものがありますが、これを型ガードとして利用することもできます。変数がクラスのインスタンスであるかを判別することに利用します。
-
-```ts
-let today = Math.random() < 0.5
-  ? new Date()
-  : "2022/07/30";
-
-if (today instanceof Date) {
-  // today は Date インスタンス
-  console.log(today.toUTCString());
-} else {
-  // today は string 型
-  console.log(today);
-}
-```
-
-### in 演算子を使った Narrowing
-
-JavaScript の `in` 演算子を使えばオブジェクトが特定のメソッドやプロパティを持っていることを判別するができます。型の Narrowing というようりは、オブジェクトの shape を確定していく作業です。
-
-例えば、`data` オブジェクトに `error` というプロパティがあるかどうかを判別するには以下のように型ガードの条件として利用して絞り込みます。
-
-```ts
-if ("error" in data) { // 型ガード
-  // このブランチ内では data オブジェクトが error プロパティを持つことが保証される
-  data; // { error: ... }
-}
-```
-
-オブジェクト型のユニオン型などを考えるときには型の絞り込みとして型ガードに利用できます。
-
-```ts
-type Fish = { swim: () => void };
-type Bird = { fly: () => void };
-type Human = {
-  walk: () => void;
-  swim?: () => void;
-  fly?: () => void;
-};
-
-function move(
-  animal: Fish | Bird | Human
-): void {
-  if ("walk" in animal) {
-    // Human 型に絞り込まれる
-    animal.walk();
-  } else if ("fly" in animal) {
-    // Bird 型に絞り込まれる
-    animal.fly();
-  } else {
-    // Fish 型に絞り込まれる
-    animal.swim();
-  }
-}
-```
-
-## 🛠 Equality Narrowing
-
-:::details 未完成
-単純な(厳密)等価演算子や(厳密)不等価演算子での判定を型ガードに使って Narrowing することも可能です。
-
-今までやってきた `typeof` 型ガードによる方法やタグ付きユニオン型における絞り込みも実はこれを駆使していました。
-:::
-
-## Truthiness Narrowing
-
-`typeof null === "object"` のような判定がされてしまうことから、Truthiness check (真実性チェック) が必要になってきます。JavaScript では `if` ステートメントの条件式では強制的かつ暗黙的に真偽値へと型変換が行われて評価が行われます。
-
-```ts
-if (obj) { // obj は真偽値へと変換されて評価される
-  // obj が true 評価ならこの節の処理が行われる
-}
-```
-
-強制的に変換された結果として `false` になるものは **falsy**、`true` になるものは **truthy** と呼ばれます。truety なものは無限にありますが、falsy なものは限られていることから、falsy でないなら truthy というように考えます。falsy な値は以下のものです。
-
-- `false`
-- `0`
-- `0n` (0 の bigint バージョン)
-- `""` (空文字列)
-- `null`
-- `undefined`
-- `NaN`
-
-これらのものは `false` として評価されて、逆にこれら以外のすべては `ture` であると評価されます。`if` の条件式で評価せずとも、`!!` という二重否定の演算子を付けることであらゆる値を強制的に真偽値へと変換できます。
-
-```ts
-// 以下すべて false という真偽値リテラル型として型推論される
-const falsy1 = !!0;
-//    ^^^^^^ false
-const falsy2 = !!0n;
-//    ^^^^^^ false
-const falsy3 = !!"";
-//    ^^^^^^ false
-const falsy4 = !!null;
-//    ^^^^^^ false
-const falsy5 = !!undefined;
-//    ^^^^^^ false
-```
-
-`null` や `undefined` などが絡む際には、変数の値が falsy かどうかのチェック、つまり Truthiness narrowing をして型を絞り込みます。特に 0 や空文字列が falsy であるのが厄介です。
-
-例えば、次のような単純な型ガードを行って CFA で型解析させてもうまくいきません。
-```ts
-function isStrOrArr(
-  param: string | string[] | null
-) {
-  if (param) {
-    // param の値が truty ならこのブランチの処理を行う
-    if (typeof param === "string") {
-      console.log(param, ": truty & string");
-    } else {
-      console.log(param, ": truty & string[]");
-    }
-  } else {
-    console.log(param, ": falsy");
-  }
-}
-isStrOrArr(["a", "b"]); // => [ "a", "b" ] : truty & string[]
-isStrOrArr("test"); // => test : truty & string
-isStrOrArr(null); // => null : falsy
-
-// 空文字列が falsy として評価されてしまう
-isStrOrArr(""); // =>  : falsy
-```
-
-次のように型ガードを構成することでうまく機能するようになります。
-
-```ts
-function isStrOrArrOk(
-  param: string | string[] | null
-) {
-  if (param && typeof param === "object") {
-    // param の値が truty かつ object 型の範疇ならこのブランチの処理を実行
-    console.log(param, ": truty & string[]");
-    //          ^^^^^: string[] 型
-  } else if (typeof param === "string") {
-    // param が string 型ならこのブランチの処理を実行
-    console.log(param, ": truty & string");
-    //          ^^^^^: string 型
-  } else {
-    // どの型ガードにも引っかからないならこのブランチの処理を実行
-    console.log(param, ": falsy");
-    //          ^^^^^: null 型
-  }
-}
-
-isStrOrArrOk(["a", "b"]); // => [ "a", "b" ] : truty & string[]
-isStrOrArrOk("test"); // => test : truty & string
-isStrOrArrOk(null); // => null : falsy
-
-// 空文字列もしっかりと文字列として判定できる
-isStrOrArrOk(""); // =>  : truty & string
-```
-
-配列かどうかの汎用的な判定は `Array.isArray()` という静的メソッドを型ガードとして利用することで可能です。
-
-```ts
-const strArr = ["A", "B"];
-if (Array.isArray(strArr)) { // 型ガード
-  console.log(strArr);
-  //          ^^^^^^: string[]
-}
-```
-
-このような静的メソッドを使っても CFA で解析できるので、if ステートメントのブランチ内部では、`param` は配列型であると解析されて、型エラーとはならずにすみます。
-
-そして、`Array.isArray()` はビルトインメソッドであり、配列の静的メソッドですが、型ガード関数として機能しています。型ガード関数は **Type predicate** という**特殊な返り値の型注釈**を施した上で真偽値を返す関数として定義することで自作することもできます。
-
-## ユーザー定義型ガード関数による Narrowing
-
-上のように特定の静的メソッドは CFA において型ガードとして機能します。そのような関数を型ガード関数(Type guard function)と呼びますが、このようばビルトインのものだけではなく、自分自身で型ガード機能を持つような独自の関数を作成することもできます。
-
-そのような関数を「ユーザー定義型ガード関数(User-defined type guard function)」と呼びます。ユーザー定義型ガード関数は内部的なロジックから真偽値を返す関数ですが、返り値の型注釈を特殊な書き方にすることで、それを型ガードとして使用しているブランチ内で CFA で特定の型であると解析できるように伝える特殊な関数です。
-
-```ts
-function isErrorResponse(
-  obj: Response
-): obj is APIErrorResponse {
-// ^^^^^^^^^^^^^^^^^^^^^^^^ type predicate の型注釈
-// obj は APIErrorRespnose 型であると記述する
-  return obj instanceof APIErrorResponse;
-}
-```
-
-返り値の型注釈を Type predicate にすることによって単に真偽値を返すだけではなく、CFA において型を絞り込んで解析できるようにしています。
-
-:::message
-Type predicate の [predicate](https://en.wikipedia.org/wiki/First-order_logic) とは日本語で言うと「述語」となります。数理論理学におけるタームから派生して利用されているようですが、ここでは型についての情報を記述するための表記方法のようなものだと考えればよいです。
-:::
-
-ユーザー定義型ガード関数は TypeScript v.1.6 で導入された古い機能です。『Overview』の以下の場所に記載されています。
-
-- [User-defined type guard functions | TypeScript: Documentation - Overview](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#user-defined-type-guard-functions)
-
-戻り値の型注釈を `x is T` というように記述することで Type Predicate となります(`x` はパラメータで、`T` は何かしらの型)。ユーザー定義型ガード関数は `if` ブロックで変数を渡して呼び出された際にはその変数の型が Narrowing されます。
-
-```ts
-type Mammals = {
-  species: "mammals";
-};
-type Cat = Mammals & {
-  name: string;
-  meow: () => void;
-};
-type Dog = Mammals & {
-  name: string;
-  bow: () => void;
-};
-
-const cat: Cat = {
-  name: "kitty",
-  species: "mammals",
-  meow: () => {
-    console.log("meowmewo");
-  },
-};
-const dog: Dog = {
-  name: "snoopy",
-  species: "mammals",
-  bow: () => {
-    console.log("bowwow");
-  },
-};
-
-function isCat(
-  animal: { species: string; }
-): animal is Cat {
-// ^^^^^^^^^^^^^ type predicate
-  return (animal as Cat).meow !== undefined;
-  // 実際に返しているのは真偽値だが type predicate として返り値を型注釈することで CFA で Narrowing を起こすように伝える
-}
-
-const mypet: Cat | Dog = Math.random() < 0.5
-  ? cat
-  : dog;
-
-// CFA において変数の型が解析される
-if (isCat(mypet)) {
-  // Cat 型に Narrowing されるためその型のメソッドが使える
-  mypet.meow();
-//^^^^^: Cat 型
-} else {
-  // Dog 型に Narroing されるためその型のメソッドが使える
-  mypet.bow();
-//^^^^^: Dog 型
-}
-```
-
-戻り値の型が単なる `boolean` 型だったり、type predicate を省略してしまうと CFA での Narrowing を行なわない単なる真偽値を返すだけの関数になってしまうので注意してください。
-
-```ts
-// ただの真偽値を返すだけの関数で型ガード関数として機能しない
-function isErrorResponse(
-  obj: Response
-): boolean {
-  return obj instanceof APIErrorResponse;
-}
-```
-
-Type predicate を記述することではじめて型ガード関数となります。
-
-## 🛠 Assertion 関数による Narrowing
-
-:::details 未完成
-
-Assertion 関数は [TypeScript v3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions) で導入された機能です。What's new の『Overview』ページの以下のところに記載されています。
-
-- [Assertion Functions | TypeScript: Documentation - Overview](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#assertion-functions)
-
-Assertion 関数は Node 環境の `assert` 関数をモデルにしていおり、次のような条件(`condition`)が `true` と評価されたときに現在のスコープにおいて型を絞り込みます。関数の戻り値の型注釈として `asserts condition` という特殊な形式の注釈を行います。
-
-```ts
-function assertSth(
-  condition: any,
-  msg?: string
-): asserts condition { // condition は引数
-// ^^^^^^^ ^^^^^^^^^
-  if (!condition) {
-    // 条件に一致しなければエラーを throw する
-    throw new AssertionError(msg);
-  }
-}
-```
-
-例外がスローされれば型が
-
-```ts
-// 専用のアサーション関数
-function assertResponse(
-  obj: any
-): asserts obj is SuccessResponse {
-  //       ^^^^^^^^^^^^^^^^^^^^^^ condition
-  if (!(obj instanceof SuccessResponse)) {
-    // CFA で obj が SuccessResponse のインスタンスでなければ例外を throw するようにする
-    throw new Error("Not a success!");
-  }
-}
-
-const response = getResponse();
-//    ^^^^^^^^: SuccessResponse | ErorrResponse 型
-
-// 現在のスコープにおいて型を Narrowing するように CFA に伝える
-assertResponse(response);
-// 現在のスコープで変数の型が絞り込まれたので以降は SuccessResponse 型として見なされる
-response; // SuccessResponse 型
-```
-:::
