@@ -4,7 +4,7 @@ emoji: "💃"
 type: "tech"
 topics: ["typescript"]
 published: true
-date: 2022-07-29
+date: 2022-08-31
 url: "https://zenn.dev/estra/articles/typescript-narrowing"
 tags: [" #type/zenn "]
 aliases: [記事_TypeScript の Narrowing]
@@ -14,12 +14,12 @@ aliases: [記事_TypeScript の Narrowing]
 
 この記事では、Widening(型の拡大) の対となる Narrowing(型の絞り込み) について解説します。
 
-Narrowing は多くの記事で型ガード(type guard)と呼ばれる話題に基づいて解説されますが、Narrowing のキーワードで包括的に解説するのが公式ドキュメントでも行われているものです。
+Narrowing は多くの記事や解説において **型ガード(type guard)** と呼ばれる用語に基づいて解説されますが、Narrowing のキーワードで包括的に解説するのが公式ドキュメントでも行われているやり方です。
 
-実際、型ガードよりも、対となる概念である『[Widening(型の拡大)](https://zenn.dev/estra/articles/typescript-widening)』や『[型の集合性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』などを加えて Narrowing として考えた方がそれぞれについてよりスッキリと理解することが可能になります(特に判定可能なユニオン型などについて)。
+実際、型ガードよりも対概念である『[Widening(型の拡大)](https://zenn.dev/estra/articles/typescript-widening)』や『[型の集合性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』などを加えて Narrowing として考えた方がそれぞれについてよりスッキリと理解することが可能になります(特に判定可能なユニオン型などについてはそうです)。
 
 :::message alert
-Narrowing のパターンそのものについては、長くなるので[別の記事](https://zenn.dev/estra/articles/typescript-narrowing-patterns)にしてまとめることにしました。この記事は集合的に Narrowing がどのようなものであるかを解説します。
+Narrowing のパターンそのものについては、一緒に解説すると長くなるので[別の記事](https://zenn.dev/estra/articles/typescript-narrowing-patterns)にしてまとめることにしました。この記事は集合的に Narrowing がどのようなものであるかを解説します。こちらのほうが本質的な理解ができると考えています。
 :::
 
 # 型集合
@@ -32,7 +32,7 @@ fig 1 (型は値の集合) | fig 2 (全体集合と部分集合)
 --|--
 ![unit vs collective](/images/typescript-widen-narrow/img_typeSet_1.png) | ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
-各リテラル型の積集合や異なる集合型(Collection type)の積集合をインターセクション型で作ろうとすると共通要素が全く無いので `never` 型となりました。また、`never` 型は空集合ということで、`never` 型そのものと他の型との和集合をユニオン型で作成すると `never` 型は無かったかのようにユニオン型の構成要素として使用した要素の型そのものとなります。
+各リテラル型の積集合や異なる集合型(Collective type)の積集合をインターセクション型で作ろうとすると共通要素が全く無いので `never` 型となりました。また、`never` 型は空集合ということで、`never` 型そのものと他の型との和集合をユニオン型で作成すると `never` 型は無かったかのようにユニオン型の構成要素として使用した要素の型そのものとなります。
 
 ```ts
 type StrOrNever = string | never;
@@ -55,7 +55,7 @@ TypeScript ではこのように「**型を集合として扱う**」ことが�
 
 そもそも型を集合論的に扱いやすくする機能を提供するように TypeScript 自体がデザインされていると公式ドキュメントで明言されていますが、その中でもユニオン型は非常に重要な機能です。
 
-Narrowing については冒頭で紹介したように公式ドキュメントでわざわざ１ページもさかれて解説されており、特にユニオン型から特定の型へと絞り込む方法が丹念に解説されているのでどれだけ重要かは想像が付きます。
+Widening はプルリクエストなどを見ないと詳細を確認できませんが、Narrowing については冒頭で紹介したように公式ドキュメントで[わざわざ１ページもさかれて](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)包括的に解説されており、特にユニオン型から特定の型へと絞り込む方法が丹念に解説されているのでどれだけ重要かは想像が付きます。
 :::
 
 # Narrowing の必要性
@@ -116,7 +116,7 @@ cantNarrowUnion(42.3);
 cantNarrowUnion("str");
 ```
 
-TypeScript での型の利便性を知っている状態だとこれは非常に恐ろしいですね。文字列型も数値型も引数として受け入れう場合には型を絞込んでからその型で利用できるメソッドを使うようにしないとエラーになります。
+TypeScript での型の利便性を知っている状態だとこれは非常に恐ろしいですね。文字列型も数値型も引数として受け入れる場合には型を絞込んでからその型で利用できるメソッドを使うようにしないとエラーになります。
 
 型の絞り込む必要があるのは、上記だと `string | number` というそれぞれで違う操作体系を持つ集合の和集合として型をつくってしまっているためです。`string` 型と `number` 型では扱えるプロトタイプメソッドやその型の変数に対して加えることのできる操作などが変わってくるために場合分けをする必要がでてきます。
 
@@ -255,7 +255,7 @@ Literal Wideing ではこのように具体的な文字列リテラル型(Unit t
 
 従って Widening では、対象となる集合が subset から superset へと範囲が拡大されることになります。supertype-subtype の関係性で考えると、subtype である文字列リテラル型から supertype である `string` 型へと拡大されます。逆に Narrowing では、対象となる集合を superset から subset へと絞り込むことになります。supertype-subtype の関係性で考えると、supertype であるユニオン型から subtype である `string` 型や `number` 型へと絞り込みます。
 
-集合論的に図示ると以下のような関係となります。
+集合論的に図示すると以下のような関係となります。
 
 ![narrowing_widening](/images/typescript-widen-narrow/img_typeSet_8.png)
 
@@ -345,13 +345,9 @@ CFA による解析によってエディタ上で変数にホバーすると実�
 
 ![ユニオン型からreduceの図示](/images/typescript-widen-narrow/img_typeSet_8_sub.png)
 
-Narrowing とはこのように型の広域な集合から条件判定によって候補を絞り込んでいくことに他なりません。図のように `string` 型といったプリミティブ型まで絞り込めばその型のプロトタイプメソッドなどが利用できるようになります。
+Narrowing とはこのように広域な方の集合から条件判定によってより範囲の狭い型の集合へと具体的に候補を絞り込んでいくことに他なりません。図のように `string` 型といったプリミティブ型まで絞り込めばその型のプロトタイプメソッドなどが利用できるようになります。
 
 # 判別可能なユニオン型
-
-:::message
-この記事では、Narrowing の基本パターンから始めるまえに集合に基づいて判定可能なユニオン型から解説します。基本パターンについて一部未完成の箇所があるのも理由の１つです。すべて補ったら再構成するかもしれません。
-:::
 
 判別可能なユニオン型(Discriminated union type)あるいはタグ付きユニオン型(Tagged union type) は型システム一般では [Sum 型](https://www.wikiwand.com/en/Sum_type)と呼ばれる類のものであり、$\sigma+\tau$ として表記されます。
 
@@ -366,17 +362,17 @@ Narrowing とはこのように型の広域な集合から条件判定によっ�
 :::message
 より広域な概念としては直和(direct sum)とも呼ばれるもので、直和は実際には次の２つの概念を指し示します。
 
-- discriminated union(識別された和)
-- disjoint union(非交和)
+- Discriminated union(識別された和)
+- Disjoint union(非交和)
 
-discrimnated union は集合論では和集合を合成元の集合を特定(判別: discriminate)できるように添字などのタグをつけたものです。判別可能なユニオン型は実際にはこの discriminated union という集合に基づいています。discriminated union は disjoint union でもあるので、型の文脈では両者はほとんど同じものとして考えても大丈夫です(もちろん厳密には違います)。
+discrimnated union は集合論では和集合を合成元の集合を特定(判別: discriminate)できるように添字などのタグをつけたものです。判別可能なユニオン型は実際にはこの Discriminated union という集合に基づいています。Discriminated union は Disjoint union でもあるので、型の文脈では両者はほとんど同じものとして考えても大丈夫です(もちろん厳密には違います)。
 
-「直和型」はこの直和から来ています。「TypeScript のユニオン型は直和型ではない」という文言も実は discriminated union と disjoint union の話に繋がります。
+「直和型」はこの直和から来ています。「TypeScript のユニオン型は直和型ではない」という文言も実は Discriminated union と Disjoint union の話に繋がります。
 :::
 
-型は具体的な値の集合で、特にプリミティブ型は具体的なリテラル型の集合としてみなせました。`string` 型と `number` 型は共通部分がないので和集合をつくった際には共通部分がないので自動的に Disjoint union となります。積集合(交差)を作り出そうとインターセクション型で `string` 型と `number` 型を合成しようとすると空集合で値を持たないことを表現する `never` 型となります。
+型は具体的な値の集合で、特にプリミティブ型は具体的なリテラル型の集合としてみなせました。`string` 型と `number` 型は共通の具体的な値が存在しないため、和集合をつくった際には共通部分が無く自動的に Disjoint union となります。積集合(交差)を作り出そうとインターセクション型で `string` 型と `number` 型を合成しようとすると空集合で値を持たないことを表現する `never` 型となります。
 
-ということで、実は今までの左ようなユニオン型の図は正しくなく、交差を持たないのでより正確に図示すると右のようになります。
+ということで、実は今までの左ようなユニオン型の図は正しくなく、交差を持たないようにより正確に図示すると右のようになります。
 
 ![交差を排除して表現](/images/typescript-widen-narrow/img_typeSet_9.png)
 
@@ -384,7 +380,7 @@ discrimnated union は集合論では和集合を合成元の集合を特定(判
 
 ```ts
 type StrOrNum = string | number;
-// disjoint union を作成する
+// Disjoint union を作成する
 
 function padLeft(pad: StrOrNum) {
   if (typeof pad === "string") {
@@ -397,11 +393,11 @@ function padLeft(pad: StrOrNum) {
 
 実は、判別可能なユニオン型として知られているのはオブジェクトの型についてのユニオン型を考えるときのものです。要するにオブジェクトの型でのユニオン型の作り方のプラクティスの話となります。
 
-異なるプリミティブ型同士をユニオン型として合成すると自動的に Disjoint union になりましたが(正確には disjoint union ではあるが discriminated union ではない)、オブジェクト型をユニオン型として合成すると Disjoint union になるとは限りません。例えば、`{ a: "st" }` と `{ b: 42 }` というオブジェクトの型を合成すると以下の図のように両方のプロパティを持つ型が交差として出現します。オブジェクトリテラルによる型の表現は実際にはそのプロパティと値の型を条件として満たすあらゆるオブジェクトの集合を表現します(他のプロパティを持っていたとしてもその型の範疇となるのは TypeScript が**構造的部分型**のシステムを採用しているからです)。
+異なるプリミティブ型同士をユニオン型として合成すると自動的に Disjoint union になりましたが(正確には Disjoint union ではあるが Discriminated union ではない)、オブジェクト型をユニオン型として合成すると Disjoint union になるとは限りません。例えば、`{ a: "st" }` と `{ b: 42 }` というオブジェクトの型を合成すると以下の図のように両方のプロパティを持つ型が交差として出現します。オブジェクトリテラルによる型の表現は実際にはそのプロパティと値の型を条件として満たすあらゆるオブジェクトの集合を表現します(他のプロパティを持っていたとしてもその型の範疇となるのは TypeScript が**構造的部分型**のシステムを採用しているからです)。
 
 ![オブジェクトの型合成](/images/typescript-widen-narrow/img_typeSet_5.png)
 
-ということで、オブジェクト型を Disjoin union として合成してタグ付きユニオン型とするにはある方法を取る必要がでてきます。そして、オブジェクト型の合成で交差(intersection)が出現しないなら、それは disjoint union であり、discriminated union です。逆に disjoin union ではないならそれは discriminated union ではないことになります。
+ということで、オブジェクト型を Disjoin union として合成してタグ付きユニオン型とするにはある方法を取る必要がでてきます。そして、オブジェクト型の合成で交差(intersection)が出現しないなら、それは Disjoint union であり、Discriminated union です。逆に disjoin union ではないならそれは Discriminated union ではないことになります。
 
 例えばよくある例として図形情報を表現するオブジェクトの型を考えます。具体的には四角形(square)、三角形(triangle)、円(circle)の３つの種類の図形について考えます。図形オブジェクトを受け取ってプロパティとして持たせた属性情報から何かしらの計算をして値を返すような関数を作りたいとします。
 
@@ -433,7 +429,7 @@ const sORt: Shape = {
 
 - `"circle"` → `"A"`、`radius` → `r`
 - `"square"` → `"B"`、`length` → `l`
-- `"triangle"` → `"C"`、`length` → `l`
+- `"triangle"` → `"C"`、`angle` → `a`
 :::
 
 ```ts
@@ -509,7 +505,7 @@ type Sum = A | B | C;
 
 ```ts
 type Shape = {
-  kind: "A" | "B";
+  kind: "A" | "B" | "C";
   r?: number; // => number | undefined
   l?: number; // => number | undefined
   a?: number; // => number | undefined
@@ -522,11 +518,17 @@ type Sum =
   | { kind: "C"; a: number; };
 ```
 
-この `Sum` というユニオン型が Disjoin union になっているかどうかは構成要素となる型の交差(インターセクション型)を取ってみればわかります。`A`、`B`、`C` の型は互いに素で共通要素となる具体的な値が存在しないので交差を取ると `never` 型となります。
+この `Sum` というユニオン型が Disjoin union になっているかどうかは構成要素となる型の交差(インターセクション型)を取ってみればわかります。`A`、`B`、`C` の型は互いに素で共通要素となる具体的な値が存在しないのでそれぞれインターセクション型で交差を取ると `never` 型となります。
 
 ```ts
-type IsNever = A & B & C;
+type NeverAB = A & B;
 //   ^^^^^^^: never 型
+type NeverAC = A & C;
+//   ^^^^^^^: never 型
+type NeverBC = B & C;
+//   ^^^^^^^: never 型
+type NeverABC = A & B & C;
+//   ^^^^^^^^: never 型
 ```
 
 共通のプロパティの値の型が異なっているので交差が空集合となるようになっています(そうでないオブジェクトの型同士で合成すれば交差がでてきます)。ということで `Sum` 型がタグ付きユニオン型であることが確認できました。
@@ -561,7 +563,12 @@ function handleShape(shape: Sum) {
 
 集合の包含関係は図を見ればわかりますが、部分集合(subset)となる型がそれを包含している上位の集合(superset)に対して subtype となります。
 
-`Kind` 型が最も条件が緩いので集合としての範囲が大きく、それに更に条件制約を書けていくとより詳細な型となり subtype へと派生していきます。`Shape`、`Strict`、`Sum` の３つ型を比較してみると、最初に定義した `kind` 以外のプロパティがオプショナルな `Shape` 型は集合としてはかなり大きいことがわかります。つまり制約が緩いわけです。逆にすべてのプロパティを必須にした `Strict` 型は制約が非常に強く集合が小さいことがわかります。そして `Sum` 型はその中間に位置しており、条件としては `Shape` よりも強く、`Strict` よりも緩くなっています。
+`Kind` 型が最も条件が緩いので集合としての範囲が大きく、更に条件制約を付けていくとより詳細な型となり subtype へと派生していきます。`Shape`、`Strict`、`Sum` の３つ型を比較してみると、最初に定義した `kind` 以外のプロパティがオプショナルな `Shape` 型は集合としてはかなり大きいことがわかります。つまり制約が緩いわけです。逆にすべてのプロパティを必須にした `Strict` 型は制約が非常に強く集合が小さいことがわかります。そして `Sum` 型はその中間に位置しており、条件としては `Shape` よりも強く、`Strict` よりも緩くなっています。
+
+```mermaid
+graph LR
+  Sup["Supertype(Superset)"] --> |制約の付与| Sub["Subtype(Subset)"]
+```
 
 図から `Strict` も判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype であり、どちらの型も交差(共通要素がないことがわかります。`Sum` 型を抜いて図示すると `Strict` 型は次のように Disjoin union であり交差を持ちません。
 
@@ -611,7 +618,7 @@ type E = {
   x: number;
 };
 
-// ５つの空から構成されるタグ付きユニオン型
+// ５つの型から構成されるタグ付きユニオン型
 type Sum = A | B | C | D | E;
 ```
 
