@@ -506,7 +506,7 @@ https://blog.ottijp.com/2020/05/23/homebrew/
 そもそも Homebrew とは、Apple 側が macOS に同梱しない UNIX ツールをインストールするためのツールです。
 
 >Homebrew is the easiest and most flexible way to install the UNIX tools Apple didn’t include with macOS. It can also install software not packaged for your Linux distribution to your home directory without requiring sudo.
-- [Homebrew Documentation](https://docs.brew.sh/Manpage#description) より引用
+>([Homebrew Documentation](https://docs.brew.sh/Manpage#description) より引用)
 
 シンボリックリンクを配置するディレクトリである `(brew --prefix)/bin` は環境によって異なり、自分の環境では `/opt/homebrew/bin` です。 この Homebrew の prefix とはマシンによって異なるパッケージのインストールパスです。マシンによって次のように prefix がデフォルトで決まっています。`brew --preifix` コマンドで自分の環境の prefix を確認できます。
 
