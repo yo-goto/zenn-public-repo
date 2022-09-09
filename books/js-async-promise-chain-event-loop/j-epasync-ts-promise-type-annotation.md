@@ -48,15 +48,15 @@ TypeScript はより良い JavaScript を書くためのリンターに過ぎま
 
 そして、TypeScript の非同期処理は **JavaScript の非同期処理のコードに型情報を上乗せしたもの** であり、本質的には Promise や async/await といった JavaScript(ECMAScript) の非同期シンタックスやその処理を実現するためのイベントループの機構、ランタイム(JS エンジン)を埋め込んでいる環境とそこから提供される非同期 API を[理解すれば良い訳です](https://zenn.dev/estra/articles/js-async-programming-roadmap)。つまり、**「非同期処理」を理解するために必要な知識そのものと TypeScript には殆ど関係性がありません**。
 
-私見では以下のような「型の情報操作機能(Type manipulation)」が JavaScript に追加されたものが TypeScript であると認識しています。
+私見では以下のような「型の情報操作機能」が JavaScript に追加されたものが TypeScript であると認識しています。
 
-- 型情報の定義(Type defining)
-- 型情報の付与(Type annotation)
-- 型情報の推論(Type inference)
-- 型情報の合成(Type composing)
-- 型情報の選別(Type narrowing)
-- 型情報の主張(Type assertion)
-- 型情報の再利用(Type reusing)
+- 型情報の推論 (Type inference)
+- 型情報の付与 (Type annotation)
+- 型情報の定義 (Type defining)
+- 型情報の合成 (Type composing)
+- 型情報の主張 (Type assertion)
+- 型情報の再利用 (Type reusing)
+- 型情報の絞り込み (Type narrowing)
 
 あとは型情報の操作によって副次的に追加されたコードの書き方やいくらかの演算子とキーワードなどが加わっただけで、それ以外はただの JavaScript です。図で表すと次のような関係になっています。中枢には実行環境に関わらず共通の動作を定める仕様となる ECMAScript があります。
 

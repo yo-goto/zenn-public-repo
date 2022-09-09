@@ -345,7 +345,7 @@ CFA による解析によってエディタ上で変数にホバーすると実�
 
 ![ユニオン型からreduceの図示](/images/typescript-widen-narrow/img_typeSet_8_sub.png)
 
-Narrowing とはこのように広域な方の集合から条件判定によってより範囲の狭い型の集合へと具体的に候補を絞り込んでいくことに他なりません。図のように `string` 型といったプリミティブ型まで絞り込めばその型のプロトタイプメソッドなどが利用できるようになります。
+Narrowing とはこのように広域な型の集合から条件判定によってより範囲の狭い型の集合へと具体的に候補を絞り込んでいくことに他なりません。図のように `string` 型といったプリミティブ型まで絞り込めばその型のプロトタイプメソッドなどが利用できるようになります。
 
 # 判別可能なユニオン型
 
@@ -357,7 +357,7 @@ Narrowing とはこのように広域な方の集合から条件判定によっ�
 
 集合論で考えると、判別可能なユニオン型は [Disjoint union(非交和)](https://ja.wikipedia.org/wiki/%E9%9D%9E%E4%BA%A4%E5%92%8C) と呼ばれるものになります。非交和(Disjoint union)は２つの集合の和集合をつくった時に共通部分がない、つまり交差(intersection)を持たない和集合のことを指します。"disjoint" とは「互いに素」であることを意味します。
 
-![disjoin union](/images/typescript-widen-narrow/img_typeSet_11.png)
+![Disjoint union](/images/typescript-widen-narrow/img_typeSet_11.png)
 
 :::message
 より広域な概念としては直和(direct sum)とも呼ばれるもので、直和は実際には次の２つの概念を指し示します。
@@ -365,18 +365,18 @@ Narrowing とはこのように広域な方の集合から条件判定によっ�
 - Discriminated union(識別された和)
 - Disjoint union(非交和)
 
-discrimnated union は集合論では和集合を合成元の集合を特定(判別: discriminate)できるように添字などのタグをつけたものです。判別可能なユニオン型は実際にはこの Discriminated union という集合に基づいています。Discriminated union は Disjoint union でもあるので、型の文脈では両者はほとんど同じものとして考えても大丈夫です(もちろん厳密には違います)。
+Discriminated union は集合論では和集合を合成元の集合を特定(判別: *discriminate*)できるように添字などのタグをつけたものです。判別可能なユニオン型は実際にはこの Discriminated union という集合に基づいています。Discriminated union は Disjoint union でもあるので、型の文脈では両者はほとんど同じものとして考えても大丈夫です(もちろん厳密には違います)。
 
 「直和型」はこの直和から来ています。「TypeScript のユニオン型は直和型ではない」という文言も実は Discriminated union と Disjoint union の話に繋がります。
 :::
 
 型は具体的な値の集合で、特にプリミティブ型は具体的なリテラル型の集合としてみなせました。`string` 型と `number` 型は共通の具体的な値が存在しないため、和集合をつくった際には共通部分が無く自動的に Disjoint union となります。積集合(交差)を作り出そうとインターセクション型で `string` 型と `number` 型を合成しようとすると空集合で値を持たないことを表現する `never` 型となります。
 
-ということで、実は今までの左ようなユニオン型の図は正しくなく、交差を持たないようにより正確に図示すると右のようになります。
+ということで、実は今までの左ようなユニオン型の図は正しくなく、２つのプリミティブ型から成るユニオン型は交差や他の要素を持たないため `string & number` が `never` となることから、より正確に図示すると右のようになります。
 
 ![交差を排除して表現](/images/typescript-widen-narrow/img_typeSet_9.png)
 
-`string | number` のようなプリミティブ型のユニオン型を Narrowing する際にはすでに知っている `typeof` 演算子で判別すればよいので特に問題はありません。
+上記の `string | number` のようなプリミティブ型のユニオン型を Narrowing する際にはすでに知っている `typeof` 演算子で判別すればよいので特に問題はありません。
 
 ```ts
 type StrOrNum = string | number;
@@ -397,7 +397,7 @@ function padLeft(pad: StrOrNum) {
 
 ![オブジェクトの型合成](/images/typescript-widen-narrow/img_typeSet_5.png)
 
-ということで、オブジェクト型を Disjoin union として合成してタグ付きユニオン型とするにはある方法を取る必要がでてきます。そして、オブジェクト型の合成で交差(intersection)が出現しないなら、それは Disjoint union であり、Discriminated union です。逆に disjoin union ではないならそれは Discriminated union ではないことになります。
+ということで、オブジェクト型を Disjoint union として合成してタグ付きユニオン型とするにはある方法を取る必要がでてきます。そして、オブジェクト型の合成で交差(intersection)が出現しないなら、それは Disjoint union であり、Discriminated union です。逆に Disjoint union ではないならそれは Discriminated union ではないことになります。
 
 例えばよくある例として図形情報を表現するオブジェクトの型を考えます。具体的には四角形(square)、三角形(triangle)、円(circle)の３つの種類の図形について考えます。図形オブジェクトを受け取ってプロパティとして持たせた属性情報から何かしらの計算をして値を返すような関数を作りたいとします。
 
@@ -480,7 +480,7 @@ type StrictIsSubTypeOfShape = FirstIsSubType<Strict, Shape>;
 // true
 ```
 
-`Shape` 型は良くない例ですが、このような方は次のようにオブジェクトの型をそれぞぞれの図形の型として分割定義した上でユニオン型として合成したほうが使いやすくなります。この方法で合成した型は `Sum` 型という名前にしておきます。
+`Shape` 型は良くない例ですが、このような型は次のようにオブジェクトの型をそれぞぞれの図形の型として分割定義した上でユニオン型として合成したほうが使いやすくなります。この方法で合成した型は `Sum` 型という名前にしておきます。
 
 ```ts
 type A = {
@@ -518,7 +518,7 @@ type Sum =
   | { kind: "C"; a: number; };
 ```
 
-この `Sum` というユニオン型が Disjoin union になっているかどうかは構成要素となる型の交差(インターセクション型)を取ってみればわかります。`A`、`B`、`C` の型は互いに素で共通要素となる具体的な値が存在しないのでそれぞれインターセクション型で交差を取ると `never` 型となります。
+この `Sum` というユニオン型が Disjoint union になっているかどうかは構成要素となる型の交差(インターセクション型)を取ってみればわかります。`A`、`B`、`C` の型は互いに素で共通要素となる具体的な値が存在しないのでそれぞれインターセクション型で交差を取ると `never` 型となります。
 
 ```ts
 type NeverAB = A & B;
@@ -570,7 +570,7 @@ graph LR
   Sup["Supertype(Superset)"] --> |制約の付与| Sub["Subtype(Subset)"]
 ```
 
-図から `Strict` も判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype であり、どちらの型も交差(共通要素がないことがわかります。`Sum` 型を抜いて図示すると `Strict` 型は次のように Disjoin union であり交差を持ちません。
+図から `Strict` も判別可能なユニオン型であると言えます。実際 `Strict` 型は `Sum` 型の subtype であり、どちらの型も交差(共通要素がないことがわかります。`Sum` 型を抜いて図示すると `Strict` 型は次のように Disjoint union であり交差を持ちません。
 
 ![strict型の図示](/images/typescript-widen-narrow/img_typeSet_10_sub.png)
 
