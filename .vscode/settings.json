@@ -1,5 +1,7 @@
 {
   "textlint.autoFixOnSave": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "taichi.vscode-textlint",
   "highlight.decorations": { "rangeBehavior": 3 },
   "highlight.regexFlags": "gi",
   "highlight.regexes": {
@@ -93,5 +95,5 @@
         }
       ]
     }
-  }
+  },
 }
