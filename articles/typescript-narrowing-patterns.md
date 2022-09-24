@@ -1,13 +1,17 @@
 ---
 title: "Narrowing Pattern"
+published: true
+cssclass: zenn
 emoji: "🖇"
 type: "tech"
 topics: ["typescript"]
-published: true
 date: 2022-09-01
+modified: 2022-09-24
 url: "https://zenn.dev/estra/articles/typescript-narrowing-patterns"
 tags: [" #type/zenn "]
-aliases: [記事_TypeScript の Narrowing Pattern]
+aliases:
+  - 記事 TypeScript の Narrowing Pattern
+  - Narrowingのパターン
 ---
 
 # はじめに
@@ -22,11 +26,13 @@ aliases: [記事_TypeScript の Narrowing Pattern]
 
 CFA での典型的な Narrowing パターンの解説に入る前に、もっと基本的な Narrowing について見ておきます。
 
-前の記事を見て入れば Widening を知っているわけですが、実はその過程ですでに Narrowing についても知っています。というのも、ユニオン型として `let` 宣言した変数では、具体的な値を代入することでその型が確定することになるので、「[代入(Assignment)](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#assignments)」も Narrowing の１つとしてカウントされます。
+前前回の記事を見て入れば Widening を知っているわけですが、実はその過程ですでに Narrowing についても知っています。というのも、ユニオン型として `let` 宣言した変数では、具体的な値を代入することでその型が確定することになるので、「[代入(Assignment)](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#assignments)」という行為も Narrowing の一種であることになります。
 
 TypeScript は代入した際の右辺の値を見て変数の型が絞り込むことによって、その型のプロトタイプメソッドなどを使っても型エラーとならなくなります。ただし、`let` 宣言した変数では再代入が何度でも可能なので、再代入時には変数宣言時に使用した型注釈であるユニオン型の要素の型の値を代入できます。代入以降は再代入した値の型として見なされるので使えるプロトタイプメソッドもその型のものとなります。
 
 ```ts
+/* assignment.ts */
+
 let unionVal: string | number;
 //            ^^^^^^^^^^^^^^^ ユニオン型として型注釈
 
@@ -45,6 +51,14 @@ unionVal; // :string (代入以降は string 型として見なされる)
 console.log(unionVal.toUpperCase()); // => STR
 //          ^^^^^^^^: string
 ```
+
+実際にそれぞれの行にエディタ上でカーソルを当てると、`1.1` という数値を代入した後の変数 `unionVal` では `number` 型として型が絞り込まれていることが確認できます。
+
+![エディタ上での表示1](/images/typescript-widen-narrow/img_narrow_assignment1.jpg)
+
+`"str"` という文字列を代入した後の変数 `unionVal` では `string` 型として型が絞り込まれていることも確認できます。
+
+![エディタ上での表示2](/images/typescript-widen-narrow/img_narrow_assignment2.jpg)
 
 また const アサーションによって Widening を抑止するのも Narrowing の一種です。
 
@@ -94,22 +108,20 @@ function testPrimitiveUnion(
   param: string | number | boolean
 ) {
   if (typeof param === "string") {
-    // CFA で string 型として解析される
-    console.log("変数は string 型として Narrowing されている");
+    // 変数 param は CFA で string 型として解析される
     console.log(param.toUpperCase());
     //          ^^^^^: string
   } else if (typeof param === "number") {
-    // CFA で number 型として解析される
-    console.log("変数は number 型として Narrowing されている");
+    // 変数 param は CFA で number 型として解析される
     console.log(param.toPrecision(4));
     //          ^^^^^: number 型
   } else if (typeof param === "boolean") {
-    // CFA で boolean 型として解析される
-    console.log("変数は boolean 型として Narrowing されている");
+    // 変数 param は CFA で boolean 型として解析される
     console.log(param.toString());
     //          ^^^^^: boolean 型
   } else {
-    // CFA で never 型として解析される
+    // このブランチではユニオン型の候補がすべてなくなったため never (空集合) となる
+    // 変数 param は CFA で never 型として解析される
     console.log(param);
     //          ^^^^^: never 型(決して観測されない)
   }
