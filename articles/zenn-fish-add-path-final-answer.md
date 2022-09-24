@@ -1,13 +1,15 @@
 ---
 title: "fishで「パスを通す」ための最終解答"
+published: true
+cssclass: zenn
 emoji: "🗽"
 type: "tech"
 topics: [fish, shell, 環境変数, dotfiles, terminal]
-published: true
 date: 2022-03-06
+modified: 2022-09-24
 url: "https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer"
-aliases: [記事_fishでパスを通すための最終解答]
-tags: " #type/zenn #shell/fish/env  "
+tags: [" #type/zenn #shell/fish/env  "]
+aliases: 記事_fishでパスを通すための最終解答
 ---
 
 # はじめに
@@ -41,7 +43,6 @@ fish 関連の記事をいくつか書きましたが、「パスを通すため
 
 その答えは、
 
-
 ...
 ...
 ...
@@ -50,10 +51,8 @@ fish 関連の記事をいくつか書きましたが、「パスを通すため
 ...
 ...
 ...
-
 
 `fish_add_path` 関数を使用する。
-
 
 以上です。
 
@@ -82,6 +81,7 @@ https://fishshell.com/docs/current/cmds/fish_add_path.html
 >[fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html#cmd-fish-add-path) より引用
 
 ## (A) コマンドラインで 1 回だけ実行する
+
 コマンドラインで追加したいパスにつき 1 回だけ次のように `fish_add_path` を実行します。(後述しますが、実はこの関数については何回実行しても大丈夫です)
 
 ```shell:コマンドライン
@@ -220,6 +220,7 @@ fish_add_path $VOLTA_HOME/bin
 :::
 
 ## コンポーネントの位置を変更
+
 `fish_user_paths` の順番を変更したい場合には、`fish_add_paths` 関数の `-m, --move` オプションを使用します。これによって指定したコンポーネントの位置が新規追加される場所(つまり先頭の位置)に変更されます。残りのコンポーネントはそのままシフトされます。
 
 ```shell
@@ -282,7 +283,6 @@ https://fishshell.com/docs/current/language.html#variable-scope
 >`set` and `read` learned a new option, `--function`, to set a variable in the function’s top scope. This should be a more familiar way of scoping variables and avoids issues with `--local`, which is actually block-scoped ([#565](https://github.com/fish-shell/fish-shell/issues/565), [#8145](https://github.com/fish-shell/fish-shell/issues/8145)):
 > [Release fish 3.4.0 (released March 12, 2022)](https://github.com/fish-shell/fish-shell/releases/tag/3.4.0) より引用
 :::
-
 
 従って、スコープを明示せずに、コマンドラインや `config.fish` ファイルにて変数を定義した場合、グローバルスコープになります。
 
@@ -881,6 +881,7 @@ $fish_user_paths[4]: |/opt/homebrew/bin|
 # 他のパターン
 
 ## status --is-login
+
 これはドキュメントの Introduction の項目に記載されているパスの通し方のパターンですが、`config.fish` に次のコードを記載することでパスを通せます。
 
 ```shell:config.fish
@@ -1033,6 +1034,7 @@ set -g testvalue 1234
 :::
 
 ## ユニバーサル変数の廃止?
+
 scope shadowing やら、今まで述べたようなアンチパターンにおけるグローバル変数・ユニバーサル変数・環境変数との混同などがあるため、いっそのことユニバーサル変数を廃止し別のメカニズムで置き換えようという議論もあります。
 
 https://github.com/fish-shell/fish-shell/issues/7317
@@ -1040,7 +1042,6 @@ https://github.com/fish-shell/fish-shell/issues/7379
 
 開発者の一人である ridiculousfish 氏がユニバーサル変数のスコープを除去し、ユニバーサル変数をグローバル変数にするというプルリクエストを投下していました(そもそもフィードバックを得るためで、結局は棄却というか、自分で取り下げていましたが)。
 https://github.com/fish-shell/fish-shell/pull/8455
-
 
 以下、ユニバーサル変数の問題点と環境変数についての会話を抜粋。
 
@@ -1058,7 +1059,6 @@ https://github.com/fish-shell/fish-shell/pull/8455
 >1. 値がそれぞれ異なる場合に、グローバル変数がユニバーサル変数をシャドーする可能性がある。
 >2. `set` をトップレベルで呼び出す際にユニバーサル変数が存在しているとそれを修正し、そうでなければ、グローバル変数として作成する。どちらになるかというのは、必ずしも明確ではありません。
 >3. ユニバーサル変数をエクスポートした場合、ネストされた fish shell のインスタンスは環境変数を継承しますが、それらはグローバル変数になります。これは非常に深刻なので、一般的なケースを防ぐためのハック方法があるほどです。
-
 
 >[andmis commented on 19 Nov 2021](https://github.com/fish-shell/fish-shell/pull/8455#issuecomment-973170023)
 >Have you considered making it illegal to set universal variables as exportable, and warning when launching a fish instance if there is an environment variable whose name collides with that of a universal variable?
@@ -1160,4 +1160,3 @@ $fish_user_paths[4]: |/opt/homebrew/bin|
 https://github.com/fish-shell/fish-shell/releases/tag/3.4.0
 
 `v3.4.0` がリリースされたため、修正された点・追加された点について追記しました。
-

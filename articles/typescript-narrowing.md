@@ -1,13 +1,14 @@
 ---
 title: "TypeScript の Narrowing"
+published: true
 emoji: "💃"
 type: "tech"
 topics: ["typescript"]
-published: true
 date: 2022-08-31
+modified: 2022-09-24
 url: "https://zenn.dev/estra/articles/typescript-narrowing"
 tags: [" #type/zenn "]
-aliases: [記事_TypeScript の Narrowing]
+aliases: 記事 TypeScript の Narrowing
 ---
 
 # はじめに
@@ -697,4 +698,3 @@ function handleShapeY(shape: Sum) {
 この話題は実用的(実践的)な話ではありますが、Narrowing については本質的な話ではないと感じたので、別の記事にしてまとめることにしました(未完成な部分も多かったので)。
 
 https://zenn.dev/estra/articles/typescript-narrowing-patterns
-
