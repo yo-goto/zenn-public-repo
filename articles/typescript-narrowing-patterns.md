@@ -444,7 +444,7 @@ function acceptTowParam(
 }
 ```
 
-「２つの変数の値が等しいなら型そのものの等しいはずだ」という理屈です。
+「２つの変数の値が等しいなら型そのものの等しいはずだ」という理屈です。単なる等価演算子(`==`)だと暗黙的な型変換が行われて `x = 1` (`number` 型)と `y = "1"` (`string` 型)の場合などに `true` という評価になってしまうため、厳密等価演算子を使っています。
 
 等しいかどうか、あるいは等しくないかどうかの判定を型ガードとして利用することで `if/else` のブランチ内で型の絞り込みが可能となります。
 
@@ -459,7 +459,7 @@ if (str !== null) {
 厳密(`===`、`!==`)ではなく、単なる等価演算子(`==`)や不等価演算子(`!=`)を利用することで、`null` と `undefined` の両者を型の候補から排除することができます。これは `== undefined` と `== null` の両者が `null` または `undefined` であると判定されてしまうことを利用した型の絞り込みです。Truthiness narrowing で行った方法よりも簡単に行なえます。
 
 ```ts
-function test1(param: number | null | undefined) {
+function test(param: number | null | undefined) {
   if (param != null) {
     // null 型と undefined 型の両方を取り除く
     console.log(param);
@@ -471,9 +471,7 @@ function test1(param: number | null | undefined) {
     console.log(param);
     //          ^^^^^: number 型
   }
-}
 
-function test2(param: number | null | undefined) {
   if (param == null) {
     // null 型と undefined 型の両方として絞り込まれる
     console.log(param);
@@ -579,5 +577,4 @@ function isErrorResponse(
 }
 ```
 
-Type predicate を記述することではじめて型ガード関数となります。
-
+Type predicate を記述することではじめて型ガード関数となります。これは type predicate の記述によってコンパイラなどに型ガード関数であるということを認識させているようです。
