@@ -16,11 +16,13 @@ aliases:
 
 # はじめに
 
-前回の『[TypeScript の Narrowing](https://zenn.dev/estra/articles/typescript-narrowing)』の記事では Narrowing について集合論的なアプローチでどのようなものであるかを解説しました。この記事では、より実用的に Narrowing の基本パターンを解説します。
+前回の『[TypeScript の Narrowing](https://zenn.dev/estra/articles/typescript-narrowing)』の記事では Narrowing について集合論的なアプローチでどのようなものであるかを解説しました。この記事では、より実用的な Narrowing の基本パターンを解説します。
 
-この記事は基本的には TypeScript 公式 Handbook の『[Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)』のページを参照して解説しています。
+この記事は基本的には TypeScript 公式 Handbook の『[Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)』のページを参照して解説しています。集合論的な話はすでに前の記事で行ってしまったので、この記事は公式ドキュメントのまとめ的な自分用のアウトプットとなります。
 
-最新の公式ドキュメント(v2)は**非常にわかりやすい構成でシンプルに TypeScript を理解できるような内容**になっているので英語であっても必ず読むべきおすすめの学習リソースです。独自の集合論的な話はすでに前の記事で行ってしまったので、この記事は公式ドキュメントのまとめ的な自分用のアウトプットとなります。従って、未完成のところや理解度の低い内容を含みますので注意してください(継続的に更新していくつもりです)。
+:::message alert
+[TypeScript v3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions) で導入された Assertion 関数については応用的な話であるため、この記事では省くことにしました。
+:::
 
 # 代入による Narrowing
 
@@ -579,49 +581,3 @@ function isErrorResponse(
 
 Type predicate を記述することではじめて型ガード関数となります。
 
-## 🛠 Assertion 関数による Narrowing
-
-:::details 未完成
-
-Assertion 関数は [TypeScript v3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions) で導入された機能です。What's new の『Overview』ページの以下のところに記載されています。
-
-- [Assertion Functions | TypeScript: Documentation - Overview](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#assertion-functions)
-
-Assertion 関数は Node 環境の `assert` 関数をモデルにしていおり、次のような条件(`condition`)が `true` と評価されたときに現在のスコープにおいて型を絞り込みます。関数の戻り値の型注釈として `asserts condition` という特殊な形式の注釈を行います。
-
-```ts
-function assertSth(
-  condition: any,
-  msg?: string
-): asserts condition { // condition は引数
-// ^^^^^^^ ^^^^^^^^^
-  if (!condition) {
-    // 条件に一致しなければエラーを throw する
-    throw new AssertionError(msg);
-  }
-}
-```
-
-例外がスローされれば型が
-
-```ts
-// 専用のアサーション関数
-function assertResponse(
-  obj: any
-): asserts obj is SuccessResponse {
-  //       ^^^^^^^^^^^^^^^^^^^^^^ condition
-  if (!(obj instanceof SuccessResponse)) {
-    // CFA で obj が SuccessResponse のインスタンスでなければ例外を throw するようにする
-    throw new Error("Not a success!");
-  }
-}
-
-const response = getResponse();
-//    ^^^^^^^^: SuccessResponse | ErorrResponse 型
-
-// 現在のスコープにおいて型を Narrowing するように CFA に伝える
-assertResponse(response);
-// 現在のスコープで変数の型が絞り込まれたので以降は SuccessResponse 型として見なされる
-response; // SuccessResponse 型
-```
-:::
