@@ -8,6 +8,7 @@ aliases: [ch_Promise コンストラクタと Executor 関数]
 『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターでは抽象的な概念についてしか触れていなかったので、ここからはコード上での Promise について、インスタンスの作成方法などを通じて触れていきます。
 
 # Promise オブジェクト
+
 まず、Promise とは「**非同期処理の結果を表現するビルトインオブジェクト**」であり、モダンな非同期処理ではこの Promise オブジェクトを介して非同期処理を行うのがベターです。
 
 Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript の一部ではなくブラウザやランタイムの環境が提供する機能)の処理の結果として返されるパターンが多いですが、Promise そのものは**ビルトインオブジェクト**であり、ECMAScript (JavaScript の言語コア) の一部であることを忘れないようにしてください。
@@ -15,7 +16,8 @@ Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript �
 また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "Promise-based API" のことを指しており、Promise 自体が API であるわけではないので注意してください。他の解説によっては、Promise の静的メソッドである `Promise.all()` などを指している場合もあります。
 
 # Promise コンストラクタ
-コード上では `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
+
+コード上で `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise
 
@@ -41,7 +43,9 @@ true
 
 以降、各 Promise オブジェクトについて、コンストラクタ関数から作成されることや、関数やメソッドから返ってくるということを意識するために "Promise インスタンス" という言葉を多用していきます。
 
-Promise インスタンスの作成は `new Promise(executor)` が基本形です。コールバック関数として引数に渡す `executor` 自身は引数を２つ受け取ります。次のコードでは、`executor` がコールバック関数であることに注目するため、あえて Promise コンストラクタの外で定義してみると次のようになります。
+Promise インスタンスの作成は `new Promise(executor)` が基本形です。コールバック関数として引数に渡す `executor` 自身は引数を２つ受け取ります。
+
+次のコードでは `executor` がコールバック関数であることに注目するため、あえて Promise コンストラクタの外で定義してみると次のようになります。
 
 ```js
 function executor(resolve, reject) {
@@ -62,14 +66,14 @@ const promise = new Promise(executor);
 :::message alert
 『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで解説したとおり、非同期 API には種類があり、`setTimeout()` は**タスクベースの非同期 API** です。
 
-基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` を使っていくのが割と一般的だと思いますが、タスクベースの非同期 API と Promise を絡めて考えると混乱することになるので、最初はあえて使わずに説明してきます(ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します)。
+基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` などを使っていくことが一般的だと思いますが、タスクベースの非同期 API と Promise を絡めて考えると混乱することになるので、最初はあえて使わずに説明してきます。ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します。
 
-実は Promise コンストラクタ内で `setTimeout()` などのタスクベースの非同期 API を利用することで、後のチャプターで解説する "[Promisification](12-epasync-wrapping-macrotask)" という手法になるのですが、これを最初に知ってしまうと学習を進めてく過程で**混乱する可能性が高いです**(自分は混乱しました)。
+実は Promise コンストラクタ内で `setTimeout()` などのタスクベースの非同期 API を利用することで、後のチャプターで解説する "[Promisification](12-epasync-wrapping-macrotask)" という手法になるのですが、これを最初に知ってしまうと学習を進めてく過程で**混乱する可能性が高いです**(筆者は混乱しました)。
 :::
 
 JavaScript では「関数は値」なのでこのように関数を他の値のように引数として渡すことができます。「コールバック関数」はこのように他の関数に引数として渡される関数のことを指します。
 
-`Promise()` コンストラクタの引数として渡されるコールバック関数である `executor` の引数である `resolve` と  `reject` もコールバック関数です。慣習的に `resolve` や `reject` となっていますが実際には名前は何でも OK です。`executor` の中において、`resolve()` 関数は Promise インスタンスを履行(Fullfilled)状態にしたいときに呼び出し、`reject()` は Promise インスタンスを拒否(Rejected)状態にしたい時に呼び出します。
+`Promise()` コンストラクタの引数として渡されるコールバック関数である `executor` の引数である `resolve` と  `reject` もコールバック関数です。慣習的に `resolve` や `reject` となっていますが実際には名前は何でも OK です。`executor` の中において、`resolve()` 関数は Promise インスタンスを履行(Fullfilled)状態にしたいという時に呼び出し、`reject()` は Promise インスタンスを拒否(Rejected)状態にしたいという時に呼び出します。
 
 この２つの関数はクセがあるので注意します(後述)。
 
@@ -103,7 +107,7 @@ const promise = new Promise((resolve, reject) => {
 アロー関数についての補足をこのページの下で行っています。
 :::
 
-`executor` 関数の第二引数である `reject` は**省略可能なので書かない場合もよくあります**。拒否状態とかを気にせずに履行状態のみを考えます(実際には、`executor` 関数の中でエラーが発生すると Promise インスタンスは自動的に拒否(Rejected)状態へと移行します)。
+`executor` 関数の第二引数である `reject` は**省略可能なので書かない場合もよくあります**。拒否状態などを気にせず、履行状態のみを考えます(実際には、`executor` 関数の中でエラーが発生すると Promise インスタンスは自動的に拒否(Rejected)状態へと移行します)。
 
 ```js
 // reject 関数を省略
@@ -128,7 +132,7 @@ const promise = new Promise(res => {
 });
 ```
 
-これで最初の書き方よりもかなり楽に書けていることが分かります。さすがに `res` というような書き方はあまりしないと思いますが、この先にでてくるものとの差異を明らかにするためにわざとやっています。
+これで最初の書き方よりもかなり楽に書けていることが分かります。さすがに `res` というような書き方はあまりしないと思いますが、この先にでてくるものとの差異を明らかにするため、わざとやっています。
 
 アロー関数の `return` 省略を使って、もっと文字数を減らしてみます。
 
@@ -176,7 +180,7 @@ const promise = new Promise((resolve, reject) => {
 
 `reject` がそのまま省略可能であったのに対して、`reject` を使いたい場合に `resolve` 関数が省略できないのは第一引数だからです。**第一引数がないのに第二引数は書けません**。
 
-ただし、上述の通り `resolve` と `reject` は名前は何でも良いのでそれを利用して次のように字数が減るように書くことができます。
+ただし、上述の通り `resolve` と `reject` について名前は何でも良いのでそれを利用して次のように字数が減るように書くことができます。
 
 ```js
 const promise = new Promise((_, rej) => {
@@ -207,7 +211,7 @@ const promise2 = Promise.reject("Promise拒否時の理由");
 この `Promise.reject()` も初期化やテストなどで活用できる便利なショートカットとして使えますが、基本は `new Promise(executor)` です。
 
 :::message
-実際には、`resolve` も `reject` も `executor` の中で使用しないなら両方とも省略することが可能です。そういった場面は特に意味がないので使わないと思いますが、一応できるということを示しておきます。
+実際には、`resolve` と `reject` の両方とも `executor` の中で使用しないなら両方とも省略することが可能です。そういった場面は特に意味がないので使わないと思いますが、一応できるということを示しておきます。
 
 ```js
 // executorBothEmit.js
@@ -228,10 +232,11 @@ hello zenn
 Promise status: Promise { <pending> }
 ```
 
-`resolve` も `reject` も呼び出さないので、Promise インスタンスは永遠に待機(Pending)状態であり、`then()` メソッドで登録しておいたコールバック関数は実行されませんし、エラーも補足されません。
+`resolve` や `reject` を呼び出さないので、Promise インスタンスは永遠に待機(Pending)状態であり、`then()` メソッドで登録しておいたコールバック関数は実行されませんし、エラーも補足されません。
 :::
 
 # 関数式とアロー関数の補足
+
 アロー関数について触れましたが、少し補足します。
 
 まずアロー関数の前に通常の関数宣言とは別の方法で関数を定義する「関数式」について触れておきます。`function` キーワードを使用した関数宣言は次のようになります。
@@ -291,7 +296,7 @@ console.log(myFunc); // => [Function: myFunc]
 :::message
 **関数式と関数宣言の使い分け**
 
-関数宣言では、`function` キーワードが頭にあるので見やすかったり、巻き上げ(hoisting)があることでファイル全体で定義した関数が使えるという利点があります。その一方、関数式は定義した行以降でしかその関数を使えず、他人が見て分かりづらい場合もありますが、グローバルスコープを汚染することなくコールバックなどで使い捨てることなどができます。結局は両方を使い分けるのが良さそうです。
+関数宣言では、`function` キーワードが頭にあるので見やすかったり、巻き上げ(hoisting)があるためファイル全体で定義した関数が使えるという利点があります。その一方、関数式は定義した行以降でしかその関数を使えず、他人が見て分かりづらい場合もありますが、グローバルスコープを汚染することなくコールバックなどで使い捨てることなどができます。結局は両方を使い分けるのが良さそうです。
 
 参考: [When to use a function declaration vs. a function expression](https://www.freecodecamp.org/news/when-to-use-a-function-declarations-vs-a-function-expression-70f15152a0a0/)
 :::

@@ -74,7 +74,7 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F
 
 https://ja.javascript.info/promisify
 
-ただし、手動でやることは最近はあまりやらないらしいです。というのも単純に非同期 API 自体が Promise-based なものが出てきています。また、古いタイプの API をラップするのでも、例えば Node 環境では `promisifying` 関数というのが util module にあり、これを使うことで手動でラップすることなく Promisify できるようになっています。
+ただし、最近は手動でやることはあまりやらないらしいです。というのも、単純に非同期 API 自体 Promise-based であるものが出てきています。また、古いタイプの API をラップするのでも、例えば Node 環境では `promisifying` 関数というのが util module にあり、これを使うことで手動ラップすることなく Promisification ができるようになっています。
 
 Deno 環境などではほとんどすべての非同期 API が Promise インスタンスを返しますし、`setTimeout()` でさえも Promise で手動ラップする必要も実はなく、Promise を返すタイマーが Standard library の１つとして提供されています。
 
@@ -84,7 +84,7 @@ Node 環境でも Promise-based な非同期 API が色々提供されており�
 
 https://nodejs.org/dist/v18.2.0/docs/api/timers.html#timers-promises-api
 
-とは言っても内部で、Promise でラップしていることもありますし、手動でラップする方法を学んでおいて損はないので解説します。単純に `new Promise()` でラップするだけです。
+とは言っても内部で、Promise でラップしていることもありますし、手動でラップする方法を学んでおいて損はないので解説します。単純に `new Promise()` によってラップするだけです。
 
 なるべく低水準でラップして直接的に呼び出さないようにします。
 
@@ -108,7 +108,7 @@ Visualizer で可視化したので、確認してみてください。
 - [promiseTimer.js - JS Visualizer](https://www.jsv9000.app/?code=Y29uc3QgcHJvbWlzZVRpbWVyID0gKGRlbGF5KSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBzZXRUaW1lb3V0KCgpID0%2BIHsKICAgICAgcmVzb2x2ZSgpOwogICAgfSwgZGVsYXkpOwp9KX07Cgpwcm9taXNlVGltZXIoMTAwMCkKICAudGhlbigoKSA9PiBjb25zb2xlLmxvZygiVGltZW91dCIpKQogIC50aGVuKCgpID0%2BIGNvbnNvbGUubG9nKCJOZXh0IGFjdGlvbiIpKQogIC50aGVuKCgpID0%2BIGNvbnNvbGUubG9nKCJOZXh0IGFjdGlvbiIpKQogIC5jYXRjaCgoZXJyKSA9PiBjb25zb2xlLmVycm9yKGVyci5tZXNzYWdlKSk7)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスク実行のタイミングについて誤解しないように注意してください
 
-はじめにタスクが発行されてタスクキューへと送られていますね。タスクキューからコールスタックへと送られて、`resolve()` が呼び出されます。それによって待機状態の Promoise が履行状態になるため、`.then()` メソッドのコールバックがマイクロタスクキューにマイクロタスクとして送られます。そしてマイクロタスクがコールスタックに積まれ実行されることで更にマイクロタスクが発生して、すべてのマイクロタスクが処理されてコールスタックが空になるとイベントループは終了します。
+はじめにタスクが発行されてタスクキューへと送られていますね。タスクキューからコールスタックへと送られて、`resolve()` が呼び出されます。それによって待機状態の Promise は履行状態となるため、`.then()` メソッドのコールバックがマイクロタスクキューにマイクロタスクとして送られます。そしてマイクロタスクがコールスタックに積まれ実行されることで更にマイクロタスクが発生して、すべてのマイクロタスクが処理されてコールスタックが空になるとイベントループは終了します。
 
 :::message
 上の書き方は少し冗長なので、アロー関数での `return` を省略をして書くと次の様になります。

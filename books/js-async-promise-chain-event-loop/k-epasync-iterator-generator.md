@@ -226,7 +226,7 @@ while (true) {
 }
 ```
 
-そこで ES2015 で追加された `for...of` の構文を利用します。この構文は上のような処理の手続きをまとめて行ってくれるのでイテレータから値を反復して取り出すのが簡単にできます(実際には、「`for...or` 構文が使えるのがイテラブルオブジェクト」という認識で良いです)。
+そこで ES2015 で追加された `for...of` の構文を利用します。この構文は上のような処理の手続きをまとめて行ってくれるのでイテレータから値を反復して取り出すのが簡単にできます(実際には、「`for...or` 構文を使えるのがイテラブルオブジェクト」という認識で良いです)。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...of
 
@@ -284,7 +284,7 @@ for (const v of iterableObject) {
 - `Set`
 
 :::message alert
-オブジェクトリテラルなどで作成した通常のオブジェクトは、自分で `[Symbol.iterator]()` や `next()` などを実装する必要があったのでイテレータでもイテラブルでもありません。
+オブジェクトリテラルなどで作成した通常のオブジェクトは、自分で `[Symbol.iterator]()` や `next()` などを実装する必要があったのでイテレータやイテラブルではありません。
 :::
 
 つまり、これらのオブジェクトは `for...of` の構文で反復処理ができることになります。
@@ -440,7 +440,7 @@ Promise.resolve() // 同期的に直ちに解決される
 console.log("[1] MAINLINE");
 ```
 
-このようなコードを実行すると、`Promise.resolve()` で同期的に直ちに履行する Promise インスタンスに chain されている `then()` に登録されているコールバック関数の方が先に処理されることになります。
+このようなコードを実行すると、`Promise.resolve()` で同期的に直ちに履行する Promise インスタンスに chain されている `then()` に登録されているコールバック関数の方が先に処理されます。
 
 ```sh
 ❯ deno run promiseAllTest.js
@@ -473,7 +473,7 @@ const urls = [
 })();
 ```
 
-これを新しいイテラブルオブジェクトで使える `for...of` で書き換えると次のようになります。
+これを新しいイテラブルオブジェクトで使える `for...of` によって書き換えると次のようになります。
 
 ```js
 (async () => {
@@ -693,7 +693,7 @@ C
 
 反復可能プロトコル(itrable protocol)ですが、実は非同期版もあります。それが非同期反復可能プロトコル(async iterable protocol)です。
 
-反復可能プロトコル(itrable protocol)を満たすオブジェクトは `[Symoble.iterator]()` メソッドによってイテレータリザルトが返ってきましたが、非同期反復可能プロトコル(async iterable protocol)を満たすオブジェクトは `[Symbol.asyncIterator]()` というメソッドによって Promise インスタンスによってラップされたイテレータリザルトが返ってきます。
+反復可能プロトコル(itrable protocol)を満たすオブジェクトは `[Symoble.iterator]()` メソッドによってイテレータリザルトが返ってきましたが、非同期反復可能プロトコル(async iterable protocol)を満たすオブジェクトは `[Symbol.asyncIterator]()` というメソッドによって Promise インスタンスでラップされたイテレータリザルトが返ってきます。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator
 
@@ -1095,7 +1095,7 @@ interface Iterator<T, TReturn = any, TNext = undefined> {
 
 イテレータは反復子プロトコル(iterator protocol)を満たすので `next()` メソッドを持っていましたが、実は `return()` メソッドと `throw()` メソッドも持つことができます。ただし、`?` でオプショナルプロパティ(メソッド)として型定義されているので必ずしも実装する必要はありません。
 
-また、`Iterator<Type>` と思ってものも型変数が３つあり、最初の型変数意外の２つはデフォルト型引数が指定されています。型注釈として利用する際には基本的にはこの２つは省略できます。そして、最初の型変数 `T` は `next()` メソッドの返り値の型 `IteratorResult<T, TRerun>` とリンクしています。`IteratorResult` の最初の型変数 `T` には `next()` メソッドの返り値であるイテレータリザルトの `value` プロパティの値の型を指定する必要があったので、型変数 `T` でリンクしている `Iterator` の型引数にも同じ型を指定することになります。
+また、`Iterator<Type>` と思ってものも型変数が３つあり、最初の型変数意外の２つはデフォルト型引数が指定されています。型注釈として利用する際には基本的にこの２つは省略できます。そして、最初の型変数 `T` は `next()` メソッドの返り値の型 `IteratorResult<T, TRerun>` とリンクしています。`IteratorResult` の最初の型変数 `T` には `next()` メソッドの返り値であるイテレータリザルトの `value` プロパティの値の型を指定する必要があったので、型変数 `T` でリンクしている `Iterator` の型引数にも同じ型を指定することになります。
 
 ```ts
 let count = 0;
@@ -1225,7 +1225,7 @@ const bear: Bear = {
 }
 ```
 
-ということで、`Generator` 型は `Iterator` 型を拡張した型となります。比べてみると所有するメソッドの型定義はほとんど同じですが、ジェネレータの方には `[Symbol.iteraotr]()` メソッドが追加されており、そこからさらにジェネレータオブジェクト型の値が返ることが分かります。
+ということで、`Generator` 型は `Iterator` 型を拡張した型となります。比べてみると所有するメソッドの型定義はほとんど同じですが、ジェネレータの方には `[Symbol.iteraotr]()` メソッドが追加されており、そこからさらにジェネレータオブジェクト型の値が返ることを理解できます。
 
 ```ts
 interface Iterator<T, TReturn = any, TNext = undefined> {

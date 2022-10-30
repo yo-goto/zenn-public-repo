@@ -7,7 +7,7 @@ aliases: [ch_Promise の静的メソッドと並列化]
 
 「いつ await すべきか分からない」というのが、一般的に async/await での難しいポイントになりますが、すでに Promise インスタンスを評価して値を取り出すという await 式の特徴については学んでいるため、「なぜ await するべきか」についてはそこまで難しくは感じないでしょう。難しさを感じるとしたら、await の配置(タイミング)による効率化やループなどに関わる部分だと思います。
 
-このチャプターでは await 式の配置による制御に入る前に、テーマの１つとして Promise の静的メソッド(Static method)による複数の Promise-based API の処理の並列化を考えます。すでに非同期 API については色々と見てきましたが、すでにお馴染み Promise-based API である `fetch()` メソッドを使用してもう一度 await 式について考えを巡らせておきます。
+このチャプターでは await 式の配置による制御の話題へ入る前に、テーマの１つとして Promise の静的メソッド(Static method)による複数の Promise-based API の処理の並列化を考えます。すでに非同期 API については色々と見てきましたが、すでにお馴染み Promise-based API である `fetch()` メソッドを使用してもう一度 await 式について考えを巡らせておきます。
 
 # 非同期 API による並列化
 
@@ -15,7 +15,7 @@ aliases: [ch_Promise の静的メソッドと並列化]
 
 その一方で、関連性のない複数の作業については同時に行っても問題は無いということも言いました。
 
-つまり、関連のない複数操作は並列化(非同期 API 処理は同時に複数実行できる)させて、効率化を測ることができます。複数の Promise 処理を１つずつ await するのではなく、処理を起動した後で `Promise.allSettled()` などの静的メソッドでまとめて await する(`await Promise.allSettled([...promises])`)ことで並列化できます。
+つまり、関連のない複数操作を並列化(非同期 API 処理は同時に複数実行できる)させて、効率化を測ることができます。複数の Promise 処理を１つずつ await するのではなく、処理を起動した後で `Promise.allSettled()` などの静的メソッドでまとめて await する(`await Promise.allSettled([...promises])`)ことで並列化できます。
 
 ただし、非同期 API の特徴を語らずに「並列化」を語ることはできません。「非同期 API を使うことで同時に複数のことができる」ということを知っていないと、この静的メソッドでの「並列化」が何を意味しているのか分からず、並行や非同期と混同して混乱することになります。
 
@@ -25,7 +25,7 @@ aliases: [ch_Promise の静的メソッドと並列化]
 ここで使う「並列化」という言葉は複数スレッドが関わる厳密な「並列(parallel)処理」のことではなく、「同時に複数のことができる」という性質の意味で使っています。実際に並列(parallel)と言っても良いものもあるのですが、そう言い切れないものがあるので注意してください。
 :::
 
-例えば次のコードでは、リソースを取得する順番に特に意味がない(依存関係がない)ので複数の `fetch()` API から始まる一連の作業を並列化しています。「一連の作業を並列化する」といっても内部的には非同期 API が並列化されています。
+例えば次のコードでは、リソースを取得する順番に特に意味がない(依存関係はない)ので複数の `fetch()` API から始まる一連の作業を並列化しています。「一連の作業を並列化する」といっても内部的には非同期 API が並列化されています。
 
 以下のコードで出てくる `urls` 変数は URL 文字列の配列として考えてください。
 
@@ -49,9 +49,9 @@ aliases: [ch_Promise の静的メソッドと並列化]
 })();
 ```
 
-まとめて await させるというのはすべての並列化されたデータフェッチが完了してから次に行いたいなにかの作業があるので、そこで async 関数の処理を一時停止させているということです。await によって並列化しているわけではなく、起動自体がそもそも並列化しており、「すべてのデータフェッチが終わってから `console.log()` を行いたいので `Promise.allSettled()` の部分で一時的に停止するように指定している」という意図のコードとして解釈してください。
+まとめて await させるというのはすべての並列化されたデータフェッチが完了してから次に行いたいなにかの作業があるので、そこで async 関数の処理を一時停止させているということです。await によって並列化しているわけではなく、起動自体がそもそも並列化しており、「すべてのデータフェッチが終わってから `console.log()` を行いたいので `Promise.allSettled()` の部分で一時的に停止するよう指定している」という意図のコードとして解釈してください。
 
-もしも次のように１つずつ await してしまったら、非同期 API による同時に複数できることのメリットを活かしきれていないことになるので上のコードよりも時間がかかり効率が悪くなってしまいます。この場合はいわゆる「直列」となります。リソースの取得順番になにか意味があるならこのようなコードでも良いですが、そうでないなら無駄なので上のように並列化します。
+もしも次のように１つずつ await してしまったら、非同期 API による同時に複数できることのメリットを活かしきれていないことになり、上のコードよりも時間がかかることで効率が悪くなってしまいます。この場合はいわゆる「直列」となります。リソースの取得順番になにか意味があるならこのようなコードでも良いですが、そうでないなら無駄なので上のように並列化します。
 
 ```js
 (async () => {
@@ -207,7 +207,7 @@ const testUrls2 = [
 
 ![time_to_fetch](/images/js-async/img_devtool_time_to_fetch.jpg)
 
-そして順序付けて行ったデータフェッチと並列化したデータフェッチでは並列化している方が効率がよくなっていることが分かりやすく図示されていますね。
+そして順序付けて行ったデータフェッチと並列化したデータフェッチでは、並列化している方の効率が良くなっていることが分かりやすく図示されていますね。
 
 ![prallel_fetch](/images/js-async/img_devtool_parallel_fetch.jpg)
 
@@ -215,7 +215,7 @@ const testUrls2 = [
 
 ```js
 // 並列起動(実際には１つずつ起動しているが起動後にバックグラウンドで処理が時間的に継続するので並列化となる)
-Deno.writeTextFile(path1, inputData); // Non-blocking 
+Deno.writeTextFile(path1, inputData); // Non-blocking
 Deno.writeTextFile(path2, inputData); // Non-blocking
 Deno.writeTextFile(path3, inputData); // Non-blocking
 ```
@@ -255,7 +255,7 @@ Deno.writeTextFileSync(path3, inputData);
 
 https://v8.dev/features/promise-combinators
 
-分かりやすいものが `Promise.all()` です。この静的メソッドは Promise インスタンスの配列を受けとり、自身も Prosmise インスタンスを返します。配列内のすべての Promise インスタンスが履行状態になった場合に `Promise.all()` から返る Promise インスタンスも履行状態となります。
+分かりやすいものが `Promise.all()` です。この静的メソッドは Promise インスタンスの配列を受けとり、自身も Prosmise インスタンスを返します。配列内のすべての Promise インスタンスが履行状態となった場合に `Promise.all()` から返る Promise インスタンスも履行状態となります。
 
 ```js
 Promise.all([pormise1, promise2, promise3])
@@ -477,7 +477,7 @@ Promise.all(promises)
 // 処理終了
 ```
 
-こちらも次のように１つでもそのような Promise があると `Promise.allSettled()` から返る Promise インスタンスは履行も拒否もしません。
+こちらも次のように１つでもそのような Promise があると `Promise.allSettled()` から返る Promise インスタンスは履行・拒否のどちらの状態にも移行しません。
 
 ```js
 Promise.all([
@@ -489,8 +489,8 @@ Promise.all([
 
 使い分け次のようばケースとなります。
 
-- `Promise.allSettled()` を使用するのは、複数の非同期が絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用されます。
-- `Promise.all()` を使用するのは、複数の非同期が絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合にはより適切。
+- `Promise.allSettled()` を使用するのは、複数の非同期処理の絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用されます。
+- `Promise.all()` を使用するのは、複数の非同期処理の絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合にはより適切。
 
 
 ## Promise.race vs Promise.any
@@ -503,7 +503,9 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Pr
 
 `Promise.race()` も Promise インスタンスの配列を引数にとり、返り値となる Promise インスタンスは配列内の一番最初に完了した、つまり Settled となった Promise インスタンスと同じ状態になります。履行状態なら返り値のインスタンスも履行状態となり、拒否状態なら返り値のインスタンスも拒否状態となります。
 
-`Promise.all()` などと同じく複数の `xTimer()` を並列化させます。タイマーの id2 が 100 ミリ秒で最も早く Settled になります。状態は `success` が `false` なので拒否状態で完了し、`Promise.race()` から返る Promise インスタンスも拒否状態となります。
+`Promise.all()` などと同じく複数の `xTimer()` を並列化させます。タイマーの id2 が 100 ミリ秒で最も早く Settled となります。
+
+状態は `success` が `false` なので拒否状態で完了して、`Promise.race()` から返る Promise インスタンスも拒否状態となります。
 
 ```js:relRace.js
 import xTimer from "./xTimer.js";
@@ -526,7 +528,7 @@ Promise.race(promises)
 // 処理終了
 ```
 
-一方、`Promise.any()` も Promise インスタンスの配列を引数にとり、一番最初に履行状態になった Promise インスタンスの状態に連鎖して `Promise.any()` から返る Promise インスタンスも履行状態となります。
+一方、`Promise.any()` も Promise インスタンスの配列を引数にとり、一番最初に履行状態となった Promise インスタンスの状態に連鎖して `Promise.any()` から返る Promise インスタンスも履行状態となります。
 
 ```js:relAny.js
 import xTimer from "./xTimer.js";

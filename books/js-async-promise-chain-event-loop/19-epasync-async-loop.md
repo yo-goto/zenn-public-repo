@@ -245,7 +245,7 @@ const pChain = chars.reduce((previous, item) => {
 
 やっていることは、累積値に chain したものを `return` することで後ろに chain をくっつけていくということです。最初は考えるのが面倒ですが慣れれば結構シンプルだと分かります。
 
-これの肝は初期値として最初から履行している Promise インスタンス `Promise.resolve()` を渡すことです。Promise chain を構築する上では chain の頭となる Promise インスタンスが必要となります。`reduce()` の処理によってこの初期値となる Promise インスタンスの後ろに順番に行いたい処理を `then()` で chain しています。
+これの肝は初期値として最初から履行している Promise インスタンス `Promise.resolve()` を渡すことです。Promise chain を構築する上では chain の頭となる Promise インスタンスが必要となります。`reduce()` の処理によってこの初期値となる Promise インスタンスの後ろには順番に行いたい処理を `then()` で chain しています。
 
 累積処理の結果として最終的にできあがった Promise chain が返ってくるのでこの一連の処理が終わった後に何かしたい場合にはさらに chain するか await 式で評価します。
 
@@ -320,7 +320,7 @@ const pChain = chars.reduce((previous, item) => {
 }, Promise.resolve());
 ```
 
-返却する Promise chain に `sleep()` の chain を噛ませるだけです。コールバックの引数も累積値が Promise chain であることが分かりやすいように `promise` にしておきましょう。
+返却する Promise chain に `sleep()` の chain を噛ませるだけです。累積値が Promise chain であると分かりやすいようにコールバックの引数も `promise` にしておきましょう。
 
 ```js
 const chars = ["A", "B", "C", "D", "E"];
@@ -453,7 +453,7 @@ const urls = [
 >Async arrow function has no 'await' expression.
 Remove 'async' keyword from the function or use 'await' expression inside.deno-lint(require-await)
 
-await 式は async 関数の直下でのみ有効です。`for` ループとは異なり、`forEach()` メソッドで行っているのはコールバック関数内で await 式を利用しています。コールバック内の await と async の即時実行関数は関連がありません。そのため、Deno のリンターに怒られないようにするにはコールバック関数そのものを async 化して即時実行の async キーワードを取り除きます。
+await 式は async 関数の直下でのみ有効です。`for` ループとは異なり、`forEach()` メソッドで行っているのはコールバック関数内で await 式を利用しています。コールバック内の await と async の即時実行関数は関連がありません。そのため、Deno のリンターから怒られないようにするにはコールバック関数そのものを async 化して即時実行の async キーワードを取り除きます。
 
 ```js
 (() => {

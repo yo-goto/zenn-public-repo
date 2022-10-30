@@ -25,7 +25,7 @@ new Promise((resolve, reject) => {
 
 逆に、`resolve()` 関数によって Promise インスタンスが Fullfilled 状態に場合には、`catch()` メソッドのコールバックは実行されません。
 
-一方、`finally()` メソッドは Promise インスタンスが Fullfilled 状態であろうと Rejected 状態であろうと登録しているコールバックが実行されます。ただし、`finally()` メソッドの**コールバック関数は一切引数をとらない**ので、チェーンで値を繋ぐことはできません。
+一方、`finally()` メソッドは Promise インスタンスが Fullfilled 状態でも Rejected 状態でも関係なく、登録しているコールバックが実行されます。ただし、`finally()` メソッドの**コールバック関数は一切引数をとらない**ので、チェーンで値を繋ぐことはできません。
 
 ```js
 // catchFinally.js

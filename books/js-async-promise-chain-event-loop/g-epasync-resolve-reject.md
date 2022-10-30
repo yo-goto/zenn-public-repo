@@ -182,7 +182,7 @@ returnPromise()
   .finally(() => console.log("👍 チェーン最後に実行するはずができない"));
 ```
 
-`returnPromise()` では resolve も reject も行っていないので、この関数から返ってくる Promise インスタンスの運命(Fate)は Unresolved であり、状態(State)も永遠に Pending 状態のままです。
+`returnPromise()` では resolve と reject のどちらも行っていないので、この関数から返ってくる Promise インスタンスの運命(Fate)は Unresolved であり、状態(State)も永遠に Pending 状態のままです。
 
 ```sh
 ❯ deno run foreverPending.js
@@ -222,11 +222,11 @@ promise2
 👍 チェーン最後に実行
 ```
 
-`promise2` に対して Promoise インスタンスで resolve を試みているため `promise2` 自体の Fate は Resolved です。そして、`promise2` 自体の履行値や拒否理由は `promise1` で `resolve()` や  `reject()` を行った値となります。
+`promise2` に対して Promise インスタンスで resolve を試みているため `promise2` 自体の Fate は Resolved です。そして、`promise2` 自体の履行値や拒否理由は `promise1` で `resolve()` や  `reject()` を行った値となります。
 
 この様に resolve の行為は単に引数の値で Promise インスタンスを Fullfilled 状態にするものではありません。Promise インスタンスで resolve した結果として Rejected 状態になることもあります。`promise2` は `Promise1` の状態や履行値、拒否理由に対して自身の状態と値すべてを委ねています。
 
-`resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "Unwrapping" と言います。この Unwrapping の能力は `Promise.reoslve()` や `new Prommise(executor)` に Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Excutor 関数に渡す `reject()` 関数にはありません。
+`resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "Unwrapping" と言います。この Unwrapping の能力は `Promise.reoslve()` や Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Excutor 関数に渡す `reject()` 関数にはありません。
 
 ```js
 // resolveWithPromise.js
@@ -257,7 +257,7 @@ promise2
 error: Uncaught (in promise) 🥦 promise1の拒否理由
 ```
 
-また、`promise1` の履行値や拒否理由を自身の履行値や拒否理由にすることはできずに、Promise インスタンスそのものを値として使ってしまっています。従って、Unwrapping の能力が無いことが確認できます。
+また、`promise1` の履行値や拒否理由を自身の履行値や拒否理由にすることはできずに、Promise インスタンスそのものを値として使ってしまっています。従って、Unwrapping の能力が無いことを確認できます。
 
 参考
 https://www.saurabhmisra.dev/promises-in-javascript-resolved-promise-fates

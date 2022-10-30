@@ -11,12 +11,12 @@ aliases: [ch_await 式の配置による制御]
 
 # 不定性の制御
 
-前の『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターにおいて、`fetch()` から始まる chain の並列化(本質的には非同期 API の並列化)を見ましたが、次のように変形してみるとどこかで視たことがある気がしてきます。
+前の『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターにおいて、`fetch()` から始まる chain の並列化(本質的には非同期 API の並列化)を見ましたが、次のように変形してみるとどこかで視たことのある気がしてきます。
 
 ```js
 fetch(urls[0])
   .then(response => response.text())
-  .then(text => console.log(text)); 
+  .then(text => console.log(text));
 fetch(urls[1])
   .then(response => response.text())
   .then(text => console.log(text));
@@ -42,7 +42,7 @@ returnPromise("2nd", "[2]")
   .then(() => console.log("👦 [8]"));
 returnPromise("3rd", "[3]")
   .then(val => console.log("👦 [6]", val))
-  .then(() => console.log("👦 [9]"));  
+  .then(() => console.log("👦 [9]"));
 ```
 
 直ちに履行する Promise インスタンスを返す関数を複数起動させた時の場合に対して、`fetch()` は完了に時間がかかりバックグラウンドで並列化しますが、類型的にはほぼ同じです。ただしこの場合、３つの `fetch()` の内でどれが最初に完了するかは分かりません。並列的に(ほぼ同時に)リクエストを投げているのでどれが最初に完了するかはその時々変わります。このような**不定性**が気になり、意図的に順序付けしたいなら await 式で制御する必要があります。
@@ -255,11 +255,11 @@ randomTimer("1st", "[A-1]")
   await fetch(urls[2])
     .then(response => response.text())
     .then(text => console.log(text));
-  console.log("すべてのfetch chainが完了しました");  
+  console.log("すべてのfetch chainが完了しました");
 })();
 ```
 
-やっかないこととして、上記の await で制御しているのは Promise chain という単位で順序付けていることです。Promise chain そのものは内部で「`fetch()` してから `response.text()` でテキスト抽出して、最終的にコンソール出力する」という順序付けがすでになされています。async 関数内ではその chain を単位にしてさらに await で順序付けを行っています。
+やっかないこととして、上記の await で制御しているのは Promise chain という単位で順序付けていることです。Promise chain そのものは内部で「`fetch()` してから `response.text()` を使ってテキスト抽出して、最終的にコンソール出力する」という順序付けがすでになされています。async 関数内ではその chain を単位にしてさらに await による順序付けを行っています。
 
 つまり、小さいスケールでの順序付け(あるいは並列化)と一段回大きなスケールでの順序付け(あるいは並列化)がされていることに気づく必要があります。関心のある領域(レイヤー)内での実行と完了の順番を保証するために await や chain での制御が次のように多重のレイヤーで行われていることがあり得ます。
 
@@ -466,7 +466,7 @@ import noAwait from "./noAwait.js";
 
 `😅 noAwaitの処理は完了しました?` の出力は意図したものでしょうか?
 
-混乱しやすいですが、この部分は実は意図通りになっています。意図していた通りに `noAwait()` が完了してからコンソールにメッセージが出力されています。つまりこの時点で **`noAwait()` 自体は完了しています**。つまり、`noAwait()` を使っているレイヤーのコードには問題はありません。
+混乱しやすいですが、この部分は実は意図通りになっています。意図していた通りに `noAwait()` が完了してからコンソールにメッセージが出力されています。したがって、この時点で **`noAwait()` 自体は完了しています**。つまり `noAwait()` を使っているレイヤーのコードには問題はありません。
 
 ```js:useNoAwait.js(このコードは問題ない)
 import noAwait from "./noAwait.js";
@@ -496,13 +496,13 @@ export default async function noAwait() {
 async function empty() {}
 ```
 
-この async/await は V8 エンジンは次のように内部的に変換すると想定されました。
+この async/await は V8 エンジンで次のように内部変換されると想定されました。
 
 ```js:V8_Converting
 resumable function empty() {
   implicit_promise = createPromise();
   // await 式が無いのでこの関数自体の処理は中断しない
-  resolvePromise(implicit_promise, undefined); 
+  resolvePromise(implicit_promise, undefined);
 }
 ```
 
@@ -519,11 +519,11 @@ resumable function noAwait() {
   console.log("🤪 ２つのasyncFnの処理は完了しました?");
   // await 式が無いのでこの関数自体の処理は中断しない
 
-  resolvePromise(implicit_promise, undefined); 
+  resolvePromise(implicit_promise, undefined);
 }
 ```
 
-async 関数内の処理は上から下に１つずつ実行されていきます。そして、１つ目の `asyncFn()` は await 式を含む async 関数なので、途中でマイクロタスクが発行されて一時中断するはずです。await 式で async 関数が一時中断されたときにはその async 関数の外側に制御を戻してメインスレッドで別の処理を継続するという話でしたが、この場合は呼び出し元である `noAwait()` の続きへと制御が戻ってきます。ということで次に２つ目の `asyncFn()` に出会うので実行しますが、１つ目と同じく内部の await 式で中断して呼び出し元の `noAwait()` の続きへと制御を戻します。そして、次の行の `console.log()` を実行します。
+async 関数内の処理は上から下に１つずつ実行されていきます。そして、１つ目の `asyncFn()` は await 式を含む async 関数なので、途中でマイクロタスクが発行されて一時中断するはずです。await 式で async 関数が一時中断されたときにはその async 関数の外側に制御を戻してメインスレッドで別の処理を継続するという話でしたが、この場合は呼び出し元である `noAwait()` の続きへと制御が戻ってきます。ということで、次に２つ目の `asyncFn()` に出会うので実行しますが、１つ目と同じく内部の await 式で中断し、呼び出し元の `noAwait()` の続きへと制御を戻して次の行の `console.log()` を実行します。
 
 そして、`return` をしていないので V8 エンジンで内部変換されたコードにおいて `undefined` で直ちに履行する Promise インスタンスを `noAwait` の呼び出し元に返します。つまり、この時点で `noAwait()` 関数の処理は終了します。
 
@@ -543,7 +543,7 @@ export default async function noAwait() {
 }
 ```
 
-「投げっぱなしにしておきたい」という意図が無い限り、async 関数や非同期 API はそれらを利用する async 関数内で完了を担保しておかないと、上のレイヤーで使う時に困ることになります。つまり、「起動する」ということのみが行われて、完了した後に何かしたい場合に上のレイヤーでそれを行うのは非常に難しくなってしまいます(これを回避するために `sleep()` を噛ませて一時的に時間を置くなどする必要がでてくる)。
+「投げっぱなしにしておきたい」という意図が無い限り、async 関数や非同期 API はそれらを利用する async 関数内で完了を担保しておかないと、上のレイヤーで使う時には困ることになります。つまり、「起動する」ということのみが行われて、完了した後に何かしたい場合に上のレイヤーでそれを行うのは非常に難しくなってしまいます(これを回避するために `sleep()` を噛ませて一時的に時間を置くなどする必要がでてくる)。
 
 これは『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』のチャプターで見たように `return` しない非同期処理のケースと同じです。`await` 式で Promise 処理を評価しないのは `then()` のコールバックで Promise 処理を `return` しないことによって「副作用」になってしまうのと同じです。
 
@@ -551,7 +551,7 @@ export default async function noAwait() {
 そもそも `console.log()` 自体が副作用なのですが、何が起きるのか分かりやすくするために利用しています。
 :::
 
-順序付けて行う場合でも並列化する場合でも、利用する async 関数や非同期 API に対して await を配置することは、その async 関数内での完了そのものを担保することになります。
+順序付けるか並列化するかに関わらず、利用する async 関数や非同期 API に対して await を配置することは、その async 関数内での完了そのものを担保することになります。
 
 ```js
 export default async function noAwait() {
@@ -593,7 +593,7 @@ async function noAwait() {
 >In general, the primary reason to use async functions is to use await expressions inside. If an async function has no await expression, it is most likely an unintentional mistake.
 >([require-await | deno_lint docs](https://lint.deno.land/?q=require-await#require-await) より引用)
 
-このリントルールに怒られないようにするには１つでも await 式があればよいのですが、今までの話を踏まえると確実にこの範囲内で起動するすべての非同期処理の完了を担保させておくのが良いでしょう。
+このリントルールから怒られないようにするには１つでも await 式があればよいのですが、今までの話を踏まえると確実にこの範囲内で起動するすべての非同期処理の完了を担保させておくのが良いでしょう。
 
 ```js
 async function noAwait() {
@@ -678,7 +678,7 @@ function pTimer(time, order) {
 
 `Promise.race()` を使う目的は複数の Promise 処理を競争させて最初に完了したものの後に何かするということです。より分かりやすく考えると、例えば `fetch()` メソッドなら複数のリソースから同時にデータフェッチさせて一番最初に取得できたデータだけを表示させるなどがやりたい時に利用します。しかし、一番最初に完了したもの以外の `fetch()` はどうなるでしょうか。上の `raceTime.js` のコードで見たように「投げっぱなし」となり、利用する async 関数自体が完了した後になってから投げっぱなしになった処理が完了します。
 
-投げっぱなしになっている処理は気持ち悪いので `Promise.reace()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぐために一番最初に完了したもの以外を停止させます。
+投げっぱなしになっている処理は気持ち悪いので `Promise.reace()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぐため一番最初に完了したもの以外を停止させます。
 
 一旦 Promise 処理から離れると `setTimeout()` API の停止には対応する `clearTimeout()` API というものを利用することで実現できます。`setTimeout()` からは戻りとしてタイマーの ID である数値が返ってくるのでそれを `clearTimeout()` に入力として渡すことでタイマーをキャンセルできます。
 
@@ -738,7 +738,7 @@ fetch(url, { signal })
 controller.abort(); // abort イベントの発火
 ```
 
-それでは実際に `setTimeout()` で 500 ミリ秒後に `conroller.abort()` を起動することで `fetch()` 処理の中止を通知させるコードを考えてみると次のようになります。
+`setTimeout()` で 500 ミリ秒後に `conroller.abort()` を起動することで `fetch()` 処理の中止を通知させるコードを考えてみると次のようになります。
 
 ```js
 const url = "https://api.github.com/zen";
@@ -764,7 +764,7 @@ setTimeout(() => {
 
 500 ミリ秒経過後に `fetch()` によるデータフェッチが完了していなければ、`fetch()` の第二引数に渡した `signal` を介して停止命令が受信されて処理がキャンセルされるます。その際には非同期例外として DOMException が throw されるので、chain の `catch()` メソッドで補足できます。
 
-これを実行すると自分の通信環境ではある程度の確率で停止できます。
+これを実行すると筆者の通信環境ではある程度の確率で停止できます。
 
 ```sh
 ❯ deno run -A fetchAbort.js

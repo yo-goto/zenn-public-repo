@@ -12,9 +12,10 @@ aliases: [ch_コールバック関数の同期実行と非同期実行]
 このチャプターではコールバック関数の誤解しやすい点について解説しておきます。
 
 # 同期か非同期か
+
 『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで Promise インスタンスの基本的な作成方法が分かったところで重要なことを解説します。
 
-`new Promise(executor)` の `Promise()` コンストラクタ関数の引数として渡した `executor` 関数ですが、このコールバック関数は「**同期的に**」実行されます。次のコードでは完全に上から下に順番にコードが実行されていきます。
+`new Promise(executor)` の `Promise()` コンストラクタ関数の引数として渡した `executor` 関数ですが、このコールバック関数は「**同期的に**」実行されます。次のコードでは完全に上から下へ順番にコードが実行されていきます。
 
 ```js:executorIsSync.js
 // executorIsSync.js
@@ -76,11 +77,11 @@ console.log('🦖 [3] MAINLINE: Sync');
 👦 [5] Resolved value: Resolved!
 ```
 
-Promise インスタンスは `then()` と `catch()` と `finally()` などの**プロトタイプメソッド**が使用できます。これによって、その Promise インスタンスの**状態が変化した後で**メソッドの引数として渡したコールスタック関数が「**非同期的に**」実行されることを保証できます。
+Promise インスタンスは `then()`/`catch()`/`finally()` などの**プロトタイプメソッド**が使用できます。これによって、その Promise インスタンスの**状態が変化した後で**メソッドの引数として渡したコールスタック関数が「**非同期的に**」実行されることを保証できます。
 
 今回の場合、`new Promise(executor)` で作成した Promise インスタンスである `promise` は、コールバック関数である `executor` が同期的に実行されて、すぐさま `resolve()` 関数に出会い実行されるので、ただちに `Promise` インスタンスの状態が履行(Fullfilled)状態になります。
 
-コードの行を順番に下に行くと `promise.then(cb)` に出会いますが、ここではコールバックである `cb` は Promise インスタンスが Fullfilled 状態になった時点でマイクロタスクキューへと送られます。この時点で Promise インスタンスである `promise` は履行(Fullfilled)状態なので、直ちにコールバック関数がマイクロタスクキューへと送られます。
+コードの行を順番に下へ行くと `promise.then(cb)` に出会いますが、ここではコールバックである `cb` は Promise インスタンスが Fullfilled 状態になった時点でマイクロタスクキューへと送られます。この時点で Promise インスタンスである `promise` は履行(Fullfilled)状態なので、直ちにコールバック関数がマイクロタスクキューへと送られます。
 
 しかし、マイクロタスクキューにあるこのコールバック関数はすぐに実行されません。コードの実行を考える上で、イベントループではスクリプトの評価によるすべての同期処理が最初のタスクとなり、その最中はコールスタック上に匿名のグローバルコンテキストが一番下に積まれている訳です。
 
@@ -88,9 +89,9 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 
 というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
-コールバック関数がマイクロタスクとして１つ発行されており、マイクロタスクキューには実行されるのを待っているマイクロタスクが１つあるので、直ちにそれを実行します。それによって、`"👦[4]Async"` がログに出力されて、その後に `"👦[5]Resolved value: Resolved!"` がログに出力されます。
+コールバック関数がマイクロタスクとして１つ発行されており、マイクロタスクキューには実行されるのを待っているマイクロタスクが１つあるので、直ちにそれを実行します。それによって、`"👦[4]Async"` がログに出力されて、その後に `"👦[5]Resolved value: Resolved!"` がログへ出力されます。
 
-実際にどのようにマイクロタスクが動くかを JS Visualizer 9000 で可視化してみたので以下のページから確認してみてください。
+実際どのようにマイクロタスクが動くかを JS Visualizer 9000 で可視化してみたので以下のページから確認してみてください。
 
 - [thenCallbackIsAsync.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGhlbkNhbGxiYWNrSXNBc3luYy5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwoKY29uc3QgcHJvbWlzZSA9IG5ldyBQcm9taXNlKHJlc29sdmUgPT4gewogIGNvbnNvbGUubG9nKCJbMl0gVGhpcyBsaW5lIGlzIFN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICByZXNvbHZlKCJSZXNvbHZlZCEiKTsKfSk7Cgpwcm9taXNlLnRoZW4odmFsdWUgPT4gewogIGNvbnNvbGUubG9nKCJbNF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7Cn0pOwoKY29uc29sZS5sb2coIlszXSBTeW5jIHByb2Nlc3MiKTsK)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
@@ -105,6 +106,7 @@ Promise インスタンスは `then()` と `catch()` と `finally()` などの**
 これに気付いていないと「Promise は同期的に実行される」とか「Promise chain は非同期的に実行される」とかの**言葉に惑わされて混乱する**ことになります。
 
 # コールバック関数はいつ実行される?
+
 このことについて、少し一般化して考えてみます。
 
 そもそもコールバック関数の処理が同期的に行われるか、非同期的に行われるかというのはコールバック関数そのものの問題ではなく、そのコールバック関数を引数として受け取って使う方の問題です。

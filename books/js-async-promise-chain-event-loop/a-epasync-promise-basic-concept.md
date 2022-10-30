@@ -4,13 +4,14 @@ aliases: [ch_Promise の基本概念]
 ---
 
 # このチャプターについて
+
 このチャプターでは Promise の基本的な概念と用語を紹介しておきます。Promise の知識自体は他の解説やドキュメントなどで目にしていると思うので、簡単な説明自体は省いて、本質的な部分のみについて触れておきます。
 
 Promise のコードについての具体的な解説はチャプター『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』で行います。
 
 # State と Fate
 
-紹介する用語はこちらのドキュメントを参考にしています。以下で解説する用語は自分の解釈が混じっていますが、このドキュメント自体は MDN のお墨付きなので信用してください(ES6 仕様のドラフトです)。
+紹介する用語はこちらのドキュメントを参考にしています。以下で解説する用語は筆者の解釈が混じっていますが、このドキュメント自体は MDN のお墨付きなので信用してください(ES6 仕様のドラフトです)。
 
 https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md
 
@@ -19,6 +20,7 @@ https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates
 :::
 
 ## State
+
 Promise インスタンスには次の３つの状態(**State**)があり、それぞれに排他的となっています(同時に１つの状態しか取りえないようになっています)。
 
 - Pending(待機状態)
@@ -27,11 +29,12 @@ Promise インスタンスには次の３つの状態(**State**)があり、そ�
 
 **Settled**(決定状態、不変状態)は実際の状態ではなく、Pending(待機状態)であるかないかを言い表すための言葉です。**Pending でなければ Settled だと言えます**。
 
-複数の Promise の完了を待つことができる Promise の静的メソッド `Promise.allSettled()` などの意味もこれです。Fullfilled か Rejected かは気にせずとりあえず Settled になっているかだけかだけに注意を払います。
+複数の Promise の完了を待つことができる Promise の静的メソッド `Promise.allSettled()` などの意味もこれです。Fullfilled か Rejected かは気にせず、とりあえず Settled になっているかだけかだけに注意を払います。
 
 重要なこととして、Settled になった Promise インスタンスの**状態は二度と変わりません**。
 
 ## Fate
+
 Promise インスタンスには２つの運命(**Fate**)があり、それぞれに排他的になっています(同時に１つの運命しか取りえないようになっています)。
 
 - Resolved(解決済み)

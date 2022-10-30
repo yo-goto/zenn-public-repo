@@ -4,6 +4,7 @@ aliases: [ch_Promise chain で値を繋ぐ]
 ---
 
 # このチャプターについて
+
 前のチャプターを通して、Promise chain の基本的な動きが分かったと思います。ここからは値を Promise chain において値をつないでいく処理を考えてみたいと思います。
 
 # 次のチェーンに値を繋ぐ
@@ -120,6 +121,7 @@ console.log("🦖 [4] MAINLINE(End): Sync");
 ポイントとしては、`return` 文をコメントアウトしてある `then()` コールバックの次の `then()` コールバックでは、渡されるはずの値がないので `undefined` となっている点です。何も `return` しない場合には次の `then()` メソッドのコールバックの入力値は `undefined` となるので注意してください。
 
 # チェーンの最後まで値を繋ぐ
+
 Promise chain で「値を繋ぐ」ことが理解しづらい場合には次のコードを考えてみます。このコードでは、`returnPromise()` 関数の第一引数として渡した文字列 `"1st Promise"` を Promise chain において `then()` メソッドのコールバックで毎回 `return` することがで最後まで値を繋げています。
 
 ```js:chainValue.js

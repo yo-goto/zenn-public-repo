@@ -55,7 +55,7 @@ try {
 console.log("🦖 [D] MAINLINE: End");
 ```
 
-ただし、Top-level await は使えるのは、JavaScriptt モジュール(ECMAScript モジュール)でのみなので注意してください。モジュールについての詳細は次の V8 や MDN のドキュメントを参照してください。
+ただし、Top-level await が使えるのは、JavaScriptt モジュール(ECMAScript モジュール)でのみなので注意してください。モジュールについての詳細は次の V8 や MDN のドキュメントを参照してください。
 
 https://v8.dev/features/modules
 
@@ -78,7 +78,7 @@ Deno ランタイム環境において、上記２つのコードの実行順序
 
 今まで通りですね。
 
-一方、Top-level await の場合はそうはいきません。実は、**Top-level await を使用しているファイル全体が１つの大きな async 関数のように機能します**。
+一方、Top-level await の場合はこうなりません。実は、**Top-level await を使用しているファイル全体が１つの大きな async 関数のように機能します**。
 
 https://v8.dev/features/top-level-await
 
@@ -86,7 +86,7 @@ https://v8.dev/features/top-level-await
 >([上記ページ](https://v8.dev/features/top-level-await)より引用、太字は筆者強調)
 
 :::message alert
-Top-level await を使用したモジュール自体を `import` する他のモジュールはそれ自体のコードの評価を開始する前に待機することになり、Top-level await が導入される前に比べて、モジュールの実行順序が複雑になります。
+Top-level await を使用したモジュール自体を `import` する他のモジュールはそれ自体のコードの評価を開始する前に待機することとなり、Top-level await が導入される前に比べて、モジュールの実行順序が複雑になります。
 :::
 
 というわけで、**このファイルのみを考えると**ファイル全体が async 関数と同じ様になるので、同期実行であった部分が async 関数内の処理と同じになります。
