@@ -9,6 +9,10 @@
     "url": "https://github.com/yo-goto/Zenn-repo/issues"
   },
   "homepage": "https://github.com/yo-goto/Zenn-repo#readme",
+  "scripts": {
+    "lint:dry": "textlint --dry-run",
+    "lint:fix": "textlint --fix"
+  },
   "dependencies": {
     "zenn-cli": "^0.1.120"
   },
