@@ -4,6 +4,7 @@ aliases: [ch_V8 エンジンについて]
 ---
 
 # このチャプターについて
+
 V8 エンジンは Chrome, Node, Deno のそれぞれの環境で利用されている JavaScript エンジンです。V8 について知っておくと理解できることがいくつかあります。
 
 このチャプターでは、V8 エンジンについての基礎知識や、V8 エンジンをローカルで使う方法などについて解説します。
@@ -17,7 +18,7 @@ https://v8.dev/
 >V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone, or can be embedded into any C++ application**.
 >([上記公式ページ](https://v8.dev/)より引用、太字は筆者強調)
 
-V8 は **Google が提供するオープンソースの JavaScript エンジン**であり、C++ で書かれており、基本的に Chrome で利用されています。
+V8 は **Google が提供するオープンソースの JavaScript エンジン**です。C++ で書かれており、主に Chrome ブラウザなどで利用されています。
 
 重要なこととして、V8 エンジンは JavaScript の標準化された言語機能の仕様である **ECMAScript を実装しています**。他の環境や C++ アプリケーションではこの JavaScript エンジンを埋め込んだ上で API などを提供することでその環境において JavaScript を実行できるようにしています。Deno では [rusty_v8](https://github.com/denoland/rusty_v8) という Rust バインディングによって V8 エンジンの C++ API を Rust で操作できるようにしているようです。その他には、V8 は WebAssembly エンジンとしても利用できます(ECMASCript と同様に WebAssembly も実装しています)。
 
@@ -195,7 +196,7 @@ V8 コマンドでは `deno run` や `node` とまったく同じ様にスクリ
 Chrome, Node, Deno ではデフォルトのイベントループに対して他のライブラリ(Libevent, Libuv, Tokio)を使って非同期 I/O などの仕組みを挿入しています。
 :::
 
-V8 エンジンのミラーリポジトリの `V8/src/libplatform` のディレクトリなど見てみると分かります。
+V8 エンジンのミラーリポジトリの `V8/src/libplatform` ディレクトリなどを見てみると分かります。
 
 https://github.com/v8/v8/tree/main/src/libplatform
 
