@@ -6,8 +6,9 @@ emoji: "🗽"
 type: "tech"
 topics: [fish, shell, 環境変数, dotfiles, terminal]
 date: 2022-03-06
-modified: 2022-09-24
+modified: 2022-11-02
 url: "https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer"
+AutoNoteMover: disable
 tags: [" #type/zenn #shell/fish/env  "]
 aliases: 記事_fishでパスを通すための最終解答
 ---
@@ -76,9 +77,9 @@ https://fishshell.com/docs/current/cmds/fish_add_path.html
 
 ドキュメントを見ると fish 側としてはインタラクティブな使用を推している感じですが、`config.fish` に記載する使用方法も用意されていました。
 
->It is (by default) safe to use fish_add_path in config.fish, or it can be used once, interactively, and the paths will stay in future because of universal variables.
+> It is (by default) safe to use fish_add_path in config.fish, or it can be used once, interactively, and the paths will stay in future because of universal variables.
 >`fish_add_path` は `config.fish` 内において(デフォルトで)安全に使用することができ、インタラクティブに一度だけ使用することも可能です。ユニバーサル変数のおかげで、パスは将来も維持されます。
->[fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html#cmd-fish-add-path) より引用
+> ([fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html#cmd-fish-add-path) より引用)
 
 ## (A) コマンドラインで 1 回だけ実行する
 
@@ -211,7 +212,7 @@ fish_add_path $VOLTA_HOME/bin
 ```
 
 :::message alert
-`fish_add_path` 関数は指定したコンポーネント(つまりディレクトリ)が存在していない場合は、追加せずに無視するため、ディレクトリを作成しておく必要があります。存在しないディレクトリをパスに追加するようにしたいなら、次のようにコマンドラインから一度だけ `set -U` を実行します。
+`fish_add_path` 関数は指定したコンポーネント(つまりディレクトリ)が存在していない場合は、追加せずに無視するため、ディレクトリを作成しておく必要があります。存在しないディレクトリをパスへ追加するようにしたいなら、次のようにコマンドラインから一度だけ `set -U` を実行します。
 
 ```shell:コマンドライン
 # $HOME/.fake/bin は存在しないディレクトリ
@@ -340,7 +341,7 @@ set -Ux PATH $HOME/.deno/bin $PATH
 ```
 
 (2)パスは通るが細かい点で微妙。
-`config.fish` で次のようにグローバルスコープで `PATH` を設定するのはやってはいけません。パスは通りますが、実は細かいところでパスが重複するケースがあります。
+`config.fish` で次のようにグローバルスコープで `PATH` を設定するのはやってはいけません。パスは通りますが、実は細かいところでパスの重複するケースがあります。
 
 ```shell:config.fish
 set PATH $HOME/.deno/bin $PATH
@@ -350,7 +351,7 @@ set -gx PATH $HOME/.deno/bin $PATH
 ```
 
 (3)パスは通るが、時間が経つにつれて遅くなる
-これがアンチパターンの中で後々問題になるものです。次のように `config.fish` にユニバーサル変数 `fish_user_paths` に対して `set -U` をしてはいけません。上記２パターンよりも更にやってはいけません。時間が経つにつれて起動や処理が遅くなる可能性があります。
+これがアンチパターンの中で後々問題になるものです。次のように `config.fish` にユニバーサル変数 `fish_user_paths` に対して `set -U` をしてはいけません。上記２パターンよりも更にやってはいけません。時間が経つにつれて起動や処理が遅くなるといった可能性があります。
 
 ```shell:config.fish
 set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
@@ -421,7 +422,10 @@ set -Ux PATH $HOME/.deno/bin $PATH
 
 [PATHのアンチパターン](#PATHのアンチパターン)の冒頭で説明しましたが、`PATH` はグローバル変数です。[変数のスコープルール](#変数のスコープルール) で説明したように fish では "inside out" のスコープルールで、参照される変数は local → global → universal という順番です。つまり、`set -U PATH $HOME/.deno/bin $PATH` で `$PATH` で参照されるのはグローバルスコープに定義された `PATH` の値となります。`set -U` で宣言した `PATH` がユニバーサル変数であっても、その行の最後に参照されている値はグローバル変数の値となります。したがって、ユニバーサル変数 `PATH` に追加したいパスとグローバル変数 `PATH` の値をセットしていることになります。
 
-ユニバーサル変数は全シェルセッションで共有され、永続化しているので、あるシェルセッションを開始した際に、`config.fish` が読み込まれると `PATH` の値に `$HOME/.deno/bin` が追加されます。~~さらに別新しいシェルセッションを開始すると、再び `config.fish` を読み込み、`PATH` に `$HOME/.deno/bin` を追加します。これによって、`PATH` には重複した `$HOME/.deno/bin` がいくつも追加された状態となります。~~  
+ユニバーサル変数は全シェルセッションで共有され、永続化しているので、あるシェルセッションを開始した際に、`config.fish` が読み込まれると `PATH` の値に `$HOME/.deno/bin` が追加されます。
+
+~~さらに別の新しいシェルセッションを開始すると、再び `config.fish` を読み込み、`PATH` に `$HOME/.deno/bin` を追加します。これによって `PATH` には重複した `$HOME/.deno/bin` がいくつも追加された状態となります。~~  
+
 **修正**: 実際にはグローバル変数 `PATH` の値は環境から継承されるので、fish 起動時に生成されます。その生成されたグローバル変数 `PATH` の値が、起動時に実行される `set -U PATH $HOME/.deno/bin $PATH` によってユニバーサル変数 `PATH` へと追加されるため、パス自体がどんどん長くなるということはありませんでした。ただ、scope shadowing の問題からパスが通らないというだけです。
 
 :::message
@@ -486,7 +490,9 @@ set -gx EDITOR vim
 「`set -gx` の問題」について取り上げていましたが、見出し名を「(2) パスは通るが、細かい点で微妙」に変更しました。
 :::
 
-ユニバーサル変数の `PATH` はダメなので、`config.fish` でグローバル変数にしたり(`set -g`)、グローバルとしてエクスポート(`set -gx`)ならいいのかというと、そういう訳でも無いです。パス自体は通りますが、細かい点で不備があります(とは言っても別に気にしなければ良い、というレベルの問題ですが)。
+ユニバーサル変数としての `PATH` はダメなので、`config.fish` でグローバル変数にしたり(`set -g`)、グローバルとしてエクスポート(`set -gx`)ならいいのと考えてしまいます。
+
+しかし、それは間違いです。パス自体は通りますが、細かい点で不備があります。
 
 ```shell:config.fish
 set PATH /opt/homebrew/bin $PATH
@@ -495,7 +501,7 @@ set -x PATH /opt/homebrew/bin $PATH
 set -gx PATH /opt/homebrew/bin $PATH
 ```
 
-まず、スコープを明示せずに変数の宣言をした場合、関数内などに定義していれば関数にローカルになりますが、`config.fish` 内にべた書きしているのでグローバルスコープとしてみなされるはずです。なので、`set PATH` と `set -g PATH` は同じですし、`set -x` と `set -gx` は同じ意味になります。
+まず、スコープを明示せずに変数の宣言をした場合、関数内などに定義していれば関数にローカルとなりますが、`config.fish` 内にベタ書きしているのでグローバルスコープとしてみなされるはずです。なので、`set PATH` と `set -g PATH` は同じですし、`set -x` と `set -gx` は同じ意味になります。
 
 細かいスコープルールについては[変数のスコープルール](#変数のスコープルール)で解説したので参照してください。
 
@@ -529,7 +535,7 @@ $LANG: set in global scope, exported, with 1 elements
 $LANG[1]: |en_US|
 ```
 
-`PATH` もそもそも環境変数なので、`set -g PATH` も `set -gx PATH` も実質的には同じ意味になります。つまり、以下のコードの意味はすべて同じです。
+`PATH` もそもそも環境変数なので、`set -g PATH` と `set -gx PATH` は実質的には同じ意味になります。つまり、以下のコードの意味はすべて同じです。
 
 ```shell:config.fish
 # 以下すべて同じ結果になる
@@ -561,7 +567,7 @@ fish を起動した際に、`config.fish` は読み込まれ上記コードが�
 
 グローバル変数は現在の fish のセッションに特有なので、そのセッションを終了するまで生存します。そのセッションにおいては、`set -e` で明示的に消去しない限り消えません。`exit` などで終了すれば消滅します。なので、一度ターミナルなどを終了してもう一度立ち上げればグローバル変数は消えています。
 
-一度、終了してから再び `PATH` を見てみると、再び環境変数が継承されるので `PATH` がグローバルに生成されます。`config.fish` に `set -gx PATH /opt/homebrew/bin $PATH` が記載されている限り、 fish を起動すれば次のように意図通りの `PATH` になっているはずです。
+一度、終了してから再び `PATH` を見てみると、再び環境変数が継承されるので `PATH` がグローバルに生成されます。そして `config.fish` に `set -gx PATH /opt/homebrew/bin $PATH` が記載されている限り、 fish を起動すれば、次のように意図通りの `PATH` になっているはずです。
 
 ```shell
 ❯ printf '%s\n' $PATH
@@ -615,7 +621,7 @@ set -gx VOLTA_HOME $HOME/.volta
 # ログインのたびに評価されていくが、値がのびていくようなことはない
 ```
 
-また、先述の通り、スコープの明示をせずに `config.fish` にベタ書きするとスコープはグローバルになるので、スコープを明示しないパターンも見かけます(混乱するのでスコープ明示したほうがいいです)。
+また、先述の通り、スコープの明示をせず `config.fish` にベタ書きするとスコープはグローバルになるので、スコープを明示しないパターンも見かけます(混乱するのでスコープ明示したほうがいいです)。
 
 ```shell:config.fish
 # グローバルスコープなので、上と同じ
@@ -770,14 +776,14 @@ set -gx VOLTA_HOME $HOME/.volta
 「set -U fish_user_paths の問題」という見出しで書いていましたが、修正しました。
 :::
 
-ユニバーサル変数に対して `config.fish` 内で値を追加するような操作を記載してはいけません。従って `fish_add_path` が利用しているユーザーが追加したパスを管理しているユニバーサル変数である `fish_user_pashs` に対しても次のようなことを `config.fish` でやってはいけません。このパターンでは、時間が経つにつれて fish 自体が遅くなる可能性があります。
+ユニバーサル変数に対して `config.fish` 内で値を追加するような操作を記載してはいけません。従って `fish_add_path` が利用しているユーザーが追加したパスを管理しているユニバーサル変数である `fish_user_pashs` に対しても次のようなことを `config.fish` でやってはいけません。このパターンでは、時間が経つにつれて fish 自体の処理が遅くなるという可能性が出てきます。
 
 ```shell:config.fish
 set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
 ```
 
 具体的に何が悪いかのを説明します。
-まず、上記のコードを `config.fish` に書いたとして、最後の `$fish_user_paths` はユニバーサル変数の値を展開するので、次のようにログインするたびに、パスが重複追加されていきます。
+まず上記のコードを `config.fish` に書いたとして、最後の `$fish_user_paths` はユニバーサル変数の値を展開するので、次のようにログインするたびに、パスが重複追加されていきます。
 
 ```shell
 ❯ printf '%s\n' $fish_user_paths
@@ -802,7 +808,7 @@ set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
 /opt/homebrew/bin
 ```
 
-この理由は、`fish_user_paths` がユニバーサル変数だからです。ユニバーサル変数は全シェルセッションで共有され、永続化しているので、あるシェルセッションを開始した際に、`config.fish` が読み込まれますが、そのたびに `set -U fish_user_paths $HOME/.deno/bin $fish_user_paths` が実行され、永続化されている `fish_user_paths` の値に毎回追加されてます。
+この理由は、`fish_user_paths` がユニバーサル変数だからです。ユニバーサル変数は全シェルセッションで共有され、永続化しているので、１つのシェルセッションを開始した時に `config.fish` は読み込まれます。したがって、そのたびに `set -U fish_user_paths $HOME/.deno/bin $fish_user_paths` は実行され、永続化されている `fish_user_paths` の値に毎回追加されてます。
 
 先述した引用では「パスがどんどん長くなる」と言及されていますが、完全にこのパターンのことです。
 
@@ -987,7 +993,7 @@ https://github.com/IlanCosman/tide/issues/242
 
 また、tide における設定用の変数は他の外部コマンドが参照される必要はとくにありません。環境変数はその外部コマンド特有の変数で内部的に利用し設定される必要のあるものか、またはよく利用されうる情報 `$PAGER` や `$EDITOR` などの場合を覗いて必要ない、というわけです。
 
-その違いについて説明すると、例えば、`pstree` のところで説明しましたが、JavaScript のツールチェインを管理する volta というツールのコマンドとして `volta install` があり、これは node のバージョンを指定してインストールするコマンドです。バージョンを指定しなければ最新の LTS release をインストールします。
+その違いについて説明すると、例えば `pstree` のところで説明しましたが、JavaScript のツールチェインを管理する volta というツールのコマンドとして `volta install` があり、これは node のバージョンを指定してインストールするコマンドです。バージョンを指定しなければ最新の LTS release をインストールします。
 
 以下のように事前に使用する環境変数と `PATH` を `config.fish` に定義したとします。
 

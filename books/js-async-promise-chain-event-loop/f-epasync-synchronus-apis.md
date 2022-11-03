@@ -1,6 +1,11 @@
 ---
 title: "同期 API とブロッキング"
-aliases: [ch_同期 API とブロッキング]
+cssclass: zenn
+date: 2022-06-15
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_同期 API とブロッキング
 ---
 
 # このチャプターについて
@@ -26,7 +31,7 @@ https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
     - [fs.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilefile-data-options-callback) (Callback-based API[^callback-based])
     - [fsPromises.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fspromiseswritefilefile-data-options) (Promise-based API)
   - Deno: [Deno.writeFile](https://doc.deno.land/deno/stable/~/Deno.writeFile) (Promise-based API)
-- 同期 API (Blocking API) 
+- 同期 API (Blocking API)
   - Node: [fs.wirteFileSync](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilesyncfile-data-options)
   - Deno: [Deno.wirteFileSync](https://doc.deno.land/deno/stable/~/Deno.writeFileSync)
 
@@ -183,7 +188,7 @@ Promise や async/awiat などの処理は、結果としてタイミングが�
 ```js:副作用にしてしまったアンチパターン
 Deno.writeTextFile(path, inputData) // [A]
   .then(() => {
-    Deno.readTextFile(path); 
+    Deno.readTextFile(path);
     // return していないので副作用となる
   }) // [B]
   .then((data) => console.log("[3]", data)); // [C] undefined が出力される
@@ -195,7 +200,7 @@ Deno.writeTextFile(path, inputData) // [A]
   Deno.writeTextFile(path, inputData); // [A]
   // [A] の完了に関わらず [B] を開始
   const data = Deno.readTextFile(path); // [B]
-  console.log("[3]", data); // [C] 
+  console.log("[3]", data); // [C]
   // そもそも Proimise インスタンスから値が取り出せていないので Promise{ <pending> } が出力される
 })();
 ```
@@ -266,4 +271,3 @@ https://github.com/jprichardson/node-fs-extra
 https://github.com/isaacs/node-graceful-fs
 
 Deno の std ではそういったユーティリティ機能を公式の開発チームによってメンテしつつ提供するようにしたものだと考えられます。
-

@@ -1,7 +1,11 @@
 ---
 title: "TypeScript における Promise の型注釈"
-aliases: [ch_TypeScript における Promise の型注釈]
-tags: [" #JavaScript/async  "]
+cssclass: zenn
+date: 2022-07-12
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_TypeScript における Promise の型注釈
 ---
 
 # このチャプターについて
@@ -99,6 +103,7 @@ https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno
 TypeScript では既存の JavaScript コードに型の情報を付与していくことから学習が始まります。
 
 ## 変数への型注釈
+
 例えば、文字列リテラルの値で初期化した変数に明示的に `string` 型であると型の情報を付与することが型注釈(type annotation)と呼ばれる行為です。
 
 変数に型を注釈するには変数名の後に `:` を付けて型の名前を書きます。JavaScript のプリミティブ型である文字列型なら `string` というように決まった型の名前があるのでそれを変数名の後に追加します。
@@ -698,6 +703,7 @@ const numProp: GeneralProp<number> = {
 型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
 
 # ジェネリック関数
+
 ジェネリック関数(generic function)はこのジェネリクスの概念を利用した関数になります。
 
 https://www.typescriptlang.org/docs/handbook/2/generics.html
@@ -1706,4 +1712,3 @@ TypeScript の非同期処理は JavaScript の非同期処理に過ぎません
 以下のように **type challenges** というコミュニティによる型表現のテストがあるので型についての基礎が理解できたらぜひ取り組んでいきましょう。
 
 https://github.com/type-challenges/type-challenges
-

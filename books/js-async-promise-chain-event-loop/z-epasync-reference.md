@@ -1,6 +1,11 @@
 ---
 title: "参考文献"
-aliases: [ch_参考文献]
+cssclass: zenn
+date: 2022-06-30
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_参考文献
 ---
 
 # [はじめに](1-epasync-begin)
@@ -66,7 +71,6 @@ aliases: [ch_参考文献]
 - [JavaScript Execution Context – How JS Works Behind The Scenes](https://www.freecodecamp.org/news/execution-context-how-javascript-works-behind-the-scenes/)
 - [In depth: Microtasks and the JavaScript runtime environment - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth#javascript_execution_contexts)
 - [zero-cost async stack traces // slidr.io](https://slidr.io/bmeurer/zero-cost-async-stack-traces-1#27)
-
 
 ## [それぞれのイベントループ](c-epasync-what-event-loop)
 
@@ -239,13 +243,16 @@ aliases: [ch_参考文献]
 - [Async Await try-catch hell - YouTube](https://www.youtube.com/watch?v=ITogH7lJTyE)
 
 # その他
+
 ## Deno
+
 [std@0.145.0 | Deno](https://deno.land/std@0.145.0)
 
 ## Node
+
 [About this documentation | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/documentation.html)
 
 ## 仕様書
+
 - [HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html)
 - [ECMAScript® 2023 Language Specification](https://tc39.es/ecma262/)
-

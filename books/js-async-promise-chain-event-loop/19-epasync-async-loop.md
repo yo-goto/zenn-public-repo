@@ -1,6 +1,11 @@
 ---
 title: "反復処理の制御"
-aliases: [ch_反復処理の制御]
+cssclass: zenn
+date: 2022-06-30
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_反復処理の制御
 ---
 
 # このチャプターについて
@@ -88,6 +93,7 @@ async function fetchThenConsole(url) {
 一般的には `forEach()` のコールバックで非同期が絡む作業の実行をやるとミスが起きるのであまり使われないのではないでしょうか。`map()` の方が分かりやすいですし。`forEach()` 使用時のミスについては後で解説します。
 
 # (2) 順番に興味があるので順序付けて実行
+
 もしも、１つ目のリソースを取得が完了してから２つ目のリソースを取得したいという意図があるなら、await 式などで順序付ける必要がでてきます。データフェッチ以外のケースで、非同期の複数タスクの間に依存関係や順序関係がある場合にもこのようなやり方で行います。
 
 いわゆる「直列」でのやり方です。
@@ -610,6 +616,7 @@ const promises = urls.map(url => fetchThenConsole(url));
 - `for await...of`
 
 ## for...in
+
 `for...in` はオブジェクトのプロパティを反復するために作られたものですが、この方法にはいくつかの問題があるため、デバッグ目的以外には基本的に使いません。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...in
@@ -673,4 +680,3 @@ async function fetchThenConsole(url) {
 ```
 
 `for await...of` は非同期ジェネレータ関数などを使うので詳しくは『[イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)』のチャプターで解説します。
-

@@ -1,56 +1,63 @@
 ---
 title: "EPAsync book 管理ノート"
-aliases: [EPAsync, 本_イベントループとプロミスチェーンで学ぶ非同期処理]
-tags: [" #type/zenn/book #JavaScript/async  "]
+cssclass: zenn
+date: 2022-08-14
+modified: 2022-11-02
 url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
+AutoNoteMover: disable
+tags: [" #type/zenn/book #JavaScript/async  "]
+aliases:
+  - EPAsync
+  - 本_イベントループとプロミスチェーンで学ぶ非同期処理
 ---
 
 ## MOC
+
 セクション管理
-[sec-01-epasync](sec-01-epasync)
-[sec-02-epasync](sec-02-epasync)
-[sec-03-epasync](sec-03-epasync)
+- [sec-01-epasync](sec-01-epasync)
+- [sec-02-epasync](sec-02-epasync)
+- [sec-03-epasync](sec-03-epasync)
 
 メイン
-[1-epasync-begin](1-epasync-begin)
-[2-epasync-event-loop](2-epasync-event-loop)
-[3-epasync-promise-constructor-executor-func](3-epasync-promise-constructor-executor-func)
-[4-epasync-callback-is-sync-or-async](4-epasync-callback-is-sync-or-async)
-[5-epasync-multiple-promises](5-epasync-multiple-promises)
-[6-epasync-then-always-return-new-promise](6-epasync-then-always-return-new-promise)
-[7-epasync-pass-value-to-the-next-chain](7-epasync-pass-value-to-the-next-chain)
-[8-epasync-return-promise-in-then-callback](8-epasync-return-promise-in-then-callback)
-[9-epasync-dont-nest-promise-chain](9-epasync-dont-nest-promise-chain)
-[10-epasync-dont-use-side-effect](10-epasync-dont-use-side-effect)
-[11-epasync-omit-return-by-arrow-shortcut](11-epasync-omit-return-by-arrow-shortcut)
-[12-epasync-wrapping-macrotask](12-epasync-wrapping-macrotask)
-[13-epasync-loop-is-nested](13-epasync-loop-is-nested)
-[14-epasync-chain-to-async-await](14-epasync-chain-to-async-await)
-[15-epasync-v8-converting](15-epasync-v8-converting)
-[16-epasync-top-level-async](16-epasync-top-level-async)
-[17-epasync-static-method](17-epasync-static-method)
-[18-epasync-await-position](18-epasync-await-position)
-[19-epasync-async-loop](19-epasync-async-loop)
+- [1-epasync-begin](1-epasync-begin)
+- [2-epasync-event-loop](2-epasync-event-loop)
+- [3-epasync-promise-constructor-executor-func](3-epasync-promise-constructor-executor-func)
+- [4-epasync-callback-is-sync-or-async](4-epasync-callback-is-sync-or-async)
+- [5-epasync-multiple-promises](5-epasync-multiple-promises)
+- [6-epasync-then-always-return-new-promise](6-epasync-then-always-return-new-promise)
+- [7-epasync-pass-value-to-the-next-chain](7-epasync-pass-value-to-the-next-chain)
+- [8-epasync-return-promise-in-then-callback](8-epasync-return-promise-in-then-callback)
+- [9-epasync-dont-nest-promise-chain](9-epasync-dont-nest-promise-chain)
+- [10-epasync-dont-use-side-effect](10-epasync-dont-use-side-effect)
+- [11-epasync-omit-return-by-arrow-shortcut](11-epasync-omit-return-by-arrow-shortcut)
+- [12-epasync-wrapping-macrotask](12-epasync-wrapping-macrotask)
+- [13-epasync-loop-is-nested](13-epasync-loop-is-nested)
+- [14-epasync-chain-to-async-await](14-epasync-chain-to-async-await)
+- [15-epasync-v8-converting](15-epasync-v8-converting)
+- [16-epasync-top-level-async](16-epasync-top-level-async)
+- [17-epasync-static-method](17-epasync-static-method)
+- [18-epasync-await-position](18-epasync-await-position)
+- [19-epasync-async-loop](19-epasync-async-loop)
 
 サブ
-[a-epasync-promise-basic-concept](a-epasync-promise-basic-concept)
-[b-epasync-callstack-execution-context](b-epasync-callstack-execution-context)
-[c-epasync-what-event-loop](c-epasync-what-event-loop)
-[d-epasync-task-microtask-queues](d-epasync-task-microtask-queues)
-[e-epasync-v8-engine](e-epasync-v8-engine)
-[f-epasync-asynchronous-apis](f-epasync-asynchronous-apis)
-[f-epasync-synchronus-apis](f-epasync-synchronus-apis)
-[g-epasync-resolve-reject](g-epasync-resolve-reject)
-[h-epasync-catch-finally](h-epasync-catch-finally)
-[j-epasync-ts-promise-type-annotation](j-epasync-ts-promise-type-annotation)
-[k-epasync-iterator-generator](k-epasync-iterator-generator)
-[x-epasync-epilogue](x-epasync-epilogue)
-[y-epasync-conclusion](y-epasync-conclusion)
-[z-epasync-reference](z-epasync-reference)
+- [a-epasync-promise-basic-concept](a-epasync-promise-basic-concept)
+- [b-epasync-callstack-execution-context](b-epasync-callstack-execution-context)
+- [c-epasync-what-event-loop](c-epasync-what-event-loop)
+- [d-epasync-task-microtask-queues](d-epasync-task-microtask-queues)
+- [e-epasync-v8-engine](e-epasync-v8-engine)
+- [f-epasync-asynchronous-apis](f-epasync-asynchronous-apis)
+- [f-epasync-synchronus-apis](f-epasync-synchronus-apis)
+- [g-epasync-resolve-reject](g-epasync-resolve-reject)
+- [h-epasync-catch-finally](h-epasync-catch-finally)
+- [j-epasync-ts-promise-type-annotation](j-epasync-ts-promise-type-annotation)
+- [k-epasync-iterator-generator](k-epasync-iterator-generator)
+- [x-epasync-epilogue](x-epasync-epilogue)
+- [y-epasync-conclusion](y-epasync-conclusion)
+- [z-epasync-reference](z-epasync-reference)
 
 未完成
-[i-epasync-terms](i-epasync-terms)
-[x-epasync-ts-promise-type-annotation](x-epasync-ts-promise-type-annotation)
+- [i-epasync-terms](i-epasync-terms)
+- [x-epasync-ts-promise-type-annotation](x-epasync-ts-promise-type-annotation)
 
 ## 管理用ノート
 
@@ -78,6 +85,7 @@ url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 太文字が多すぎるので減らす。
 
 ## チャプター管理
+
 `config.yml` に記載するチャプターデータ。
 
 ```yaml
@@ -120,4 +128,3 @@ chapters:
   - x-epasync-epilogue # 『あとがき』
   - z-epasync-reference # 『参考文献』
 ```
-

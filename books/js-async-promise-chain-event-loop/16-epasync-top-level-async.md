@@ -1,6 +1,11 @@
 ---
 title: "Top-level await"
-aliases: [ch_Top-level await]
+cssclass: zenn
+date: 2022-05-28
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_Top-level await
 ---
 
 # このチャプターについて
@@ -143,4 +148,3 @@ try {
 https://qiita.com/uhyo/items/0e2e9eaa30ec2ff05260
 
 この内容については詳しく解説できるレベルの理解ではないので、注意書き程度にとどめておきます。非同期処理の学習に終わりはありません😱
-

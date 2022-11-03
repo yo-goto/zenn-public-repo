@@ -1,12 +1,19 @@
 ---
 title: "catch メソッドと finally メソッド"
-aliases: [ch_catch メソッドと finally メソッド]
+cssclass: zenn
+date: 2022-05-14
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_catch メソッドと finally メソッド
 ---
 
 # このチャプターについて
+
 このチャプターでは今まで解説していなかった `catch()` メソッド、`finally()` メソッドについて、そしてそれらメソッドが発行するマイクロタスクについて解説していきたいと思います。
 
 # Promise のプロトタイプメソッド
+
 `then()` 以外の Promise のプロトタイプメソッドとして `catch()` と `finally()` メソッドが挙げられます。これは try/catch/finally に対応しており、同様の考え方で使うことができます。
 
 ```js
@@ -181,4 +188,3 @@ console.log("🦖 [J-2] MAINLINE: End");
 👦 [I-9] <7-Async> MICRO: then
 🦄 [F-10] <8-async> MICRO: finally callback
 ```
-

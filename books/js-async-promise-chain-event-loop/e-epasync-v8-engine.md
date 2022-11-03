@@ -1,6 +1,11 @@
 ---
 title: "V8 エンジンについて"
-aliases: [ch_V8 エンジンについて]
+cssclass: zenn
+date: 2022-05-06
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_V8 エンジンについて
 ---
 
 # このチャプターについて
@@ -59,6 +64,7 @@ https://engineering.mercari.com/blog/entry/20220128-3a0922eaa4/
 V8 エンジンをスタンドアロンで利用できればほぼ素の ECMAScript の機能を利用できます。つまり、環境の提供する API に惑わされることなく ECMAScript のことだけを考える事ができます。
 
 ## jsvu
+
 そして、実際 V8 エンジンはスタンドアロンで利用できます。次の GoogleChromeLabs が提供している jsuv(JavaScript engine Version Updater) でローカルに簡単にインストールでき、ソースからコンパイルすることなく利用できます。
 
 https://github.com/GoogleChromeLabs/jsvu
@@ -307,4 +313,3 @@ while (tasksAreWaiting()) {
 ```
 
 V8 エンジンのデフォルトイベントループにタスクキューが実際いくつ存在しているかは分かりませんが、とりあえず `setTimeout()` 用のタスクキューは存在していることが分かります。タスクキューは１つ以上あることが仕様で定義されているので、タスクキューの数に関わらず `getNextQueue()` でとにかく１つのタスクキューを選ぶということで上の疑似コードとしています。
-

@@ -1,6 +1,11 @@
 ---
 title: "イベントループの概要と注意点"
-aliases: [ch_イベントループの概要と注意点]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn #JavaScript/async "]
+aliases: ch_イベントループの概要と注意点
 ---
 
 # このチャプターについて
@@ -264,4 +269,3 @@ https://2018.jsconf.eu/speakers/erin-zimmer-further-adventures-of-the-event-loop
 ```
 
 このように `<script>` タグ内の JavaScript はまとめてタスク(Task1)として処理されます。イベントリスナーに登録されてるコールバックはイベントが発火した時点で別のタスク(Task2)として処理されます。
-

@@ -1,9 +1,15 @@
 ---
 title: "V8 エンジンによる async/await の内部変換"
-aliases: [ch_V8 エンジンによる async/await の内部変換]
+cssclass: zenn
+date: 2022-05-14
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_V8 エンジンによる async/await の内部変換
 ---
 
 # このチャプターについて
+
 このチャプターでは、V8 エンジンによる async/await の内部変換コードから async/await の舞台裏を探索し、その挙動について理解するための解説を行います。
 
 仕様を直接見るよりも、V8 エンジンでどうなっているかを見た方が分かりやすいので V8 からアプローチします。前のチャプターで見たとおり、async/await では若干謎の挙動が存在しています。V8 エンジンの内部変換コードを見ることでその謎は解決できます。
@@ -1160,7 +1166,7 @@ async function fooNext() {
 // 合計マイクロタスクが２つ発生する
 ```
 
-ということで、マイクロタスクは２つ発生します。`fooNext()` をチェーンした場合には `then()` メソッドのコールバックがマイクタスクキューへと発行されるのは async 関数の内部で生成されるマイクロタスク合計２個を実行した後になります。
+ということで、マイクロタスクは２つ発生します。`fooNext()` をチェーンした場合には `then()` メソッドのコールバックがマイクロタスクキューへと発行されるのは async 関数の内部で生成されるマイクロタスク合計２個を実行した後になります。
 
 また実際のコードで考えてみます。
 
@@ -1396,6 +1402,7 @@ console.log("🦖 [2] MAINLINE: End");
 ```
 
 # async/await の最適化
+
 以上、async/await の挙動について、V8 エンジンの内部変換コードから解説を試みてみました。
 
 最初に述べたよう ECMAScript の仕様自体が async/await の最適化(かつては V8 において `--harmony-await-optimization` というフラグで使用されていた機能)をマージしました。
@@ -1425,6 +1432,7 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 >([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用、太字は筆者強調)
 
 # async/await のまとめ
+
 V8 の舞台裏を見ることで async/await の挙動が理解できたと思います。
 
 もちろん async/await を理解できるようになるには、今までの知識として Promise とイベントループ、マイクロタスクの概念が必要不可欠です。ここまで学習してきたことによって async/await が理解できるようになったことを忘れないでください。
@@ -1436,4 +1444,3 @@ await 式によって async 関数内の実行フローが分割され制御が�
 Promise chain も async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** です。
 
 V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています。
-

@@ -1,6 +1,11 @@
 ---
 title: "then メソッドは常に新しい Promise を返す"
-aliases: [ch_then メソッドは常に新しい Promise を返す]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_then メソッドは常に新しい Promise を返す
 ---
 
 # このチャプターについて
@@ -10,6 +15,7 @@ aliases: [ch_then メソッドは常に新しい Promise を返す]
 :::
 
 このチャプターでは、Promise chain での注意点である `then()` メソッドの特長について解説しておきます。
+
 # then メソッドから返ってくる Promise インスタンス
 
 前のチャプターから続いて、`then()` メソッドをそれぞれもう 1 つずつ増やしてみます。
@@ -329,4 +335,3 @@ node:internal/process/promises:288
 
 Node.js v18.2.0
 ```
-

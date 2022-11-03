@@ -1,10 +1,14 @@
 ---
 title: "古い非同期 API を Promise でラップする"
-aliases: [
-  ch_古い非同期 API を Promise でラップする,
-  Promisify,
-  Promisification
-]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases:
+  - ch_古い非同期 API を Promise でラップする
+  - Promisify
+  - Promisification
 ---
 
 # このチャプターについて
@@ -178,4 +182,3 @@ async 関数の外側で何らかの別の処理が走っている可能性も�
 https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
 
 https://doc.deno.land/https://deno.land/std@0.145.0/async/mod.ts/~/delay
-

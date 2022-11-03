@@ -1,6 +1,11 @@
 ---
 title: "コールバック関数の同期実行と非同期実行"
-aliases: [ch_コールバック関数の同期実行と非同期実行]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_コールバック関数の同期実行と非同期実行
 ---
 
 # このチャプターについて
@@ -185,4 +190,3 @@ console.log("🦖 [5] MAINLINE: Sync");
 コールバック関数についての基礎は mdn のドキュメントで確認してください。
 
 https://developer.mozilla.org/ja/docs/Glossary/Callback_function
-

@@ -1,9 +1,15 @@
 ---
 title: "コールスタックと実行コンテキスト"
-aliases: [ch_コールスタックと実行コンテキスト]
+cssclass: zenn
+date: 2022-05-06
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_コールスタックと実行コンテキスト
 ---
 
 # このチャプターについて
+
 このチャプターでは、コールスタックに積まれる「**実行コンテキスト**」について知識を補います。
 
 実行コンテキストは `this` キーワードの挙動を理解する上で実は重要だったりしますが、このチャプターではイベントループについて理解を深めるための知識として解説しています。
@@ -13,6 +19,7 @@ aliases: [ch_コールスタックと実行コンテキスト]
 :::
 
 # 実行コンテキストとコールスタックの関係
+
 『What the heck is the event loop anyway?』の動画でみてもらったように、コールスタックには関数などが積まれているように見えますが、正確にはコールスタックに積まれるのは実行コンテキスト(Execution context)と呼ばれるものです。
 
 実行コンテキストとはなんでしょうか。ECMAScript 2023 の仕様 9.4 の項目をみてみます。
@@ -37,7 +44,6 @@ https://tc39.es/ecma262/#sec-execution-contexts
 https://www.freecodecamp.org/news/execution-context-how-javascript-works-behind-the-scenes/
 
 https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth#javascript_execution_contexts
-
 
 ブラウザでは、JavaScript コードを直接的に理解できないので、機械語に変換される必要があります。例えば、HTML のパース中に `<script>` タグを介してブラウザが JavaScript コードにエンカウントしたりすると、ブラウザはそのコードを JavaScript エンジン(Chrome なら V8)へと送信します。
 
@@ -249,7 +255,6 @@ console.log("[1] 🦖 MAINLINE: End [GEC]/[Task1]");
 
 ![4](/images/js-async/img_executionContextStack_4.jpg)
 
-
 まず、プログラム開始時にいつもどおりグローバルコンテキストが作成されます。最初のタスクとして同期処理がすべて処理されていきます。`setTimeout()` の実行コンテキストが作成されてそれぞれ０秒遅延でタスクとしてコールバック関数 `taskFunc2()` と `taskFunc3()` を発行するように環境へと伝えます。そして、`Promise.resolve().then()` の関数実行コンテキストが作成されて、プロミスインスタンス自体は直ちに履行状態になったため、マイクロタスクが発行されます。
 
 最後に `console.log()` の処理を行い、同期処理がすべて処理されて何もすることが無くなった時点でグローバルコンテキストがコールスタックからポップして破棄されます。この時点でコールスタックは空の状態となりました。コールスタックが空になったら**マイクロタスクのチェックポイント**です。マイクロタスクキューにマイクロタスクがあればすべてのマイクロタスクが処理されます。別の考え方だと、プログラムの実行開始という**単一タスクが完了したのですべてのマイクロタスクを処理**します。
@@ -350,4 +355,3 @@ Error: Let's have a look...
 ```
 
 `console.trace()` でコンテキストがどのように積まれるかを見る際には、環境によって表示されるものが違うということがよくあります(特にマイクロタスクやタスクなどの実行時に)。そういう訳で、ここでの話はある程度の抽象的なものとして扱ってください。
-

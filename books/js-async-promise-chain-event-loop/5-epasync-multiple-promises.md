@@ -1,6 +1,11 @@
 ---
 title: "複数の Promise を走らせる"
-aliases: [ch_複数の Promise を走らせる]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_複数の Promise を走らせる
 ---
 
 # このチャプターについて
@@ -218,4 +223,3 @@ console.log("🦖 [4] MAINLINE: Sync");
 
 - [doubleThenCallback.js - JS Visuzalizer 9000](https://www.jsv9000.app/?code=Ly8gZG91YmxlVGhlbkNhbGxiYWNrLmpzCmNvbnNvbGUubG9nKCdbMV0gU3luYyBwcm9jZXNzJyk7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyKSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgWyR7b3JkZXJ9XSBUaGlzIGxpbmUgaXMgU3luY2hyb25vdXNseSBleGVjdXRlZGApOwogICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICB9KTsKfTsKcmV0dXJuUHJvbWlzZSgnMXN0IFByb21pc2UnLCAnMicpLnRoZW4oKHZhbHVlKSA9PiB7CiAgY29uc29sZS5sb2coJ1s1XSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQnKTsKICBjb25zb2xlLmxvZygnUmVzb2x2ZWQgdmFsdWU6ICcsIHZhbHVlKTsKfSk7CnJldHVyblByb21pc2UoJzJuZCBQcm9taXNlJywgJzMnKS50aGVuKCh2YWx1ZSkgPT4gewogIGNvbnNvbGUubG9nKCdbNl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkJyk7CiAgY29uc29sZS5sb2coJ1Jlc29sdmVkIHZhbHVlOiAnLCB2YWx1ZSk7Cn0pOwoKY29uc29sZS5sb2coJ1s0XSBTeW5jIHByb2Nlc3MnKTsK)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
-

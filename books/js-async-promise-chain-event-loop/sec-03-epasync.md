@@ -1,6 +1,10 @@
 ---
-date: 2022-06-16
 title: "第３章 - async 関数と await 式の挙動"
+cssclass: zenn
+date: 2022-06-16
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
 alieases: [EPAsync 第３章]
 ---
 
@@ -13,4 +17,3 @@ alieases: [EPAsync 第３章]
 - [Promise chain から async 関数へ](14-epasync-chain-to-async-await)
 - [V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)
 - [Top-level await](16-epasync-top-level-async)
-

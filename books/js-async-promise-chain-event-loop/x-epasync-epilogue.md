@@ -1,5 +1,10 @@
 ---
 title: "あとがき"
+cssclass: zenn
+date: 2022-06-06
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: "ch_あとがき"
 ---
 
@@ -53,7 +58,6 @@ https://typescriptbook.jp/writing/pdr/0002-iterative-writing-process
 :::message
 ローカルサーバーを立ててブラウザで一々 HTML ファイルを噛ませたりするよりもシェルを使ってコマンドラインから JavaScript を実行した方が「個人的に」分かりやすいっていうのも理由として実は大きかったです(この本を書き出す前に fish shell とかの記事を量産していた経緯もあるので)。なので、一般化できるかは別として、上の togetter をまとめている tricken さんの意見に完全に同意しています。
 
-
 >ブラウザも実行環境の一種ではあるけど、**「ターミナルでコマンドラインとして実行するタイプの実行環境」で考えるのがめちゃ大事**。jsのそれにあたるnode.jsに早く辿りつきたかった。
 >([2020年でJavaScript学ぶならきっとブラウザ向けJSガン無視していきなり初手node.js（ただし暫く何も足さない）がいいんじゃないかというメモ - min.t (ミント)](https://min.togetter.com/Hqz7ufB)より引用)
 :::
@@ -98,6 +102,7 @@ Deno では設定なしで TypeScript が使えるのですが、TypeScript か�
 (😎 また感想などいただけると励みになります)
 
 # 宣伝
+
 せっかくなので、最後に自分が初めて翻訳に関わったツールである Obisidian について宣伝しておきます。
 
 最近は忙しくてあまりドキュメントなどの保守ができていませんが、個人のためのナレッジベース(PKM: Personal Knowlege Base)を作るモダンなマークダウンメモツールである Obsidian を是非使ってみてください(ちなみに Electron で開発されており、モバイルも含めてクロスプラットフォームで使えます)。
@@ -109,4 +114,3 @@ Obsidian についての紹介記事はこちらになります。
 https://zenn.dev/estra/articles/ohzflow-zenn-hugo-obsidian
 
 この本を書いたり、非同期処理についての学習をするのにも非常に役立ちました。Zenn との相性もかなり高いのでぜひとも使ってみて広げてください。控えめに言って最高です👍
-

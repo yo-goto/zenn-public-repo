@@ -1,6 +1,11 @@
 ---
 title: "Promise コンストラクタと Executor 関数"
-aliases: [ch_Promise コンストラクタと Executor 関数]
+cssclass: zenn
+date: 2022-04-21
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_Promise コンストラクタと Executor 関数
 ---
 
 # このチャプターについて
@@ -442,4 +447,3 @@ https://qiita.com/suin/items/a44825d253d023e31e4d
 https://typescriptbook.jp/reference/functions/function-expression-vs-arrow-functions
 
 以降、Promise インスタンスを返す関数や async/await を使った非同期関数などが登場しますが、このアロー関数を使って定義する場合があるので注意してください。
-

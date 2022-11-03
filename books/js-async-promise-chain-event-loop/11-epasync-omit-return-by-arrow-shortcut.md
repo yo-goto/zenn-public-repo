@@ -1,6 +1,11 @@
 ---
 title: "アロー関数で return を省略する"
-aliases: [ch_アロー関数で return を省略する]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_アロー関数で return を省略する
 ---
 
 # このチャプターについて
@@ -120,4 +125,3 @@ console.log("🦖 [3] Sync");
 🦖 [3] Sync
 👦 [last] Resolved value: 1st Promise
 ```
-

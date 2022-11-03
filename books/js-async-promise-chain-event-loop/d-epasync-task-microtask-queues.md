@@ -1,6 +1,11 @@
 ---
 title: "タスクキューとマイクロタスクキュー"
-aliases: [ch_タスクキューとマイクロタスクキュー]
+cssclass: zenn
+date: 2022-05-06
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_タスクキューとマイクロタスクキュー
 ---
 
 # このチャプターについて
@@ -20,6 +25,7 @@ https://zenn.dev/qnighy/articles/345aa9cae02d9d
 https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 
 # イベントループとはそもそも何？
+
 『What the heck is the event loop anyway?』の動画で、イベントループの概略自体はつかめていると思いますが、その定義から考えていきます。
 
 >To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
@@ -456,4 +462,3 @@ Promise chain や async/await、Promise-based API などについては Promise 
 "タスク連鎖" や "マイクロタスク連鎖" は筆者が作成したただの造語ですが(本質的な部分を捉えるために考えた言葉です)、このようにイメージができるとイベントループのメンタルモデルが盤石になり、頭の中で処理順番がどうなるか想起できるようになると思います。
 
 ここで語った内容も含めて「非同期処理」の全体については『[総括 - 非同期処理のまとめ](y-epasync-conclusion)』のチャプターで再度まとめておきますので安心してください。
-

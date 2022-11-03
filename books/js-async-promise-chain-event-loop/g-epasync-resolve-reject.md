@@ -1,14 +1,21 @@
 ---
 title: "resolve 関数と reject 関数の使い方"
-aliases: [ch_resolve 関数と reject 関数の使い方]
+cssclass: zenn
+date: 2022-05-06
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_resolve 関数と reject 関数の使い方
 ---
 
 # このチャプターについて
+
 『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターでも少し触れましたが、`resolve()` メソッドは `reject()` メソッドよりも複雑なので使い方に気をつける必要があります。
 
 このチャプターでは、`new Promise(executor)` で使用する Executor 関数の引数である `resolve()` 関数と `reject()` 関数の注意点について解説していきます。
 
 # resolve や reject ではコールバック関数の実行は止まらない
+
 次のコードの様に `Promise()` コンストラクタに渡すコールバックである executor 関数内において、`resolve()` や `reject()` を呼び出しただけでは関数の実行は終わらないことに注意してください。
 
 ```js
@@ -42,7 +49,6 @@ promise
 ```
 
 `resolve()` や `reject()` 関数でコールバックの実行が止まらないということは次のようなことができてしまいます。
-
 
 ```js
 // whichState.js
@@ -108,6 +114,7 @@ promise
 また、Promise chain において、`then()` メソッドに登録したコールバック関数も従っている Promise インスタンスの状態が変化した場合にたった一度だけ呼び出されます。それゆえ、一番最初に呼び出される `resolve()` や `reject()` 以外はまったく何も起きませんし、効果もありません。
 
 # Promise コンストラクタにおける例外発生
+
 ただし、`throw new Error()` をコールバックの中で行った場合にも、それ以降のコードが実行されないことに注意してください。
 
 そして、`Promise()` コンストラクタでの処理で例外が発生した場合は、自動的に Promise が reject されて例外がキャッチされます。従って、例外が発生したその Promise インスタンスは `reject()` 関数を呼び出したのと同じように拒否状態となります。
@@ -135,6 +142,7 @@ promise
 ```
 
 # Promise コンストラクタ関数内の返り値は無視される
+
 重要なこととして、`new Promise(executor)` のコールバック executor 関数では、`return` による**返り値そのものは無視されます**。従って、次のような Promise を返す関数から返ってくるのはあくまで `resolve()` された値を持つ Promise インスタンスであり、`return` された値は持っていません。
 
 ```js
@@ -190,6 +198,7 @@ returnPromise()
 ```
 
 # Promise インスタンスで resolve する
+
 ある Promise インスタンスで、別の Promise インスタンスを resolve してみたいと思います。
 
 Promise インスタンスで resolve を試みると、resolve するのに使用した Promise インスタンスの履行値や拒否理由が伝達されます。
@@ -261,4 +270,3 @@ error: Uncaught (in promise) 🥦 promise1の拒否理由
 
 参考
 https://www.saurabhmisra.dev/promises-in-javascript-resolved-promise-fates
-

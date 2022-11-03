@@ -1,6 +1,10 @@
 ---
-date: 2022-06-16
 title: "第１章 - API を提供する環境と実行メカニズム"
+cssclass: zenn
+date: 2022-06-16
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
 alieases: [EPAsync 第１章]
 ---
 
@@ -27,4 +31,3 @@ https://www.youtube.com/watch?v=8aGhZQkoFbQ
 - [V8 エンジンについて](e-epasync-v8-engine)
 - [コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)
 - [それぞれのイベントループ](c-epasync-what-event-loop)
-

@@ -1,6 +1,11 @@
 ---
 title: "Promise の静的メソッドと並列化"
-aliases: [ch_Promise の静的メソッドと並列化]
+cssclass: zenn
+date: 2022-06-26
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_Promise の静的メソッドと並列化
 ---
 
 # このチャプターについて
@@ -492,7 +497,6 @@ Promise.all([
 - `Promise.allSettled()` を使用するのは、複数の非同期処理の絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用されます。
 - `Promise.all()` を使用するのは、複数の非同期処理の絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合にはより適切。
 
-
 ## Promise.race vs Promise.any
 
 複数の Promise 処理すべてには興味がなく、対象となるものの内のどれか１つの Promise インスタンスが Settled になるかどうかに興味があり、履行か拒否には興味がない場合には `Promise.race())` を使用します。履行されたものに興味があり、最初に履行したものを取り出したい場合には `Promise.any()` を使用します。この２つのメソッドも複数の Promise 処理を合成して並列化しますが、１つのものが条件を満たした時点で他の処理については考える必要がなくなり、完了、つまり返り値の Promise インスタンスが履行状態となります。
@@ -550,4 +554,3 @@ Promise.any(promises)
 // 300msで履行
 // 処理終了
 ```
-

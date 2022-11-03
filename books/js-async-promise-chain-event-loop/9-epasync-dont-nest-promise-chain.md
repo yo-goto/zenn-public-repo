@@ -1,6 +1,11 @@
 ---
 title: "Promise chain はネストさせない"
-aliases: [ch_Promise chain はネストさせない]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_Promise chain はネストさせない
 ---
 
 # このチャプターについて
@@ -345,4 +350,3 @@ console.log('🦖 [4] Sync');
 ```
 
 Promise chain はこのようにネストさせずに流れを見やすくします。
-

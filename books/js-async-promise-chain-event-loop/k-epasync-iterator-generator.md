@@ -1,7 +1,11 @@
 ---
 title: "イテレータとイテラブルとジェネレータ関数"
-aliases: [ch_イテレータとイテラブルとジェネレータ関数]
-tags: [" #JavaScript/async  "]
+cssclass: zenn
+date: 2022-07-18
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_イテレータとイテラブルとジェネレータ関数
 ---
 
 # このチャプターについて
@@ -1250,7 +1254,6 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 
 型定義についてより具体的に見ていきましょう。
 
-
 `Generator<T = unknown, TReturn = any, TNext = unknown>` というようにジェネリクス型としてインターフェイスで定義されてるので、この `T`、`TReturn`、`TNext` はそれぞれ型引数です。何を指定するかは以下のようになっています。
 
 - `T` : `yield` する値の型
@@ -1444,4 +1447,3 @@ async function* asyncGen(
 ```
 
 ジェネレータ関数など使う機会がそこまで多くないかもしれませんが、ビルトインメソッドやビルトインオブジェクトの型定義などを調べて理解するプロセスが分かったと思うので、こういった見方で他のビルトインの型定義も理解できるはずです(型定義についてはもちろん JavaScript での書き方を正しく知っておくことも重要です)。
-

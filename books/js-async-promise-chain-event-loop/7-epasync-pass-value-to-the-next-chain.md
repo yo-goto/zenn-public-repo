@@ -1,6 +1,11 @@
 ---
 title: "Promise chain で値を繋ぐ"
-aliases: [ch_Promise chain で値を繋ぐ]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_Promise chain で値を繋ぐ
 ---
 
 # このチャプターについて
@@ -204,4 +209,3 @@ returnPromise("🐵 1st Promise", "[2]")
 
 console.log("🦖 [3] MAINLINE(End): Sync");
 ```
-

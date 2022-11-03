@@ -1,14 +1,22 @@
 ---
-date: 2022-06-16
 title: "第２章 - Promise インスタンスと連鎖"
+cssclass: zenn
+date: 2022-06-16
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
 alieases: [EPAsync 第３章]
 ---
 
 # この章について
 
-第２章では Promise インスタンスと Promise chain について見ていきます。非同期処理の処理予測を行うためのメンタルモデルを構築する上で基礎となる Promise chain について具体的なコードを実行して非同期処理の実行順序を予測できるように訓練していきます。
+第２章では Promise インスタンスと Promise chain について見ていきます。Promise chain は非同期処理の処理予測を行うためのメンタルモデルを構築する上で基礎となる非常に重要な概念です。Promise chain の具体的なコード実行を通じて非同期処理の実行順序を予測できるようにこの章で訓練していきます。
 
-[第１章](sec-01-epasync)の内容が難しい場合にはこちらの章から始めるのも良いかもしれません。この本の執筆経緯的にもこの章の内容をはじめに書いています。この章の内容を学ぶことで、[第３章](sec-03-epasync)の async/await を理解できるようになります。
+この章の内容をしっかり学ぶことで、[第３章](sec-03-epasync)の async/await を理解できるようになります。
+
+:::message
+この本の執筆経緯的にも Promise chain についての解説である第２章をはじめに執筆しており難易度としては簡単なので、[第１章](sec-01-epasync)の内容が難しい場合には第２章から読み始めるのも一つの手です。
+:::
 
 # チャプター
 
@@ -26,4 +34,3 @@ alieases: [EPAsync 第３章]
 - [catch メソッドと finally メソッド](h-epasync-catch-finally)
 - [古い非同期 API を Promise でラップする](12-epasync-wrapping-macrotask)
 - [イベントループは内部にネストしたループがある](13-epasync-loop-is-nested)
-

@@ -1,6 +1,11 @@
 ---
 title: "Promise の基本概念"
-aliases: [ch_Promise の基本概念]
+cssclass: zenn
+date: 2022-05-03
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_Promise の基本概念
 ---
 
 # このチャプターについて
@@ -71,4 +76,3 @@ Unwrapping については『[resolve 関数と reject 関数の使い方](g-epa
 動詞や名詞などの意味合いの違いは次の Stack overflow の解答がわかりやすいです。上の図もこちらに記載されているものを参考に作成しました。
 
 https://stackoverflow.com/a/29269515/18328461
-

@@ -1,6 +1,11 @@
 ---
 title: "コールバックで副作用となる非同期処理"
-aliases: [ch_コールバックで副作用となる非同期処理]
+cssclass: zenn
+date: 2022-04-17
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_コールバックで副作用となる非同期処理
 ---
 
 # このチャプターについて
@@ -741,4 +746,3 @@ const getDataByAwait = async () => {
 // top-level await ならこのスコープで取り出せる
 const myLocalValue = await returnPromise().then(result => result.data);
 ```
-

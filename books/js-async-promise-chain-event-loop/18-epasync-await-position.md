@@ -1,6 +1,11 @@
 ---
 title: "await 式の配置による制御"
-aliases: [ch_await 式の配置による制御]
+cssclass: zenn
+date: 2022-06-30
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_await 式の配置による制御
 ---
 
 # このチャプターについて
@@ -931,4 +936,3 @@ raceの結果: 100[ms]のタイマー
 「投げっぱなしの処理」があると、このように「副作用」的に意図した結果とならなくなりますが、AbortController API と AbortSignal API によって race させている他の処理をキャンセルすることで統制できます。
 
 ちなみに、これは `Promise.any()` による競争でも同じ話が言えます。
-

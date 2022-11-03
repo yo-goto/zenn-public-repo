@@ -1,6 +1,11 @@
 ---
 title: "非同期 API と環境"
-aliases: [ch_非同期 API と環境]
+cssclass: zenn
+date: 2022-05-06
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: ch_非同期 API と環境
 ---
 
 # このチャプターについて
@@ -682,4 +687,3 @@ console.log("上の処理の完了を待たずにコンソールに出力");
 >**ブロッキングするなら同期。同期でないなら非同期。実行タイミングがコード配置とズレてしまうものも非同期とみなす。**
 
 とりあえずはこの考え方に乗ることで物事をシンプルにして理解できます。
-

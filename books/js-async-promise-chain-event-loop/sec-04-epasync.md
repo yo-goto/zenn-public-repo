@@ -1,6 +1,10 @@
 ---
-date: 2022-07-13
 title: "第４章 - 制御と型注釈"
+cssclass: zenn
+date: 2022-07-13
+modified: 2022-11-02
+AutoNoteMover: disable
+tags: [" #type/zenn/book  #JavaScript/async "]
 alieases: [EPAsync 第４章]
 ---
 
@@ -17,4 +21,3 @@ alieases: [EPAsync 第４章]
 - [反復処理の制御](19-epasync-async-loop)
 - [イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)
 - [TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)
-
