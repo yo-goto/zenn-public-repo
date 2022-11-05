@@ -10,9 +10,9 @@ aliases: ch_反復処理の制御
 
 # このチャプターについて
 
-このチャプターでは、非同期処理の反復処理、あるいは Promise が絡む反復処理について、await 式の配置と絡めてどのように反復処理をしていくかを考えて行きましょう。
+このチャプターでは、非同期処理の反復処理、あるいは Promise が絡む反復処理について、await 式の配置と絡めてどのように反復処理をしていくかを考えて行きます。
 
-このチャプターでは主に JSON Placeholder という Fake API サービスを利用して複数のリソースからデータフェッチなどをすることを考えます。
+主に JSON Placeholder という Fake API サービスを利用して複数のリソースからデータフェッチなどをすることを考えます。
 
 https://jsonplaceholder.typicode.com
 
@@ -26,11 +26,11 @@ const urls = [
 ];
 ```
 
-反復処理といっても、やりたいことの意図に応じてデータフェッチを並列化したり、順序付けして逐次実行する２つのケースが考えられます。
+反復処理では、やりたいことの意図に応じてデータフェッチを並列化したり、順序付けして逐次実行する２つのケースが考えられます。
 
 # (1) 順番に興味がないので並列化して効率化
 
-まずは、順番に興味がない場合ですが、各 URL からリソースを取得する順番に意味が無ければ、`Promise.all()` などでまとめて上げて内部的に非同期 API を並列化することで効率化させます。データフェッチ以外のケースでも、非同期の複数タスクの間に依存関係や順序関係が無いならこのようなやり方で行います。
+まずは順番に興味がない場合ですが、各 URL からリソースを取得する順番に意味が無ければ、`Promise.all()` などでまとめて上げて内部的に非同期 API を並列化することで効率化を図ることができます。データフェッチ以外のケースでも、非同期の複数タスクの間に依存関係や順序関係が無いならこのようなやり方で行います。
 
 この場合は配列の `map()` メソッドなどを使って Promise の配列を作り、`await Promise.all()` ですべての完了をまってから次に何かを行うようにします。各 async 関数は Promise の配列を作る過程で並列的に起動させます。実際にはもちろん１つずつ起動させますが、内部的に利用される非同期 API が起動後に環境によってバックグラウンドで時間的に継続処理されるので実質的に「並列化」されることになります。
 
@@ -45,7 +45,7 @@ const urls = [
 
 ```js:並列化を分けない
 (async () => {
-  const promises = urls.map(url => 
+  const promises = urls.map(url =>
     fetch(url)
       .then(response => response.json())
       .then(json => console.log(json))
@@ -55,7 +55,7 @@ const urls = [
 })();
 ```
 
-どの程度の粒度の操作を単位にして await するかを考える必要がありますが、通常は共通の操作を async 関数にまとめて try-catch に閉じ込めるなどを行うのが一般的ではないでしょうか。async 関数内の処理は独立させてそのレイヤーでの実行と完了の順番が担保されるようにします。
+どの程度の粒度の操作を単位にして await するかを考える必要がありますが、通常は共通の操作を async 関数にまとめて try-catch に閉じ込めるなどを行うのが一般的であると思われます。async 関数内の処理は独立させてそのレイヤーでの実行と完了の順番が担保されるようにします。
 
 ```js
 async function fetchThenConsole(url) {
@@ -74,7 +74,7 @@ async function fetchThenConsole(url) {
 })();
 ```
 
-配列の `map()` ではなく `forEach()` を使おうとするのは一般的にアンチパターンとなります。`map()` メソッド内部で `return` した async 関数や非同期 API の完了を把握するための返ってくる Promise インスタンスが `forEach()` の場合だと返り値自体無いので取得しずらくなります。さらに `forEach()` のコールバックで await 式を使おうとするのは Syntax Error になりますし、それを回避してコールバックそのものを async 関数下しようとすると意図しない挙動になります。
+配列の `map()` ではなく `forEach()` を使おうとするのは一般的にアンチパターンとなります。`map()` メソッド内部で `return` した async 関数や非同期 API の完了を把握するための返ってくる Promise インスタンスが `forEach()` の場合だと返り値自体無いので取得しずらくなります。さらに `forEach()` のコールバックで await 式を使おうとするのは Syntax Error になりますし、それを回避してコールバックそのものを async 関数にしようとすると意図しない挙動になります。
 
 とはいえ、先に Promise を入れる配列を宣言しておいて、`push()` メソッドで async 関数や非同期 API を chain して起動した時に返ってくる Promise インスタンスを格納しておくことで await 式で評価できるようになります。
 
@@ -90,7 +90,7 @@ async function fetchThenConsole(url) {
 })();
 ```
 
-一般的には `forEach()` のコールバックで非同期が絡む作業の実行をやるとミスが起きるのであまり使われないのではないでしょうか。`map()` の方が分かりやすいですし。`forEach()` 使用時のミスについては後で解説します。
+一般的には `forEach()` のコールバックで非同期が絡む作業の実行をやるとミスが起きる上に、`map()` の方がわかりやすいので `map()` の使用が推奨されます。`forEach()` を使用することによって起こるミスについては後で解説します。
 
 # (2) 順番に興味があるので順序付けて実行
 
@@ -105,7 +105,7 @@ async function fetchThenConsole(url) {
 ```js
 (async () => {
   for (let i = 0; i < urls.length; i++) {
-    await fetchThenConsole(urls[i]); 
+    await fetchThenConsole(urls[i]);
     // fetchThenConsole() は async 関数
     console.log(`${i + 1}個目のフェッチが完了しました`);
   }
@@ -189,7 +189,7 @@ const result = array.reduce((
   previousValue, // 前回のコールバックから返却された値
   currentItem, // 現在の配列要素
   index, // 現在の配列のインデックス
-  array, // 走査対象の配列そのもの 
+  array, // 走査対象の配列そのもの
   ) => {
   // なんらかの処理
   // 次のイテレーションの previousValue として使われる値を返却する
@@ -202,7 +202,7 @@ const result = array.reduce((
 ```js
 const startVal = 1000;
 const array = [1, 2, 3];
-const result = array.reduce((previousValue, currentItem) => { 
+const result = array.reduce((previousValue, currentItem) => {
   return previousValue + currentItem;
   // 最初 1000 + 1 = 1001 が返却される
   // 次 1001 + 2 = 1003 が返却される
@@ -215,7 +215,7 @@ console.log(result); //=>  1006
 
 ```js
 const array = [1, 2, 3];
-const result = array.reduce((previousValue, currentItem) => { 
+const result = array.reduce((previousValue, currentItem) => {
   return previousValue + currentItem;
   // 最初 1 + 2 = 3 が返却される
   // 次 3 + 3 = 6 が返却されて終わり

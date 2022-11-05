@@ -2,10 +2,12 @@
 title: "それぞれのイベントループ"
 cssclass: zenn
 date: 2022-05-06
-modified: 2022-11-02
+modified: 2022-11-05
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_それぞれのイベントループ
+aliases:
+  - ch_それぞれのイベントループ
+  - イベントループの疑似コード
 ---
 
 # このチャプターについて

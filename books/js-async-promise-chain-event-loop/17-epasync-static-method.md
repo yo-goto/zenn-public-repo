@@ -10,7 +10,7 @@ aliases: ch_Promise の静的メソッドと並列化
 
 # このチャプターについて
 
-「いつ await すべきか分からない」というのが、一般的に async/await での難しいポイントになりますが、すでに Promise インスタンスを評価して値を取り出すという await 式の特徴については学んでいるため、「なぜ await するべきか」についてはそこまで難しくは感じないでしょう。難しさを感じるとしたら、await の配置(タイミング)による効率化やループなどに関わる部分だと思います。
+「いつ await すべきか分からない」というのが一般的に async/await での難しいポイントになりますが、すでに Promise インスタンスを評価して値を取り出すという await 式の特徴については学んでいるため、「なぜ await するべきか」についてはそこまで難しくは感じないでしょう。難しさを感じるとしたら、await の配置(タイミング)による効率化やループなどに関わる部分だと思います。
 
 このチャプターでは await 式の配置による制御の話題へ入る前に、テーマの１つとして Promise の静的メソッド(Static method)による複数の Promise-based API の処理の並列化を考えます。すでに非同期 API については色々と見てきましたが、すでにお馴染み Promise-based API である `fetch()` メソッドを使用してもう一度 await 式について考えを巡らせておきます。
 
@@ -18,11 +18,11 @@ aliases: ch_Promise の静的メソッドと並列化
 
 『[同期 API とブロッキング](f-epasync-synchronus-apis)』のチャプターで解説したとおり、Promise chain や async/await は非同期 API を起点にした一連の作業の「実行と完了」の順番を担保するものです。そして、非同期 API のおかげで同時に複数のことができますが、競合するような複数の非同期 API 処理は同時に行ってはならなず、順番を決めて行うようにすべきであるということを解説しました。
 
-その一方で、関連性のない複数の作業については同時に行っても問題は無いということも言いました。
+その一方で関連性のない複数の作業については同時に行っても問題は無いということも述べました。
 
 つまり、関連のない複数操作を並列化(非同期 API 処理は同時に複数実行できる)させて、効率化を測ることができます。複数の Promise 処理を１つずつ await するのではなく、処理を起動した後で `Promise.allSettled()` などの静的メソッドでまとめて await する(`await Promise.allSettled([...promises])`)ことで並列化できます。
 
-ただし、非同期 API の特徴を語らずに「並列化」を語ることはできません。「非同期 API を使うことで同時に複数のことができる」ということを知っていないと、この静的メソッドでの「並列化」が何を意味しているのか分からず、並行や非同期と混同して混乱することになります。
+ただし、非同期 API について理解した上で「並列化」という言葉の意味を考える必要があります。「非同期 API を使うことで同時に複数のことができる」ということを知っていないと、この静的メソッドでの「並列化」が何を意味しているのか分からず、並行や非同期と混同して混乱することになります。
 
 例えば、async 関数そのものを並列化していると思っていても、実際に並列化できるのは内部的に含まれている非同期 API の処理で API 以外の付随する処理はイベントループによって並行(concurrent)に実行されるので「並列化」という言葉が意味していることを勘違いしてしまうケースが多いです。この場合には、「並列」と「非同期」と「並行」の複数概念が同時に必要となり、俯瞰的に組み合わせて理解する必要があります。メインスレッドでは常になんらかの処理(コールバック関数など)が実行されており、複数の非同期 API 処理は環境がバックグラウンドで行っていることを忘れないようにしてください。
 
@@ -48,7 +48,7 @@ aliases: ch_Promise の静的メソッドと並列化
   // ある非同期 API 処理が終わっていないときも別の JS コードや他の非同期 API 処理が実行できる
 
   // まとめて await させることで時間短縮して効率化
-  await Promise.allSettled(promises); 
+  await Promise.allSettled(promises);
   // 上の処理の完了が担保されてからコンソールにメッセージを出力
   console.log("⭐️ 並列化した複数フェッチがすべて終了しました");
 })();
@@ -85,8 +85,8 @@ Promise.all([
 ]).then(([res1, res2, res3]) => {
     console.log("⭐️ 並列化した複数フェッチがすべて終了しました");
     const promises = [
-      res1.text(), // promise-based API 
-      res2.text(), // promise-based API 
+      res1.text(), // promise-based API
+      res2.text(), // promise-based API
       res3.text(), // promise-based API
     ];
     return Promise.all(promises);
@@ -129,7 +129,7 @@ async function fetchThenConsole(url) {
 
 ```js
 // 並列起動(実際には１つずつ起動しているが起動後にバックグラウンドで処理が時間的に継続するので並列化となる)
-fetch(urls[0]); 
+fetch(urls[0]);
 fetch(urls[1]);
 fetch(urls[2]);
 ```
@@ -309,12 +309,12 @@ Promise.all([
 
 ```js
 Promise.all([
-  promise1, // promiseAPI(),  
-  promise2, // fetch(url), 
-  promise3, // asyncFunc(), 
-  promise4, // (async () => {})(), 
-  promise5, // promiseChain(), 
-  promise6, // Promise.resolve().then().then(), 
+  promise1, // promiseAPI(),
+  promise2, // fetch(url),
+  promise3, // asyncFunc(),
+  promise4, // (async () => {})(),
+  promise5, // promiseChain(),
+  promise6, // Promise.resolve().then().then(),
 ]).then(() => console.log("すべてのPromise処理が履行しました"));
 ```
 
