@@ -34,7 +34,7 @@ async 関数は「非同期関数」と呼ばれることが多々あります�
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function
 
-ただし、『[非同期 API と環境](f-epasync-asynchronous-apis#非同期という概念)』のチャプターで解説したとおり、`setTimeout()` などの非同期 API も非同期関数と呼ばれることがあります。両者は同じ呼称で同一視すべきではないのでこの本では「非同期関数」と言ったら async 関数のことを指すようにしていますが、実は**非同期関数という呼称自体も学習において誤解の原因となることがあります**(それについては後述します)。ちなみに、MDN 英語版での非同期関数のページでは "asynchrnous function" という言葉ではなく、"async function" という用語で語られています(この２つは若干ニュアンスが違うので受ける印象も異なってきます)。
+ただし、『[非同期 API と環境](f-epasync-asynchronous-apis#非同期という概念)』のチャプターで解説したとおり、`setTimeout()` などの非同期 API も非同期関数と呼ばれることがあります。両者は同じ呼称で同一視すべきではないのでこの本では「非同期関数」と言ったら async 関数のことを指すようにしていますが、実は**非同期関数という呼称自体も学習において誤解の原因となることがあります**(それについては後述します)。ちなみに、MDN 英語版での非同期関数のページでは "asynchronous function" ではなく "async function" という用語がタイトルになっています(この２つは若干ニュアンスが違うので受ける印象も異なってきます)。
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 

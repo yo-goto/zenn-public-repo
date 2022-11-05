@@ -265,7 +265,7 @@ https://2018.jsconf.eu/speakers/erin-zimmer-further-adventures-of-the-event-loop
     // Task2 ->
   });
   // Task1 ->
-<script>
+</script>
 ```
 
 このように `<script>` タグ内の JavaScript はまとめてタスク(Task1)として処理されます。イベントリスナーに登録されてるコールバックはイベントが発火した時点で別のタスク(Task2)として処理されます。

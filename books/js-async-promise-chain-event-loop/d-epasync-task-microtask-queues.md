@@ -318,7 +318,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#ta
 
   console.log("Sync process End: [Global Execution Context]");
   // task1 -->
-<script>
+</script>
 ```
 
 チャプター『[コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)』で説明したようにコードが実行開始されると、グローバルコンテキスト(Global Execution Context)が作成されて、コールスタック(Call stack)上にそのグローバルコンテキストが積まれます。そして、同期処理の関数呼び出しなどはすべてこのグローバルコンテキストに積まれることで実行されていきます。同期処理部分がすべて実行されて、このグローバルコンテキストが破棄された後で、ある時間にキーダウンイベントなどをブラウザが受け取ると、Web API がそのイベントを受け取って `addEventListener()` で登録しておいたコールバックを別のタスクとしてイベント用のタスクキューへと送ります。

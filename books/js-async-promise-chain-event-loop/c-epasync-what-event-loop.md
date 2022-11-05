@@ -178,10 +178,10 @@ while (queue.waitForMessage()) {
 
 ```html
 <script>
-  // <- 最初の Task 
+  // <- 最初の Task
   const foo = bar;
   foo.doSomething();
-  
+
   document.body.addEventLlistener('keydown', (event) => {
     // <- イベントを受信したら発火される Task
     if (event.key === 'PageDown') {
@@ -191,7 +191,7 @@ while (queue.waitForMessage()) {
     // イベントを受信したら発火される Task ->
   });
   // 最初の Task ->
-<script>
+</script>
 ```
 
 `addEventListener()` は Web API のメソッドであり、そのコールバック部分はブラウザがキーダウンイベントを受け取った際に、別のタスクとして実行されます。つまり、タスクキュー(Task queue)へと送られた後に、コールスタックへと運ばれて JavaScript として実行されるわけです。
