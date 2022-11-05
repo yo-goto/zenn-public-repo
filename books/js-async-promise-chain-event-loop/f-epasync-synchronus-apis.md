@@ -20,6 +20,10 @@ https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
 
 その一方で、Node 環境や Deno 環境では意図的にブロッキングを起こすようにデザインされた「**同期 API(Synchronous API)**」が存在しています。`console.log()` などの Web APIs(Web Platform APIs) は置いておいて、そういった API は名前の最後が `Sync` で終わるケースのものとして提供されています(I/O 関連の処理など)。
 
+:::message
+Node や Deno では HTTP やファイルシステムにアクセスする機能を API として提供していることがわかります。これらの API は OS の機能を利用するので OS API(Operation System API) と呼ばれることがあります。
+:::
+
 例えば、ファイルへの書き込みを行う API ですが、名前は安直に `writeFile` として Node でも Deno でも大体同じ機能で提供されています。Deno は Node の後発なので、**ユーザー側は Node にすでに存在している API 機能が Deno にもあるだろうと期待して探します**。そして実際にあります。ただし、`writeFile` と言っても上で説明したような非同期型と同期型が以下のように存在しており、同期型は両方とも `Sync` で名前が終わっていることが分かります。
 
 :::message
