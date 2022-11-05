@@ -187,7 +187,7 @@ https://youtu.be/cCOL7MC4Pl0
 
 https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/
 
-実際にそれを証明するためのコードとして、次のようなコードが考えられます。`pause` 関数によって同期的にブロッキングした後に `setTimeout()` 関数と `Promise.resolve().then()` で競争させて、どちらのコールバックが先に実行されるかを検証します。
+実際にそれを証明するためのコードとして、次のようなコードが考えられます。`pause` 関数によって同期的にブロッキングした後に `setTimeout()` 関数と `Promise.resolve().then()` を競争させて、どちらのコールバックが先に実行されるかを検証します。
 
 ```js:blockingTimer.js
 // メインスレッドを同期的に指定時間だけブロッキングする関数
@@ -199,7 +199,7 @@ function pause(milliseconds, order) {
   console.log(`${order} Timer exit after ${milliseconds}`);
 }
 
-console.log("[1] Sync process");
+console.log("[1] Sync");
 
 // 環境にタイマー処理を委任する
 setTimeout(() => {
@@ -220,16 +220,16 @@ Promise.resolve().then(() => {
 pause(3000, "[2]");
 // pause() が完了した時点で環境に委任したタイマーの時間は経過している
 
-console.log("[3] Sync process");
+console.log("[3] Sync");
 ```
 
-3000 ミリ秒の間メインスレッドをブロッキングしている最中に環境へ委任したタイマー処理自体は完了しているはずなので、コールバックが実行できるようになっているはずです。そしてステップ(1)がステップ(2)と同じでなければ、ステップ(2)の「単一のタスクの実行」を行うはずなので `console.log("[3] Sync process");` が終わった時点で次に実行されるのは `console.log("[4? - 5] setTimeout[0ms] finished");` であり、`"[4? - 5] setTimeout[0ms] finished"` という文字列がログに順番として出力されるはずですが、実際の出力は次のようになります。
+3000 ミリ秒の間メインスレッドをブロッキングしている最中に環境へ委任したタイマー処理自体は完了しているはずなので、コールバックが実行できるようになっているはずです。そしてステップ(1)がステップ(2)と同じでなければ、ステップ(2)の「単一のタスクの実行」を行うはずなので `console.log("[3] Sync");` が終わった時点で次に実行されるのは `console.log("[4? - 5] setTimeout[0ms] finished");` であり、`"[4? - 5] setTimeout[0ms] finished"` という文字列がログに順番として出力されるはずですが、実際の出力は次のようになります。
 
 ```sh
 ❯ deno run blockingTimer.js
-[1] Sync process
+[1] Sync
 [2] Timer exit after 3000
-[3] Sync process
+[3] Sync
 [6? - 4] then callback
 [4? - 5] setTimeout[0ms] finished
 [5? - 6] setTimeout[1000ms] finished

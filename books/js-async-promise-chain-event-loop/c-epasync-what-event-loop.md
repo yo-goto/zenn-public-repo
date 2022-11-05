@@ -793,7 +793,13 @@ fs.readFile("./test.md", () => {
 >When delay is larger than 2147483647 or less than 1, the delay will be set to 1. Non-integer delays are truncated to an integer.
 >([Timers | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/timers.html#settimeoutcallback-delay-args) より引用)
 
-絶対に１ミリ秒以上かかります。`queueMicrotask()` API コールバックそのままタスクキューに送るという処理ではなく、あくまで遅延時間が経過したらコールバックをタスクキューに送るというタイマーである訳です。
+ということで、絶対に１ミリ秒以上かかります。
+
+ちなみに WHATWG 仕様には次のように、正確に指定した時間通りの実行が保証されるわけではないと記載されています。
+
+> This API does not guarantee that timers will run exactly on schedule. Delays due to CPU load, other tasks, etc, are to be expected.
+
+また、`setTimeout()` は `queueMicrotask()` のようにコールバックをそのままキューに送るという処理ではなく、あくまで遅延時間が経過したらコールバックをタスクキューに送るという処理なので注意してください。
 
 同期処理やマイクロタスクを使った処理が１つでもあると、この結果は大抵 Phase の順番通りになり、Timers のコールバックの方が先に処理されます。とはいえ、タイマーなので不定性がつきまといます。
 
