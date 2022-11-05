@@ -56,6 +56,7 @@ WHATWG の仕様において、イベントループは１つ以上のタスク�
 
 > 2. If the [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop) has a [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) with at least one [runnable](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task), then:
 >     1. Let taskQueue be one such [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue), chosen in an [implementation-defined](https://infra.spec.whatwg.org/#implementation-defined) manner.
+>
 > (https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model より)
 
 この Processing model がイベントループが実際に行うことです。この本ではすべての詳細を触れずに擬似コードで解説するので、より詳しく知りたい場合にはこの Processing model を参照してください。
@@ -97,7 +98,7 @@ List は上で述べたように Stack や Queue や Set である可能性が�
 仕様ではタスクキューがその名前とは裏腹に Queue ではなく Set である理由が述べられています。
 
 > [Task queues](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) are [sets](https://infra.spec.whatwg.org/#ordered-set), not [queues](https://infra.spec.whatwg.org/#queue), because the [event loop processing model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) grabs the first [_runnable_](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) from the chosen queue, instead of [dequeuing](https://infra.spec.whatwg.org/#queue-dequeue) the first task.
-> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より)
+> (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より)
 
 イベントループの Processing model では、上で述べたようにまずは複数ありえるタスクキューの中から環境定義の方法で一つのタスクキューを選択しますが、そのタスクキューの中から最初のタスクを選択(dequeuing)するのではなく、実行可能(runnable)という状態である最初のタスクを選択して処理します。
 
@@ -108,7 +109,7 @@ Set は List でもあるので順序がありますが、その中で実行可�
 ## タスク
 
 > Tasks encapsulate algorithms that are responsible for such work as:
-> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より)
+> (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より)
 
 タスクキューにプッシュされるタスク(Task)は、以下のような作業の責務を持つアルゴリズムをカプセル化するものです。
 
@@ -121,7 +122,7 @@ Set は List でもあるので順序がありますが、その中で実行可�
 そして、タスクには供給されるタスクソース(Task source)というものがあり、似た種類のタスクは同一のタスクキューへとプッシュされます。
 
 > Essentially, task sources are used within standards to separate logically-different types of tasks, which a user agent might wish to distinguish between. Task queues are used by user agents to coalesce task sources within a given event loop.
-> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+> (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より引用)
 
 タスクキューで見てきた通り、タスクキューは１つ以上存在できるので、もちろんタスクキューにタスクを供給してくる供給源であるタスクソースも複数あります。上記に上げたタスクはそれぞれ異なるタスクソースで、異なるタスクキューにタスクを供給すると考えてよいでしょう。
 
