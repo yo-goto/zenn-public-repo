@@ -2,7 +2,7 @@
 title: "タスクキューとマイクロタスクキュー"
 cssclass: zenn
 date: 2022-05-06
-modified: 2022-11-02
+modified: 2022-11-05
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_タスクキューとマイクロタスクキュー
@@ -28,22 +28,37 @@ https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 
 『What the heck is the event loop anyway?』の動画で、イベントループの概略自体はつかめていると思いますが、その定義から考えていきます。
 
->To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+> To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 イベントループとは、**イベントやユーザーインタラクション、スクリプト、レンダリング、ネットワーキングなどをまとめ上げて調整するために**、ユーザーエージェントが使用しなくてはならないものであると述べられています。
 
+イベントループは以下で解説するタスクキューとマイクロタスクキューを所有しています。
+
 # タスクキュー
 
->An event loop has one or more task queues. A task queue is a set of tasks.
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+:::message alert
+この項目には筆者の勘違いがあったので、修正致しました。
 
-イベントループは１つ以上のタスクキュー(Task queue)を所有し、タスクキューはタスク(Task)の集合である、ということが述べられています。重要なこととして、タスクキューは１つではなく、複数存在してもよいといことが分かります。
+コミュニティ用のスクラップで指摘していただいた点について修正しています。詳しい修正点については[スクラップ](https://zenn.dev/link/comments/1b145433c5b5df)の方を確認してください。
+:::
 
->Task queues are sets, not queues, because the event loop processing model grabs the first runnable task from the chosen queue, instead of dequeuing the first task.
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+WHATWG の仕様において、イベントループは１つ以上のタスクキュー(Task queue)を所有していると述べられています。つまり、**タスクキューは１つではなく、複数個存在してもよい**ということが分かります。
 
-複数のタスクキューはキューではなく集合となっていることがわかります。イベントループは複数のタスクキューから１つのタスクキューを選び、そのキューの先頭にある最も古いタスクを処理しなくてはいけませんが、複数あるタスクキューからどのタスクキューを選ぶかというのは実装側、つまり環境が考慮します。
+> An [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop) has one or more task queues.
+> (https://html.spec.whatwg.org/multipage/webappapis.html#task-queue より)
+
+タスクキュー(Task queue)とは、文字通りタスクのキューであるとここでは考えてください。ただし、後述しますが、仕様上のタスクキューは厳密にはキュー(Queue)ではなくセット(Set)というデータ型です。
+
+ここで重要な話として、イベントループは複数のタスクキューから実行可能なタスクが少なくとも一つ以上あるようなタスクキューを一つ選択した上で、そのキュー内に存在する最初の実行可能なタスクを処理しなくてはいけませんが、複数あるタスクキューからどのタスクキューを選ぶかというのは **実装側(つまり環境側)が定義する方法** で考慮します。
+
+これについては、WHATAG 仕様の [Processing model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) の項目にて述べられています。
+
+> 2. If the [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop) has a [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) with at least one [runnable](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task), then:
+>     1. Let taskQueue be one such [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue), chosen in an [implementation-defined](https://infra.spec.whatwg.org/#implementation-defined) manner.
+> (https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model より)
+
+この Processing model がイベントループが実際に行うことです。この本ではすべての詳細を触れずに擬似コードで解説するので、より詳しく知りたい場合にはこの Processing model を参照してください。
 
 :::message
 Node 環境では、フェーズ(Phase)という概念があり、６つあるフェーズのそれぞれに結びついたタスクキュー(あるいは準ずるもの)からタスクを処理するようになっています。Node 環境では、この６つあるフェーズを１つずつ選択して順番にフェーズを経過して一周することでイベントループの一周となります。つまり、タスクキューが６つあるとして考えられます(実際にタスクキューとして機能するのは４つ程度)。６つあるタスクキューは順番に選択されて順番に処理されます。
@@ -51,10 +66,49 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 ブラウザ環境では、レンダリングエンジンである Blink がタスクキューの選択を行っており、それぞれのタスクキューの優先度を振り分けています。
 :::
 
-# タスク
+## タスクキューとは Set である
 
->Tasks encapsulate algorithms that are responsible for such work as:
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+タスクキューは名前上はタスクのキュー(Queue)となっていますが、実際にはタスクの Set である、ということが仕様では述べられています。
+
+> A [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) is a [set](https://infra.spec.whatwg.org/#ordered-set) of [tasks](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task).
+> (https://html.spec.whatwg.org/multipage/webappapis.html#task-queue より)
+
+ここで言う Queue や Set とは特定のデータ構造(data strature)のことです(以前の解説では、この点についてただの集合であると誤解していました)。データ構造については WHATAG 仕様に定義されています。具体的には HTML Standard ではなく、それらの仕様が基づく用語や概念を定義している [Infra Standard](https://infra.spec.whatwg.org/) というページに記載されています。
+
+Queue や Set は Infra Standard の [5. Data structures](https://infra.spec.whatwg.org/#data-structures) の項目に記載されています。このページを見ると、Queue や Set とは List という仕様におけるデータ型の一つであることがわかります。List には他にも Stack というデータ構造が定義されています。
+
+- List
+  - Stack
+  - Queue
+  - Set
+
+ここで、List とは以下のようなものであると定義されていて、有限個の要素からなる順序付きの列からなる仕様の型であることが述べられています。日本語訳版だと「[有限個の アイテム （ item ）からなる有順序連列](https://triple-underscore.github.io/infra-ja.html#lists)」となっています。
+
+> A list is a specification type consisting of a finite ordered sequence of items.
+> (https://infra.spec.whatwg.org/#lists より)
+
+List は上で述べたように Stack や Queue や Set である可能性があります。言い換えれば、これらのデータ構造は List の派生となります。
+
+問題となるタスクキューは Queue ではなく、Set です。この Set は List でもあるので、順序が付いた列です。定義的には、順序集合([ordered set](https://ja.wikipedia.org/wiki/%E9%A0%86%E5%BA%8F%E9%9B%86%E5%90%88#%E5%89%8D%E9%A0%86%E5%BA%8F%E3%83%BB%E5%8D%8A%E9%A0%86%E5%BA%8F%E3%83%BB%E5%85%A8%E9%A0%86%E5%BA%8F))と呼ばれるものであり、同一のアイテムを重複してもたない List です。
+
+> Some [lists](https://infra.spec.whatwg.org/#list) are designated as ordered sets. An ordered set is a [list](https://infra.spec.whatwg.org/#list) with the additional semantic that it must not contain the same [item](https://infra.spec.whatwg.org/#list-item) twice.
+> (https://infra.spec.whatwg.org/#sets より)
+
+仕様ではタスクキューがその名前とは裏腹に Queue ではなく Set である理由が述べられています。
+
+> [Task queues](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) are [sets](https://infra.spec.whatwg.org/#ordered-set), not [queues](https://infra.spec.whatwg.org/#queue), because the [event loop processing model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) grabs the first [_runnable_](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) from the chosen queue, instead of [dequeuing](https://infra.spec.whatwg.org/#queue-dequeue) the first task.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より)
+
+イベントループの Processing model では、上で述べたようにまずは複数ありえるタスクキューの中から環境定義の方法で一つのタスクキューを選択しますが、そのタスクキューの中から最初のタスクを選択(dequeuing)するのではなく、実行可能(runnable)という状態である最初のタスクを選択して処理します。
+
+Set は List でもあるので順序がありますが、その中で実行可能(runnable)かつ順序的に最初のタスクが処理されるということです。ということで、ほとんど Queue と同じような処理となりますが、実行可能ではないものはとばされてしまうということになります。
+
+ちなみに後で解説するマイクロタスクキュー(Microtask queue)は厳密に Queue なので注意してください。
+
+## タスク
+
+> Tasks encapsulate algorithms that are responsible for such work as:
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より)
 
 タスクキューにプッシュされるタスク(Task)は、以下のような作業の責務を持つアルゴリズムをカプセル化するものです。
 
@@ -66,8 +120,8 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 
 そして、タスクには供給されるタスクソース(Task source)というものがあり、似た種類のタスクは同一のタスクキューへとプッシュされます。
 
->Essentially, task sources are used within standards to separate logically-different types of tasks, which a user agent might wish to distinguish between. Task queues are used by user agents to coalesce task sources within a given event loop.
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+> Essentially, task sources are used within standards to separate logically-different types of tasks, which a user agent might wish to distinguish between. Task queues are used by user agents to coalesce task sources within a given event loop.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 タスクキューで見てきた通り、タスクキューは１つ以上存在できるので、もちろんタスクキューにタスクを供給してくる供給源であるタスクソースも複数あります。上記に上げたタスクはそれぞれ異なるタスクソースで、異なるタスクキューにタスクを供給すると考えてよいでしょう。
 
@@ -86,7 +140,7 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 - `setTimeout()` API
 - `setInterval()` API
 
-## setTimeout API
+### setTimeout API
 
 タスクベースの非同期 API である、`setTimeout()` は、`setTimeout(cb, delay)` というように指定した遅延時間が経過した後に、引数のコールバック関数をタスクとしてタスクキューに発行します。
 
@@ -112,7 +166,7 @@ function setTimeout(
 
 https://doc.deno.land/deno/stable/~/setTimeout
 
-## setInvertal API
+### setInvertal API
 
 タスクベースの非同期 API である、`setInterval()` は、`setInverval(cb, interval)` というように指定したインターバル時間が経過するたびに、引数のコールバック関数をタスクとしてタスクキューに発行します。
 
@@ -142,11 +196,11 @@ https://doc.deno.land/deno/stable/~/setInterval
 
 続いて仕様にはイベントループが所有するものについてもいくつか定義されています。理解する上で重要な部分について触れていきます。
 
->Each event loop has **a currently running task**, which is either a task or null. Initially, this is null. It is used to handle reentrancy. 
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用、太字は筆者強調)
+> Each event loop has **a currently running task**, which is either a task or null. Initially, this is null. It is used to handle reentrancy.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用、太字は筆者強調)
 
->Each event loop has **a microtask queue**, which is a queue of microtasks, initially empty. A microtask is a colloquial way of referring to a task that was created via the queue a microtask algorithm. 
->([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用、太字は筆者強調)
+> Each event loop has **a microtask queue**, which is a queue of microtasks, initially empty. A microtask is a colloquial way of referring to a task that was created via the queue a microtask algorithm.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用、太字は筆者強調)
 
 イベントループは Currnetly running task (現在実行中のタスク) を持ち、さらに**単一の**マイクロタスクキュー(Microtask queue)を持つというように定義されていますね。
 
@@ -154,9 +208,11 @@ https://doc.deno.land/deno/stable/~/setInterval
 
 https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5
 
->1. Let task be the event loop's currently running task. ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
+> 1. Let task be the event loop's currently running task.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
 
->task could be a microtask. ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
+> task could be a microtask.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
 
 イベントループの開始時にタスクをイベントループの Currently running task として扱いますが、この場合マイクロタスクであってもよいと書かれているので、現在実行中のタスクとマイクロタスクも Currnetly running task として考慮できます。従って、本質的にはタスクとマイクロタスクも同じ扱いで、コールスタック上にプッシュされた実行コンテキストであると理解できます。
 
@@ -164,7 +220,8 @@ https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-mod
 
 次に、マイクロタスクキューについて深堀りしましょう。まずマイクロタスクキュー(Microtask queue)はタスクキューではありません。
 
->The microtask queue is not a task queue. ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+> The microtask queue is not a task queue.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
 
 上で見たとおり、イベントループはマイクロタスクキューを１つ持つといっていますね。
 
@@ -178,12 +235,12 @@ Deno 環境では、基本的にはマイクロタスクキューが１つです
 
 マイクロタスクキューはタスクキューよりも優先的に処理されます。単一タスクが終わったら、すべてのマイクロタスクを処理するというのはそういうことです。node の `nextTickQueue` にあるのもマイクロタスクですが、単一タスクが終わったら必ずマイクロタスクキューにあるすべてのマイクロタスクが処理されます。マイクロタスクキューで重要なことはこれだけです。
 
-# マイクロタスク
+## マイクロタスク
 
 マイクロタスクキューに送られるマイクロタスクについて考えてみます。MDN のドキュメントにはこう書かれています。
 
->A microtask is a short function which is executed after the function or program which created it exits and only if the JavaScript execution stack is empty, but before returning control to the event loop being used by the user agent to drive the script's execution environment.
->([Using microtasks in JavaScript with queueMicrotask() - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)より引用)
+> A microtask is a short function which is executed after the function or program which created it exits and only if the JavaScript execution stack is empty, but before returning control to the event loop being used by the user agent to drive the script's execution environment.
+> ([Using microtasks in JavaScript with queueMicrotask() - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)より引用)
 
 マイクロタスク自体は、それを呼び出し関数やプログラムが実行された後に**コールスタックが空になった後にのみ実行される短い関数**です。API や Promise の `then()` メソッドなどの引数に渡すコールバック関数がマイクロタスクとして扱われます。
 
@@ -194,7 +251,7 @@ Deno 環境では、基本的にはマイクロタスクキューが１つです
 - `queueMicrotask()` API
 - `MutationObserver()` API
 
-## queueMicrotask API
+### queueMicrotask API
 
 `queueMicrotask(cb)` は引数のコールバック関数をマイクロタスクとしてマイクロタスクキューに発行しますが、**戻り値は何もない**ことに注意してください。つまり、`Promise.then()` のように、Promise インスタンスを返しません。イベントループにおけるマイクロタスクの挙動などをテストしたり、その他のコールバックが処理される前のクリーンアップなどに役に立ちます。
 
@@ -241,7 +298,7 @@ function queueMicrotask(func: VoidFunction): void;
 
 https://doc.deno.land/deno/stable/~/queueMicrotask
 
-## MutationObserver API
+### MutationObserver API
 
 `MutationOberver()` コンストラクタ関数は MutationObserver API という大きなインタフェースの一部として提供されています。DOM 内の要素を監視して、何かの変更があった際にコールバックをマイクロタスクとして発火する Web API です。この API が発行するマイクロタスクは Promise とは関係なく、`MutationObserver()` 自体からも Promise ではなくオブザーバインスタンスが返ってくるので注意してください。
 
@@ -274,15 +331,15 @@ https://ja.javascript.info/mutation-observer
 
 https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth
 
->A task is any JavaScript scheduled to be run by the standard mechanisms such as initially starting to execute a program, an event triggering a callback, and so forth. Other than by using events, you can enqueue a task by using `setTimeout()` or `setInterval()`.
->([上記ページ](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth)より引用)
+> A task is any JavaScript scheduled to be run by the standard mechanisms such as initially starting to execute a program, an event triggering a callback, and so forth. Other than by using events, you can enqueue a task by using `setTimeout()` or `setInterval()`.
+> ([上記ページ](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth)より引用)
 
 タスク(Task)とは、**プログラムの実行開始**や**イベントがコールバックをトリガーする**などの**標準的なメカニズムにより実行されるようにスケジューリングされた JavaScript のこと**である、と述べられています。
 
 :::message
 MDN のドキュメントでは、以下のような旨が述べられています。
 
->JavaScript とは、もともとがシングルスレッドの言語であり、それが開発された時代ではその選択がベターなものでしたが、時代と共にコンピュータの性能そのものが向上したことや、JavaScript が様々なアプリケーションにて使われるようになったことから、シングルスレッド言語の限界を超えるための機能が必要とされるようになりました。**`setTimeout()` や `setInterval()` といった Web API スケジューリング機能をブラウザ環境の機能として提供することから始まり**、徐々にタスクスケジューリングとマルチスレッドアプリケーション開発を可能とさせる強力な機能を提供するようになりました。
+> JavaScript とは、もともとがシングルスレッドの言語であり、それが開発された時代ではその選択がベターなものでしたが、時代と共にコンピュータの性能そのものが向上したことや、JavaScript が様々なアプリケーションにて使われるようになったことから、シングルスレッド言語の限界を超えるための機能が必要とされるようになりました。**`setTimeout()` や `setInterval()` といった Web API スケジューリング機能をブラウザ環境の機能として提供することから始まり**、徐々にタスクスケジューリングとマルチスレッドアプリケーション開発を可能とさせる強力な機能を提供するようになりました。
 
 つまり、Promise によるマイクロタスクなどの機能よりも前に導入された標準的なメカニズム(古いタイプのメカニズム)であることが示唆されています。
 :::
@@ -374,7 +431,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#ta
 ```
 
 コンソールでこのように出力されます。
-![](/images/js-async/img_doubleScriptTag.jpg)
+
+![output_doubleScriptTag](/images/js-async/img_doubleScriptTag.jpg)
 
 **結局のところ、JavaScript コードはすべてタスクかマイクロタスクになります**。タスクとして実行される JavaScript コードは、このように script であるか、非同期のコールバック関数のどちらかになります。
 
