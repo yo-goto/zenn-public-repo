@@ -56,14 +56,14 @@ API は ECMAScript とはほとんど関係なく環境が独自に定義して�
 
 重要なので再確認しますが、API というのは**環境に特有の機能**であり、ECMAScript の一部ではありません。
 
->It turns out that the way we farm out work in JavaScript is **to use environment-specific functions and APIs. And this is a source of great confusion in JavaScript**.
+> It turns out that the way we farm out work in JavaScript is **to use environment-specific functions and APIs. And this is a source of great confusion in JavaScript**.
 >
->**JavaScript always runs in an environment**.
+> **JavaScript always runs in an environment**.
 >
->Often, that environment is the browser. But it can also be on the server with NodeJS. But what on earth is the difference?
+> Often, that environment is the browser. But it can also be on the server with NodeJS. But what on earth is the difference?
 >
->The difference – and this is important – is that the browser and the server (NodeJS), functionality-wise, **are not equivalent. They are often similar, but they are not the same**.
->([Async Await JavaScript Tutorial – How to Wait for a Function to Finish in JS](https://www.freecodecamp.org/news/async-await-javascript-tutorial/) より引用、太字は筆者強調)
+> The difference – and this is important – is that the browser and the server (NodeJS), functionality-wise, **are not equivalent. They are often similar, but they are not the same**.
+> ([Async Await JavaScript Tutorial – How to Wait for a Function to Finish in JS](https://www.freecodecamp.org/news/async-await-javascript-tutorial/) より引用、太字は筆者強調)
 
 この「環境」ですが、例えば、この本を見ている Chrome や Safari などのブラウザも環境の１つです。ブラウザ環境以外には、Node や Deno などのサーバーサイドで使えるランタイム環境などもあげられます。
 
@@ -97,12 +97,14 @@ JavaScript は元々ブラウザ環境でのみ使われる言語だったので
 
 ただし、ブラウザ環境とランタイム環境で Web API(ランタイム環境では Web Platform API と呼ばれることがある) の互換性がある程度あったとしても、ブラウザ環境に無いような API(Deno なら Deno globals) についてはそれぞれのランタイム環境が独自に定義しているために基本的には互換性はありません。Node や Deno ではそういった API の名前や設計思想の異なる点がありますからね。
 
-そして、最近になってランタイム環境間での Web API の互換性を高める目的で [WinterCG(Web-interoperable Runtimes Community Group)](https://wintercg.org)という団体が発足しました。サーバーランタイム(Deno / Node.js) とエッジランタイム(Cloudflare Workers / Deno)の環境間で Web Platform API (`fetch()` や `setTimeout()` や `queueMicrotask()` など)の互換性を高めようというのが目的です。開発者は今後、より互換性の高い JavaScript で開発ができるようになると期待できます。
+実際に Node のドキュメントで、`setTimeout()` はブラウザ API を模倣しているが、[微妙に実装が異なる](https://nodejs.org/en/docs/guides/timers-in-node/#controlling-the-time-continuum-with-node-js))ということが述べられています。
 
->The ultimate goal of the group is to promote **runtimes supporting a comprehensive unified API surface** that JavaScript developers can rely on **regardless of the runtime they are using**: be it browsers, servers, embedded applications, or edge runtimes.
+ちなみに、最近になってランタイム環境間での Web API の互換性を高める目的で [WinterCG(Web-interoperable Runtimes Community Group)](https://wintercg.org)という団体が発足しました。サーバーランタイム(Deno / Node.js) とエッジランタイム(Cloudflare Workers / Deno)の環境間で Web Platform API (`fetch()` や `setTimeout()` や `queueMicrotask()` など)の互換性を高めようというのが目的です。開発者は今後、より互換性の高い JavaScript で開発ができるようになると期待できます。
+
+> The ultimate goal of the group is to promote **runtimes supporting a comprehensive unified API surface** that JavaScript developers can rely on **regardless of the runtime they are using**: be it browsers, servers, embedded applications, or edge runtimes.
 >
->The members of the group want to provide a space to better coordinate between browser vendors and other implementors on how Web Platform APIs can be best implemented and used outside of browsers.
->([What are we trying to do? | WinterCG](https://wintercg.org/faq#what-are-we-trying-to-do) より引用、太字は筆者強調)
+> The members of the group want to provide a space to better coordinate between browser vendors and other implementors on how Web Platform APIs can be best implemented and used outside of browsers.
+> ([What are we trying to do? | WinterCG](https://wintercg.org/faq#what-are-we-trying-to-do) より引用、太字は筆者強調)
 
 # 「非同期処理」の目的と仕組み
 
@@ -197,14 +199,14 @@ consle.log("[1] 実際には時間を図りつつ他のことができる");
 :::message
 次の freecodecamp の記事からの引用を見てもらえばわかると思いますが、例えばジャグリングをしていて両手がふさがっている最中に新しくボールを追加しようとしたら、誰かに手伝ってもらう必要があります。一人では同時に複数のことができなくても、誰かに作業を委任(delegate)して手伝ってもらうことで、効率よく作業をすすめることができます。
 
->Let's circle back to the juggling example. What would happen if you wanted to add another ball? Instead of six balls, you wanted to juggle seven balls. That's might be a problem.
+> Let's circle back to the juggling example. What would happen if you wanted to add another ball? Instead of six balls, you wanted to juggle seven balls. That's might be a problem.
 >
->You don't want to stop juggling, because it's just so much fun. But you can't go and get another ball either, because that would mean you'd have to stop.
+> You don't want to stop juggling, because it's just so much fun. But you can't go and get another ball either, because that would mean you'd have to stop.
 >
->The solution? **Delegate the work to a friend or family member**. They aren't juggling, so they can go and get the ball for you, then toss it into your juggling at a time when your hand is free and you are ready to add another ball mid-juggle.
->(中略)
->**It turns out that it is the environment that takes on the work, and the way to get the environment to do that work, is to use functionality that belongs to the environment**. For example fetch or setTimeout in the browser environment.
->([Async Await JavaScript Tutorial – How to Wait for a Function to Finish in JS](https://www.freecodecamp.org/news/async-await-javascript-tutorial/) より引用、太字は筆者強調)
+> The solution? **Delegate the work to a friend or family member**. They aren't juggling, so they can go and get the ball for you, then toss it into your juggling at a time when your hand is free and you are ready to add another ball mid-juggle.
+> (中略)
+> **It turns out that it is the environment that takes on the work, and the way to get the environment to do that work, is to use functionality that belongs to the environment**. For example fetch or setTimeout in the browser environment.
+> ([Async Await JavaScript Tutorial – How to Wait for a Function to Finish in JS](https://www.freecodecamp.org/news/async-await-javascript-tutorial/) より引用、太字は筆者強調)
 
 そして、JavaScript の文脈で言えば、作業を手伝ってくれるのが「環境」というわけです。実際にジャグリングしているのは「Runtime(JavaScript エンジン)」であり、その作業を手伝ってくれるのが「環境(のどこかのコンポーネント)」です。
 :::
@@ -232,8 +234,8 @@ https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-
 
 そもそも最初に見てもらった『What the heck is the event loop anyway?』では「**一度に複数のことができるのはブラウザがランタイム以上のものであるからで、ブラウザから提供される Web APIs は実質的にスレッドである**」ということが実は語られていました。
 
->Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. **The reason we can do things concurrently is that the browser is more than just the Runtime**. So, remember this diagram, **the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads**, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in.
->(以下の書き起こしページから引用、太字は筆者強調)
+> Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. **The reason we can do things concurrently is that the browser is more than just the Runtime**. So, remember this diagram, **the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads**, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in.
+> (以下の書き起こしページから引用、太字は筆者強調)
 
 https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html
 
@@ -443,18 +445,18 @@ console.log("[2] 🦖 sync");
 
 「非同期処理(というテーマ)」を実現するための機構として、タスクは古い方式で、マイクロタスクは新しい方式です。マイクロタスクは Promise 処理のために導入された新しい機構であり、`fetch()` API はこのマイクロタスクの仕組みに立脚した非同期 API となります。`fetch()` は処理結果となる値を入れ込んだ Promise インスタンスを返してきます。これは **Promise-based API** と呼ばれるモダンな非同期 API の仕組みです。
 
->Many modern Web APIs are promise-based, including WebRTC, Web Audio API, Media Capture and Streams, and many more.
->([How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion) より引用)
+> Many modern Web APIs are promise-based, including WebRTC, Web Audio API, Media Capture and Streams, and many more.
+> ([How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion) より引用)
 
 MDN でも、非同期 API の理想は Promise インスタンスを返す関数(つまり、Promise-based API)であると示唆されています。
 
->理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります。顕著な例としては `setTimeout()` 関数があります。
->([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
+> 理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります。顕著な例としては `setTimeout()` 関数があります。
+> ([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
 
 実際、Node の後発であるモダンなランタイム環境である Deno では、基本的にすべての非同期アクションは Promise インスタンスを返します。Promise-based API を基軸に開発されている訳です。
 
->All async actions in Deno return a promise. Thus Deno provides different APIs than Node.
->([Introduction | Deno Manual](https://deno.land/manual/introduction#comparison-to-nodejs) より引用)
+> All async actions in Deno return a promise. Thus Deno provides different APIs than Node.
+> ([Introduction | Deno Manual](https://deno.land/manual/introduction#comparison-to-nodejs) より引用)
 
 それでは、非同期 API について一旦まとめておきましょう。
 
@@ -484,8 +486,8 @@ Promise-based API は Promise インスタンスを返すため、Promise を介
 
 このチャプターの締めとして、改めて「非同期」という概念を確認しておきます。インターネット上のどこを探してもフワフワしている概念なのですが、「非同期(asynchronous)」の概念が MDN でどのように説明されているかを見ると次のように記載されています。
 
->The term asynchronous refers to two or more objects or events not existing or happening at the same time (**or multiple related things happening without waiting for the previous one to complete**).
->([Asynchronous - MDN Web Docs Glossary: Definitions of Web-related terms | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Asynchronous) より引用、太字は筆者強調)
+> The term asynchronous refers to two or more objects or events not existing or happening at the same time (**or multiple related things happening without waiting for the previous one to complete**).
+> ([Asynchronous - MDN Web Docs Glossary: Definitions of Web-related terms | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Asynchronous) より引用、太字は筆者強調)
 
 上の文章は MDN の日本語版と英語版で解釈がなぜか食い違っているように思えるのでオリジナルの英語版を持ってきています。太字以外を見ないようにしてください(共通部分以外の前にある文は信頼できないですし、混乱することになるので)。「**複数の関連する事象が前の事象の完了を待たずに起きる**」というのが個人的には唯一信頼できる定義だと考えています。
 
@@ -493,8 +495,8 @@ Promise-based API は Promise インスタンスを返すため、Promise を介
 
 あるいは nodejs.dev での定義を見てみると次のように説明されています(この定義は話半分に聞いてください)。
 
->Asynchronous means that things can happen independently of the main program flow.
->([JavaScript Asynchronous Programming and Callbacks](https://nodejs.dev/learn/javascript-asynchronous-programming-and-callbacks) より引用)
+> Asynchronous means that things can happen independently of the main program flow.
+> ([JavaScript Asynchronous Programming and Callbacks](https://nodejs.dev/learn/javascript-asynchronous-programming-and-callbacks) より引用)
 
 なるほど、非同期(Asynchronous)とは「**メインのプログラムフローから独立して物事が起きうること**」とのことです。これも「複数の関連する処理が前の処理の完了を待たずに起きる」の言い換えに近いですね。
 

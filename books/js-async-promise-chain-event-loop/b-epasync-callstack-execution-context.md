@@ -22,14 +22,12 @@ aliases: ch_コールスタックと実行コンテキスト
 
 『What the heck is the event loop anyway?』の動画でみてもらったように、コールスタックには関数などが積まれているように見えますが、正確にはコールスタックに積まれるのは実行コンテキスト(Execution context)と呼ばれるものです。
 
-実行コンテキストとはなんでしょうか。ECMAScript 2023 の仕様 9.4 の項目をみてみます。
+実行コンテキストとはなんでしょうか。[ECMAScript 2023 の 9.4 Execution Context](https://tc39.es/ecma262/#sec-execution-contexts) の項目をみてみます。
 
-https://tc39.es/ecma262/#sec-execution-contexts
-
->**An execution context is a specification device that is used to track the runtime evaluation of code** by an ECMAScript implementation. **At any point in time, there is at most one execution context per agent that is actually executing code**. This is known as **the agent's running execution context**. All references to the running execution context in this specification denote the running execution context of the surrounding agent.
+> **An execution context is a specification device that is used to track the runtime evaluation of code** by an ECMAScript implementation. **At any point in time, there is at most one execution context per agent that is actually executing code**. This is known as **the agent's running execution context**. All references to the running execution context in this specification denote the running execution context of the surrounding agent.
 >
->**The execution context stack is used to track execution contexts**. **The running execution context is always the top element of this stack**. A new execution context is created whenever control is transferred from the executable code associated with the currently running execution context to executable code that is not associated with that execution context. **The newly created execution context is pushed onto the stack and becomes the running execution context**.
->([上記ページ](https://tc39.es/ecma262/#sec-execution-contexts)より引用、太字は筆者強調)
+> **The execution context stack is used to track execution contexts**. **The running execution context is always the top element of this stack**. A new execution context is created whenever control is transferred from the executable code associated with the currently running execution context to executable code that is not associated with that execution context. **The newly created execution context is pushed onto the stack and becomes the running execution context**.
+> ([ECMAScript® 2023 Language Specification](https://tc39.es/ecma262/#sec-execution-contexts) より引用、太字は筆者強調)
 
 引用で示されているように、実行コンテキスト(Execution context)はコードの実行時評価を追跡するために使用される機構であり、どの時点でも実際にコードを実行している実行コンテキストはエージェント(Agent)あたり最大で１つとなります。これはエージェントの実行中実行コンテキスト(**Agent's runninng execution context**)として知られています。
 
@@ -50,10 +48,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In
 V8 エンジン(JavaScript エンジン)がコードを受信すると、その JavaScript コードの変換と実行を処理するための特別な環境、つまり実行コンテキスト(Execution context)を作成します。実行コンテキストには、現在実行中のコードとその実行を支援するためのすべての情報が含まれており、実行コンテキストがコールスタックに積まれ、スタックの最上位要素である Running execution context となることで実際に実行が行われます。具体的には、コードはパーサーによって解析されて、変数と関数がメモリに格納されて、実行可能なバイトコードが生成されてからコードが実行されます。
 
 JavaScript のコードが実行されるとき、そのコードは実行コンテキスト(Execution context)内部で実行されます。コードが作成する実行コンテキストには３つの種類があります。
-
-:::message alert
-名称に揺れがあるのは、仕様で記載されているものと簡易的に呼ばれる通称名があるためで、どちらも記載しておきます。
-:::
 
 - (A) **Global Execution Context** (GEC): **グローバルコンテキスト(Global context)**。これはユーザーコードの本体(main body)を実行する際に作成される実行コンテキストです。つまり、JavaScript の関数の外側に存在するあらゆるコードは、それが実行される際にグローバルコンテキストが作成されます。
 - (B) **Functional Execution Context** (FEC): 関数実行コンテキストまたは関数コンテキストと呼ばれるコンテキストです。各関数は、それ自身の実行コンテキスト内で実行されます。この実行コンテキストは **ローカルコンテキスト(Local context)** とも呼ばれます。

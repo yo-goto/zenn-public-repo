@@ -79,9 +79,9 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 Queue や Set は Infra Standard の [5. Data structures](https://infra.spec.whatwg.org/#data-structures) の項目に記載されています。このページを見ると、Queue や Set とは List という仕様におけるデータ型の一つであることがわかります。List には他にも Stack というデータ構造が定義されています。
 
 - List
-  - Stack
-  - Queue
-  - Set
+  - Stack:
+  - Queue: ← マイクロタスクキュー
+  - Set: ← タスクキュー
 
 ここで、List とは以下のようなものであると定義されていて、有限個の要素からなる順序付きの列からなる仕様の型であることが述べられています。日本語訳版だと「[有限個の アイテム （ item ）からなる有順序連列](https://triple-underscore.github.io/infra-ja.html#lists)」となっています。
 
@@ -100,7 +100,7 @@ List は上で述べたように Stack や Queue や Set である可能性が�
 > [Task queues](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) are [sets](https://infra.spec.whatwg.org/#ordered-set), not [queues](https://infra.spec.whatwg.org/#queue), because the [event loop processing model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) grabs the first [_runnable_](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) from the chosen queue, instead of [dequeuing](https://infra.spec.whatwg.org/#queue-dequeue) the first task.
 > (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より)
 
-イベントループの Processing model では、上で述べたようにまずは複数ありえるタスクキューの中から環境定義の方法で一つのタスクキューを選択しますが、そのタスクキューの中から最初のタスクを選択(dequeuing)するのではなく、実行可能(runnable)という状態である最初のタスクを選択して処理します。
+イベントループの Processing model では、上で述べたようにまずは複数個ありえるタスクキューの中から環境定義の方法で一つのタスクキューを選択しますが、そのタスクキューの中から最初のタスクを選択(dequeuing)するのではなく、実行可能(runnable)という状態である最初のタスクを選択して処理します。
 
 Set は List でもあるので順序がありますが、その中で実行可能(runnable)かつ順序的に最初のタスクが処理されるということです。ということで、ほとんど Queue と同じような処理となりますが、実行可能ではないものはとばされてしまうということになります。
 
@@ -205,7 +205,7 @@ https://doc.deno.land/deno/stable/~/setInterval
 
 イベントループは Currnetly running task (現在実行中のタスク) を持ち、さらに**単一の**マイクロタスクキュー(Microtask queue)を持つというように定義されていますね。
 
-仕様の『spin the event loop』のところでは、次のように記載されています。
+仕様の『spin the event loop』の項目では、次のように記載されています。
 
 https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5
 
