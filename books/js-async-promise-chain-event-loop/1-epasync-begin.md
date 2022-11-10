@@ -18,12 +18,12 @@ aliases: ch_はじめに
 
 この本では、プロミスチェーン(Promise chain)とイベントループ(Event loop)という大きく２つのポイントから非同期処理について解説しています。学習経験から重要な情報に沿ってロードマップを再構成した作りとなっているので内容重視の解説順番となります。
 
-執筆目標としては「読者が**非同期処理の制御の流れを理解し、予測できるようになる**」ことを掲げています。また、**学習の過程で陥りがちなトラップや誤解**などについても実際の学習から得た知見で解説しているので、「非同期処理について学習してみたけど、やっぱり分からない」という方の誤解や勘違いを解きつつ「**非同期処理の謎を解明する**」ということも目標としています。
+執筆目標としては「読者が非同期処理の制御の流れを理解し、予測できるようになる」ことを掲げています。また、**学習の過程で陥りがちなトラップや誤解**などについても実際の学習から得た知見で解説しているので、「非同期処理について学習してみたけど、やっぱり分からない」という方の誤解や勘違いを解きつつ「非同期処理の謎を解明する」ということも目標としています。
 
 :::message
 **なぜ今更プロミスチェーンなのか？**
 
-非同期処理の解説であるのに「async/await」ではなく「プロミスチェーン」をあえてタイトルに入れているのは意味があります。というのも、直感に反して**非同期処理の主役は Promise であり**、非同期処理の動きを理解するための本質的な部分が **イベントループ上でのタスク・マイクロタスクの連鎖的な処理(chain)** であるからです。async/await で扱う Promise の性質を知るため、マイクロタスクが**連鎖的に処理**されることを理解するために、プロミスチェーン(Promise chain)が必要となります。
+非同期処理の解説であるのに「async/await」ではなく「プロミスチェーン」をあえてタイトルに入れているのは意味があります。というのも、直感に反して**非同期処理の主役は Promise であり**、非同期処理の動きを理解するための本質的な部分が **イベントループ上でのタスク・マイクロタスクの連鎖的な処理(chain)** であるからです。async/await で扱う Promise の性質を知るため、マイクロタスクが連鎖的に処理されることを理解するために、プロミスチェーン(Promise chain)が必要となります。
 
 Promise について詳しくなることで非同期処理を柔軟に書けるようにもなります。急がば回れということで Promise をじっくりと解説していきます。
 :::
@@ -175,7 +175,7 @@ hello world!
 hello world!
 ```
 
-小さいスニペットをコマンドライン実行してテストするというこの方法を筆者は「[コマンドライン JavaScript](x-epasync-epilogue#コマンドラインから始める-javascript)」と呼んでいます。ちなみに、この方法に利用できる環境は MDN では「**JavaScript Shell**」と呼ばれています。
+小さいスニペットをコマンドライン実行してテストするというこの方法を筆者は「[コマンドライン JavaScript](x-epasync-epilogue#コマンドラインから始める-javascript)」と呼んでいます。ちなみに、この方法に利用できる環境は MDN では「JavaScript Shell」と呼ばれています。
 
 > A JavaScript shell allows you to quickly test snippets of JavaScript code without having to reload a web page. They are extremely useful for developing and debugging code.
 > ([JavaScript technologies overview - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/JavaScript_technologies_overview#shells) より引用)

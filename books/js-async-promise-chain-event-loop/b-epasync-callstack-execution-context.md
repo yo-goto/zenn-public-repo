@@ -187,7 +187,7 @@ console.log("[2] 🦖 MAINELINE: End [Global Execution Context]");
 // simpleMicroTask.js
 console.log("[1] 🦖 MAINELINE: Start [Global Execution Context]");
 Promise.resolve()
-  .then(function microTaskFunc() => {
+  .then(function microTaskFunc() {
     console.log("[3] 👦 MICRO: [Functional Execution Context (microTaskFunc)]");
   }); // 直ちにマイクロタスクキューへマイクロタスクを発行する
 console.log("[2] 🦖 MAINELINE: End [Global Execution Context]");

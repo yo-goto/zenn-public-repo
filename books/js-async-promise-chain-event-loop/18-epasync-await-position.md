@@ -317,13 +317,13 @@ import bigStep from "bigStep";
 
 # 投げっぱなしの処理
 
-上でみた `bigStep()` のような async 関数で別の async 関数である `middleStep()` を await しな、つまり await を内部で行わない async 関数だと何が起きるでしょうか。
+上でみた `bigStep()` のような async 関数で別の async 関数である `middleStep()` を await しない、つまり await を内部で行わない async 関数だと何が起きるでしょうか。
 
 ```diff js
 async function bigStep() {
 -  await middleStep();
-+  middleStep();
 -  await middleStep();
++  middleStep();
 +  middleStep();
 }
 ```
@@ -419,8 +419,8 @@ import noAwait from "./noAwait.js";
 ```diff js
 export default async function noAwait() {
 - asyncFn();
-+ await asyncFn();
 - asyncFn();
++ await asyncFn();
 + await asyncFn();
   console.log("🤪 ２つのasyncFnの処理は完了しました?");
 }
@@ -685,15 +685,15 @@ function pTimer(time, order) {
 
 投げっぱなしになっている処理は気持ち悪いので `Promise.reace()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぐため一番最初に完了したもの以外を停止させます。
 
-一旦 Promise 処理から離れると `setTimeout()` API の停止には対応する `clearTimeout()` API というものを利用することで実現できます。`setTimeout()` からは戻りとしてタイマーの ID である数値が返ってくるのでそれを `clearTimeout()` に入力として渡すことでタイマーをキャンセルできます。
+一旦 Promise 処理から離れると、`setTimeout()` API は `clearTimeout()` API を利用することで停止を実現できます。`setTimeout()` からは戻りとしてタイマーの ID である数値が返ってくるのでそれを `clearTimeout()` に入力として渡すことでタイマーをキャンセルできます。
 
 ```js
 const timerId = setTimeout(() => console.log("🥺 これは出力されないよ"), 1000);
 // すぐにタイマーをキャンセルするのでコールバックが実行されない
-clearTimeout(timerId); 
+clearTimeout(timerId);
 ```
 
-`clearTimeout()` も環境の提供する API 機能なので、これを起動することで環境が管理しているタイマーに対して「止めなさい」とキャンセルさせるように司令できます。Web API(Web Platform API)である `setTimeout()` によって並列的にタイマーが図られているわけですが、タスクキューへコールバックを送る前にそのタイマーを破棄させることでタスクキューへと送るのをこれでやめさせます。
+`clearTimeout()` も環境の提供する API 機能なので、これを起動することで環境が管理しているタイマーに対して「止めなさい」とキャンセルさせるように司令できます。Web API(Web Platform API)である `setTimeout()` によって並列的に時間が図られているわけですが、タスクキューへコールバックを送る前にそのタイマーを破棄させることでタスクキューへと送るのをやめさせます。
 
 というのが基本的なタイマーのキャンセルですが、素の状態で使うのは色々と面倒なので別のキャンセル用の機構と組み合わされたものを利用します。
 

@@ -401,7 +401,7 @@ console.log(
 
 話を戻しますが、`fetch()` API は Promise-based な非同期 API であり、`fetch()` メソッドからは Promise インスタンスが処理の結果として返ってきます。そして、`await fetch(url).then(res => res.text())` のように Promise chain を await 式で評価する場合でも、結局は Promise chain から返ってくる Promise インスタンスを評価していますね。
 
-本質的には async/await と Promise chain は全く同じです。Promise のシステムに基づき Promise インスタンスを扱います。Promise インスタンスを介してマイクロタスクを連鎖的に発行し、それらがイベンループ上で連続的に処理されることで逐次処理を実現します。
+本質的には async/await と Promise chain は全く同じです。Promise のシステムに基づき Promise インスタンスを扱います。Promise インスタンスを介してマイクロタスクを連続で発行し、それらがイベンループ上で連鎖的に処理されることで逐次処理を実現します。
 
 ということで、以下のコードで async/await と Promise chain の両方を書いていますが、意味はほほとんど同じです。
 

@@ -256,11 +256,11 @@ Deno.writeTextFileSync(path3, inputData);
 
 並列化や順序付けにまつわる話を見てきましたが、ここで Promise の静的メソッドについての基本的な話に戻ります。
 
-`Promise.all()` や `Promise.allSettled()` などの Promise オブジェクトの静的メソッドは Promise インスタンスの配列を引数に受け取ります(厳密には Iterable オブジェクト)。そして複数の Promise 処理を「合成(Composition)」することから、"**Promise combinators**" と呼ばれています。
+`Promise.all()` や `Promise.allSettled()` などの Promise オブジェクトの静的メソッドは Promise インスタンスの配列を引数に受け取ります(厳密には Iterable オブジェクト)。そして複数の Promise 処理を「合成」することから、"**Promise combinator**" と呼ばれています。
 
 https://v8.dev/features/promise-combinators
 
-分かりやすいものが `Promise.all()` です。この静的メソッドは Promise インスタンスの配列を受けとり、自身も Prosmise インスタンスを返します。配列内のすべての Promise インスタンスが履行状態となった場合に `Promise.all()` から返る Promise インスタンスも履行状態となります。
+最も分かりやすいものが `Promise.all()` です。この静的メソッドは Promise インスタンスの配列を受けとり、自身も Prosmise インスタンスを返します。配列内のすべての Promise インスタンスが履行状態となった場合に `Promise.all()` から返る Promise インスタンスも履行状態となります。
 
 ```js
 Promise.all([pormise1, promise2, promise3])
@@ -297,10 +297,10 @@ Promise.all(promiseArray)
 ```js
 Promise.all([
   promiseAPI(),  // Promise が返る
-  fetch(url), // Promise が返る
-  asyncFunc(), // Promise が返る
+  fetch(url),    // Promise が返る
+  asyncFunc(),   // Promise が返る
   (async () => {})(), // Promise が返る
-  promiseChain(), // Promise が返る
+  promiseChain(),     // Promise が返る
   Promise.resolve().then().then(), // Promise が返る
 ]).then(() => console.log("すべてのPromise処理が履行しました"));
 ```
@@ -423,13 +423,15 @@ Promise.allSettled(promises)
   .catch((err) => console.error(err))
   .finally(() => console.log("処理終了"));
 
-// ❯ deno run relAllSettled.js
-// [
-//   { status: "rejected", reason: "200msで拒否" },
-//   { status: "rejected", reason: "100msで拒否" },
-//   { status: "fulfilled", value: "300msで履行" }
-// ]
-// 処理終了
+/*
+❯ deno run relAllSettled.js
+[
+  { status: "rejected", reason: "200msで拒否" },
+  { status: "rejected", reason: "100msで拒否" },
+  { status: "fulfilled", value: "300msで履行" }
+]
+処理終了
+*/
 ```
 
 `Promise.allSettled()` から返ってくる Promise インスタンスは次のような値を内部にもちます。await 式で評価したり、then のコールバックの入力となる値はこのようになっています。
@@ -477,9 +479,11 @@ Promise.all(promises)
   .catch((err) => console.error(err))
   .finally(() => console.log("処理終了"));
 
-// ❯ deno run relAll.js
-// 100msで拒否
-// 処理終了
+/*
+❯ deno run relAll.js
+100msで拒否
+処理終了
+*/
 ```
 
 こちらも次のように１つでもそのような Promise があると `Promise.allSettled()` から返る Promise インスタンスは履行・拒否のどちらの状態にも移行しません。
@@ -527,9 +531,11 @@ Promise.race(promises)
   .catch((err) => console.error(err))
   .finally(() => console.log("処理終了"));
 
-// ❯ deno run relRace.js
-// 100msで拒否
-// 処理終了
+/*
+❯ deno run relRace.js
+100msで拒否
+処理終了
+*/
 ```
 
 一方、`Promise.any()` も Promise インスタンスの配列を引数にとり、一番最初に履行状態となった Promise インスタンスの状態に連鎖して `Promise.any()` から返る Promise インスタンスも履行状態となります。
@@ -550,7 +556,9 @@ Promise.any(promises)
   .catch((err) => console.error(err))
   .finally(() => console.log("処理終了"));
 
-// ❯ deno run relAny.js
-// 300msで履行
-// 処理終了
+/*
+❯ deno run relAny.js
+300msで履行
+処理終了
+*/
 ```

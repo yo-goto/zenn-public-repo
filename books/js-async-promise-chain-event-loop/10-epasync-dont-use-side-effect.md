@@ -525,7 +525,7 @@ doAsyncTask()
 // 正しい Promise chain
 doAsyncTask()
   .then(() => {
-    // Prosise インスタンスを返す関数
+    // Promise インスタンスを返す関数
     return doSthAsyncA(path);
   })
   .then(data => {

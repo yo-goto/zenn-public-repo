@@ -147,12 +147,12 @@ Callback 形式なら適切にネストさせることで、Promise chain なら
 
 ちなみに、Callback-based API や Promise-based API の処理オーダー(順番)が重要であることは実は Node API Document の fs の項目に直接的に言及されています。
 
->Because they are executed asynchronously by the underlying thread pool, there is no guaranteed ordering when using either the callback or promise-based methods.
->(中略)
->**It is important to correctly order the operations by awaiting the results of one before invoking the other**:
->(中略)
->Or, when using the callback APIs, **move the `fs.stat()` call into the callback of the `fs.rename()` operation**:
->([File system | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#ordering-of-callback-and-promise-based-operations) より引用、太字は筆者強調)
+> Because they are executed asynchronously by the underlying thread pool, there is no guaranteed ordering when using either the callback or promise-based methods.
+> (中略)
+> **It is important to correctly order the operations by awaiting the results of one before invoking the other**:
+> (中略)
+> Or, when using the callback APIs, **move the `fs.stat()` call into the callback of the `fs.rename()` operation**:
+> ([File system | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#ordering-of-callback-and-promise-based-operations) より引用、太字は筆者強調)
 
 また、以下の様に Deno の非同期 API でドキュメントのサンプルに常に `await` キーワードが付いているのは Promise-based API であることを示すのと同時に、完了を担保してから次の処理を行うケースが一般的だからという理由が考えられます。
 
@@ -209,7 +209,7 @@ Deno.writeTextFile(path, inputData) // [A]
 })();
 ```
 
-Deno でも考え方は同じすが、Node では、Promise-based な File System 系の API 操作は[スレッドセーフ](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)ではないので同時に同じファイルを修正してしまうような場合に注意するように書かれています。
+Deno でも考え方は同じですが、Node では、Promise-based な File System 系の API 操作は[スレッドセーフ](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)ではないので同時に同じファイルを修正してしまうような場合に注意するように書かれています。
 
 > The promise APIs use the underlying Node.js threadpool to perform file system operations off the event loop thread. These operations are **not synchronized or threadsafe**. Care must be taken **when performing multiple concurrent modifications on the same file or data corruption may occur**.
 > ([File system | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#promises-api) より引用、太字は筆者強調)
@@ -226,8 +226,8 @@ API という言葉は非常にわかりづらく、とにかく曖昧なので�
 
 `Deno` から名前が始まる API は「Deno globals」と呼ばれ、公式の API ドキュメントでは「Deno CLI APIs」とも呼ばれています。つまり CLI(コマンドランインターフェース)のための API であるため、必ずしも Node の API と対応付けることができません。環境(直接的には Deno の実行ファイル)が提供する API の機能としては別に Deno では「標準モジュール(Standard module: Deno std)」というウェブ上で配布されているモジュールが存在しており、これらは API とは呼ばれていません。
 
->These modules do not have external dependencies and they are reviewed by the Deno core team. The intention is to have a standard set of high quality code that all Deno projects can use fearlessly.
->([std@0.145.0 | Deno](https://deno.land/std@0.145.0) より引用)
+> These modules do not have external dependencies and they are reviewed by the Deno core team. The intention is to have a standard set of high quality code that all Deno projects can use fearlessly.
+> ([std@0.145.0 | Deno](https://deno.land/std@0.145.0) より引用)
 
 標準モジュールの実装は TypeScript で行われており、内部を見ると Deno globals の API や標準モジュール自体を組み合わせることでより**実用性の高いユーティリティ機能を実現したもの**を配布しているようです。それぞれの機能ごとに `fs` (File System) や `http`、`io` などのモジュールに分割されています。
 

@@ -29,7 +29,7 @@ https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 『What the heck is the event loop anyway?』の動画で、イベントループの概略自体はつかめていると思いますが、その定義から考えていきます。
 
 > To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
-> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3)より引用)
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)
 
 イベントループとは、**イベントやユーザーインタラクション、スクリプト、レンダリング、ネットワーキングなどをまとめ上げて調整するために**、ユーザーエージェントが使用しなくてはならないものであると述べられています。
 
@@ -46,7 +46,7 @@ https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 WHATWG の仕様において、イベントループは１つ以上のタスクキュー(Task queue)を所有していると述べられています。つまり、**タスクキューは１つではなく、複数個存在してもよい**ということが分かります。
 
 > An [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop) has one or more task queues.
-> (https://html.spec.whatwg.org/multipage/webappapis.html#task-queue より)
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) より引用)
 
 タスクキュー(Task queue)とは、文字通りタスクのキューであるとここでは考えてください。ただし、後述しますが、仕様上のタスクキューは厳密にはキュー(Queue)ではなくセット(Set)というデータ型です。
 
@@ -57,7 +57,7 @@ WHATWG の仕様において、イベントループは１つ以上のタスク�
 > 2. If the [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop) has a [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) with at least one [runnable](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task), then:
 >     1. Let taskQueue be one such [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue), chosen in an [implementation-defined](https://infra.spec.whatwg.org/#implementation-defined) manner.
 >
-> (https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model より)
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) より引用)
 
 この Processing model がイベントループが実際に行うことです。この本ではすべての詳細を触れずに擬似コードで解説するので、より詳しく知りたい場合にはこの Processing model を参照してください。
 
@@ -72,7 +72,7 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 タスクキューは名前上はタスクのキュー(Queue)となっていますが、実際にはタスクの Set である、ということが仕様では述べられています。
 
 > A [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) is a [set](https://infra.spec.whatwg.org/#ordered-set) of [tasks](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task).
-> (https://html.spec.whatwg.org/multipage/webappapis.html#task-queue より)
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) より引用)
 
 ここで言う Queue や Set とは特定のデータ構造(data strature)のことです(以前の解説では、この点についてただの集合であると誤解していました)。データ構造については WHATAG 仕様に定義されています。具体的には HTML Standard ではなく、それらの仕様が基づく用語や概念を定義している [Infra Standard](https://infra.spec.whatwg.org/) というページに記載されています。
 
@@ -86,19 +86,19 @@ Queue や Set は Infra Standard の [5. Data structures](https://infra.spec.wha
 ここで、List とは以下のようなものであると定義されていて、有限個の要素からなる順序付きの列からなる仕様の型であることが述べられています。日本語訳版だと「[有限個の アイテム （ item ）からなる有順序連列](https://triple-underscore.github.io/infra-ja.html#lists)」となっています。
 
 > A list is a specification type consisting of a finite ordered sequence of items.
-> (https://infra.spec.whatwg.org/#lists より)
+> ([Infra Standard](https://infra.spec.whatwg.org/#lists) より引用)
 
 List は上で述べたように Stack や Queue や Set である可能性があります。言い換えれば、これらのデータ構造は List の派生となります。
 
 問題となるタスクキューは Queue ではなく、Set です。この Set は List でもあるので、順序が付いた列です。定義的には、順序集合([ordered set](https://ja.wikipedia.org/wiki/%E9%A0%86%E5%BA%8F%E9%9B%86%E5%90%88#%E5%89%8D%E9%A0%86%E5%BA%8F%E3%83%BB%E5%8D%8A%E9%A0%86%E5%BA%8F%E3%83%BB%E5%85%A8%E9%A0%86%E5%BA%8F))と呼ばれるものであり、同一のアイテムを重複してもたない List です。
 
 > Some [lists](https://infra.spec.whatwg.org/#list) are designated as ordered sets. An ordered set is a [list](https://infra.spec.whatwg.org/#list) with the additional semantic that it must not contain the same [item](https://infra.spec.whatwg.org/#list-item) twice.
-> (https://infra.spec.whatwg.org/#sets より)
+> ([Infra Standard](https://infra.spec.whatwg.org/#sets) より引用)
 
 仕様ではタスクキューがその名前とは裏腹に Queue ではなく Set である理由が述べられています。
 
 > [Task queues](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) are [sets](https://infra.spec.whatwg.org/#ordered-set), not [queues](https://infra.spec.whatwg.org/#queue), because the [event loop processing model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) grabs the first [_runnable_](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) from the chosen queue, instead of [dequeuing](https://infra.spec.whatwg.org/#queue-dequeue) the first task.
-> (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より)
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)
 
 イベントループの Processing model では、上で述べたようにまずは複数個ありえるタスクキューの中から環境定義の方法で一つのタスクキューを選択しますが、そのタスクキューの中から最初のタスクを選択(dequeuing)するのではなく、実行可能(runnable)という状態である最初のタスクを選択して処理します。
 
@@ -109,7 +109,7 @@ Set は List でもあるので順序がありますが、その中で実行可�
 ## タスク
 
 > Tasks encapsulate algorithms that are responsible for such work as:
-> (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より)
+> (https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3 より引用)
 
 タスクキューにプッシュされるタスク(Task)は、以下のような作業の責務を持つアルゴリズムをカプセル化するものです。
 
@@ -289,7 +289,7 @@ queueMicrotask(() => console.log("[4] 🫐"));
 
 `queueMicrotask()` はブラウザ環境で提供される Web API ですが、Node でも Deno でも同じ名前で使用できます。
 
-https://nodejs.org/api/globals.html#queuemicrotaskcallback
+https://nodejs.org/dist/v18.2.0/docs/api/globals.html#queuemicrotaskcallback
 
 上で説明したとおり、Node 環境では `process.nextTick()` API よりも `queueMicrotask()` API の使用が推奨されます。
 
@@ -315,7 +315,7 @@ const observer = new MutationObserver((mutationRecords) => {
 });
 
 // オブザーバーインスタンスに対象ノードとオブザーバーの設定をアタッチする
-observer.observe(targetNode, ({ 
+observer.observe(targetNode, ({
   childList: true,
   subtree: true,
   characterDataOldValue: true
