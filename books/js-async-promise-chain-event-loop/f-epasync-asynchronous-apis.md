@@ -226,7 +226,7 @@ https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-
 
 そもそも最初に見てもらった『What the heck is the event loop anyway?』では「**一度に複数のことができるのはブラウザがランタイム以上のものであるからで、ブラウザから提供される Web APIs は実質的にスレッドである**」ということが実は語られていました。
 
-> Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. **The reason we can do things concurrently is that the browser is more than just the Runtime**. So, remember this diagram, **the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads**, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in.
+> Right, so I've been kind of partially lying do you and telling you that JavaScript can only do one thing at one time. That's true the JavaScript Runtime can only do one thing at one time. It can't make an AJAX request while you're doing other code. It can't do a setTimeout while you're doing another code. **The reason we can do things concurrently is that the browser is more than just the Runtime**. So, remember this diagram, **the JavaScript Runtime can do one thing at a time, but the browser gives us these other things, gives us these we shall APIs, these are effectively threads**, you can just make calls to, and those pieces of the browser are aware of this concurrency kicks in. If you're back end person this diagram looks basically identical for node, **instead of web APIs we have C++ APIs and the threading is being hidden from you by C++**.
 > (以下の書き起こしページから引用、太字は筆者強調)
 
 https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html
@@ -236,11 +236,15 @@ https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-a
 
 Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エンジンである V8 のことを言っています。Deno や Node は V8 を含んだ"環境"であり、色々な API を提供するので、ここではブラウザと等価なものとして考えてください。
 
-それぞれ公式サイトでの文言。
+ちなみにそれぞれ公式サイトでの文言は以下のようになっています。
 - [Deno is a simple, modern and secure runtime for JavaScript and TypeScript that uses V8 and is built in Rust.](https://deno.land)
 - [Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.](https://nodejs.org/en/)
 
 また、引用の "we shall APIs" はおそらく書き起こしの間違いで、実際の動画では "Web APIs" と言っています。
+
+そして、Node 環境なら Web API の代わりに JS から操作できる C++ API (例えば `fs.writeFile()` など)を使うことができ、バックグラウンドにあるスレッドの隠蔽を行ってくれるとも言っていますね。この API の呼び出しは裏側の別スレッドで OS 機能を使用してファイル書き込みを行うための C++ のコードを実行するように Node 環境へ命令していることになります。
+
+これによって JS のプログラマーは C++ API を使っているということを意識することなく済み、コールバック関数の形で登録しておいた後の関連作業は C++ API の処理が終わってから JavaScript のスレッドへと通知されて実行されることになります。そして、この通知実行のシステムは後のチャプターで解説するイベントループの機構によって実現されます。
 :::
 
 ここまでくれば非同期処理の全体的な仕組みや目的がなんとなく分かると思います。
@@ -258,7 +262,7 @@ Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エ
 
 つまり、「同時に複数のことをできる」からと言って必ずしも複数スレッドを利用した厳密な「並列(parallel)」ではない訳です。『What the heck is the event loop anyway?』でも「**一度に複数のことができるのはブラウザがランタイム以上のものであるからで、ブラウザから提供される Web APIs は実質的にスレッドである**」という話がされていましたが、あくまで「実質的に」という注釈がつきます。Node などでは複数のスレッドをセットにしたスレッドプールを利用することがあるので実際「並列(parallel)」と言ってもよいものやポーリングの際にまとめて有効期限の切れたタイマーを一括処理するなどがあるのでかなりややこしい話になっています。基本的に JS の文脈で語られる「並列」という言葉は信用せずに話半分で聞いておくのが良いかもしれません。
 
-例えば、`Promise.all()` などの静的メソッドの話題で「並列化」という言葉をよく聞くと思いますが、**その実体が何なのか意識されずに「並列化」という言葉が気軽に使われているケースが多い**ので、読み手側も意識しすぎてしまうと混乱することになります。実際に「並列処理ではない」と行ったそばから「並列化」という言葉を使ってくることもあるので、API などの情報が抜け落ちている場合には意味不明となり混乱することが多いです。これについては『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターで解説します。
+例えば `Promise.all()` などの静的メソッドの話題で「並列化」という言葉をよく聞くと思いますが、**その実体が何なのか意識されずに「並列化」という言葉が気軽に使われているケースが多い**ので、読み手側も意識しすぎてしまうと混乱することになります。非同期 API や環境についての情報が抜け落ちている場合には、「並列処理ではない」という解説と「並列化」という用語が組み合わさってしまうことで「並列処理ではないのに並列化ができる?」といった具体に意味不明となり混乱することが多いです。これについては『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターで解説します。
 
 この本の中で出てくる「並列的」や「並列化」という言葉は複数スレッドが絡む厳密な「並列(parallel)」ではなく、「**複数の作業が時間的に同時にされている**」ということを指すので注意してください。厳密な並列を指す場合には必ず「並列(parallel)処理」と記載するようにします。
 
@@ -273,8 +277,8 @@ https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
 
 この Web API については Deno 環境でも同一名の API として使用できます。マニュアルには複数スレッドで独立させてプログラムを走らせることが可能と記載されています。
 
->Workers can be used to **run code on multiple threads**. Each instance of Worker is **run on a separate thread**, dedicated only to that worker.
->([Workers | Manual | Deno](https://deno.land/manual/runtime/workers#workers) より引用、太字は筆者強調)
+> Workers can be used to **run code on multiple threads**. Each instance of Worker is **run on a separate thread**, dedicated only to that worker.
+> ([Workers | Manual | Deno](https://deno.land/manual/runtime/workers#workers) より引用、太字は筆者強調)
 
 # 「非同期処理」の内訳
 
