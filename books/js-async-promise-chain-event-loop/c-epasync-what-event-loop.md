@@ -318,6 +318,12 @@ JavaScript はシングルスレッド言語であり、ブラウザ環境でユ
 
 ![Rendering pipeline 60 fps](/images/js-async/img_renderingPipelineFrames.jpg)*[In The Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0)を参考に筆者作成*
 
+:::message
+レンダリングの更新の間隔は 60Hz のリフレッシュレートモニターで平均 16.7 ミリ秒となりますが、一般的にブラウザは W3C の勧告に従って、レンダリング更新をディスプレイのリフレッシュレートに合わせて行います。したがって、リフレッシュレートが 144Hz や 240Hz ならレンダリング更新はそれぞれ一秒間に144回の更新、240回の更新となり、rAF のコールバック関数もそれに合わせた分だけ呼び出されることになります。
+
+参考: [Window.requestAnimationFrame() - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Window/requestAnimationFrame)
+:::
+
 各レンダリングパイプラインの発生までの間隔でユーザーの JavaScript コード(タスクとマイクロタスク)をメインスレッドで実行できます。ただし、16.7 ミリ秒以上かかるタスクなどがあればレンダリング更新がおくれてしまいフレームが落ちることになるので注意する必要があります。
 
 結局、イベントループの疑似コードは次のようになります。
