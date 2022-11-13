@@ -1481,7 +1481,7 @@ async function fetcher(
 })();
 ```
 
-JavaScriptt で言う所の [try-catch hell](https://www.youtube.com/watch?v=ITogH7lJTyE) を避けるための `[data, error]` という２つの値からなる配列を返すパターンを使っています。このパターンを使うことで返り値の型注釈が面倒なことになっていますね(現時点ではあまりうまく型付けできていないと思います)。
+JavaScript で言う所の [try-catch hell](https://www.youtube.com/watch?v=ITogH7lJTyE) を避けるための `[data, error]` という２つの値からなる配列を返すパターンを使っています。このパターンを使うことで返り値の型注釈が面倒なことになっていますね(現時点ではあまりうまく型付けできていないと思います)。
 
 要素の型がそれぞれ異なる配列は TypeScript では**タプル(Tuple)型**と呼ばれます。
 
