@@ -2,7 +2,7 @@
 title: "Promise の静的メソッドと並列化"
 cssclass: zenn
 date: 2022-06-26
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_Promise の静的メソッドと並列化
@@ -24,7 +24,7 @@ aliases: ch_Promise の静的メソッドと並列化
 
 ただし、非同期 API について理解した上で「並列化」という言葉の意味を考える必要があります。「非同期 API を使うことで同時に複数のことができる」ということを知っていないと、この静的メソッドでの「並列化」が何を意味しているのか分からず、並行や非同期と混同して混乱することになります。
 
-例えば、async 関数そのものを並列化していると思っていても、実際に並列化できるのは内部的に含まれている非同期 API の処理で API 以外の付随する処理はイベントループによって並行(concurrent)に実行されるので「並列化」という言葉が意味していることを勘違いしてしまうケースが多いです。この場合には、「並列」と「非同期」と「並行」の複数概念が同時に必要となり、俯瞰的に組み合わせて理解する必要があります。メインスレッドでは常になんらかの処理(コールバック関数など)が実行されており、複数の非同期 API 処理は環境がバックグラウンドで行っていることを忘れないようにしてください。
+例えば、async 関数そのものを並列化していると思っていても**実際に並列化できるのは内部的に含まれている非同期 API の処理**であり、API 以外の付随する処理はイベントループによって並行(concurrent)に実行されるので、「並列化」という言葉が意味していることを勘違いしてしまうケースが多いです。この場合には、「並列」と「非同期」と「並行」の複数概念が同時に必要となり、俯瞰的に組み合わせて理解する必要があります。メインスレッドでは常になんらかの処理(コールバック関数など)が実行されており、複数の非同期 API 処理は環境がバックグラウンドで並列的に行っていることに注意してください。
 
 :::message alert
 ここで使う「並列化」という言葉は複数スレッドが関わる厳密な「並列(parallel)処理」のことではなく、「同時に複数のことができる」という性質の意味で使っています。実際に並列(parallel)と言っても良いものもあるのですが、そう言い切れないものがあるので注意してください。
@@ -43,7 +43,7 @@ aliases: ch_Promise の静的メソッドと並列化
     fetch(urls[1]).then(response => response.text()).then(text => console.log(text)),
     fetch(urls[2]).then(response => response.text()).then(text => console.log(text)),
   ];
-  // chain の部分は並行的(concurrent)にスケジューリング
+  // chain の部分のコールバックは並行的(concurrent)にスケジューリング
   // 「並列化」できるのはあくまで非同期 API の処理であり、そのおかげ
   // ある非同期 API 処理が終わっていないときも別の JS コードや他の非同期 API 処理が実行できる
 
@@ -54,7 +54,7 @@ aliases: ch_Promise の静的メソッドと並列化
 })();
 ```
 
-まとめて await させるというのはすべての並列化されたデータフェッチが完了してから次に行いたいなにかの作業があるので、そこで async 関数の処理を一時停止させているということです。await によって並列化しているわけではなく、起動自体がそもそも並列化しており、「すべてのデータフェッチが終わってから `console.log()` を行いたいので `Promise.allSettled()` の部分で一時的に停止するよう指定している」という意図のコードとして解釈してください。
+まとめて await させるというのはすべての並列化されたデータフェッチが完了してから次に行いたいなにかの作業があるので、そこで async 関数の処理を一時停止させているということです。await によって並列化しているわけではなく、起動自体がそもそも並列化しており、「すべてのデータフェッチが終わってから `console.log()` を行いたいので `Promise.allSettled()` を await 評価する箇所で async 関数内の処理を一時中断するよう指定している」という意図のコードとして解釈してください。
 
 もしも次のように１つずつ await してしまったら、非同期 API による同時に複数できることのメリットを活かしきれていないことになり、上のコードよりも時間がかかることで効率が悪くなってしまいます。この場合はいわゆる「直列」となります。リソースの取得順番になにか意味があるならこのようなコードでも良いですが、そうでないなら無駄なので上のように並列化します。
 
@@ -125,7 +125,7 @@ async function fetchThenConsole(url) {
 
 上のコードのように、配列の `map()` メソッドなどを使って async 関数を複数起動させて返ってくる Promise インスタンスの配列を作ることもできます。取得したいリソース同士の依存関係がなければこの時点で await する必要なく、`Promise.allSetteld()` や `Promise.all()` などでまとめ上げてしまいます。
 
-繰り返しますが「並列化」できているのは `Promise.all()` とは一切関係無く `fetch()` という「非同期 API」そのものの性質のおかげです。次のように `Promise.all()` を書かなくても関係なく、そのまま実行して「並列化」となります。
+繰り返しますが「並列化」できているのは `Promise.allSettled()` や `Promise.all()`とは一切関係無く `fetch()` という「非同期 API」そのものの性質のおかげです。次のように `Promise.all()` を書かなくても関係なく、そのまま実行して「並列化」となります。
 
 ```js
 // 並列起動(実際には１つずつ起動しているが起動後にバックグラウンドで処理が時間的に継続するので並列化となる)
@@ -134,11 +134,11 @@ fetch(urls[1]);
 fetch(urls[2]);
 ```
 
-ということで次のように Promise chain を並列化していると思っていても、内部的な非同期 API 処理が並列化されるだけで、chain 部分のコールバックは今まで見てきたようにマイクロタスクとしてイベントループで連鎖的に並行で処理されます。
+ということで次のように Promise chain を並列化していると思っていても、内部的な非同期 API 処理が並列化されるだけで、chain 部分のコールバックは今まで見てきたようにマイクロタスクとしてイベントループで連鎖的に並行(concurrent)で処理されます。
 
 ```js
 // 非同期 API の並列起動
-fetch(urls[0]).then(response => response.text()).then(text => console.log(text)); 
+fetch(urls[0]).then(response => response.text()).then(text => console.log(text));
 fetch(urls[1]).then(response => response.text()).then(text => console.log(text));
 fetch(urls[2]).then(response => response.text()).then(text => console.log(text));
 // chain によって登録されているコールバック関数はマイクロタスクとして連鎖的に処理される
@@ -147,7 +147,7 @@ fetch(urls[2]).then(response => response.text()).then(text => console.log(text))
 先程定義したような async 関数 `fetchThenConsole()` も次のように３つを順番に起動したときには、内部の await 式で一時的断中しても非同期 API がバックグラウンドで継続するために async 関数そのものが「並列化」しているように誤解してしまうことが多いです。Promise chain と同じ様に await 式以降の処理はマイクロタスクとして連鎖的にイベントループで処理されます。
 
 ```js
-// async 関数を順番に起動していく
+// async 関数を順番に起動していく(実質的には非同期 API を順番に起動)
 fetchThenConsole(urls[0]); // 内部の await 式で一時中断して呼び出し元に制御が戻る
 fetchThenConsole(urls[1]); // 内部の await 式で一時中断して呼び出し元に制御が戻る
 fetchThenConsole(urls[2]); // 内部の await 式で一時中断して呼び出し元に制御が戻る
@@ -223,6 +223,8 @@ const testUrls2 = [
 Deno.writeTextFile(path1, inputData); // Non-blocking
 Deno.writeTextFile(path2, inputData); // Non-blocking
 Deno.writeTextFile(path3, inputData); // Non-blocking
+
+// ブロッキングしないので API 処理に関与しないこの後の処理は関係なく実行処理できる...
 ```
 
 `await Promise.all([...promises])` はあくまで「すべての並列化処理が完了してから次に行いたい処理を行う」ということを指示しているだけです。
@@ -234,7 +236,7 @@ Deno.writeTextFile(path3, inputData); // Non-blocking
     Deno.writeTextFile(path2, inputData), // Promiseが返る
     Deno.writeTextFile(path3, inputData), // Promiseが返る
   ]);
-  // 次の行はすべての並列化した Promise 処理が完了してから行いたいから await Promise.all() した
+  // 次の行はすべての並列化した Promise 処理が完了してから行いたいから await 式の評価を行った
   console.log("⭐️ 並列化した非同期 API 処理がすべて終了しました");
 })();
 ```
@@ -248,9 +250,11 @@ Deno.writeTextFileSync(path1, inputData);
 Deno.writeTextFileSync(path2, inputData);
 // 上の処理が完了してから次の処理を実行する
 Deno.writeTextFileSync(path3, inputData);
+
+// ブロッキングするのでこの後の処理は上の処理が終わらない限り実行処理できない...
 ```
 
-処理の流れは分かりやすいですが、１つずつ完了を待って処理するのであきらかに効率が悪いです。非同期 API のように並列化できないことよりも、同期 API を使っている間はメインスレッドで別の JavaScript コードを実行できないということがデメリットとしては大きそうです。
+処理の流れは分かりやすいですが、１つずつ完了を待って処理するのであきらかに効率が悪いです。非同期 API のように並列化できないことよりも、**同期 API を使っている間はメインスレッドで別の JavaScript コードを実行できない**ということがデメリットとしては大きそうです。
 
 # Promise Combinator による「合成」
 
@@ -265,13 +269,14 @@ https://v8.dev/features/promise-combinators
 ```js
 Promise.all([pormise1, promise2, promise3])
   .then([value1, value2, value3] => {
+    //  ^^^^^^^^^^^^^^^^^^^^^^^ 引数での配列の分割代入
     console.log({ value1 });
     console.log({ value2 });
     console.log({ value3 });
   })
 ```
 
-`Promise.all()` の返り値となる Promise インスタンスには引数として渡した配列内の複数 Promise インスタンスの結果、つまり履行値の配列が格納されています。分かりやすいように次のように直ちに履行する Promise インスタンスを `Promise.reoslve()` で作成してみます。
+`Promise.all()` の返り値となる Promise インスタンスには引数として渡した配列内の複数 Promise インスタンスの結果、つまり履行値の配列が格納されています。分かりやすいように次のように最初から履行している Promise インスタンスを `Promise.reoslve()` で作成してみます。
 
 ```js
 const promiseArray = [
@@ -366,7 +371,7 @@ const [text, json] = await Promise.all([
 
 # Promise Combinator の種類
 
-Promise combinator は ES2022 の時点ですでに４つの種類が存在しています。４つは便宜的に対応関係にあると考えることができるので次のように対応付けられます。
+Promise combinator は ES2022 の時点ですでに４つの種類が存在しています。４つは便宜的に対応関係にあると考えることができるので次のように分けられます。
 
 - `Promise.allSettled()` vs `Promise.all()`
 - `Promise.race()` vs `Promise.any()`
@@ -375,9 +380,9 @@ MDN のドキュメントには以下のように Promise の静的メソッド�
 
 ![mdn での説明](/images/js-async/img_promise-methods-in-mdn.png =550x)*MDNのドキュメントより*
 
-Promise combinator は `Promise.resolve()` や `Promise.reject()` と同じく静的メソッドです。
+Promise combinator は `Promise.resolve()` や `Promise.reject()` と同じくビルトインオブジェクトである Promise の静的メソッドです。
 
-引数となる複数の Promise 処理に対して何をしたいのかという目的によってこれらのメソッドを使い分けます。この４つの静的メソッドはすべて複数の Promise 処理をまとめあげて並列化しますが、引数として渡す配列内の Promise の状態によって返り値の Promise インスタンスの状態がどうなるか変わります。
+引数となる複数の Promise 処理に対して何をしたいのかという目的によってこれらのメソッドを使い分けます。この４つの静的メソッドはすべて複数の Promise 処理をまとめあげて並列し、**返り値として Promise インスタンスが返ってきます**。ただし、引数として渡す配列内の Promise の状態によって返り値の Promise インスタンスの状態がどうなるか変わります。
 
 ## Promise.allSettled vs Promise.all
 
@@ -444,18 +449,18 @@ Promise.allSettled(promises)
 ]
 ```
 
-ただし、`Promise.allSettled()` から返る Promise インスタンスが Settled になるためには引数の配列に渡す Promise インスタンスは Settled となる必要があります。次のような Promise インスタンスを渡してしまうと `Promise.allSettled()` は履行しません。配列内のすべての Promise インスタンスが履行または拒否状態となる必要があります。
+ただし、`Promise.allSettled()` から返る Promise インスタンスが Settled になるためには引数の配列に渡す Promise インスタンスは Settled となる必要があります。次のような Promise インスタンスを渡してしまうと `Promise.allSettled()` は解決せず Settled となりません。配列内のすべての Promise インスタンスが履行または拒否状態となる必要があります。
 
 ```js
 const p = new Promise(() => {});
 // Settled にならず永遠に Pending である Promise インスタンス
 ```
 
-次のように１つでもそのような Promise があると `Promise.all()` は履行しません。
+次のように１つでもそのような Promise があると `Promise.all()` は Settled にならないので chain しているコールバックは実行できません。
 
 ```js
 Promise.allSettled([
-  new Promise(() => {}),
+  new Promise(() => {}), // 永遠に Pending
   Promise.resolve(1),
 ]).then(data => console.log(data));
 // 実行しても何も起きないコード
@@ -486,24 +491,28 @@ Promise.all(promises)
 */
 ```
 
-こちらも次のように１つでもそのような Promise があると `Promise.allSettled()` から返る Promise インスタンスは履行・拒否のどちらの状態にも移行しません。
+次のように１つでも Settled とならないような Promise があると `Promise.all()` から返る Promise インスタンスは履行・拒否のどちらの状態にも移行しません。
 
 ```js
 Promise.all([
-  new Promise(() => {}),
+  new Promise(() => {}), // 永遠に Pending
   Promise.resolve(1),
 ]).then(data => console.log(data));
 // 実行しても何も起きないコード
 ```
 
-使い分け次のようばケースとなります。
+ということで、使い分け次のようなケースとなります。
 
-- `Promise.allSettled()` を使用するのは、複数の非同期処理の絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用されます。
-- `Promise.all()` を使用するのは、複数の非同期処理の絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合にはより適切。
+- `Promise.allSettled()` を使用するのは、複数の非同期処理の絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用。
+- `Promise.all()` を使用するのは、複数の非同期処理の絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合。
 
 ## Promise.race vs Promise.any
 
-複数の Promise 処理すべてには興味がなく、対象となるものの内のどれか１つの Promise インスタンスが Settled になるかどうかに興味があり、履行か拒否には興味がない場合には `Promise.race())` を使用します。履行されたものに興味があり、最初に履行したものを取り出したい場合には `Promise.any()` を使用します。この２つのメソッドも複数の Promise 処理を合成して並列化しますが、１つのものが条件を満たした時点で他の処理については考える必要がなくなり、完了、つまり返り値の Promise インスタンスが履行状態となります。
+複数の Promise 処理すべてには興味がなく、対象となるものの内のどれか１つの Promise インスタンスが Settled になるかどうかに興味があり、履行か拒否には興味がない場合には `Promise.race()` を使用します。
+
+一方、履行されたものに興味があり、最初に履行したものを取り出したい場合には `Promise.any()` を使用します。
+
+この２つのメソッドも複数の Promise 処理を合成して並列化しますが、１つの処理が条件を満たした時点で他の処理については考える必要がなくなり、完了、つまり返り値の Promise インスタンスが履行状態となります。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/any
 

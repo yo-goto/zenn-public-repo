@@ -2,7 +2,7 @@
 title: "TypeScript における Promise の型注釈"
 cssclass: zenn
 date: 2022-07-12
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_TypeScript における Promise の型注釈
@@ -793,7 +793,7 @@ function returnArrEl(
 
 ```ts:ジェネリック関数
 // Type は型変数で実際に存在している string などの型名ではない
-function returnArrEl<Type>( 
+function returnArrEl<Type>(
   arr: Type[] // Type 型の要素を持つ配列の型注釈
 ) {
   return arr[0];
@@ -1460,7 +1460,7 @@ async function fetcher(
 })();
 ```
 
-JavaScriptt で言う所の [try-catch hell](https://www.youtube.com/watch?v=ITogH7lJTyE) を避けるための `[data, error]` という２つの値からなる配列を返すパターンを使っています。このパターンを使うことで返り値の型注釈が面倒なことになっていますね(現時点ではあまりうまく型付けできていないと思います)。
+JavaScript で言う所の [try-catch hell](https://www.youtube.com/watch?v=ITogH7lJTyE) を避けるための `[data, error]` という２つの値からなる配列を返すパターンを使っています。このパターンを使うことで返り値の型注釈が面倒なことになっていますね(現時点ではあまりうまく型付けできていないと思います)。
 
 要素の型がそれぞれ異なる配列は TypeScript では**タプル(Tuple)型**と呼ばれます。
 

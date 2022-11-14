@@ -2,7 +2,7 @@
 title: "Top-level await"
 cssclass: zenn
 date: 2022-05-28
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_Top-level await
@@ -60,7 +60,7 @@ try {
 console.log("🦖 [D] MAINLINE: End");
 ```
 
-ただし、Top-level await が使えるのは、JavaScriptt モジュール(ECMAScript モジュール)でのみなので注意してください。モジュールについての詳細は次の V8 や MDN のドキュメントを参照してください。
+ただし、Top-level await が使えるのは、JavaScript モジュール(ECMAScript モジュール)でのみなので注意してください。モジュールについての詳細は次の V8 や MDN のドキュメントを参照してください。
 
 https://v8.dev/features/modules
 

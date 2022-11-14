@@ -2,7 +2,7 @@
 title: "古い非同期 API を Promise でラップする"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
@@ -15,7 +15,7 @@ aliases:
 
 ここまで Promise chain でのマイクロタスク発行による非同期処理を見てきました。「単一タスクを実行したら、すべてのマイクロタスクを処理する」というのがイベントループの重大ルールです。
 
-このチャプターでは、タスクによる非同期処理と、マイクロタスクをかませることで逐次処理やエラーハンドリングをやりやすくする "Promisification" という方法について解説しておきます。
+このチャプターでは、タスクによる非同期処理と、マイクロタスクをかませることで逐次処理やエラーハンドリングをやりやすくする "Promisification" という手法について解説しておきます。
 
 :::message alert
 『[タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)』のチャプターでタスクとマイクロタスクの関係については詳しく解説したので、タスクの詳細についてはそちらのチャプターを参照してください。
@@ -23,9 +23,11 @@ aliases:
 
 # タスク発行
 
-この本の冒頭で述べたように `setTimoue()` 関数は Web API の一部です。これをなるべく使わずに最初説明したのは、この関数に登録するコールバック関数がタスクキューへと追加されてしまうからです。
+『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで説明したとおり、`setTimeout()` は非同期の Web API です。
 
 `setTimout(cb, delay)` の形で `cb` にはコールバック関数、`delay` には遅延時間をミリ秒が単位で指定することで、その時間が経ってからコールバック関数を実行できます。つまり、このコールバック関数は非同期的に実行されます。
+
+この処理はコードのスケジューリングをするわけですが、処理の実態は「並列的に環境側で指定した時間を計測して、時間経過後に登録したコールバック関数をタスクキューへ送信する」というものです。登録したコールバック関数は実際に処理されるタイミングは、イベントループの機構においてタスクキューからコールスタックへと配置されてスタック上でトップとなった瞬間です。
 
 ```js
 // timeout.js
@@ -67,8 +69,8 @@ MDN のドキュメントには以下のことが書かれています。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90
 
->理想的には、すべての非同期関数はプロミスを返すはずですが、**残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。**古い様式であるコールバックとプロミスの混在は問題を引き起こします**。というのは、`saySomething()` が失敗したりプログラミングエラーを含んでいた場合に、そのエラーをとらえられないからです。setTimeout にその責任があります。**幸いにも setTimeout をプロミスの中にラップすることができます**。良いやり方は、問題のある関数をできる限り低い水準でラップした上で、直接呼び出さないようにすることです。
->([上記ページ](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)より引用、太字は筆者強調)
+> 理想的には、すべての非同期関数はプロミスを返すはずですが、**残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。**古い様式であるコールバックとプロミスの混在は問題を引き起こします**。というのは、`saySomething()` が失敗したりプログラミングエラーを含んでいた場合に、そのエラーをとらえられないからです。setTimeout にその責任があります。**幸いにも setTimeout をプロミスの中にラップすることができます**。良いやり方は、問題のある関数をできる限り低い水準でラップした上で、直接呼び出さないようにすることです。
+> ([上記ページ](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)より引用、太字は筆者強調)
 
 非同期 API はコールバックのスタイルでタスクを発行するよりも、Promise を返してマイクロタスクを発行するものであることが望ましいという旨が読み取れます。そして、タスクを発行するタイプのコールバックスタイル API は Promise でラップすることでエラーハンドリングなどをよりやりやすくなります。
 
@@ -78,9 +80,15 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F
 
 https://ja.javascript.info/promisify
 
+:::message alert
+この手法を非同期処理の学習のはじめに知ってしまうと混乱することになるので注意してください。
+
+というのも、Promisification では非同期処理の内訳として登場する複数のものが絡めて利用されているためです。`setTimeout()` と Promise のそれぞれタスクキューとマイクロタスクキューという別々の機構を利用し、この手法ではタスクとマイクロタスクを順番に消費して連鎖的に処理を実現するということをやるので、コード上の見た目に比べて相当複雑なことをしています。具体的な Promisification の処理のフローでは「API を起動して環境に並列的作業を行わせ、それが完了後にイベントループにタスクを送り、そのタスクが処理される際に Promise を解決してマイクロタスクを発火させることで後続の関連処理を順番に行わせる」ということをやります。各要素について理解できていれば難しくないですが、はじめからいきなりこれを理解しようとするのはかなり無理があります。
+:::
+
 ただし、最近は手動でやることはあまりやらないらしいです。というのも、単純に非同期 API 自体 Promise-based であるものが出てきています。また、古いタイプの API をラップするのでも、例えば Node 環境では `promisifying` 関数というのが util module にあり、これを使うことで手動ラップすることなく Promisification ができるようになっています。
 
-Deno 環境などではほとんどすべての非同期 API が Promise インスタンスを返しますし、`setTimeout()` でさえも Promise で手動ラップする必要も実はなく、Promise を返すタイマーが Standard library の１つとして提供されています。
+Deno 環境などではほとんどすべての非同期 API が Promise インスタンスを返しますし、`setTimeout()` でさえも Promise で手動ラップする必要も実はなく、Promise を返すタイマーが std の１つとして提供されています。
 
 https://deno.land/std@0.145.0/async#delay
 
@@ -125,22 +133,31 @@ const promiseTimer = (delay)
 
 Promise でラップして使わない場合にはコールバックをいくつもネストする必要がでてくるので、いわゆる **Callback Hell** になります。その形から "Pyramid of doom" とも呼ばれます。
 
-```js
+```js:pyramidDoom.js
 setTimeout((value) => {
-  console.log(value);
+  console.log(value, "[1]");
   setTimeout((value) => {
-    console.log(value);
+    console.log(value, "[2]");
     setTimeout((value) => {
-      console.log(value);
+      console.log(value, "[3]");
       setTimeout((value) => {
-        console.log(value);
+        console.log(value, "[4]");
         setTimeout((value) => {
-          console.log(value, "ピラミッドのてっぺん");
+          console.log(value, "[5] 頂点");
         }, 1000, value);
       }, 1000, value);
     }, 1000, value);
   }, 1000, value);
 }, 1000, "タイムアウト");
+
+/* 出力結果
+❯ deno run pyramidDoom.js
+タイムアウト [1]
+タイムアウト [2]
+タイムアウト [3]
+タイムアウト [4]
+タイムアウト [5] 頂点
+*/
 ```
 
 また、Promise でラップすることによって、Async function にて `await` 式を使って完了を待てるようになります。
@@ -163,7 +180,7 @@ const promiseTimer = (delay) => new Promise((resolve) => setTimeout(resolve, del
 ```js
 function sleep(time) {
   // resolve の名前は何でもよいので短い r にしておく
-  return new Promise(r => setTimeout(r, time)); 
+  return new Promise(r => setTimeout(r, time));
 }
 (async () => {
   await multipleFetch(); // 複数の fetch を行う async 関数だとする

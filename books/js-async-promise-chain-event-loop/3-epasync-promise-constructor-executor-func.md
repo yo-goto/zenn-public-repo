@@ -2,7 +2,7 @@
 title: "Promise コンストラクタと Executor 関数"
 cssclass: zenn
 date: 2022-04-21
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_Promise コンストラクタと Executor 関数
@@ -73,7 +73,7 @@ const promise = new Promise(executor);
 
 基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` などを使っていくことが一般的だと思いますが、タスクベースの非同期 API と Promise を絡めて考えると混乱することになるので、最初はあえて使わずに説明してきます。ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します。
 
-実は Promise コンストラクタ内で `setTimeout()` などのタスクベースの非同期 API を利用することで、後のチャプターで解説する "[Promisification](12-epasync-wrapping-macrotask)" という手法になるのですが、これを最初に知ってしまうと学習を進めてく過程で**混乱する可能性が高いです**(筆者は混乱しました)。
+実は Promise コンストラクタ内で `setTimeout()` などのタスクベースの非同期 API を利用することで、後のチャプターで解説する "[Promisification](12-epasync-wrapping-macrotask)" という手法になるのですが、これを最初に知ってしまうと学習を進めてく過程で**混乱する可能性が高いので**注意してください。
 :::
 
 JavaScript では「関数は値」なのでこのように関数を他の値のように引数として渡すことができます。「コールバック関数」はこのように他の関数に引数として渡される関数のことを指します。

@@ -186,17 +186,16 @@ function* generatorFn(n) {
 const generator = generatorFn(5);
 
 // ジェネレータオブジェクトの next メソッドでイテレータリザルトを返す
-console.log(generator.next());
-// { value: 6, done: false }
+console.log(generator.next()); // => { value: 6, done: false }
 console.log("関数を一時停止してなにか別の処理");
-console.log(generator.next());
-// { value: 30, done: false }
+
+console.log(generator.next()); // => { value: 30, done: false }
 console.log("関数を一時停止してなにか別の処理");
-console.log(generator.next());
-// { value: 0, done: false }
+
+console.log(generator.next()); // => { value: 0, done: false }
 console.log("関数を一時停止してなにか別の処理");
-console.log(generator.next());
-// { value: undefined, done: false }
+
+console.log(generator.next()); // => { value: undefined, done: true }
 console.log("ジェネレータ関数内のすべての処理を終了");
 ```
 

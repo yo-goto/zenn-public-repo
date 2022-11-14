@@ -2,7 +2,7 @@
 title: "それぞれのイベントループ"
 cssclass: zenn
 date: 2022-05-06
-modified: 2022-11-05
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
@@ -22,7 +22,7 @@ aliases:
 
 従って、最終的には各環境ごとにイベントループがどのようになっているかということを認識する必要があります。とはいっても、タスク(Task)とマイクロタスク(Microtask)の考え方はどの環境でも基本的に同じです。
 
->「**単一タスク(Task)が実行された後にすべてのマイクロタスク(Microtask)を処理する**」
+> 「**単一タスク(Task)が実行された後にすべてのマイクロタスク(Microtask)を処理する**」
 
 『[JSの非同期処理を理解するために必要だった知識と学習ロードマップ](https://zenn.dev/estra/articles/js-async-programming-roadmap)』の追記にて、ブラウザ環境(Chrome)とランタイム環境(Node, Deno)のイベントループについての調査をまとめましたが、結局のところ本質的な部分は同じであり、ブラウザ環境が実装すべき HTML 仕様のイベントループにランタイム環境も近づくことが期待できます。そして、実際にそうなっています。
 
@@ -50,7 +50,7 @@ Deno 環境ではタイマー以外は Promise based な API を基本とした�
 
 「**単一タスク(Task)が実行された後にすべてのマイクロタスク(Microtask)を処理する**」という共通性質は理解の上で非常に重要ですが、これよりも実用的にマイクロタスクを捉えることのできるものがあります。
 
->「**コールスタック(Call stack)が空になったらマイクロタスクを処理する**」
+> 「**コールスタック(Call stack)が空になったらマイクロタスクを処理する**」
 
 マイクロタスクの実行タイミングは「Microtask checkpoint」と呼ばれ、イベントループにおいてこのチェックポイントはコールスタックが空となった時に必ず実行されるように仕様で定義されています。Node や Deno といったランタイム環境では「ブラウザ環境のイベントループの仕様に近づき、マイクロタスクはコールスタックが空になったら実行されるように実装するはずである」と期待できます(そもそもイベントループの仕様は HTML 仕様しか存在せず、ブラウザで動く JavaScript の再利用性を可能な限り高めるためことが期待されます)。
 
@@ -77,8 +77,8 @@ V8 エンジンの上記ブログポストで示されているこの図が非�
 
 ブログ記事では次のようにも語られています。
 
->On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
->([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks)より引用、太字は筆者強調)
+> On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
+> ([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks)より引用、太字は筆者強調)
 
 非同期処理の仕組みの核心として、`setTimeout()` や  `setImmediate()` は環境の提供する非同期 API であり、それらはタスクを発行する一方、Promise や await の処理はマイクロタスクを発行し、**単一タスクが実行された後にすべてのマイクロタスクを処理します**。これを別の言い方で言うと「**コールスタックが空になったらマイクロタスクを処理する**」となります。ブラウザ環境とランタイム環境の大きな違いは**レンダリングの作業があるかないか**です。
 
@@ -130,8 +130,8 @@ https://libevent.org
 
 https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit
 
->The main purpose of the scheduler is to decide which task gets to execute on the main thread at any given time. To enable this, the scheduler provides higher level replacements for the APIs that are used to post tasks on the main thread.
->([Blink Scheduler](https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit) より引用)
+> The main purpose of the scheduler is to decide which task gets to execute on the main thread at any given time. To enable this, the scheduler provides higher level replacements for the APIs that are used to post tasks on the main thread.
+> ([Blink Scheduler](https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit) より引用)
 
 Chrome ブラウザ環境では、環境実装のルールとしてどのようにタスクキューを優先するかを Blink scheduler によって選択させているようです。内部的にどのような順位になっているからを知りたい場合は上記ドキュメントを参照してください。
 
@@ -159,8 +159,8 @@ while (queue.waitForMessage()) {
 
 ドキュメントには以下のように解説されています。
 
->`queue.waitForMessage()` waits synchronously for a message to arrive (if one is not already available and waiting to be handled).
->([The event loop - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#event_loop) より引用)
+> `queue.waitForMessage()` waits synchronously for a message to arrive (if one is not already available and waiting to be handled).
+> ([The event loop - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#event_loop) より引用)
 
 待ち状態のタスク(メッセージ)がある限りそのタスクを処理しつづけるというループになっていますが、これは簡略化しすぎているので、非同期処理については何も分かりません。ですが、イベントループというものは本質的には、このようにタスクを処理するための半無限ループであることを理解しておくとよいです。そして、「**メッセージの通知**」を待つためのループであることを覚えておいてください。
 
@@ -212,8 +212,8 @@ while (true) {
 
 『[タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)』のチャプターで解説した通り、HTML 仕様においてイベントループは１つ以上のタスクキューを持ちます。
 
->An event loop has one or more task queues. A task queue is a set of tasks.
->([Event loops | HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)
+> An event loop has one or more task queues. A task queue is a set of tasks.
+> ([Event loops | HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)
 
 そして以下のものがタスクとして扱われます。
 
@@ -312,9 +312,9 @@ https://web.dev/rendering-performance/#2.-js-css-greater-style-greater-paint-gre
 
 https://developer.chrome.com/blog/renderingng-architecture/
 
-JavaScript はシングルスレッド言語であり、ブラウザ環境でユーザーの JavaScript コードは UI スレッド(メインスレッド) で実行されます。上述した通り、ブラウザ環境ではレンダリングの作業があります。そしてレンダリングのための作業も UI スレッドで行われます。従ってその作業を行っている間はそのスレッドで JavaScirpt を実行できません。
+JavaScript はシングルスレッド言語であり、ブラウザ環境でユーザーの JavaScript コードはメインスレッド(Main thread)で実行されます。上述した通り、ブラウザ環境ではレンダリングの作業があります。そしてレンダリングのための作業もメインスレッドで行われます。従ってその作業を行っている間はそのスレッドで JavaScirpt を実行できません。
 
-レンダリング更新は平均 16.7 ミリ秒 (60fps) で行われます。つまり上記のレンダリングパイプラインが 16.7 ミリ秒ごとに以下の図のようにメインスレッドで発生します。
+レンダリング更新は 1/60 秒で四捨五入して 16.7 ミリ秒 (60fps) 平均で行われます。つまり上記のレンダリングパイプラインが 16.7 ミリ秒ごとに以下の図のようにメインスレッドで発生します。
 
 ![Rendering pipeline 60 fps](/images/js-async/img_renderingPipelineFrames.jpg)*[In The Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0)を参考に筆者作成*
 
@@ -350,7 +350,9 @@ while (true) {
 
 先に出てきましたが、レンダリングパイプライン直前にのみ確実に実行できる `requestAnimationFrame()` という Web API が存在しています。長いので "rAF" と略されて表記される事が多いです。
 
-つまり、この API で引数として渡したコールバック関数はレンダリング更新のタイミングでしか実行できません。アニメーションなどに使うことができます。
+https://developer.mozilla.org/ja/docs/Web/API/Window/requestAnimationFrame
+
+この API では、引数として渡したコールバック関数はレンダリング更新のタイミングでしか実行できません。アニメーションなどに使うことができます。
 
 ```js
 requestAnimationFrame(() => {
@@ -775,8 +777,8 @@ timeout
 
 公式ドキュメントにはそれらのオーダーは呼び出されたコンテキストに依存すると書いてあります。メインモジュール内で両方呼び出された場合にはそれらのタイミングはプロセスのパフォーマンスに束縛されます。
 
->The order in which the timers are executed will vary depending on the context in which they are called. If both are called from within the main module, then timing will be bound by the performance of the process (which can be impacted by other applications running on the machine).
->([The Node.js Event Loop, Timers, and process.nextTick() | Node.js](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout) より引用)
+> The order in which the timers are executed will vary depending on the context in which they are called. If both are called from within the main module, then timing will be bound by the performance of the process (which can be impacted by other applications running on the machine).
+> ([The Node.js Event Loop, Timers, and process.nextTick() | Node.js](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout) より引用)
 
 I/O サイクル(Callback-based API の `fs` のメソッドのコールバックの中など)で呼び出すと決定的になり、`setImmediate()` のコールバックが常に先に実行されます。
 
@@ -796,8 +798,8 @@ fs.readFile("./test.md", () => {
 
 ちなみに、Node の `setTimeout()` API は遅延時間を指定しない場合はデフォルトで `1` として設定されます。また、`1` 以下の数値を指定しても `1` としてセットされます。
 
->When delay is larger than 2147483647 or less than 1, the delay will be set to 1. Non-integer delays are truncated to an integer.
->([Timers | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/timers.html#settimeoutcallback-delay-args) より引用)
+> When delay is larger than 2147483647 or less than 1, the delay will be set to 1. Non-integer delays are truncated to an integer.
+> ([Timers | Node.js v18.2.0 Documentation](https://nodejs.org/dist/v18.2.0/docs/api/timers.html#settimeoutcallback-delay-args) より引用)
 
 ということで、絶対に１ミリ秒以上かかります。
 
@@ -805,7 +807,7 @@ fs.readFile("./test.md", () => {
 
 > This API does not guarantee that timers will run exactly on schedule. Delays due to CPU load, other tasks, etc, are to be expected.
 
-また、`setTimeout()` は `queueMicrotask()` のようにコールバックをそのままキューに送るという処理ではなく、あくまで遅延時間が経過したらコールバックをタスクキューに送るという処理なので注意してください。
+また、`setTimeout()` は `queueMicrotask()` のようにコールバックを直ちにキューに送るという処理ではなく、あくまで「**遅延時間が経過したら**」コールバックをタスクキューに送るという処理なので注意してください。
 
 同期処理やマイクロタスクを使った処理が１つでもあると、この結果は大抵 Phase の順番通りになり、Timers のコールバックの方が先に処理されます。とはいえ、タイマーなので不定性がつきまといます。
 
@@ -825,7 +827,7 @@ console.log("sync process");
 
 タイマーの比較はあまり気にしすぎると混乱するので軽く流しても大丈夫です。`setImmediate()` の正しい使い方はこのような比較ではなく、I/O イベントのコールバック直後に実行するクリーンアップなどに利用します。
 
->Schedules the "immediate" execution of the callback after I/O events' callbacks.
+> Schedules the "immediate" execution of the callback after I/O events' callbacks.
 
 ## Deno 環境のイベントループ
 

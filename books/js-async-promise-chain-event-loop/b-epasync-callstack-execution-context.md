@@ -2,7 +2,7 @@
 title: "コールスタックと実行コンテキスト"
 cssclass: zenn
 date: 2022-05-06
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_コールスタックと実行コンテキスト
@@ -293,7 +293,7 @@ https://slidr.io/bmeurer/zero-cost-async-stack-traces-1#27
 
 V8 で `console.trace()` によってスタックトレースすると、`EntryFrame` や `InternalFrame`、`StubFrame` というスタックフレームが積まれることを確認できたりします。
 
-```js
+```js:asyncTrace.js
 async function foo() {
   console.trace("👾 Stack Trace [async function context]");
   await bar();

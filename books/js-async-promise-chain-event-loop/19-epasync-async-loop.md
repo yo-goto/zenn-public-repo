@@ -2,7 +2,7 @@
 title: "反復処理の制御"
 cssclass: zenn
 date: 2022-06-30
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_反復処理の制御
@@ -547,7 +547,7 @@ const urls = [
         .catch((e) => console.error(e))
     );
   });
-  // Promise インスタンスを await 式で評価してこの関数内での完了を保証できる
+  // Promise.all() は Promise を返すので、await 式で評価してこの関数内での完了を保証できる
   const jsons = await Promise.all(promises);
   console.log(jsons);
 
@@ -573,7 +573,9 @@ const urls = [
 
 ## async callback と map
 
-async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスの配列をしっかりと作成できます。
+async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。
+
+`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスの配列をしっかりと作成できます。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで見たとおり、async 関数のボディで何も `return` していなくても `undefined` で履行する Promise インスタンスが返されるので、`map()` メソッドはコールバック関数の返り値としてその Promise インスタンスを補足します。
 
 ```js
 // Promise インスタンスの配列を作成する
@@ -582,11 +584,10 @@ const promises = urls.map(async (url) => {
     const response = await fetch(url);
     const text = await response.text();
     console.log(text);
-    // return される値が無いので undefined で履行した Promise インスタンスがコールバックから返る
   } catch(err) {
     console.log(err);
-    // return される値が無いので undefined で履行した Promise インスタンスがコールバックから返る
   }
+  // return される値が無いので undefined で履行した Promise インスタンスがコールバックから返る
 });
 ```
 

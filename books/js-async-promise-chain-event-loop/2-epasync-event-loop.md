@@ -2,7 +2,7 @@
 title: "イベントループの概要と注意点"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn #JavaScript/async "]
 aliases: ch_イベントループの概要と注意点
@@ -119,8 +119,8 @@ https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-bey
 
 タスクキューへと供給されるタスク(Task)はタスク源(Task source)と呼ばれる供給源があり、それは複数存在しています。
 
->Per its source field, each task is defined as coming from a specific task source. For each event loop, every task source must be associated with a specific task queue.
->([task source | HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#task-source)より引用)
+> Per its [source](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-source) field, each [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) is defined as coming from a specific task source. For each [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop), every [task source](https://html.spec.whatwg.org/multipage/webappapis.html#task-source) must be associated with a specific [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue).
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#task-source) より引用)
 
 例えば、`setTimeout()` API のコールバックとマウスクリックから発火されるイベントからのコールバックはそれぞれべつの Task source から来るタスクであり、**それぞれのタスクは別々のタスクキューへと送られます**。
 
@@ -150,7 +150,7 @@ console.log("🦖 [1] Mainline");
 
 setTimeout(() => { // コールバック関数はタスクとして処理される
   console.log("⏰ [3] Callback is a task");
-}, 0); 
+}, 0);
 
 Promise.resolve()
   .then(() => { // コールバック関数はマイクロタスクとして処理される

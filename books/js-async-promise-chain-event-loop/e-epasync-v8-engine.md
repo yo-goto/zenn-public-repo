@@ -2,7 +2,7 @@
 title: "V8 エンジンについて"
 cssclass: zenn
 date: 2022-05-06
-modified: 2022-11-02
+modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_V8 エンジンについて
@@ -110,6 +110,8 @@ $ jsvu
 jsvu は V8 エンジンのみだけでなく、あらゆる JavaScript エンジンのインストールができます。次のサポートバージョンのエンジンがインストールできるようになっています。上記コマンドを実行すると、インストールできるもののリストが表示されるので V8 を選択してインストールします。
 
 ![jsvu support versions](/images/js-async/img_jsvu_supportVersion.jpg)*[GoogleChromeLabs/jsvu](https://github.com/GoogleChromeLabs/jsvu) より引用*
+
+V8 が Chrome (Google) から提供されているように、[SpiderMonkey](https://spidermonkey.dev) は Firefox (Mozilla) から、[JavaScriptCore](https://developer.apple.com/documentation/javascriptcore) なら safari (Apple) といったように JavaScript エンジンは通常は有名なブラウザベンダーから提供されます。
 
 ## d8
 
