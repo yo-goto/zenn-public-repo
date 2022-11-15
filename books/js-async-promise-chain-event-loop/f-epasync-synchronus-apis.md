@@ -21,10 +21,10 @@ https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
 その一方で、Node 環境や Deno 環境では意図的にブロッキングを起こすようにデザインされた「**同期 API(Synchronous API)**」が存在しています。`console.log()` などの Web APIs(Web Platform APIs) は置いておいて、そういった API は名前の最後が `Sync` で終わるケースのものとして提供されています(I/O 関連の処理など)。
 
 :::message
-Node や Deno では HTTP やファイルシステムにアクセスする機能を API として提供していることがわかります。これらの API は OS の機能を利用するので OS API(Operation System API) と呼ばれることがあります。
+Node や Deno では HTTP やファイルシステムにアクセスする機能を API として提供していますが、これらの API は OS の機能を利用するので OS API(Operation System API) と呼ばれることがあります。
 :::
 
-例えば、ファイルへの書き込みを行う API ですが、名前は安直に `writeFile` として Node でも Deno でも大体同じ機能で提供されています。Deno は Node の後発なので、**ユーザー側は Node にすでに存在している API 機能が Deno にもあるだろうと期待して探します**。そして実際にあります。ただし、`writeFile` と言っても上で説明したような非同期型と同期型が以下のように存在しており、同期型は両方とも `Sync` で名前が終わっていることが分かります。
+例えば、ファイルへの書き込みを行う API ですが、名前は安直に `writeFile` として Node でも Deno でも大体同じ機能で提供されています。Deno は Node の後発なので、**ユーザー側は Node にすでに存在している API 機能が Deno にもあるだろうと期待して探します**。そして実際にあります(開発側からしたら同じ機能は同じ名前にするのが妥当でしょう)。ただし、`writeFile` と言っても上で説明したような非同期型と同期型が以下のように存在しており、同期型は両方とも `Sync` で名前が終わっていることが分かります。
 
 :::message
 「非同期 API / 同期 API」という呼称だと理解が難しい場合には、「Non-blocking API / Blocking API」をメインに考えた方が分かりやすいかもしれません。
@@ -145,9 +145,9 @@ Deno.writeTextFile(path, inputData) // [A]
 
 Callback 形式なら適切にネストさせることで、Promise chain なら適切に連鎖させることで、async/await なら適切に await することで、コード全体での順序では**時間的に非連続であったとしても注目している特定の範囲内に存在するコードの実行と完了の順番を保証させます**。
 
-ちなみに、Callback-based API や Promise-based API の処理オーダー(順番)が重要であることは実は Node API Document の fs の項目に直接的に言及されています。
+ちなみに、Callback-based API や Promise-based API の処理オーダー(順番)が重要であることが Node API Document の fs の項目に直接的に言及されています。
 
-> Because they are executed asynchronously by the underlying thread pool, there is no guaranteed ordering when using either the callback or promise-based methods.
+> Because **they are executed asynchronously by the underlying thread pool**, there is no guaranteed ordering when using either the callback or promise-based methods.
 > (中略)
 > **It is important to correctly order the operations by awaiting the results of one before invoking the other**:
 > (中略)
@@ -162,7 +162,7 @@ await Deno.writeTextFile("hello1.txt", "Hello world\n");  // overwrite "hello1.t
 
 https://doc.deno.land/deno/stable/~/Deno.writeTextFile
 
-このように、非同期 API を起点にした一連の作業が特定順序で実行・完了されることを保証するための正しい書き方とその仕組みを学ぶということが非同期処理というテーマでの学習です。つまり、「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
+このように、非同期 API を起点にした一連の関連作業が特定順序で実行・完了されることを保証するための正しい書き方とその仕組みを学ぶということが非同期処理というテーマでの学習です。つまり、時間的には非連続になる可能性のある「逐次(sequential)処理」をどうやって書いて、どういうメカニズムでその処理が実現されているのかを知ることが重要ということです。
 
 # 非同期 API の利用が目的
 
@@ -174,10 +174,10 @@ Promise や async/awiat などの処理は、結果としてタイミングが�
 
 実際に MDN のドキュメントでは、async/await の目的が Promise-based API の利用のためであることがで明言されています。
 
->Note: async/await の目的は、プロミスベースの API を利用するのに必要な構文を簡素化することです。 async/await の動作は、ジェネレータとプロミスの組み合わせに似ています。
->([非同期関数 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function) より引用)
+> Note: async/await の目的は、プロミスベースの API を利用するのに必要な構文を簡素化することです。 async/await の動作は、ジェネレータとプロミスの組み合わせに似ています。
+> ([非同期関数 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function) より引用)
 
-別のチャプターで解説しますが、イベントループとコールスタックによって、非同期 API の処理結果と次の処理を１つのメインスレッドに集約的に通知させます。同時に複数のことをやるが、その結果を使った処理を再度１つのスレッドに集めて、次の処理を実行したり、別の非同期 API を起動させたりするという一連の作業順番を制御するために Promise chain や async/await を書く必要があるということです。そして、その結果としてコード上の配置と実行タイミングがずれて処理されるコードがでてくるということです。
+別のチャプターで解説しますが、イベントループとコールスタックによって、非同期 API の処理結果と次の処理をメインスレッドに集約的に通知させます。同時に複数のことをやるが、その結果を使った処理を再度１つのスレッド(=１つのコールスタック)に集めて、次の処理を実行したり、別の非同期 API を起動させたりするという一連の作業順番を制御するために Promise chain や async/await を書く必要があるということです。そして、その結果としてコード上の配置と実行タイミングがずれて処理されるコードがでてくるということです。
 
 基本的には、非同期のシンタックスを書くことは「結果的に使わざる負えない手段」であって「目的」ではないです。
 

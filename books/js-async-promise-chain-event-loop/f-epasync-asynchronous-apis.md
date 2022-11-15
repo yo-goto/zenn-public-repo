@@ -280,7 +280,7 @@ https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
 > Workers can be used to **run code on multiple threads**. Each instance of Worker is **run on a separate thread**, dedicated only to that worker.
 > ([Workers | Manual | Deno](https://deno.land/manual@v1.20.4/runtime/workers) より引用、太字は筆者強調)
 
-さらに ES2017 では、ビルトインオブジェクトとして [SharedArrayBuffer](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) や [Atomic](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Atomics) といった機能が追加され、スレッド間でのメモリ共有ができるようになったそうです。
+Worker API を利用することでスレッドを分岐させて本当の並列(parallel)処理ができるようになったわけですが、ES2017 ではビルトインオブジェクトとして [SharedArrayBuffer](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) や [Atomic](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Atomics) といった機能がさらに追加され、複数スレッド間でのメモリ共有ができるようになったそうです。
 
 https://hacks.mozilla.org/2016/05/a-taste-of-javascripts-new-parallel-primitives/
 
@@ -446,7 +446,7 @@ console.log("[2] 🦖 sync");
 > Many modern Web APIs are promise-based, including WebRTC, Web Audio API, Media Capture and Streams, and many more.
 > ([How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion) より引用)
 
-MDN では非同期 API の理想が Promise インスタンスを返す関数(つまり Promise-based API)であると示唆されています。
+新しい非同期 API は Promise を利用しており、MDN では非同期 API の理想が Promise インスタンスを返す関数(つまり Promise-based API)であると示唆されています。
 
 > 理想的には、すべての非同期関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります。顕著な例としては `setTimeout()` 関数があります。
 > ([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
@@ -655,7 +655,7 @@ console.log("上の処理の完了を待たずにコンソールに出力");
 
 次のチャプターで詳細に解説しますが、現実的には Callback や Promise chain、async/await は非同期 API の絡む処理を行う際に必要なシンタックスであり、状況に応じて「非同期」の性質を発現します。しかし、単体で利用することはほとんどなく、非同期 API を起点にした一連の後続処理の順序を制御するための方法として利用されます。
 
-このチャプターの冒頭で「非同期処理」とは「実行のタイミングがずれてしまう処理」であるという旨を書きましたが、それは部分的な解釈に過ぎませんでした。本質的には「複数の関連する事象が前の事象の完了を待たずに起きる」が「非同期」の正しい解釈であり、非同期 API を使う際に書かざる負えない Promise chain などのシンタックスによって付随的にでてくる「実行タイミングがコードの配置とずれる処理」は「非同期」の一部であるという訳です。
+このチャプターの冒頭で「非同期処理」とは「実行のタイミングがずれてしまう処理」であるという旨を書きましたが、それは部分的な解釈に過ぎませんでした。実際には「複数の関連する事象が前の事象の完了を待たずに起きる」が「非同期」の正しい解釈であり、非同期 API を使う際に書かざる負えない Promise chain などのシンタックスによって付随的にでてくる「実行タイミングがコードの配置とずれる処理」は「非同期」の一部であるという訳です。
 
 ```js:これしか書かれていないスクリプトファイル
 fetch("https://api.github.com/zen") // 起動させて環境がバックグラウンドで行う API 処理[非同期 API]
@@ -672,11 +672,11 @@ console.log("上の処理の完了を待たずにコンソールに出力");
 「非同期 API」についても、これこそが「非同期」の性質を発現しうるものだった訳なのですが、これも最初は「並列(parallel)」であるとあえて誤解した方が理解は進みます。とは言え、誤解していること自体を知っておくことは重要です。
 
 :::message
->非同期処理そのものは確かに並列処理ではありませんが、「**API を介して環境に委任した作業はバックグラウンドで並列に行われ、それが完了したら何かをメインスレッドで非同期的に行う**」というように、環境全体では「非同期 API」+「非同期処理」として「並列」と「非同期」の**両方が組み合わさって起きている**という仕組みを理解する必要があります。
+> 非同期処理そのものは確かに並列処理ではありませんが、「**API を介して環境に委任した作業はバックグラウンドで並列に行われ、それが完了したら何かをメインスレッドで非同期的に行う**」というように、環境全体では「非同期 API」+「非同期処理」として「並列」と「非同期」の**両方が組み合わさって起きている**という仕組みを理解する必要があります。
 
-と言いましたが、実際にはすべて「非同期」の概念にまつわる話であった訳です。最初の説明では内訳が複雑なため「非同期 API = 並列」かつ「`then()` のコールバックや `await` 式の前後 = 実行タイミングがコード配置とずれてしまう非同期処理」とみなしていました(これについては筆者の勘違いもありました😅)。
+冒頭では上のように説明していましたが、実際はすべて「非同期」の概念にまつわる話であった訳です。最初の説明では内訳が複雑なため「非同期 API = 並列」かつ「`then()` のコールバックや `await` 式の前後 = 実行タイミングがコード配置とずれてしまう非同期処理」とみなしていました(これについては筆者の勘違いもありました😅)。非同期 API が並列的作業を行えるのは非同期 API そのものの「非同期の現象を起こしうる」という性質に直結していました。
 
-「非同期処理」という用語を今ある知識で完璧に説明するなら、非同期処理とは「**複数の関連する事象が前の事象の完了を待たずに起きる非同期という現象を引き起こす可能性のある API 処理やその実行に付随して起きる後続の関連する実行タイミングがコード配置とズレてしまう可能性のある処理のこと、あるいはそれらすべてをまとめて認識するための呼称**」であると言えます。「可能性がある」と言っているのは状況次第で同期になることもあるからです。
+「非同期処理」という用語を今ある知識で完璧に説明するなら、いわゆる非同期処理とは「**複数の関連する事象が前の事象の完了を待たずに起きる非同期という現象を引き起こす可能性のある API 処理やその実行に付随して起きる後続の関連する実行タイミングがコード配置とズレてしまう可能性のある処理のこと、あるいはそれらすべてをまとめて認識するための呼称**」であると言えます。「可能性がある」と言っているのは状況次第で同期になることもあるからです。
 
 こんな定義だと紛らわしく扱いずらいので、上で述べたようにこの本では非同期 API (環境の機能)なら明確に「非同期 API」であることを強調して呼称し、それ以外の非同期にまつわる処理やシンタックス(Promise chain や async/await など)はまとめて「非同期処理」として呼称します(可能な場合はなるべく詳細に呼称するようにします)。
 
