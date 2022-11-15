@@ -95,7 +95,7 @@ function promiseResolve(v) {
 
 再び、async 関数の処理が再開し、最終的に async 関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise chain などで利用できるようになります。
 
-`implicit_promise = createPromise()` は後から解決される Promise インスタンス `implicit_promise` を作成し、`reoslvePromise(implicit_promise, w)` では作成したその Promise インスタンスを後から `w` で解決しています。細かい実装は分からないので、ここではそういうものだと考えてください。
+`implicit_promise = createPromise()` は後から解決される Promise インスタンス `implicit_promise` を作成し、`resolvePromise(implicit_promise, w)` では作成したその Promise インスタンスを後から `w` で解決しています。細かい実装は分からないので、ここではそういうものだと考えてください。
 
 ということで、上記コードの説明としてもう少しコメントを追加しておきたいと思います。`v` は `v = Promise.resolve(42)` というように値 `42` で既に履行されている Promise インスタンスとして想定します。
 
@@ -392,7 +392,7 @@ console.log("🦖 [2] MAINLINE: End");
 
 スクリプト評価による同期処理がすべて終わり、コールスタックからグローバルコンテキストがポップして破棄されることで、コールスタックが空になるので、マイクロタスクのチェックポイントとなります。マイクロタスクキューの先頭にあるものから順番にすべて処理されていきます。
 
-３番目にマイクロタスクキューへ送られたコールバック `() => console.log("👦 [5] <3-Sync> MICRO: then")` が実行された時点で、元々の `Promise.reoslve().then()` で返ってくる Promise インスタンスが履行状態となるので、`Promise.resolve().then().then()` のコールバックがマイクロタスクキューに送られて直ちにコールスタックへと積まれて実行されます。
+３番目にマイクロタスクキューへ送られたコールバック `() => console.log("👦 [5] <3-Sync> MICRO: then")` が実行された時点で、元々の `Promise.resolve().then()` で返ってくる Promise インスタンスが履行状態となるので、`Promise.resolve().then().then()` のコールバックがマイクロタスクキューに送られて直ちにコールスタックへと積まれて実行されます。
 
 ということで、実行結果は次のようになります。
 

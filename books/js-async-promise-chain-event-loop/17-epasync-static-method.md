@@ -276,7 +276,7 @@ Promise.all([pormise1, promise2, promise3])
   })
 ```
 
-`Promise.all()` の返り値となる Promise インスタンスには引数として渡した配列内の複数 Promise インスタンスの結果、つまり履行値の配列が格納されています。分かりやすいように次のように最初から履行している Promise インスタンスを `Promise.reoslve()` で作成してみます。
+`Promise.all()` の返り値となる Promise インスタンスには引数として渡した配列内の複数 Promise インスタンスの結果、つまり履行値の配列が格納されています。分かりやすいように次のように最初から履行している Promise インスタンスを `Promise.resolve()` で作成してみます。
 
 ```js
 const promiseArray = [

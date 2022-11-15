@@ -1061,7 +1061,7 @@ const sp: Promise<string> = new Promise(resolve => {
 });
 ```
 
-`Promise.reoslve()` でも同じことですね。数値で履行するなら型引数には `number` 型を指定します。
+`Promise.resolve()` でも同じことですね。数値で履行するなら型引数には `number` 型を指定します。
 
 ```js:TypeScript
 const np: Promise<number> = Promise.resolve(42);
@@ -1308,7 +1308,7 @@ const p = new Promise<number>(resolve => resolve(42));
 function pTimer(time) {
   return new Promise(resolve => setTimeout(() => {
     console.log(`${time}[ms]でタイムアウトしました`);
-    reoslve(time);
+    resolve(time);
   }), time);
 }
 ```
@@ -1321,8 +1321,8 @@ function pTimer(
 ): Promise<number> {
   return new Promise(resolve => setTimeout(() => {
     console.log(`${time}[ms]でタイムアウトしました`);
-    reoslve(time);
-  }), time);
+    resolve(time);
+  }, time));
 }
 
 pTimer(1000).then(val => console.log("履行値は", val));

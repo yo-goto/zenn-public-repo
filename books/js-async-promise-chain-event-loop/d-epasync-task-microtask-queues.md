@@ -298,7 +298,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask
 
 https://developer.mozilla.org/ja/docs/Web/API/HTML_DOM_API/Microtask_guide#enqueueing_microtasks
 
-Promise インスタンスが返ってこないので chain できない点以外については、基本的に `Promise.reoslve().then()` と同じように考えることができます。
+Promise インスタンスが返ってこないので chain できない点以外については、基本的に `Promise.resolve().then()` と同じように考えることができます。
 
 ```js
 // qmt.js

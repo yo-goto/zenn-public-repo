@@ -298,7 +298,7 @@ const chars = ["A", "B", "C", "D", "E"];
 (async () => {
   console.log("１秒ごとにアルファベットの出力を開始します");
 
-  await Promise.reoslve()
+  await Promise.resolve()
     .then(() => sleep(100))
     .then(() => console.log(chars[0]))
     .then(() => sleep(1000))
@@ -374,7 +374,7 @@ E
 すべてのアルファベットを出力しました
 ```
 
-改良すべきところがあるとするなら、`then()` が多く、マイクロタスクが無駄に発生してしまうところを直しておきます。Promise chain が分かりやすいように初期値を `Promise.reoslve()` にしましたが、元のコードと同じく、Promise インスタンスが返ってくる `sleep(1000)` を初期値にして始めてよいでしょう。`console.log()` の実行と `sleep(1000)` の返却も１つの `then()` コールバックにまとめて良いでしょう。
+改良すべきところがあるとするなら、`then()` が多く、マイクロタスクが無駄に発生してしまうところを直しておきます。Promise chain が分かりやすいように初期値を `Promise.resolve()` にしましたが、元のコードと同じく、Promise インスタンスが返ってくる `sleep(1000)` を初期値にして始めてよいでしょう。`console.log()` の実行と `sleep(1000)` の返却も１つの `then()` コールバックにまとめて良いでしょう。
 
 ```js:reduceChainKai.js
 import sleep from './sleep.js';

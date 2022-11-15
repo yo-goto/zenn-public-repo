@@ -235,7 +235,7 @@ promise2
 
 この様に resolve の行為は単に引数の値で Promise インスタンスを Fullfilled 状態にするものではありません。Promise インスタンスで resolve した結果として Rejected 状態になることもあります。`promise2` は `Promise1` の状態や履行値、拒否理由に対して自身の状態と値すべてを委ねています。
 
-`resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "Unwrapping" と言います。この Unwrapping の能力は `Promise.reoslve()` や Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Excutor 関数に渡す `reject()` 関数にはありません。
+`resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "Unwrapping" と言います。この Unwrapping の能力は `Promise.resolve()` や Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Excutor 関数に渡す `reject()` 関数にはありません。
 
 ```js
 // resolveWithPromise.js

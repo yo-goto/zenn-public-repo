@@ -39,7 +39,7 @@ undefined
 "object"
 > promise instanceof Promise
 true
-# Promise.reoslve() でつくっても同じ
+# Promise.resolve() でつくっても同じ
 > const np = Promise.resolve(1);
 undefined
 > np instanceof Promise
