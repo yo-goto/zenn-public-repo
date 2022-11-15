@@ -8,7 +8,7 @@ topics: [ "git", "github", "英語", "翻訳", "Obsidian" ]
 date: 2021-03-28
 modified: 2022-10-20
 url: "https://zenn.dev/estra/articles/translate-with-gitandgithub"
-tags: [" #type/zenn #git/github #Zenn #翻訳 #obsidian "]
+tags: [" #type/zenn #git/GitHub #Zenn #翻訳 #obsidian "]
 aliases:
   - git翻訳のまとめ記事
   - 記事_プルリクエストによる翻訳作業のやり方
