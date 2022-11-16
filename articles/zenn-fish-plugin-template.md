@@ -1,13 +1,15 @@
 ---
 title: "fish shellプラグインの開発テンプレートプラグインを作ってみた"
+published: true
+cssclass: zenn
 emoji: "🍤"
 type: "tech"
 topics: [fish, shell, 初心者, ターミナル, CLI]
-published: true
 date: 2022-02-21
+modified: 2022-11-16
 url: "https://zenn.dev/estra/articles/zenn-fish-plugin-template"
-aliases: [記事_fish shellプラグインの開発テンプレートプラグインを作ってみた]
 tags: " #shell/fish #type/zenn  "
+aliases: 記事『fish shellプラグインの開発テンプレートプラグインを作ってみた』
 ---
 
 ## モチベーション
@@ -25,6 +27,7 @@ fisher install yo-goto/fish-plugin-template
 ```
 
 ## ディレクトリ構造
+
 今回のディレクトリ構造はこんな感じです。関数の数がすこし多いのでメインとなる `fish-plugin-template.fish` から分離させて別個で定義しています。ファイル数が多いので、前回解説した[source-fish](https://github.com/yo-goto/source-fish)を使って開発しました。
 
 ```shell
@@ -61,7 +64,6 @@ fisher install yo-goto/fish-plugin-template
 - `__fish-plugin-template_make_template` : 親の関数から指定された条件をもとにディレクトリとファイルを作成する。条件の中に「テンプレートを追加する」があればテンプレート追加の関数(`__fish-plugin-template_write_template_$template`)を検索してファイルのベースになる名前とデバッグ用フラグを渡す。
 - `__fish-plugin-template_write_template_functions` : `functions` ディレクトリにあるファイルへのテンプレート挿入関数。ここに記載された `function` のテンプレートを指定されたプラグイン名のファイルに対して挿入する。
 - `__fish-plugin-template_interactive` : `fish-plugin-template` に引数を指定しない場合に起動するインタラクティブな質問でテンプレートを展開していく関数。質問の答えから内部で `__fish-plugin-template_make_template` を呼び出し、条件を与える。
-
 
 ↓ 簡易的な制御の流れ (関数名が長いので `fish-plugin-template` の部分を `fpt` と略しています)
 
@@ -205,7 +207,6 @@ _flag_debug:  -d
 ```
 
 ↓ 一方、問題である `--argument-names` オプションを併用した場合。
-
 
 ```shell:--argument-namesオプションを併用した場合
 function argtest-argparse-arguemnts-names \
@@ -449,7 +450,6 @@ end
 
 この `__fish-plugin-template_write_template_functions` は上で説明した次の `__fish-plugin-template_make_template` 関数から起動されて、条件として、プラグインの名前とデバッグフラグのみが渡されます。
 
-
 ```shell:functions/__fish-plugin-template_make_template.fish
 if functions --query __fish-plugin-template_write_template_override_$template
     # --argument-names 'plugin' '_flag_debug'
@@ -553,4 +553,3 @@ Make a full template in this directory? [Y/n]: y
 ```
 
 ということで、解説は終わりになります。興味がある方はこのプラグインや `soruce-fish` を使ってプラグイン開発してみてください。
-

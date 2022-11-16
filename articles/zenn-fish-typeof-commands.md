@@ -1,16 +1,19 @@
 ---
 title: "fishコマンドの機能的な分類"
+published: true
+cssclass: zenn
 emoji: "🏄🏻‍♂️"
 type: "tech"
 topics: [fish, shell, 初心者]
-published: true
 date: 2022-03-15
+modified: 2022-11-16
 url: "https://zenn.dev/estra/articles/zenn-fish-typeof-commands"
-aliases: [記事_fishコマンドの機能的な分類]
 tags: " #type/zenn #shell/fish/command  "
+aliases: 記事『fishコマンドの機能的な分類』
 ---
 
 # はじめに
+
 https://github.com/fish-shell/fish-shell/releases/tag/3.4.0
 
 日本時間の 2022/03/13 にリリースされた `fish v3.4.0` と合わせて[公式ドキュメントのコマンドリストページ](https://fishshell.com/docs/current/commands.html)が更新されました。
@@ -23,6 +26,7 @@ fish が提供するコマンドのカテゴリー分けが非常に分かりや
 :::
 
 # 分類の仕方
+
 まず「コマンド」と言っても、fish ではコマンドラインから実際に呼び出される可能性があるものにはいくつか種類があります。
 
 ```shell:コマンドライン
@@ -45,6 +49,7 @@ https://zenn.dev/estra/articles/zenn-what-is-command
 コマンドは CLI からユーザーが行いたい特定のタスクを遂行するために使用することが一般的ですから、上記のような分類よりも機能ごとの分類について知っておいた方が役立つ場面は多いはずです。また、bash や zsh などの他のシェルでも同様のタスク実行用コマンドは用意されているので、他のシェルスクリプトの内容を類推するのに役立ちます。
 
 # 機能分類
+
 ということで、今回は fish のコマンドを**機能的な面**から分類して解説していきたいと思います。
 と言っても、公式ドキュメントをほぼそのまま参考にしていますので、参考元を見たい方は公式ドキュメントの次のページを確認してください。また、所々補っている部分や分かりやすい言葉で置き換えてある箇所がいくつかあるので正確な内容についてもそちらを参照してください。
 
@@ -62,6 +67,7 @@ https://fishshell.com/docs/current/commands.html
 - 補助外部コマンド
 
 ## シンタックスキーワード
+
 参照元: [Keywords](https://fishshell.com/docs/current/commands.html#keywords)
 
 以下のものは fish のシンタックスを構築するコアの言語キーワードです。もちろんすべてコマンドですが、これらは「ビルトイン」に属するものです。
@@ -130,6 +136,7 @@ This function ends
 https://zenn.dev/estra/articles/google-search-from-fish-shell
 
 ## デコレーション
+
 参照元: [Decorations](https://fishshell.com/docs/current/commands.html#decorations)
 
 デコレーション用のコマンドは、他のコマンドの前に付けることでそのコマンドの振る舞いを制御できます。以下のものはすべて「ビルトイン」に属します。
@@ -169,6 +176,7 @@ $ exec /opt/homebrew/bin/fish -l
 :::
 
 ## タスク実行用ツール
+
 参照元: [Tools to do a task](https://fishshell.com/docs/current/commands.html#tools-to-do-a-task)
 
 以下は、各種タスク実行のためのコマンドです。ユーザが望む基本的なタスクはこれらのコマンドを使用して遂行できます。
@@ -226,6 +234,7 @@ $ help cd
 :::
 
 ## シェルのカスタマイズ用関数
+
 参照元: [Known functions](https://fishshell.com/docs/current/commands.html#known-functions)
 
 以下のものは fish shell をカスタマイズするためのコマンドで、使用することで fish の振る舞いを変更できます。以下のものはすべて「関数」です。
@@ -258,6 +267,7 @@ $ fish_config
 ```
 
 ## 補助関数
+
 参照元: [Helper functions](https://fishshell.com/docs/current/commands.html#helper-functions)
 
 以下は補助関数(helper function)として fish から提供されているコマンドです。
@@ -313,6 +323,7 @@ __fish_argcomplete_complete.fish
 ```
 
 ## 補助外部コマンド
+
 参照元: [Helper commands](https://fishshell.com/docs/current/commands.html#helper-commands)
 
 どこからでも簡単に呼び出せるよう「外部コマンド」として提供されているものが２つあります。
@@ -345,6 +356,7 @@ $ exa --tree --level=2 -a --classify /opt/homebrew/Cellar/fish/3.4.0/
 ```
 
 # コマンドの調べ方と覚え方
+
 以上のコマンドの使い方を一気に覚えることはできないため、目についたものをその時々調べたり、やりたいことからコマンドを探していくのオススメします。
 
 また、コマンドの使い方を調べる際の方法も紹介しておきます。以下のコマンド等を使用して調べることができます。
@@ -433,6 +445,7 @@ $ command -a python3
 ```
 
 ## 次にやってみること
+
 「fish コマンドの機能的な分類」について解説してきましたが、タスク実行用ツールのコマンドのいくつかをコマンドラインから利用できるようになったら、次はそれらとキーワードで紹介したコマンドを使って「関数」を作成してみると使えるコマンドがどんどん増えていきます。
 
 また、fish では「プラグイン」を作成できますが、つくり方は「関数」と同じ要領で、単純にプロジェクトとして Github で公開して `fisher` などのプラグインマネージャーでインストールできるように体裁を整えるだけです。
@@ -451,4 +464,3 @@ $ command -a python3
     - [fishのVAR=VALステートメントでDenoの環境変数 NO_COLOR を上書きする](https://zenn.dev/estra/articles/deno-no-color-fish-override-variable)
 - (5)「スコープルールと環境変数をしっかり理解する」
     - [fishで「パスを通す」ための最終解答](https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer)
-

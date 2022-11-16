@@ -6,11 +6,11 @@ emoji: "🗽"
 type: "tech"
 topics: [fish, shell, 環境変数, dotfiles, terminal]
 date: 2022-03-06
-modified: 2022-11-02
+modified: 2022-11-16
 url: "https://zenn.dev/estra/articles/zenn-fish-add-path-final-answer"
 AutoNoteMover: disable
 tags: [" #type/zenn #shell/fish/env  "]
-aliases: 記事_fishでパスを通すための最終解答
+aliases: 記事『fishでパスを通すための最終解答』
 ---
 
 # はじめに

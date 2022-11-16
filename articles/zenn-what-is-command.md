@@ -1,13 +1,18 @@
 ---
 title: "fish shellにおける関数・ビルトイン・外部コマンドの実体"
+published: true
+cssclass: zenn
 emoji: "🐚"
 type: "tech"
 topics: [fish, shell, UNIX, macOS, Homebrew]
-published: true
 date: 2022-02-23
+modified: 2022-11-16
 url: "https://zenn.dev/estra/articles/zenn-what-is-command"
-aliases: [記事_fish shellビルトインと外部コマンドの実体]
 tags: " #type/zenn #shell/fish  "
+aliases:
+  - 記事『fish shellビルトインと外部コマンドの実体』
+  - 外部コマンドの実体
+  - ビルトインコマンドと外部コマンドの違い
 ---
 
 # はじめに
@@ -455,6 +460,7 @@ https://qiita.com/tk3fftk/items/8b389c0e4b1f9c64ebe3
 https://kinacom.hatenablog.jp/entry/2016/06/29/180854
 
 ## シンボリックリンクとHomebrew
+
 :::message alert
 `fish` プログラムは `opt/homebrew/bin/fish` であるかと思いきや、実際にはそうではなかったことが判明したので追記いたしました。
 :::
@@ -670,6 +676,7 @@ zless*                               zipsplit*
 https://stackoverflow.com/questions/48740260/osx-whats-the-difference-between-usr-bin-python-and-system-library-framewor
 
 これも macOS が利用する Python のバージョンが変更されてもシンボリックリンクの指し示す先が変更されれば `python` コマンドは同一のファイルパス(`/usr/bin/phthon`)で利用できるようになっていますね。
+
 # まとめ
 
 まとめると、このようになります。
@@ -677,4 +684,3 @@ https://stackoverflow.com/questions/48740260/osx-whats-the-difference-between-us
 - **Function** : 他のコマンドをグルーピングし、名前を付けて実行できるようにして定義したもの。ファイル拡張子は `.fish` で、自作したものや、いくつかの external command のラッパーやユーティリティ(`ls`、`man` や `help` 等)が fish shell から提供されている。fish shell から提供されるものは、Homebrew などを使っている場合には `/opt/homebrew/Cellar/fish/3.3.1/share/fish/functions/` などの場所に fish shell script として定義されている。
 - **Builtin** (内部コマンド: **Internal command**) : シェルから見て内部にあるコマンドで、fish shell のプログラム自体に組み込まれて提供されている(`and`, `argparse`, `for` など)。各コマンドに対応するソースコードは C++ で書かれている。
 - **External command** (外部コマンド) : シェルから見て外部にあるコマンドで、fish shell 自体とは関係のないプログラム。bash などの別のシェルを使っていても呼び出すことができる。`/bin` や `/usr/bin`、`/usr/local/bin`、`/opt/homebrew/bin/` といったディレクトリに種類ごとで配置されている。macOS などの [UNIX-like OS](https://www.wikiwand.com/ja/Unix%E7%B3%BB) にもともと入っている**UNIX command**(OS に同梱されていることから **Included command** とも呼ばれることもあるらしい)や、Homebrew などのパッケージマネージャーを使って自分で入れることができるパッケージのコマンドなど。実体は executable なバイナリファイルや、テキストファイル(shell script など)。外部コマンドの呼び出し対象となるのは、`PATH` 環境変数に登録されたディレクトリで、新しく追加されたものから検索される。登録されているディレクトリに実際のバイナリファイルが存在するとは限らずシンボリックリンクの場合も多々ある。
-

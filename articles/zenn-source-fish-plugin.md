@@ -1,13 +1,15 @@
 ---
 title: "fish shellで一気にファイルをsourceするプラグインを作ってみた"
+published: true
+cssclass: zenn
 emoji: "🍣"
 type: "tech"
 topics: [fish, shell, 初心者, ターミナル, CLI]
-published: true
 date: 2022-02-12
+modified: 2022-11-16
 url: "https://zenn.dev/estra/articles/zenn-source-fish-plugin"
-aliases: [記事_fish shellで一気にファイルをsourceするプラグインを作ってみた]
 tags: " #type/zenn #shell/fish  "
+aliases: 記事『fish shellで一気にファイルをsourceするプラグインを作ってみた』
 ---
 
 ## モチベーション
@@ -321,6 +323,7 @@ not builtin type
 別の記事でもう少し詳しく function、builtin、external command の実体について解説してみました。
 https://zenn.dev/estra/articles/zenn-what-is-command
 :::
+
 ## findとsourceをラップする
 
 今回作ったプラグインは言ってしまえば、BSD 系の external command である `find` と fish builtin である `soruce` コマンドをラップした関数です。付加的に色々な処理をつけたりオプション分岐させて使いやすくしています。前の fish shell の記事で紹介した `ggl` も BSD の `open` コマンドや Linux 用ユーティリティである `xdg-open` コマンドのラッパーといえます。
@@ -549,5 +552,3 @@ end
 興味のある方は Github でソースコードを公開していますので確認してみてください。
 
 https://github.com/yo-goto/source-fish
-
-
