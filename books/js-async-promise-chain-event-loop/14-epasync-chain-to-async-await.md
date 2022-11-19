@@ -281,7 +281,7 @@ Promise chain で書き直した方は async 関数内部で Promise 処理を `
 
 async 関数の基本については解説したので、もう１人の登場人物である await 式について詳しく見ていきましょう。
 
-まずは読み方ですが、asynchronous という英単語の発音記号は `/eɪsɪ́ŋkr(ə)nəs/` なので、`async` の読み方は"エイシンク"が正しいということになりますが、ゴリラさん([@gorilla0513](https://twitter.com/gorilla0513))の調査による意外にアシンク派が多いようです。
+まずは読み方ですが、asynchronous という英単語の発音記号は `/eɪsɪ́ŋkr(ə)nəs/` なので、`async` の読み方は"エイシンク"が正しいということになりますが、ゴリラさん([@gorilla0513](https://twitter.com/gorilla0513))の Twitter アンケートによると意外にアシンク派が多いようです。
 
 https://twitter.com/gorilla0513/status/1589809249848537088?s=20&t=9PPhBYSWCGtEJdOzJXL6-A
 
