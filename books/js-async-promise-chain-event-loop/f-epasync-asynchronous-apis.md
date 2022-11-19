@@ -369,11 +369,13 @@ API を介した作業を環境が代わりに並列的に行っている間も�
 
 つまり、両方が一体となって処理を実現していくわけです。
 
-![setTimeoutのメカニズム](/images/js-async/img_setTimeout-mechanism.jpg)
+![setTimeoutのメカニズム](/images/js-async/img_setTimeout-mechanism.png)
 
 JavaScript はこのように ECMAScript と環境実装の API(実行環境の固有機能) を組み合わせたものとして考えます。実際、`console.log()` なども API ですし、JavaScript は API が無いと大したことはできません。
 
 話を戻すと、非同期 API の処理は環境が並列的に行ってくれるので、非同期 API の処理結果を使ってコールバック関数の形でなにか処理したい場合には他の同期処理とはタイミングをずらす必要がありますね。本質的には (A) 非同期 API を使いたいがために (B) 非同期のシンタックスの関数を書く必要があるという話になります。
+
+![fetchのメカニズム](/images/js-async/img_fetch-mechanism.png)
 
 以下のコードでは `fetch()` API でデータ取得しながら `setTimeout()` API で指定した遅延時間 1000 ミリ秒を計測し、時間経過後にコンソールへテキスト出力をしています。**環境の機能である非同期 API(Non-blocking API)を使用しているから同時に複数のことができます**。
 
