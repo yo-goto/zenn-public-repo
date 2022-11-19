@@ -178,7 +178,10 @@ const timerId = setTimeout(() => {
 
 https://developer.mozilla.org/ja/docs/Web/API/setTimeout
 
-`setTimeout()` API の遅延時間を 0 秒にすることでタスクキューへタスクを簡単に発行できますが、あくまでタイマー処理であり、０ミリ秒遅延は実際０ミリ秒にはならず１ミリ秒以上の時間がかかることに注意してください。また、タスクキューに他のタスクがある場合には先に存在していたタスクが処理されるので、その場合もタスク処理が指定時間よりも遅く処理されることになります。
+`setTimeout()` API の遅延時間を 0 秒にすることでタスクキューへタスクを簡単に発行できますが、あくまでタイマー処理であり、０ミリ秒遅延は実際０ミリ秒にはならず１ミリ秒以上の時間がかかることに注意してください。また、タスクキューに他のタスクがある場合には先に存在していたタスクが処理されるので、その場合もタスク処理が指定時間よりも遅く処理されることになります。スケジュール通りの正確な実行が保証されないことは仕様に記載されています。
+
+> This API does not guarantee that timers will run exactly on schedule. Delays due to CPU load, other tasks, etc, are to be expected.
+> ([HTML Standard](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers) より引用)
 
 ```ts:Denoでの型定義
 function setTimeout(
