@@ -16,6 +16,10 @@ aliases: Promise本『Promise chain はネストさせない』
 
 このチャプターでは、Promise chain におけるネストについて、アンチパターンとしての話と、原理的な話を行います。
 
+:::message alert
+このチャプターでの解説全体に大きな間違いがあったので修正予定です。
+:::
+
 # Promise chain をネストしてみる
 
 前のチャプターでは、`then()` メソッドのコールバックにおいて、Promise インスタンスを `return` した場合「Promise インスタンスの `resolve` に使われた値は次の `then()` メソッドのコールバック関数の引数として渡される」という話でした。
@@ -99,7 +103,7 @@ console.log("🦖 [4] Sync");
 ```js
 returnPromise("1st Promise", "2")
   .then((value) => {
-    // これが cb1 
+    // これが cb1
     // 上から下に実行されていく
     console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
@@ -131,7 +135,7 @@ returnPromise("1st Promise", "2")
 ```js
 returnPromise("3rd Promise", "3")
   .then((value) => {
-    // これが cb3 
+    // これが cb3
     // 上から下に実行されていく
     console.log("👦 [7] Async");
     console.log("👦 Resolved value: ", value);
