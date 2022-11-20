@@ -5,7 +5,7 @@ date: 2022-04-21
 modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_Promise コンストラクタと Executor 関数
+aliases: Promise本『Promise コンストラクタと Executor 関数』
 ---
 
 # このチャプターについて
@@ -71,7 +71,7 @@ const promise = new Promise(executor);
 :::message alert
 『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで解説したとおり、非同期 API には種類があり、`setTimeout()` は**タスクベースの非同期 API** です。
 
-基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` などを使っていくことが一般的だと思いますが、タスクベースの非同期 API と Promise を絡めて考えると混乱することになるので、最初はあえて使わずに説明してきます。ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します。
+基本的に非同期処理の解説では上記のコンストラクタ関数内で `setTimeout()` などを使っていくことが一般的だと思いますが、タスクベースの非同期 API と本来的にはマイクロタスクベースの非同期 API のために存在する Promise を絡めて考えてしまうと混乱することになるので、最初はあえて使わずに説明してきます。ちなみに `console.log()` 自体も Web API ですがこちらは非同期処理とは関係ないので使用します。
 
 実は Promise コンストラクタ内で `setTimeout()` などのタスクベースの非同期 API を利用することで、後のチャプターで解説する "[Promisification](12-epasync-wrapping-macrotask)" という手法になるのですが、これを最初に知ってしまうと学習を進めてく過程で**混乱する可能性が高いので**注意してください。
 :::
@@ -170,7 +170,7 @@ const promise2 = new Promise(res => res("Promise履行時の値"));
 `executor` 関数の引数である `res` 関数と静的メソッドである `Promise.resolve()` は別物であることに注目してください。
 
 :::message
-`Promise.resolve()` と `reject()` 関数(上の例では `res()`)が別モノであるということが実は async/await の挙動などで関わってくるので注意してください。特に `resolve()` 関数はかなり特殊です。つまり、完全に等価ではないので、「大体同じ」として扱っています。
+`Promise.resolve()` と `reject()` 関数(上の例では `res()`)が別モノであるということが実は async/await の挙動などで関わってくるので注意してください。特に `resolve()` 関数はかなり特殊で再帰性などの特徴が関わります。つまり、**完全に等価ではない**ので、「大体同じ」として扱っています。
 :::
 
 この `Promise.resolve()` は最も文字数が少なく書けるので、Promise オブジェクトの初期化やテストコードを書く際に活用できる便利なショートカットとして覚えてください。実際に Promise オブジェクトを作成する際には `new Promise(excutor)` が基本となります。

@@ -5,7 +5,7 @@ date: 2022-04-17
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_コールバックで副作用となる非同期処理
+aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 
 # このチャプターについて
@@ -63,12 +63,12 @@ https://www.youtube.com/watch?v=e-5obm1G_FY&list=TLGGz_fwguCfqL8yMDA3MjAyMg
 さて、今まで `then()` メソッドのコールバック関数内にて返すものとしては次のパターンでした。
 
 - (1) 文字列や数値などの通常の値を `return` する
-  - 直ちに次の `then()` メソッドのコールバックが Microtask queue へと追加されて、コールバック関数の引数には `return` した値が渡される
+  - 直ちに次の `then()` メソッドのコールバックがマイクロタスクキューへと追加されて、コールバック関数の引数には `return` した値が渡される
 - (2) Promise インスタンスを `return` する
-  - 待機状態ならそれが解決してから次の `then()` メソッドのコールバックが Microtask queue へと追加され、`resolve` した値がコールバック関数の引数に渡される
-  - 履行状態なら直ちに次の `then()` メソッドのコールバックが Microtask queue へと追加され、`resolve` した値がコールバック関数の引数に渡される
+  - 待機状態ならそれが解決してから次の `then()` メソッドのコールバックがマイクロタスクキューへと追加され、`resolve` した値がコールバック関数の引数に渡される
+  - 履行状態なら直ちに次の `then()` メソッドのコールバックがマイクロタスクキューへと追加され、`resolve` した値がコールバック関数の引数に渡される
 - (3) 何も `return` しない
-  - 直ちに次の `then()` メソッドのコールバックが Microtask queue へと追加されて、コールバック関数の引数は `undefined` となる
+  - 直ちに次の `then()` メソッドのコールバックがマイクロタスクキューへと追加されて、コールバック関数の引数は `undefined` となる
 
 (2) と (3) を混同してしまう場合に気をつけてください。`then()` メソッドのコールバック関数で Promise を使った非同期処理を行う場合には必ず Promise インスタンスを `return` するようにしてください。`then()` メソッドのコールバック関数内部で、非同期処理を使用する場合に、`return` をして Promise インスタンスを返していない場合、その非同期処理は「**副作用(Side Effect)**」となります。この場合、次の `then()` メソッドのコールバック関数へ値を繋ぐことができなくなり、そもそも意図した実行順番にならなくなる場合があります。
 
@@ -589,6 +589,7 @@ doAsyncTask()
     const data = doSthAsyncA(path);
     console.log(data);
     return data;
+  })
   .then(data => {
     const processedData_1st = doSthAsyncB(data);
     console.log(processedData_1st);

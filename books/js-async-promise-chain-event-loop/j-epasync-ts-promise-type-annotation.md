@@ -5,7 +5,7 @@ date: 2022-07-12
 modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_TypeScript における Promise の型注釈
+aliases: Promise本『TypeScript における Promise の型注釈』
 ---
 
 # このチャプターについて

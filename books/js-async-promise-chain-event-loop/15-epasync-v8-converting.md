@@ -541,7 +541,7 @@ function promiseResolve(v) {
 }
 ```
 
-この場合は実は `await 42` と同じで、内部的にマイクロタスクを１つ発行することになります。そういう訳で、`await` で**何を評価しようが少なくともマイクロタスク１つが発行される**ことになります。各 await 式において最低でも１つマイクロタスクが発行されます。
+この場合は実は `await 42` と同じで、内部的にマイクロタスクを１つ発行することになります。そういう訳で、`await` で**何を評価しようが少なくともマイクロタスク１つが発行される**ことになります。つまり、各 await 式において最低でも１つマイクロタスクが発行されます。
 
 ということで、次のように `Math.random() < 0.5` で 50% ずつの確率で分岐するコードでは実行結果は同じになります。
 
@@ -865,7 +865,36 @@ https://zenn.dev/uhyo/articles/return-await-promise
 :::message alert
 ここでいう `resolve()` 関数とは Promise コンストラクタの引数となる executor 関数の引数として渡す `resolve` コールバック関数のことで、`Promise.resolve()` のことではないことに注意してください。
 
-つまり、`resolve(Promise.resolve(42))` と `Promise.resolve(Promise.resolve(42))` は違います。`resolve()` 関数が特殊であり、`Promise.resolve()` の**引数が Promise インスタンスの場合は変換せずにそのまま返します**。
+つまり、`resolve(Promise.resolve(42))` と `Promise.resolve(Promise.resolve(42))` は違います。`resolve()` 関数が特殊であり、`Promise.resolve()` の**引数が Promise インスタンスの場合は変換せずにそのまま返します**。例えば、以下のように `queueMicrotask()` と競争させても、直ちにマイクロタスクを発行していることがわかります。
+
+```js
+console.log("🦖 [1]");
+
+Promise.resolve(Promise.resolve(Promise.resolve(42)))
+  .then((d) => {
+    // １つ目のマイクロタスク
+    console.log("💙 [3]", d);
+  });
+
+queueMicrotask(() => {
+  // ２つ目のマイクロタスク
+  console.log("🔥 [4]");
+});
+
+console.log("🦖 [2]");
+
+/*
+🦖 [1]
+🦖 [2]
+💙 [3] 42
+🔥 [4]
+*/
+```
+
+MDN でも引数として与えられた値がプロミスならそのプロミス自体を返すと説明されています。
+
+> Promise.resolve() メソッドは、与えられた値で解決した Promise オブジェクトを返します。その値がプロミスであった場合は、そのプロミスが返されます。
+> ([Promise.resolve() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve) より引用)
 :::
 
 この記事では V8 エンジンの内部変換で考えるので、上の記事にように通常の関数に戻して考えるのではなく、async 関数の内部変換後に起きることでそのまま考えてみます。
@@ -919,6 +948,20 @@ const implicit_promise = new Promise(resolve => {
   Promise.resolve().then(() => {
     Promise.resolve(42).then(resolve);
   });
+});
+```
+
+少し分かりやすくするために、あえて `queueMicrotask()` API を使って書き直すと次のようになります。
+
+```js
+const implicit_promise = new Promise(resolve => {
+  // Promise.resolve(42) の then メソッドを呼び出すマイクロタスクを発行する
+  queueMicrotask(() => {
+    // このコールバックが１つ目のマイクロタスク
+    Promise.resolve(42).then(resolve);
+    //                       ^^^^^^^ このコールバックが2つ目のマイクロタスク
+  });
+  // 合計二個のマイクロタスクが必要
 });
 ```
 
@@ -1018,18 +1061,21 @@ Promise インスタンス以外で resolve を試みるとマイクロタスク
 Unwrapping については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』のチャプターで解説しました。
 :::
 
-ただし、この `Promise.resolve()` と `resolve()` の２つには注意すべき違いがあります。
+ただし、この `Promise.resolve()` と Executor 関数の `resolve()` の２つには注意すべき違いがあります。
 
-上で見たようにまずは `resolve()` 関数に Promise インスタンスを渡した場合は注意が必要です。次のようなコードで Promise インスタンスで resolve を試みることでコードの実行順番が直感的に予測しずらくなります。
+上で見たようにまずは Executor 関数の `resolve()` 関数に Promise インスタンスを渡した場合は注意が必要です。次のようなコードで Promise インスタンスで resolve を試みることでコードの実行順番が直感的に予測しずらくなります。
 
 ```js
 // コードの参照元 : https://twitter.com/ferdaber/status/1098318363305099264?s=20&t=Qu2h-Aa0IhI5Lh-bxPkcOw
+
 new Promise(resolve => {
   resolve('a');
 }).then(console.log);
+
 new Promise(resolve => {
   resolve(Promise.resolve('b'));
-}).then(console.log)
+}).then(console.log);
+
 Promise.resolve(Promise.resolve('c')).then(console.log);
 ```
 
@@ -1046,7 +1092,7 @@ b
 ```js
 new Promise(resolve => {
   resolve(Promise.resolve('b'));
-}).then(console.log)
+}).then(console.log);
 ```
 
 このコードは上で見たように ECMAScript の仕様において `resolve()` 関数に渡された Promise の `then()` メソッドを呼ぶというマイクロタスクを発行するというように決まっているわけですから、次のように変換できます。
@@ -1056,7 +1102,19 @@ new Promise(resolve => {
   Promise.resolve().then(() => {
     Promise.resolve('b').then(resolve);
   });
-}).then(console.log)
+}).then(console.log);
+```
+
+分かりやすく `queueMicrotask()` API を使って書き直すと次のようになります。
+
+```js
+new Promise(resolve => {
+  queueMicrotask(() => { // このコールバックが１つ目のマイクロタスク
+    Promise.resolve('b').then(resolve);
+    //                        ^^^^^^^ このコールバックが2つ目のマイクロタスク
+  });
+  // この Promise が解決されるまで２つのマイクロタスクが必要
+}).then(console.log);
 ```
 
 そういう訳で、この Promise インスタンスが履行状態となるまでにマイクロタスクが２個必要となり、出力順番は a → c → b となるわけです。
@@ -1070,7 +1128,7 @@ new Promise((resolve) => {
 }).then(value => console.log("[1]", value)); // <1-Sync>
 
 Promise.resolve(Promise.resolve(Promise.resolve("I")))
-  .then(value => console.log("[2]", value)) // <2-Sync>
+  .then(value => console.log("[2]", value)); // <2-Sync>
 
 new Promise((resolve) => {
   resolve(Promise.resolve("S")); // <3-Sync> <5-Async>
