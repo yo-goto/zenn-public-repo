@@ -11,7 +11,7 @@ tags: " #type/zenn #obsidian #anki #PKM "
 # はじめに
 前回の[OHZフロー](https://zenn.dev/estra/articles/ohzflow-zenn-hugo-obsidian)についての記事から更に応用的運用を行うためのフローについてのBookにつながる内容です(現在作成中)。
 
-今回はObsidiain内部の**ナレッジベースからAnkiへとフラッシュカード化する方法**とそのプラグインを紹介します。前回はOHZフロー(Zenn & Hugo in Obsidian)だったので、今回も暫定的に**OTA(Obsidian To Anki)フロー**と呼んで名称の簡略化と概念化を行います。
+今回はObsidian内部の**ナレッジベースからAnkiへとフラッシュカード化する方法**とそのプラグインを紹介します。前回はOHZフロー(Zenn & Hugo in Obsidian)だったので、今回も暫定的に**OTA(Obsidian To Anki)フロー**と呼んで名称の簡略化と概念化を行います。
 
 Obsidianとこの記事で紹介するプラグインの両方とも開発の中途段階なので今後様々な変更があると思われます。注意してください。
 
