@@ -5,7 +5,7 @@ date: 2022-04-17
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_複数の Promise を走らせる
+aliases: Promise本『複数の Promise を走らせる』
 ---
 
 # このチャプターについて

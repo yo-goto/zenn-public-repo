@@ -5,7 +5,7 @@ date: 2022-05-14
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_V8 エンジンによる async/await の内部変換
+aliases: Promise本『V8 エンジンによる async/await の内部変換』
 ---
 
 # このチャプターについて

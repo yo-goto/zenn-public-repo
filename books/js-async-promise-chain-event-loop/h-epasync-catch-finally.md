@@ -5,7 +5,7 @@ date: 2022-05-14
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_catch メソッドと finally メソッド
+aliases: Promise本『catch メソッドと finally メソッド』
 ---
 
 # このチャプターについて

@@ -5,7 +5,7 @@ date: 2022-05-03
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_Promise の基本概念
+aliases: Promise本『Promise の基本概念』
 ---
 
 # このチャプターについて

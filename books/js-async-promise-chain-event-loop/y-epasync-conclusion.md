@@ -5,7 +5,7 @@ date: 2022-07-21
 modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_総括 - 非同期処理のまとめ
+aliases: Promise本『総括 - 非同期処理のまとめ』
 ---
 
 # このチャプターについて

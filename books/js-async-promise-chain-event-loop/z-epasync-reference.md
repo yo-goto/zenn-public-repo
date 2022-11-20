@@ -5,7 +5,7 @@ date: 2022-06-30
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_参考文献
+aliases: Promise本『参考文献』
 ---
 
 # [第１章 - API を提供する環境と実行メカニズム](sec-01-epasync)

@@ -5,7 +5,7 @@ date: 2022-05-14
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_Promise chain から async 関数へ
+aliases: Promise本『Promise chain から async 関数へ』
 ---
 
 # このチャプターについて

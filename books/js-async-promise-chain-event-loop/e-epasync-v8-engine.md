@@ -5,7 +5,7 @@ date: 2022-05-06
 modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_V8 エンジンについて
+aliases: Promise本『V8 エンジンについて』
 ---
 
 # このチャプターについて

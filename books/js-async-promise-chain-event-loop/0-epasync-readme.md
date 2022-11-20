@@ -8,7 +8,7 @@ AutoNoteMover: disable
 tags: [" #type/zenn/book #JavaScript/async  "]
 aliases:
   - EPAsync
-  - 本_イベントループとプロミスチェーンで学ぶ非同期処理
+  - Promise本『イベントループとプロミスチェーンで学ぶ非同期処理』
 ---
 
 ## MOC

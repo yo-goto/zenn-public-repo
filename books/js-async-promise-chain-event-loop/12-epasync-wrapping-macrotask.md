@@ -6,7 +6,7 @@ modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
-  - ch_古い非同期 API を Promise でラップする
+  - Promise本『古い非同期 API を Promise でラップする』
   - Promisify
   - Promisification
 ---

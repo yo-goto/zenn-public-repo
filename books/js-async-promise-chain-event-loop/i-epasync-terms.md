@@ -5,6 +5,7 @@ date: 2022-10-30
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
+aliases: Promise本『用語集』
 ---
 
 # このチャプターについて

@@ -5,7 +5,7 @@ date: 2022-06-15
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_同期 API とブロッキング
+aliases: Promise本『同期 API とブロッキング』
 ---
 
 # このチャプターについて

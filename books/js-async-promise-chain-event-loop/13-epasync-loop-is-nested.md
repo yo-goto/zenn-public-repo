@@ -5,7 +5,7 @@ date: 2022-04-17
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_イベントループは内部にネストしたループがある
+aliases: Promise本『イベントループは内部にネストしたループがある』
 ---
 
 # このチャプターについて

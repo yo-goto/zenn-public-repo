@@ -5,7 +5,7 @@ date: 2022-06-30
 modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_反復処理の制御
+aliases: Promise本『反復処理の制御』
 ---
 
 # このチャプターについて

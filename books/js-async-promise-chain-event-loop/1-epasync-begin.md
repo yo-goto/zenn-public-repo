@@ -5,7 +5,7 @@ date: 2022-04-17
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_はじめに
+aliases: Promise本『はじめに』
 ---
 
 # このチャプターについて
