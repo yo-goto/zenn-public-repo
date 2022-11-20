@@ -18,6 +18,7 @@ aliases: Promise本『参考文献』
 - [Inside look at modern web browser (part 2) - Chrome Developers](https://developer.chrome.com/blog/inside-browser-part2/)
 - [What the heck is the event loop anyway? – Philip Roberts](https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html)
 - [Angular Basics: Introduction to Processes, Threads—Web UI](https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-ui-developers)
+- [A Taste of JavaScript's New Parallel Primitives - Mozilla Hacks - the Web developer blog](https://hacks.mozilla.org/2016/05/a-taste-of-javascripts-new-parallel-primitives/)
 
 MDN
 - [How to use promises - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises#conclusion)
@@ -25,6 +26,8 @@ MDN
 - [プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)
 - [Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API)
 - [Web Worker の使用 - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers)
+- [Atomics - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Atomics)
+- [SharedArrayBuffer - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer)
 
 ## [同期 API とブロッキング](f-epasync-synchronus-apis)
 
