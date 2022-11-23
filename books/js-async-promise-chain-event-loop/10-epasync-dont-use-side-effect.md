@@ -8,6 +8,10 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 
+:::message alert
+このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を受けています。
+:::
+
 # このチャプターについて
 
 このチャプターは、別のチャプター『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』の続きとしての内容となります。

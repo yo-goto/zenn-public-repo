@@ -8,6 +8,10 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_then メソッドのコールバックで Promise インスタンスを返す
 ---
 
+:::message alert
+このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を受けています。
+:::
+
 # このチャプターについて
 
 このチャプターは短いですが、Promise chain を理解する上で重要なので１つのチャプターとして独立させています。チャプターは飛びますが、『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』のチャプターでも使う知識なので注意してください。

@@ -8,6 +8,10 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_Promise chain で値を繋ぐ
 ---
 
+:::message alert
+このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を受けています。
+:::
+
 # このチャプターについて
 
 前のチャプターを通して、Promise chain の基本的な動きが分かったと思います。ここからは値を Promise chain において値をつないでいく処理を考えてみたいと思います。

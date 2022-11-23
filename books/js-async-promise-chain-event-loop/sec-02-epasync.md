@@ -18,6 +18,8 @@ alieases: [EPAsync 第３章]
 この本の執筆経緯的にも Promise chain についての解説である第２章をはじめに執筆しており難易度としては簡単なので、[第１章](sec-01-epasync)の内容が難しい場合には第２章から読み始めるのも一つの手です。
 :::
 
+# 間違いについて
+
 :::message alert
 この章のチャプターで大きな間違いが見つかりました。
 
@@ -107,12 +109,12 @@ A 3
 */
 ```
 
-その挙動についての詳細な解説を行うためには仕様の理解が必要なため現在調査中です。間違った情報を公開してしまい申し訳ございません。とりあえずのところ、この話題以外の async/await といった他の解説には影響は無いようです。
+これらの挙動についての詳細な解説を行うためには仕様の理解が必要なため現在調査中です。間違った情報を公開してしまい申し訳ございません。とりあえずのところ、この話題以外の async/await といった他の解説には影響は無いようです。
 
 調査中の内容は以下のブログ記事で追跡してまとめています。
 
 - [JavaScript thenメソッドのコールバックについての勘違い](https://publish.obsidian.md/ankiyorihajimeyo/TSJS/JavaScript+then%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E3%81%AE%E5%8B%98%E9%81%95%E3%81%84)
-- [JavaScript Promise chainをネストする弊害](https://publish.obsidian.md/ankiyorihajimeyo/TSJS/JavaScript+Promise+chain%E3%82%92%E3%83%8D%E3%82%B9%E3%83%88%E3%81%99%E3%82%8B%E5%BC%8A%E5%AE%B3)
+- [JavaScript Promise chainのネストをフラット化する弊害](https://publish.obsidian.md/ankiyorihajimeyo/TSJS/JavaScript+Promise+chain%E3%81%AE%E3%83%8D%E3%82%B9%E3%83%88%E3%82%92%E3%83%95%E3%83%A9%E3%83%83%E3%83%88%E5%8C%96%E3%81%99%E3%82%8B%E5%BC%8A%E5%AE%B3)
 
 挙動の詳細が理解できしだい、新しいチャプターを追加し、波及しているチャプターの内容を順次修正してきます。
 :::
