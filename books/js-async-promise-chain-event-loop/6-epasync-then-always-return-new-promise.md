@@ -8,10 +8,6 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: ch_then メソッドは常に新しい Promise を返す
 ---
 
-:::message alert
-このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を受けています。
-:::
-
 # このチャプターについて
 
 :::message alert

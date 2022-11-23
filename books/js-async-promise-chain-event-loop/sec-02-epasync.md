@@ -21,7 +21,7 @@ alieases: [EPAsync 第３章]
 # 間違いについて
 
 :::message alert
-この章のチャプターで大きな間違いが見つかりました。
+この章のチャプターで大きな間違い、あるいは情報の欠落が見つかりました。
 
 `then()` メソッドのコールバックから返る値の種類によってマイクロタスクの発生数が異なるため、現在行っている解説だと以下のようなコードの実行順序が理解できなくなります。
 
@@ -72,12 +72,10 @@ console.log("🦖 [2]");
 
 この理由としては、`then()` メソッドに渡すコールバックから Promise などの Thenable オブジェクト(`.then()` メソッドを持つオブジェクト) が返されると、もとの `then()` メソッドから返される Promsie を解決するために通常の値を返す時に加えて追加で２つのコールバックがマイクロタスクとして発生します。
 
-現在の解説だと、上記のような普通の値を返す chain と Promise を返す chain の比較がないため、一見正しい解説のように見えてしまっているはずですが、コールバック関数で Promise を返している場合、実際にはマイクロタスクが追加で２つ発生しています。
+現在の解説だと、上記のような普通の値を返す chain と Promise を返す chain の比較がないため、Promise を返している chain においても一見正しい解説のように見えてしまっているはずですが、コールバック関数で Promise を返している場合、**実際にはマイクロタスクが追加で２つ発生しています**。
 
 この挙動についての間違いから以下の解説のチャプターが影響を受けます。
 
-- [複数の Promise を走らせる](5-epasync-multiple-promises)
-- [then メソッドは常に新しい Promise を返す](6-epasync-then-always-return-new-promise)
 - [Promise chain で値を繋ぐ](7-epasync-pass-value-to-the-next-chain)
 - [then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)
 - [Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)
