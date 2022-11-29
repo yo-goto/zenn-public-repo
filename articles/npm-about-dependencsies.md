@@ -1391,7 +1391,7 @@ https://www.youtube.com/watch?v=SHIci8-6_gs
 
 - 2022-11-29 追記
 
-Tink の話は npm 社での解雇の問題などがあり、それに続いて [Kat 氏が npm を離職](https://twitter.com/zkat__/status/1174381958387781632?s=20&t=jy9K3yUf-EIi-mr1wkjzJA) していたため、事実上頓挫していたことが判明した。Tink のリポジトリ 2019 年に停止して現在アーカイブされている。
+Tink の話は npm 社での解雇の問題などがあり、それに続いて Kat 氏が npm を離職していたため、事実上頓挫していたことが判明した。Tink のリポジトリ 2019 年に停止して現在アーカイブされている。
 
 https://github.com/npm/tink/issues/49
 
