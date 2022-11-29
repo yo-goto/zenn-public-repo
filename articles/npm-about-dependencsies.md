@@ -343,7 +343,7 @@ DAG と Tree の構造は下図のように異なる。
 |---|---|
 | ![DAG](/images/npm-dependencies/img_DAGStructure2.png) | ![Tree](/images/npm-dependencies/img_treeStructure.png) |
 
-そもそも " 非循環依存関係の原則 "(**Acyclic dependencies principle**) というソフトウェアデザイン原則が存在しているらしい。
+そもそも "非循環依存関係の原則"(**Acyclic dependencies principle**) というソフトウェアデザイン原則が存在しているらしい。
 これは「パッケージの依存関係は閉路を持たないようにする」という原則で、パッケージ作成などを行う際にはこの原則に従うことで、閉路 (cycle) を作成しないように、つまり DAG にするようにデザインしなくてはいけないとのこと (パッケージだけでなくコンポーネントについてもこの原則が適用される)。
 
 https://en.wikipedia.org/wiki/Acyclic_dependencies_principle?oldformat=true
@@ -540,7 +540,8 @@ https://npm.github.io/how-npm-works-docs/npm3/how-npm3-works.html
 
 `node_module` フォルダの構造について説明する前にここで一度用語の紹介をしておきたいと思う。以下の用語について把握しておくことで `node_modules` フォルダの構造がなぜそうなるのを理解するのに役立つ。
 
-開発における役割でのパッケージ分類
+#### 開発における役割でのパッケージ分類
+
 - Prod (Production dependencies)
   - 動作や実行するのに必要なパッケージ
   - `package.json` の `dependencies` や `peerDependencies` や `optionalDependencies` もこれに含まれる
@@ -548,7 +549,8 @@ https://npm.github.io/how-npm-works-docs/npm3/how-npm3-works.html
   - 開発中のみに必要とされるパッケージ
   - `package.json` の `devDependencies`
 
-依存のレベルによるパッケージの分類用語
+#### 依存のレベルによるパッケージの分類用語
+
 - **Primary** dependencies (**Direct** dependencies)
   - プロジェクトルートの `package.json` ファイルから要求される依存パッケージ
 - **Secondary** dependencies (**Indirect** dependencies)
@@ -556,7 +558,10 @@ https://npm.github.io/how-npm-works-docs/npm3/how-npm3-works.html
 	- node_modules フォルダに含まれる大多数がこちらに属する
 	- 一般的用語では [Transitive dependencies](https://en.wikipedia.org/wiki/Transitive_dependency)(推移的依存関係) と呼ばれる
 
-npm で実際に使用される依存構造にまつわる用語 (依存のインストールは下記の３つを推移する)
+#### npm で実際に使用される依存構造にまつわる用語
+
+依存解決からパッケージ配置を行うには下記の３つの構造が必要。
+
 - (1) dependency graph (依存グラフ)
 	- パッケージ間の本質的な依存関係をグラフ構造に表現したもの
 	- 実際の構造は DAG (Directed acyclic graph) と呼ばれるもの
@@ -568,20 +573,22 @@ npm で実際に使用される依存構造にまつわる用語 (依存のイ�
 	- 実際の node_modules フォルダの構造
   - 別名: フォルダツリー (folder tree)
 
-フォルダツリー上のパッケージ配置についての用語
+#### フォルダツリー上のパッケージ配置についての用語
+
 - **Flat** package
 	- node_modules フォルダのルートに配置されたパッケージ
 	- この状態を「Flat にインストール」とか言う。
 - **Nested** package
 	- Flat packge フォルダ内部の node_modules フォルダ内部に配置されたパッケージ
 
-依存構造にまつわる俗語
-- deep tree
+#### 依存構造にまつわる俗語
+
+- [deep tree](https://youtu.be/M3BM9TB-8yA?t=756)
 	- node_modules フォルダが何重にもネストされたフォルダの状態
 - [npm doppelganger](https://rushjs.io/pages/advanced/npm_doppelgangers/) (npm ドッペルゲンガー)
 	- npm のインストールによって複数個インストールされてしまった同一バージョンのパッケージのことを指す
 - [Phantom dependencies](#phantom-dependencies)
-  - `require` できてしまうことで発生する " 幽霊のような依存 "
+  - `require` できてしまうことで発生する「幽霊のような依存」
 
 参考
 https://tech.groww.in/introduction-to-package-dependency-resolution-in-npm-ad1b374fc13a
