@@ -1193,7 +1193,8 @@ ctest@1.0.0 /Users/roshi/Development/Testing/ctest
     └── has-flag@4.0.0
 ```
 
-Phantom Dependency を図にすると次のようになる。
+Phantom Dependency を図にすると次のようになる。プロジェクトのソースコードから Primary ではないパッケージに対して `require()` できるのが問題。
+
 ![phantom dependency](/images/npm-dependencies/img_diamond-phantom-dep.jpg)
 
 逆に Phantom ではない通常の依存関係について考えてみる。
@@ -1215,10 +1216,14 @@ Phantom Dependency を図にすると次のようになる。
 
 各パッケージにおいて、それぞれの `package.json` ファイルにて Phatom でない実体を持つ依存関係として明示的に必要なパッケージが宣言されている。
 
-Phantom Dependency を作ってしまった場合には Primary に対してだけではなく、Secondary に対しても直接的な依存ができてしまったため、次のような弊害の起きる可能性がでてくる。
+Phantom Dependency を作ってしまった場合には Primary に対してだけではなく、Secondary に対しても直接的にソースコードからの依存ができてしまったため、次のような弊害の起きる可能性がでてくる。
 
 - バージョン互換性がなくなる: `package.json` ファイルに記載していない `supports-color` の互換性は保証できない
 - 配布の際に依存関係が欠落する: プログラム内で動作させるのに必要な処理として使用しているのに `devDependencies` に記載していない場合は、このパッケージを取得したユーザーから実際には機能していないように見えて、追跡困難な問題が発生する
+
+:::message
+後述する [pnpm](#pnpm-による解決) というパッケージマネージャではこの問題を特殊な node_modeuls フォルダの構造によってそもそも Secondary を呼び出せないようにして解決しているが、Phantom dependency にパッケージは実際には世の中に配布されており、その場合には pnpm では利用できないという問題がでてくる。
+:::
 
 詳しくは Rush のドキュメントを見てほしいが、このように Primary 以外の依存、つまり Secondary の依存内からモジュールを使用できてしまうことから、いくつかの弊害が起きる。
 
@@ -1261,13 +1266,13 @@ ctest@1.0.0 /Users/roshi/Development/Testing/ctest
 
 - 2022-11-29 追記
 
-後発のパッケージマネージャーである pnpm ではパッケージの管理を厳格に行うことでこの Phantom dependencies の問題を解決している。
+後発のパッケージマネージャーである pnpm ではパッケージの管理を厳格に行うことでこの Phantom dependencies の問題をベースから解決している。
 
 https://pnpm.io/ja/
 
-上で解説したように npm では Primary として `package.json` に宣言していない Secondary から `require` や `import` できてしまう。一方 pnpm の場合には store と呼ばれるグローバルな場所にパッケージを管理し、`node_modules` ディレクトリの構造自体をハードリンクやソフトリンクを使い実現している。現実的に `node_moduls` フォルダには Primary のディレクトリしか配置されないので、Primary 以外を使おうとするとエラーとなる。
+上で解説したように npm では Primary として `package.json` に宣言していない Secondary から `require` や `import` ができてしまう。一方 pnpm の場合には store と呼ばれるグローバルな場所にパッケージを管理し、`node_modules` ディレクトリの構造自体をハードリンクやソフトリンクを使い実現している。現実的に `node_moduls` フォルダには Primary のディレクトリしか配置されない(かつシンボリックリンク)ので、Primary 以外を使おうとするとエラーとなる。
 
-例えば Express パッケージのみを pnpm でインストールした時には次のようなディレクトリ構造となる。`.pnpm` の隠しフォルダ配下には Seconary dependencies のフォルダが store へのハードリンクとして作成される。
+例えば Express パッケージのみを pnpm でインストールした時には次のようなディレクトリ構造となる。`.pnpm` の隠しフォルダ配下には Seconary dependencies のフォルダが store 内にある実際のパッケージへのハードリンクとして作成される。
 
 ```sh
 # exa を使って深さ2までツリー表示
