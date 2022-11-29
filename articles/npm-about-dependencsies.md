@@ -1258,7 +1258,7 @@ ctest@1.0.0 /Users/roshi/Development/Testing/ctest
 
 https://pnpm.io/ja/
 
-上で解説したように npm では Primary として `package.json` に宣言していない Secondary dependencies が `require` や `import` できてしまう。一方 pnpm の場合には store と呼ばれるグローバルな場所にパッケージを管理し、`node_modules` ディレクトリの構造自体をハードリンクやソフトリンクを使い実現している。現実的に `node_moduls` フォルダには Primary しか配置されないいので、Primary 以外を使おうとするとエラーとなる。
+上で解説したように npm では Primary として `package.json` に宣言していない Secondary から `require` や `import` できてしまう。一方 pnpm の場合には store と呼ばれるグローバルな場所にパッケージを管理し、`node_modules` ディレクトリの構造自体をハードリンクやソフトリンクを使い実現している。現実的に `node_moduls` フォルダには Primary のディレクトリしか配置されないので、Primary 以外を使おうとするとエラーとなる。
 
 例えば Express パッケージのみを pnpm でインストールした時には次のようなディレクトリ構造となる。`.pnpm` の隠しフォルダ配下には Seconary dependencies のフォルダが store へのハードリンクとして作成される。
 
