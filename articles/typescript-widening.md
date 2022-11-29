@@ -1,16 +1,18 @@
 ---
 title: "TypeScript の Widening"
+published: true
+cssclass: zenn
 emoji: "🕺"
 type: "tech"
 topics: ["typescript", "deno"]
-published: true
 date: 2022-07-29
+modified: 2022-11-26
 url: "https://zenn.dev/estra/articles/typescript-widening"
 tags: [" #type/zenn #TypeScript/inference "]
-aliases: [
-  記事_TypeScript の Widening,
-  Widening, 型の拡大
-]
+aliases:
+  - 記事『TypeScript の Widening』
+  - Widening
+  - 型の拡大
 ---
 
 # はじめに
@@ -1189,7 +1191,7 @@ https://sandersn.github.io/manual/Widening-and-Narrowing-in-Typescript.html
 https://zenn.dev/estra/articles/typescript-type-set-hierarchy
 
 # 終わり
+
 Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
 
 Widening の対となる Narrowing については次回以降の記事で書こうと思います。
-
