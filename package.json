@@ -23,7 +23,6 @@
     "textlint-rule-preset-ja-technical-writing": "^7.0.0"
   },
   "volta": {
-    "node": "16.16.0",
-    "npm": "8.15.0"
+    "node": "18.12.1"
   }
 }
