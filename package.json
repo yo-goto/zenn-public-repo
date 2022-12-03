@@ -14,16 +14,15 @@
     "lint:fix": "textlint --fix"
   },
   "dependencies": {
-    "zenn-cli": "^0.1.120"
+    "zenn-cli": "^0.1.132"
   },
   "devDependencies": {
     "@proofdict/textlint-rule-proofdict": "^3.1.2",
-    "textlint": "^12.1.0",
+    "textlint": "^12.2.3",
     "textlint-rule-preset-ja-spacing": "^2.2.0",
     "textlint-rule-preset-ja-technical-writing": "^7.0.0"
   },
   "volta": {
-    "node": "16.16.0",
-    "npm": "8.15.0"
+    "node": "18.12.1"
   }
 }

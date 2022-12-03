@@ -8,6 +8,10 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise chain はネストさせない』
 ---
 
+:::message alert
+このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を強く受けています。
+:::
+
 # このチャプターについて
 
 :::message alert
