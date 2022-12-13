@@ -2,13 +2,14 @@
 title: "EPAsync book 管理ノート"
 cssclass: zenn
 date: 2022-08-14
-modified: 2022-11-02
+modified: 2022-12-04
 url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #JavaScript/async  "]
 aliases:
   - EPAsync
   - Promise本『イベントループとプロミスチェーンで学ぶ非同期処理』
+  - Promise本
 ---
 
 ## MOC
@@ -51,13 +52,10 @@ aliases:
 - [h-epasync-catch-finally](h-epasync-catch-finally)
 - [j-epasync-ts-promise-type-annotation](j-epasync-ts-promise-type-annotation)
 - [k-epasync-iterator-generator](k-epasync-iterator-generator)
+- [m-epasync-promise-prototype-then](m-epasync-promise-prototype-then)
 - [x-epasync-epilogue](x-epasync-epilogue)
 - [y-epasync-conclusion](y-epasync-conclusion)
 - [z-epasync-reference](z-epasync-reference)
-
-未完成
-- [i-epasync-terms](i-epasync-terms)
-- [x-epasync-ts-promise-type-annotation](x-epasync-ts-promise-type-annotation)
 
 ## 管理用ノート
 
@@ -111,6 +109,7 @@ chapters:
   - 9-epasync-dont-nest-promise-chain # 『Promise chain はネストさせない』
   - 10-epasync-dont-use-side-effect # 『コールバックで副作用となる非同期処理』
   - 11-epasync-omit-return-by-arrow-shortcut # 『アロー関数で return を省略』する』
+  - m-epasync-promise-prototype-then # 『Promise.prototype.then メソッドの仕様挙動』
   - h-epasync-catch-finally # 『catch メソッドと finally メソッド』
   - 12-epasync-wrapping-macrotask # 『古い非同期APIをPromiseでラップする』
   - 13-epasync-loop-is-nested # 『イベントループは内部にネストしたループがある』
