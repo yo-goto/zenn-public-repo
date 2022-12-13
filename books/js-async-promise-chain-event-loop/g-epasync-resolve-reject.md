@@ -5,7 +5,7 @@ date: 2022-05-06
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_resolve 関数と reject 関数の使い方
+aliases: Promise本『resolve 関数と reject 関数の使い方』
 ---
 
 # このチャプターについて

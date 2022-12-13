@@ -5,7 +5,7 @@ date: 2022-04-17
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_Promise chain で値を繋ぐ
+aliases: Promise本『Promise chain で値を繋ぐ』
 ---
 
 :::message alert

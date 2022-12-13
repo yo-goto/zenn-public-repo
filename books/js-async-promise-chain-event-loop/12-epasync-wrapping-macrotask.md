@@ -2,11 +2,11 @@
 title: "古い非同期 API を Promise でラップする"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-11-14
+modified: 2022-12-04
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
-  - ch_古い非同期 API を Promise でラップする
+  - Promise本『古い非同期 API を Promise でラップする』
   - Promisify
   - Promisification
 ---
@@ -59,33 +59,28 @@ Visualizer で可視化してみたので次のリンクから確認してくだ
 
 - [setTimeout.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGltZW91dC5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzVdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMzAwMG1zIik7Cn0sIDMwMDApOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzRdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMjAwMG1zIik7Cn0sIDIwMDApOwpzZXRUaW1lb3V0KCgpID0%2BIHsKICBjb25zb2xlLmxvZygiWzNdIFRoaXMgbGluZSB3aWxsIGJlIHByaW50ZWQgYWZ0ZXIgMTAwMG1zIik7Cn0sIDEwMDApOwpjb25zb2xlLmxvZygiWzJdIFN5bmMgcHJvY2VzcyIpOwo%3D)
 - ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスク実行のタイミングについて誤解しないように注意してください
-- ⚠️ 注意: タスクキューへのタスクを入れるタイミングに実装ミスと思われる部分があるので注意してください(タイマーの指定時間が経過した順番にタスクキューへ入れられるはずのところが、タイマーの起動順番にタスクキューへと入れられてしまっています)
+- ⚠️ 注意: タスクキューへのタスクを入れるタイミングに実装ミスと思われる部分があるので注意してください (タイマーの指定時間が経過した順番にタスクキューへ入れられるはずのところが、タイマーの起動順番にタスクキューへと入れられてしまっています)
 
 タスクキューへと追加されるのが分かると思います。
 
 # タスクベースの非同期 API について
 
-MDN のドキュメントには以下のことが書かれています。
+MDN のドキュメントでは、非同期 API の理想はコールバックのスタイルでタスクを発行するよりも、[Promise を返してマイクロタスクを発行するものであることが望ましいという旨](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) が読み取れます。
 
-https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90
-
-> 理想的には、すべての非同期関数はプロミスを返すはずですが、**残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。**古い様式であるコールバックとプロミスの混在は問題を引き起こします**。というのは、`saySomething()` が失敗したりプログラミングエラーを含んでいた場合に、そのエラーをとらえられないからです。setTimeout にその責任があります。**幸いにも setTimeout をプロミスの中にラップすることができます**。良いやり方は、問題のある関数をできる限り低い水準でラップした上で、直接呼び出さないようにすることです。
-> ([上記ページ](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90)より引用、太字は筆者強調)
-
-非同期 API はコールバックのスタイルでタスクを発行するよりも、Promise を返してマイクロタスクを発行するものであることが望ましいという旨が読み取れます。そして、タスクを発行するタイプのコールバックスタイル API は Promise でラップすることでエラーハンドリングなどをよりやりやすくなります。
+そして、タスクを発行するタイプの Callback-based API を Promise でラップすることでエラーハンドリングなどが行いやすくなります。
 
 # Promisification
 
-上で述べたように Promise インスタンスによってタスクベースの非同期処理(つまり古いタイプの非同期 API)をラップする手法は "Promisifying" または "Promisification" と呼ばれます。
+上で述べたように Promise インスタンスによってタスクベースの非同期処理 (つまり古いタイプの非同期 API) をラップする手法は "Promisifying" または "Promisification" と呼ばれます。
 
 https://ja.javascript.info/promisify
 
 :::message alert
 この手法を非同期処理の学習のはじめに知ってしまうと非常に混乱することになるので注意してください。
 
-というのも、Promisification では非同期処理の内訳として登場する複数のものが絡めて利用されているためです。`setTimeout()` と Promise のそれぞれタスクキューとマイクロタスクキューという別々の機構を利用し、この手法ではタスクとマイクロタスクを順番に消費して連鎖的に処理を実現するということをやるので、コード上の見た目に比べて相当複雑なことをしています。具体的な Promisification の処理のフローでは「API を起動して環境に並列的作業を行わせ、それが完了後にイベントループにタスクを送り、そのタスクが処理される際に Promise を解決してマイクロタスクを発火させることで後続の関連処理を順番に行わせる」ということをやります。各要素について理解できていれば難しくないですが、はじめからいきなりこれを理解しようとするのはかなり無理があります。
+というのも、Promisification では非同期処理の内訳として登場する複数のものが絡めて利用されているためです。`setTimeout()` と Promise のそれぞれタスクキューとマイクロタスクキューという別々の機構を利用し、この手法ではタスクとマイクロタスクを順番に消費して連鎖的に処理を実現するということをやるので、コード上の見た目に比べて相当複雑なことをしています。具体的な Promisification の処理のフローでは「API を起動して環境に並列的作業を行わせ、それが完了後にイベントループにタスクを送り、そのタスクが処理される際に Promise を解決してマイクロタスクを発火させることで後続の関連処理を順番に行わせる」ということをやります。各要素について順番に理解できていれば難しくないですが、はじめからこれをまとめて理解しようとすると後々混乱してしまう可能性があります。
 
-さらに `Promise()` コンストラクタに渡す Executor 関数内部の処理は『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)』のチャプターで見たとおり同期処理なのですが、`setTimeout()` を使用してしまうことで非同期処理であると勘違いすることになります。
+さらに `Promise()` コンストラクタに渡す Executor 関数内部の処理は『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)』のチャプターで見たとおり実は「**同期処理**」なのですが、`setTimeout()` を使用してしまうことで非同期処理であると勘違いすることになります。
 :::
 
 ただし、最近は手動でやることはあまりやらないらしいです。というのも、単純に非同期 API 自体 Promise-based であるものが出てきています。また、古いタイプの API をラップするのでも、例えば Node 環境では `promisifying` 関数というのが util module にあり、これを使うことで手動ラップすることなく Promisification ができるようになっています。
@@ -196,7 +191,7 @@ function sleep(time) {
 
 async 関数の外側で何らかの別の処理が走っている可能性もありイベントループのマイクロタスクキューで別の待ちタスクなどがあれば、３秒よりももっと多くの時間遅延します。
 
-実際に Deno では標準モジュール(std)の `async` モジュールで提供される `delay()` 関数はこのように作られています。リポジトリでは次の場所に存在しています。上で定義したものより緻密に作られていますが内部的には `setTimeout()` をちゃんと使っていることが分かります。
+実際に Deno では標準モジュール (std) の `async` モジュールで提供される `delay()` 関数はこのように作られています。リポジトリでは次の場所に存在しています。上で定義したものより緻密に作られていますが内部的には `setTimeout()` をちゃんと使っていることが分かります。
 
 https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
 

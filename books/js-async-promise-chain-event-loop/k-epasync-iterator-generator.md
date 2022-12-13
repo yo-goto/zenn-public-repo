@@ -5,7 +5,7 @@ date: 2022-07-18
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_イテレータとイテラブルとジェネレータ関数
+aliases: Promise本『イテレータとイテラブルとジェネレータ関数』
 ---
 
 # このチャプターについて

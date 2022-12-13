@@ -6,7 +6,7 @@ modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
-  - ch_それぞれのイベントループ
+  - Promise本『それぞれのイベントループ』
   - イベントループの疑似コード
 ---
 

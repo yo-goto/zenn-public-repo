@@ -5,7 +5,7 @@ date: 2022-06-06
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: "ch_あとがき"
+aliases: Promise本『あとがき』
 ---
 
 # あとがき

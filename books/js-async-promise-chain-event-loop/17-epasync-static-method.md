@@ -5,7 +5,7 @@ date: 2022-06-26
 modified: 2022-11-14
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_Promise の静的メソッドと並列化
+aliases: Promise本『Promise の静的メソッドと並列化』
 ---
 
 # このチャプターについて

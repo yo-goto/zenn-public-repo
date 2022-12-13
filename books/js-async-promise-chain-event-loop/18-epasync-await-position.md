@@ -5,7 +5,7 @@ date: 2022-06-30
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: ch_await 式の配置による制御
+aliases: Promise本『await 式の配置による制御』
 ---
 
 # このチャプターについて
