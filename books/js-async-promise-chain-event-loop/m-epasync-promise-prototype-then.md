@@ -760,7 +760,7 @@ A 3
 
 async/await と Promise chain でマイクロタスクの発生数が異なるという事象が起きますが、この Thenable の話が関与しています。
 
-『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説していますが、async/await は V8 エンジン開発再度からの以下の PR で仕様自体の最適化がなされました。
+『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説していますが、async/await は V8 エンジンサイドからの以下の PR で仕様自体の最適化がなされました。
 
 https://github.com/tc39/ecma262/pull/1250/files
 
@@ -776,7 +776,7 @@ https://github.com/tc39/ecma262/pull/1250/files
 
 `await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が promise 以外の Thenable の場合だと、そのまま返すのではなく、一旦 promise でラップすることになりますが、promise オブジェクトだけは特別扱いして、そのまま返すようになりました。
 
-これはつまり、通常の値を評価するときと同じで。ただし、その後で thenable が持つ `.then` メソッドが実行されないと解決できないので、そのためのマイクロタスクが増加することになります。そして 解決時には [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されます。
+これはつまり通常の値を評価するときと同じです。ただし、その後で thenable が持つ `.then` メソッドが実行されないと解決できないので、そのためのマイクロタスクが増加することになります。そして 解決時には [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されます。
 
 結局、仕様の最適化は async 関数の await 式の評価で promise を Thenable から引き離して、無駄な処理を削減するようにしたことが大きいです。
 
