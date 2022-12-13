@@ -74,7 +74,7 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 > A [task queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) is a [set](https://infra.spec.whatwg.org/#ordered-set) of [tasks](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task).
 > ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) より引用)
 
-ここで言う Queue や Set とは特定のデータ構造(data strature)のことです(以前の解説では、この点についてただの集合であると誤解していました)。データ構造については WHATAG 仕様に定義されています。具体的には HTML Standard ではなく、それらの仕様が基づく用語や概念を定義している [Infra Standard](https://infra.spec.whatwg.org/) というページに記載されています。
+ここで言う Queue や Set とは特定のデータ構造(data structure)のことです(以前の解説では、この点についてただの集合であると誤解していました)。データ構造については WHATAG 仕様に定義されています。具体的には HTML Standard ではなく、それらの仕様が基づく用語や概念を定義している [Infra Standard](https://infra.spec.whatwg.org/) というページに記載されています。
 
 Queue や Set は Infra Standard の [5. Data structures](https://infra.spec.whatwg.org/#data-structures) の項目に記載されています。このページを見ると、Queue や Set とは List という仕様におけるデータ型の一つであることがわかります。List には他にも Stack というデータ構造が定義されています。
 
@@ -297,7 +297,7 @@ queueMicrotask(() => {
 
 https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask
 
-単にマイクロタスクを作成したいだけなら、`Promise.resolve().then()` よりも `queueMicortask()` を使用することが推奨されます。`queueMIcrotask()` を使用することで、マイクロタスクを作成するためにプロミスを使うことで発生するオーバーヘッドなどを回避できます。
+単にマイクロタスクを作成したいだけなら、`Promise.resolve().then()` よりも `queueMicortask()` を使用することが推奨されます。`queueMicrotask()` を使用することで、マイクロタスクを作成するためにプロミスを使うことで発生するオーバーヘッドなどを回避できます。
 
 https://developer.mozilla.org/ja/docs/Web/API/HTML_DOM_API/Microtask_guide#enqueueing_microtasks
 

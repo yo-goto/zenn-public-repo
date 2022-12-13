@@ -50,6 +50,28 @@ async function foo(v) {
 変換後は以下のようになります(実際に公式ブログ記事に示されているものですが、疑似コード的なものであると考えられます)。
 
 ```js:V8エンジンによる変換コード
+resumable function foo(v) {
+  implicit_promise = createPromise();
+  promise = promiseResolve(v);
+  performPromiseThen(
+    promise,
+    res => resume(«foo», res),
+    err => throw(«foo», err));
+  w = suspend(«foo», implicit_promise);
+  resolvePromise(implicit_promise, w);
+}
+
+function promiseResolve(v) {
+  if (v is Promise) return v;
+  promise = createPromise();
+  resolvePromise(promise, v);
+  return promise;
+}
+```
+
+分かりやすくするために変換コードに補足のコメントを追加しておきます。
+
+```js:V8エンジンによる変換コード
 // 途中で一時停止できる関数として resumable (再開可能) のマーキング
 resumable function foo(v) {
   implicit_promise = createPromise();
