@@ -23,11 +23,9 @@ aliases:
 - [Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)
 - [コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)
 
-それでは、さっそく、この本の解説で間違っていた点について例を出して解説していきます。
-
 ## 参考文献
 
-こちらのチャプターの解説で使用する ECMASciript の仕様のコードは以下のブログ記事のシリーズのものを参考にさせていただきました。非常に分かりやすい解説されているので、自分自身で Promsie の仕様を実装して学びたい場合には是非参考にしてください。
+こちらのチャプターの解説で使用する ECMASciript の仕様のコードは以下のブログ記事のシリーズのものを参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promsie の仕様を実装して学びたい場合には是非参考にしてください。
 
 https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/
 
@@ -40,6 +38,8 @@ https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-
 https://timothygu.me/es-howto/
 
 https://v8.dev/blog/understanding-ecmascript-part-1
+
+それでは、さっそく、この本の解説で間違っていた点について例を出して解説していきます。
 
 # then メソッドのコールバックから返る値の違いによる挙動
 
