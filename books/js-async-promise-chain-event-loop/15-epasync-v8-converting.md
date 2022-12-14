@@ -72,7 +72,7 @@ function promiseResolve(v) {
 ```
 
 :::message
-上のコードは擬似コードですが、使用されている関数は ECMAScript 仕様内の抽象操作 (仕様のみに存在するプログラマからはアクセスできない操作) と同じ名前であり、実際に仕様に存在している操作です。たとえ、上記の `promiseResolve` 関数は仕様の [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作であり、`performPromiseThen` 関数も [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) 抽象操作です。
+上のコードは擬似コードですが、使用されている関数は ECMAScript 仕様内の抽象操作 (仕様のみに存在するプログラマからはアクセスできない操作) と同じ名前であり、実際に仕様に存在している操作です。例えば、上記の `promiseResolve` 関数は仕様の [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作であり、`performPromiseThen` 関数も [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) 抽象操作です。
 
 これらの V8 実装は [V8 Torque](https://v8.dev/docs/torque) (TypeScript ライクな V8 エンジンの開発専用の言語) や C++ で GitHub リポジトリの [builtins](https://github.com/v8/v8/tree/main/src/builtins) の場所に記載されています。
 
@@ -127,7 +127,7 @@ function promiseResolve(v) {
 変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。async 関数はどんなときでも、Promise インスタンスを返します。async 関数の処理が一時停止して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
 
 :::details 仕様解説
-ちなみにこの `implictPromise` という暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文支持構文から呼び出される [NewPromiseCapabilit](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作で起動される Promsie コンストラクタ関数で作成されています。
+この `implictPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文支持構文から呼び出される [NewPromiseCapabilit](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promsie コンストラクタ関数で実際に Promise インスタンスが作成されています。
 :::
 
 再び、async 関数の処理が再開し、最終的に async 関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise chain などで利用できるようになります。
