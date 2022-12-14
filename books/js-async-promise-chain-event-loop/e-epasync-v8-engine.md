@@ -20,8 +20,8 @@ V8 エンジンは Chrome, Node, Deno のそれぞれの環境で利用されて
 
 https://v8.dev/
 
->V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone, or can be embedded into any C++ application**.
->([上記公式ページ](https://v8.dev/)より引用、太字は筆者強調)
+> V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone, or can be embedded into any C++ application**.
+> ([上記公式ページ](https://v8.dev/)より引用、太字は筆者強調)
 
 V8 は **Google が提供するオープンソースの JavaScript エンジン**です。C++ で書かれており、主に Chrome ブラウザなどで利用されています。
 

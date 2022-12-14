@@ -29,7 +29,7 @@ aliases:
 
 ## 参考文献
 
-こちらのチャプターの解説で使用する ECMASciript の仕様のコードは以下のブログ記事のシリーズのものを参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promsie の仕様を実装して学びたい場合には是非参考にしてください。
+こちらのチャプターの解説で使用する ECMASciript の仕様のコードは以下のブログ記事のシリーズのものを参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
 
 https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/
 
@@ -142,11 +142,11 @@ console.log("🦖 [G]");
 
 これまで見てきた Promise chain の比較であれば、💙 と 💚  が順番に出力されてくるはずですが、そうはなりません。
 
-この理由としては、最初に言ったとおり `then()` メソッドに渡すコールバックから Promise などの `.then()` メソッドを持つオブジェクト (**Thenable** と呼ばれるオブジェクト) が返されると、もとの `then()` メソッドから返される Promsie を解決するために通常の値を返す時に加えて追加で２つのコールバックがマイクロタスクとして発生するためです。
+この理由としては、最初に言ったとおり `then()` メソッドに渡すコールバックから Promise などの `.then()` メソッドを持つオブジェクト (**Thenable** と呼ばれるオブジェクト) が返されると、もとの `then()` メソッドから返される Promise を解決するために通常の値を返す時に加えて追加で２つのコールバックがマイクロタスクとして発生するためです。
 
 これまでの解説だと、上記のような普通の値を返す chain と Promise を返す chain の比較がなかったため、Promise を返している chain においても一見正しい解説のように見えてしまっているはずですが、コールバック関数で Promise を返している場合、**実際にはマイクロタスクが追加で２つ発生しています**。
 
-実際、もう片方の chain の `then` コールバックから返る値を Promsie オブジェクトに変更すれば最初のコードと同じ出力順番にすることができます。
+実際、もう片方の chain の `then` コールバックから返る値を Promise オブジェクトに変更すれば最初のコードと同じ出力順番にすることができます。
 
 ```js:fakePattern.js
 console.log("🦖 [A]");
@@ -213,7 +213,7 @@ const thenable = {
 })();
 ```
 
-このように `.then` メソッドを持っていれば、await 評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promsie 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
+このように `.then` メソッドを持っていれば、await 評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promise 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
 
 つまり、Promise 以外の `.then` を持つオブジェクト (ECMAScirpt 実装ではない Promise) などがネイティブの Promise のように扱えるようにした仕組みが Thenable と言えます。
 
@@ -233,7 +233,7 @@ const thenable = {
 
 Promise 系列の仕様を理解するために必要な抽象操作は [Promise Abstract Operations](https://tc39.es/ecma262/#sec-promise-abstract-operations) の項目に記載されています。ただし、ここに記述されている抽象操作からは他の項目にある抽象操作も呼び出されるので理解するのには様々な操作をたどっていく必要があります。
 
-例えば、Promsie の静的メソッドである [Promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) は内部的に大半の作業を `PromiseResolve` という抽象操作に委任しています。
+例えば、Promise の静的メソッドである [Promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) は内部的に大半の作業を `PromiseResolve` という抽象操作に委任しています。
 
 ![algorithm-steps](/images/js-async/img_ecma-algorithm-step.jpg)
 
@@ -243,7 +243,7 @@ Promise 系列の仕様を理解するために必要な抽象操作は [Promise
 
 例えば、`Promise.prototype.catch` や `Promise.prototype.finally` といったプロトタイプメソッドは、実は大半の作業を `Promise.prototype.then` にまかせています。
 
-## Job
+## Job とマイクロタスク
 
 図一番下の [HostEnqueuPromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob) という操作が最終的にマイクロタスクをマイクロタスクキューへとエンキューする操作です。
 
@@ -264,7 +264,7 @@ Promise 関連の Job (マイクロタスク) を作る直接の注意操作は�
 
 `Promise.prototype.then` のコールバックから返される値によって異なる挙動が起きますが、この問題を起こしている抽象操作の実体は [CreateResolvingFunctinos](https://tc39.es/ecma262/#sec-createresolvingfunctions) で作成される [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) という関数です。
 
-仕様的にはこのような名前がついていますが、その正体はかなり身近なもので、`new Promise(executor)` という Promsie インスタンス作成時に渡すコールバック関数 `executor` の引数となる `resolve` 関数です。
+仕様的にはこのような名前がついていますが、その正体はかなり身近なもので、`new Promise(executor)` という Promise インスタンス作成時に渡すコールバック関数 `executor` の引数となる `resolve` 関数です。
 
 ```js
 const p = new Promise((resolve, reject) => {
@@ -289,29 +289,29 @@ Promise コンストラクタを使ってプロミスインスタンスを作成
 
 `Promise.prototype.then` が呼び出されると PerformPromiseThen 抽象操作が呼び出される前に [Promise コンストラクタ](https://tc39.es/ecma262/#sec-promise-executor) によって新しい Promise インスタンスが作成されます。実際には以下のステップで発生しています。
 
-> 3. Let C be ? [SpeciesConstructor](https://tc39.es/ecma262/#sec-speciesconstructor)(promise, [%Promise%](https://tc39.es/ecma262/#sec-promise-constructor)).
-> 4. Let resultCapability be ? [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability)(C).
+> - 3. Let C be ? [SpeciesConstructor](https://tc39.es/ecma262/#sec-speciesconstructor)(promise, [%Promise%](https://tc39.es/ecma262/#sec-promise-constructor)).
+> - 4. Let resultCapability be ? [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability)(C).
 
 [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作はコンストラクタを引数にとって、新しい Promise オブジェクトを作成し、内部フィールドにその参照を格納します。仕様のステップでは以下の場所で [Construct](https://tc39.es/ecma262/#sec-construct) 抽象操作を使ってコンストラクタを起動させます。
 
-> 6. Let promise be ? [Construct](https://tc39.es/ecma262/#sec-construct)(C, « executor »).
+> - 6. Let promise be ? [Construct](https://tc39.es/ecma262/#sec-construct)(C, « executor »).
 
 そして、[Promise コンストラクタ](https://tc39.es/ecma262/#sec-promise-executor) の仕様の次のステップで CreateResolvingFunctions が呼び出され、`resolve` 関数と `reject` 関数が作成されています。
 
-> 8. Let resolvingFunctions be [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions)(promise).
+> - 8. Let resolvingFunctions be [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions)(promise).
 
 その後 then メソッド内部の処理の続きとして [PerformPromiseThen](https://tc39.es/ecma262/#sec-promise.prototype.then) 抽象操作が呼び出され、仕様の以下のステップ 10-11 のステップで promise の状態によって処理が振り分けられますが、どちらの場合でも [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) が呼び出されます。
 
-> 10. Else if promise.\[\[PromiseState\]\] is fulfilled, then
->   a. Let value be promise.\[\[PromiseResult\]\].
->   b. Let fulfillJob be [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob)(fulfillReaction, value).
->   c. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(fulfillJob.\[\[Job\]\], fulfillJob.\[\[Realm\]\]).
-> 11. Else,
->   a. [Assert](https://tc39.es/ecma262/#assert): The value of promise.\[\[PromiseState\]\] is rejected.
->   b. Let reason be promise.\[\[PromiseResult\]\].
->   c. If promise.\[\[PromiseIsHandled\]\] is false, perform [HostPromiseRejectionTracker](https://tc39.es/ecma262/#sec-host-promise-rejection-tracker)(promise, "handle").
->   d. Let rejectJob be [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob)(rejectReaction, reason).
->   e. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(rejectJob.\[\[Job\]\], rejectJob.\[\[Realm\]\]).
+> - 10. Else if promise.\[\[PromiseState\]\] is fulfilled, then
+>   - a. Let value be promise.\[\[PromiseResult\]\].
+>   - b. Let fulfillJob be [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob)(fulfillReaction, value).
+>   - c. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(fulfillJob.\[\[Job\]\], fulfillJob.\[\[Realm\]\]).
+> - 11. Else,
+>   - a. [Assert](https://tc39.es/ecma262/#assert): The value of promise.\[\[PromiseState\]\] is rejected.
+>   - b. Let reason be promise.\[\[PromiseResult\]\].
+>   - c. If promise.\[\[PromiseIsHandled\]\] is false, perform [HostPromiseRejectionTracker](https://tc39.es/ecma262/#sec-host-promise-rejection-tracker)(promise, "handle").
+>   - d. Let rejectJob be [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob)(rejectReaction, reason).
+>   - e. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(rejectJob.\[\[Job\]\], rejectJob.\[\[Realm\]\]).
 
 NewPromiseReactiobJob は上で説明したように Job (マイクロタスク) を作成するための操作です。
 
@@ -319,10 +319,10 @@ NewPromiseReactiobJob は上で説明したように Job (マイクロタスク)
 
 実際に `resolve` 関数や `reject` 関数が呼び出されるのは仕様の以下のステップです。[PromiseCapability Record](https://tc39.es/ecma262/#sec-promisecapability-records) (promise の状態にアクセスできるようにしたヘルパーオブジェクトのようなもの) のフィールド `[[Resolve]]` と `[[Reject]]` にはそれぞれ `resolve` 関数と `reject` 関数が保持されており、[Call](https://tc39.es/ecma262/#sec-call) 抽象操作で関数の呼び出しを行っています。
 
-> h. If handlerResult is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
->   i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Reject\]\], undefined, « handlerResult.\[\[Value\]\] »).
-> i. Else,
->   i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Resolve\]\], undefined, « handlerResult.\[\[Value\]\] »).
+> - h. If handlerResult is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
+>   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Reject\]\], undefined, « handlerResult.\[\[Value\]\] »).
+> - i. Else,
+>   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Resolve\]\], undefined, « handlerResult.\[\[Value\]\] »).
 
 このようにして仕様内部では `Promise.prototype.then` から `resolve` 関数と `reject` 関数が呼び出せるようになっています。
 
@@ -342,10 +342,10 @@ const resolve = (resoltion) => {
 
 step.1 から step.4 までは関数作成のためのただの準備です。
 
-> 1. Let F be the [active function object](https://tc39.es/ecma262/#active-function-object).
-> 2. [Assert](https://tc39.es/ecma262/#assert): F has a \[\[Promise\]\] internal slot whose value [is an Object](https://tc39.es/ecma262/#sec-object-type).
-> 3. Let promise be F.\[\[Promise\]\].
-> 4. Let alreadyResolved be F.\[\[AlreadyResolved\]\].
+> - 1. Let F be the [active function object](https://tc39.es/ecma262/#active-function-object).
+> - 2. [Assert](https://tc39.es/ecma262/#assert): F has a \[\[Promise\]\] internal slot whose value [is an Object](https://tc39.es/ecma262/#sec-object-type).
+> - 3. Let promise be F.\[\[Promise\]\].
+> - 4. Let alreadyResolved be F.\[\[AlreadyResolved\]\].
 
 ただし、ECMAScript の仕様の読むために必要な情報があるのでいくつか解説しておきます。
 
@@ -383,24 +383,24 @@ resolve(resolution);
 
 `resolve` 関数の実装では、この引数 `resolution` の値の種類によって処理が変わるので場合分けすることになります。その箇所は以下の仕様の step.7 から step.16 となります (step.5-6 は省略します)。
 
-> 7. If [SameValue](https://tc39.es/ecma262/#sec-samevalue)(resolution, promise) is true, then
->   a. Let selfResolutionError be a newly created TypeError object.
->   b. Perform [RejectPromise](https://tc39.es/ecma262/#sec-rejectpromise)(promise, selfResolutionError).
->   c. Return undefined.
-> 8. If resolution [is not an Object](https://tc39.es/ecma262/#sec-object-type), then
->   a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
->   b. Return undefined.
-> 9. Let then be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([Get](https://tc39.es/ecma262/#sec-get-o-p)(resolution, "then")).
-> 10. If then is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
->   a. Perform [RejectPromise](https://tc39.es/ecma262/#sec-rejectpromise)(promise, then.\[\[Value\]\]).
->   b. Return undefined.
-> 12. If [IsCallable](https://tc39.es/ecma262/#sec-iscallable)(thenAction) is false, then
->   a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
->   b. Return undefined.
-> 13. Let thenJobCallback be [HostMakeJobCallback](https://tc39.es/ecma262/#sec-hostmakejobcallback)(thenAction).
-> 14. Let job be [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob)(promise, resolution, thenJobCallback).
-> 15. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(job.\[\[Job\]\], job.\[\[Realm\]\]).
-> 16. Return undefined.
+> - 7. If [SameValue](https://tc39.es/ecma262/#sec-samevalue)(resolution, promise) is true, then
+>   - a. Let selfResolutionError be a newly created TypeError object.
+>   - b. Perform [RejectPromise](https://tc39.es/ecma262/#sec-rejectpromise)(promise, selfResolutionError).
+>   - c. Return undefined.
+> - 8. If resolution [is not an Object](https://tc39.es/ecma262/#sec-object-type), then
+>   - a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
+>   - b. Return undefined.
+> - 9. Let then be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([Get](https://tc39.es/ecma262/#sec-get-o-p)(resolution, "then")).
+> - 10. If then is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
+>   - a. Perform [RejectPromise](https://tc39.es/ecma262/#sec-rejectpromise)(promise, then.\[\[Value\]\]).
+>   - b. Return undefined.
+> - 12. If [IsCallable](https://tc39.es/ecma262/#sec-iscallable)(thenAction) is false, then
+>   - a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
+>   - b. Return undefined.
+> - 13. Let thenJobCallback be [HostMakeJobCallback](https://tc39.es/ecma262/#sec-hostmakejobcallback)(thenAction).
+> - 14. Let job be [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob)(promise, resolution, thenJobCallback).
+> - 15. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(job.\[\[Job\]\], job.\[\[Realm\]\]).
+> - 16. Return undefined.
 
 ちょっと長いですが、やっていることは `resolve` 関数の引数 `resolution` の値によって処理を振り分けて、[FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise) か [RejectPromise](https://tc39.es/ecma262/#sec-rejectpromise) を使って promise オブジェクトの状態を pending から fulfilled または rejected へと遷移させ、関数自体から `undefined` を返して終了させています。
 
@@ -408,11 +408,11 @@ step.10 以降の処理は例外が起きた場合やその場合分けに適さ
 
 `resolution` (解決値) として考えれられる値の種類は以下のようなケースが考えられ、実際それぞれのステップで場合分けされます。
 
-1. 解決値が「元の promise そのもの」の場合 (step.7)
-2. 解決値が「オブジェクトでない値」の場合 (step.8)
-3. 解決値が「解決値がオブジェクト」の場合 (step.9)
-  1. `then` プロパティがメソッドでない場合 (`undefind` である場合も含む) (step.12)
-  2. `then` プロパティがメソッドの場合、つまりそのオブジェクトは Thenable である場合 (step.13-16)
+- 1. 解決値が「元の promise そのもの」の場合 (step.7)
+- 2. 解決値が「オブジェクトでない値」の場合 (step.8)
+- 3. 解決値が「解決値がオブジェクト」の場合 (step.9)
+  - 1. `then` プロパティがメソッドでない場合 (`undefind` である場合も含む) (step.12)
+  - 2. `then` プロパティがメソッドの場合、つまりそのオブジェクトは Thenable である場合 (step.13-16)
 
 それでは、まずは step.7 から step.11 を実装してみます。
 
@@ -456,9 +456,9 @@ promsie オブジェクトの内部状態を実際に遷移させるのは [Fulf
 
 残されたケースは `resolution` の値が「オブジェクトの場合」であり、さらに「then メソッドを持つかどうか」、つまり thenable であるかどうかの処理の振り分けを行う step.12 から step.16 までを実装します。
 
-> 12. If [IsCallable](https://tc39.es/ecma262/#sec-iscallable)(thenAction) is false, then
->   a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
->   b. Return undefined.
+> - 12. If [IsCallable](https://tc39.es/ecma262/#sec-iscallable)(thenAction) is false, then
+>   - a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
+>   - b. Return undefined.
 
 step.12 では [IsCallable](https://tc39.es/ecma262/#sec-iscallable) という抽象操作を使って、オブジェクトの `.then` が呼び出し可能なメソッドであるかどうかを判定し、呼び出し不可能な場合には、`resolution` が `.then` メソッドを持たないオブジェクトであることがわかり、FulfillPromise を使って直ちに履行して `return undefined` で `resolve` 関数を終了させます。
 
@@ -466,13 +466,13 @@ step.12 では [IsCallable](https://tc39.es/ecma262/#sec-iscallable) という�
 
 `resolution` が Thenable である場合の処理を step.13 から step.16 で行います。
 
-> 13. Let thenJobCallback be [HostMakeJobCallback](https://tc39.es/ecma262/#sec-hostmakejobcallback)(thenAction).
-> 14. Let job be [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob)(promise, resolution, thenJobCallback).
+> - 13. Let thenJobCallback be [HostMakeJobCallback](https://tc39.es/ecma262/#sec-hostmakejobcallback)(thenAction).
+> - 14. Let job be [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob)(promise, resolution, thenJobCallback).
 
 step.13 では、マイクロタスクとして実行するコールバック関数を [HostMakeJobCallback](https://tc39.es/ecma262/#sec-hostmakejobcallback) 抽象操作で作成します。返ってくるのは JobCallback Record というコールバック関数への参照を可能したデータです。step.14 ではこのデータから [NewPromiseThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) という抽象操作で、マイクロタスクの実体である Job を作成します。
 
-> 15. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(job.\[\[Job\]\], job.\[\[Realm\]\]).
-> 16. Return undefined.
+> - 15. Perform [HostEnqueuePromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob)(job.\[\[Job\]\], job.\[\[Realm\]\]).
+> - 16. Return undefined.
 
 そして、[HostEnqueuPromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob) 操作によって実際にマイクロタスクとしてエンキューし、`return undefined` で `resolve` 関数を終了します。
 
@@ -560,12 +560,12 @@ resolve(Promise.resolve(43));
 
 step.1 ではマイクロタスクとなる Job を作成します。
 
-> 1. Let job be a new [Job](https://tc39.es/ecma262/#job) [Abstract Closure](https://tc39.es/ecma262/#sec-abstract-closure) with no parameters that captures promiseToResolve, thenable, and then and performs the following steps when called:
->   a. Let resolvingFunctions be [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions)(promiseToResolve).
->   b. Let thenCallResult be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([HostCallJobCallback](https://tc39.es/ecma262/#sec-hostcalljobcallback)(then, thenable, « resolvingFunctions.\[\[Resolve\]\], resolvingFunctions.\[\[Reject\]\] »)).
->   c. If thenCallResult is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
->     i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(resolvingFunctions.\[\[Reject\]\], undefined, « thenCallResult.\[\[Value\]\] »).
->   d. Return ? thenCallResult.
+> - 1. Let job be a new [Job](https://tc39.es/ecma262/#job) [Abstract Closure](https://tc39.es/ecma262/#sec-abstract-closure) with no parameters that captures promiseToResolve, thenable, and then and performs the following steps when called:
+>   - a. Let resolvingFunctions be [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions)(promiseToResolve).
+>   - b. Let thenCallResult be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([HostCallJobCallback](https://tc39.es/ecma262/#sec-hostcalljobcallback)(then, thenable, « resolvingFunctions.\[\[Resolve\]\], resolvingFunctions.\[\[Reject\]\] »)).
+>   - c. If thenCallResult is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
+>     - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(resolvingFunctions.\[\[Reject\]\], undefined, « thenCallResult.\[\[Value\]\] »).
+>   - d. Return ? thenCallResult.
 
 Job の実体が抽象クロージャであることは説明しました。上のステップは step.a から step.d までのステップを行うような関数挙動を作成するというものだと考えてください。このステップが後のマイクロタスクとして処理される関数の挙動となります。
 
@@ -702,7 +702,7 @@ const resolve = (resoltion) => {
 
 さて、[FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise) 抽象操作では、TriggerPromiseReaction 抽象操作が実行されて、次に chain している `then` メソッドなどがあればそのコールバックをマイクロタスクとして発行します。
 
-ということで、考えていた Promsie chain の `then` メソッドから返る Promise オブジェクトはマイクロタスクが３個実行されてからやっと解決したことになり、マイクロタスク４個目でコンソールに出力できることになります。
+ということで、考えていた Promise chain の `then` メソッドから返る Promise オブジェクトはマイクロタスクが３個実行されてからやっと解決したことになり、マイクロタスク４個目でコンソールに出力できることになります。
 
 ```js
 Promise.resolve(42)
@@ -719,12 +719,12 @@ Promise.resolve(42)
 
 解決値の値の種類 | (ステップ) 起こる処理
 --|--
-元の promise そのもの | (step.7) 例外を throw して直ちに拒否する
-オブジェクトでない値 | (step.8) 解決対象の promise をその解決で直ちに履行する
+元の promise そのもの | (step.7) 例外を throw して直ちに promise を拒否する
+オブジェクトでない値 | (step.8) 解決対象の promise をその解決値で直ちに履行する
 Thenable ではないオブジェクト | (step.12)  promise をその解決値で直ちに履行する
 Thenable なオブジェクト | (step.13-16) `thenable.then(resolve, reject)` を呼び出すためのマイクロタスクを発行する
 
-解決値が promise の場合にはそれが settled になるまでにマイクロタスクが少なくとも確実に３個発生することに注意してください。つまり、Promise chain において `then` メソッドのコールバックで proimse オブジェクトを返すとマイクロタスクが３個発生することになります。
+解決値が Promise オブジェクトの場合にはそれが settled になるまでにマイクロタスクが少なくとも確実に３個発生することに注意してください。つまり、Promise chain において `then` メソッドのコールバックで proimse オブジェクトを返すとマイクロタスクが３個発生することになります。
 
 # Promise chain のネストをフラット化する弊害
 
@@ -778,10 +778,60 @@ https://github.com/tc39/ecma262/pull/1250/files
 
 何が起きたかを掻い摘んで説明すると、[NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作と [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) の呼び出しがなくなり、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作がここに挿入されました。
 
-`await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が promise 以外の Thenable の場合だと、そのまま返すのではなく、一旦 promise でラップすることになりますが、promise オブジェクトだけは特別扱いして、そのまま返すようになりました。
+`await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が Promise 以外の Thenable の場合だと、そのまま返すのではなく、一旦 Promise でラップすることになります (これは通常の値を評価するときとまったく同じです)。ただし、Promise オブジェクトだけは特別扱いして、そのまま返すようになりました。
 
-これはつまり通常の値を評価するときと同じです。ただし、その後で thenable が持つ `.then` メソッドが実行されないと解決できないので、そのためのマイクロタスクが増加することになります。そして 解決時には [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されます。
+これを引き起こしている直接的な操作は [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作から呼び出される [IsPromise](https://tc39.es/ecma262/#sec-ispromise) という抽象操作です。この操作では以下のアルゴリズムステップで引数 `x` がオブジェクトでなかったり、`[[PromiseState]]` という内部スロットを持たなければ `false` 値を返して Promise オブジェクトでないことを判定します。
+
+> 1. If x [is not an Object](https://tc39.es/ecma262/#sec-object-type), return false.
+> 2. If x does not have a \[\[PromiseState\]\] internal slot, return false.
+> 3. Return true.
 
 結局、仕様の最適化は async 関数の await 式の評価で promise を Thenable から引き離して、無駄な処理を削減するようにしたことが大きいです。
 
-しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が promise の場合を特別扱いしていません。つまり、仕様の最適化がされていないので、コールバックで promise を返した場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
+しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が promise の場合を特別扱いしていません。
+
+つまり、`return thenable` という処理が `then()` メソッドのコールバック関数であると、thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、そのためのマイクロタスクが増加することになります。そして 解決時には [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されます。
+
+つまり、`Promise.prototype.then` の方の仕様は async/await であった最適化がされていないので、コールバック関数で Promise を返した場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
+
+例えば、以下のように実際にまったく同じ処理を Promise chain と async/await で記述したときには最適化されている async/await の方が先に終了します。
+
+```js:countMt.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: promise chain (p) か async/await (a) か
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
+console.log("🦖 [1] G: sync");
+
+Promise.resolve(1)
+  .then((x) => { // <1-p[1]>
+    console.log("💙 [3] P: async", x);
+    return Promise.resolve(2);
+    // <3-p[2]> <5-p[3]>
+  })
+  .then((y) => { // <3-p[4]>
+    console.log("💙 [5] P: async", y);
+  });
+
+// こちらの方が先に終了する
+(async () => {
+  const x = await Promise.resolve(1);
+  // <2-a[1]>
+  console.log("💚 [4] A: async", x);
+  const y = await Promise.resolve(2);
+  // <4-a[2]>
+  console.log("💚 [6] A: async", y);
+})();
+
+console.log("🦖 [2] G: sync");
+
+/* RESULT
+🦖 [1] G: sync
+🦖 [2] G: sync
+💙 [3] P: async 1
+💚 [4] A: async 1
+💚 [6] A: async 2
+💙 [5] P: async 2
+*/
+```

@@ -15,7 +15,7 @@ aliases: Promise本『はじめに』
 # 解説の間違いについての注意
 
 :::message alert
-『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』の章にあるチャプターで解説に間違いと思われる部分がありました。間違った内容を公開してしまい申し訳ございません。詳細については当該の章チャプターと新しく開設用に用意した『[Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターを参照してください。
+『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』の章にあるチャプターで解説に間違いと思われる部分がありました。間違った内容を公開してしまい申し訳ございません。詳細については新しく訂正・解説用に作成した『[Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターを参照してください。
 :::
 
 # この本について
@@ -234,6 +234,8 @@ JS Visualizer では実装ミスとも言える点や勘違いしやすい点が
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2022-12-14
+  - 『[Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』の訂正・解説用チャプターを追加
 - 2022-11-23
   - 『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』の章で間違いが見つかっため、その内容についての注意を記載
 - 2022-11-05
