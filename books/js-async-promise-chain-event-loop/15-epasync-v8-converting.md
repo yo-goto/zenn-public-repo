@@ -127,7 +127,7 @@ function promiseResolve(v) {
 変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。async 関数はどんなときでも、Promise インスタンスを返します。async 関数の処理が一時停止して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
 
 :::details 仕様解説
-この `implictPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文支持構文から呼び出される [NewPromiseCapabilit](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promsie コンストラクタ関数で実際に Promise インスタンスが作成されています。
+この `implictPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文支持構文から呼び出される [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promise コンストラクタ関数で実際に Promise インスタンスが作成されています。
 :::
 
 再び、async 関数の処理が再開し、最終的に async 関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise chain などで利用できるようになります。
@@ -268,9 +268,9 @@ async/await では最初の await 式でのみ暗黙的に async 関数から返
 実際、`performPromiseThen` という関数は ECMAScript 仕様に存在している [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) という抽象操作であり、以下のように `Promise.prototype.then` メソッドの仕様から呼び出されています。
 
 ![algorithm-steps](/images/js-async/img_ecma-algorithm-step.jpg)
+:::
 
 `peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。仕様的には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) という抽象操作から作成されます。
-:::
 
 この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で async 関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。つまり、`then()` メソッドのようにマイクロタスクが発行されるので、Promise chain で考えれば理解できるはずです。
 

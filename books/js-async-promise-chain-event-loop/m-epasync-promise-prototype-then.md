@@ -24,24 +24,21 @@ aliases:
 - [コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)
 
 :::message
-この解説はあまりにも仕様に近づきすぎていますが、誤りの修正として暫定的にこの場所にチャプターとして設けています。将来的には関連チャプターでこの内容を仕様なしで簡易的に解説して、このチャプターはより詳細なものとして番外編に位置づけたいと考えています。
+この解説はあまりにも仕様に近づきすぎていますが(というか仕様そのもの)、誤りの修正として暫定的にこの場所にチャプターとして設けています。将来的には関連チャプターでこの内容を仕様なしで簡易的に解説して、このチャプターはより詳細なものとして番外編に位置づけたいと考えています。
 :::
 
 ## 参考文献
 
 こちらのチャプターの解説で使用する ECMASciript の仕様のコードは以下のブログ記事のシリーズのものを参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
 
-https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/
-
-https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/
-
-https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/
+- [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
+- [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)
+- [Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/)
 
 また ECMAScript の仕様そのものを理解するためには以下の記事が参考になるので興味があれば参考にしてみてください。
 
-https://timothygu.me/es-howto/
-
-https://v8.dev/blog/understanding-ecmascript-part-1
+- [Understanding the ECMAScript spec, part 1](https://v8.dev/blog/understanding-ecmascript-part-1)
+- [How to Read the ECMAScript Specification](https://timothygu.me/es-howto/)
 
 それでは、さっそく、この本の解説で間違っていた点について例を出して解説していきます。
 
@@ -49,36 +46,60 @@ https://v8.dev/blog/understanding-ecmascript-part-1
 
 結論から言うと、`Promise.prototype.then()` メソッドにわたす **コールバック関数から返る値の種類によって発生するマイクロタスクの数が異なる** ことが仕様から判明しました。
 
-`.then(callback)` のように渡したコールバック関数 `callback` がマイクロタスクとして発行されるという話はそのままですが、`callback` から `.then` メソッドを持つオブジェクトが返ると、追加でマイクロタスクが発生します。
+`then(callback)` のように渡したコールバック関数 `callback` がマイクロタスクとして発行されるという話はそのままですが、`callback` から `then` メソッドを持つオブジェクトが返ると、追加でマイクロタスクが発生します。
 
-その原理については後で詳しく解説するので、発生する現象についてここから見ていきます。
+以下のように `then` のコールバックで通常の値が返されている場合には合計２個のマイクロタスクが発生し、その２個目のマイクロタスクでコンソールへの出力となります。
+
+```js
+Promise.resolve(42)
+  .then(x => x + 1) // 通常の値 43 が返されている
+  .then(x => console.log(x));
+  //   ^^^^^^^^^^^^^^^^^^^^
+  //  マイクロタスク２個目で出力
+```
+
+一方、以下のように `then` のコールバックで Promise オブジェクトが返されている場合には合計５個のマイクロタスクが発生し、その５個目のマイクロタスクでコンソールへの出力となります。
+
+```js
+Promise.resolve(42)
+  .then(x => Promise.resolve(x + 1)) // Promise オブジェクトが返されている
+  .then(x => console.log(x));
+  //   ^^^^^^^^^^^^^^^^^^^^
+  //  マイクロタスク5個目で出力
+```
+
+その原理については後で詳しく解説するので、発生するマイクロタスクの数が異なることをサンプルコードで見ていきます。
 
 まずは今まで行ってきた解説で完全に説明できる例です。
 
 以下のコードでは、`then()` メソッドのコールバック関数で数値などの普通の値を返す２つの Promise chain を用意して競争させています。このコードの実行順序予測はこれまでの説明通りで、実際実行してみると予想通りになることがわかります。
 
 ```js:simpleValue.js
-// <> は発生しているマイクロタスクの追跡順番
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: どちらの promise chain かの識別 (a or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
 console.log("🦖 [A]");
 
 Promise.resolve()
-  .then(() => { // <1>
+  .then(() => { // <1-a[1]>
     console.log("💙 [B]")
     return 1;
   })
-  .then((d) => { // <3>
+  .then((d) => { // <3-a[2]>
     console.log("💙 [C]", d);
   });
 
 Promise.resolve()
-  .then(() => { // <2>
+  .then(() => { // <2-b[1]>
     console.log("💚 [D]");
     return 2;
   })
-  .then((d) => { // <4>
+  .then((d) => { // <4-b[2]>
     console.log("💚 [E]", d);
   })
-  .then(() => { // <5>
+  .then(() => { // <5-b[3]>
     console.log("💚 [F]")
   });
 
@@ -101,26 +122,32 @@ console.log("🦖 [G]");
 上のコードと同じ実行順番になる予測してみると、出力の順序が予想通りにならないことがわかります。
 
 ```js:complexPattern.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: どちらの promise chain かの識別 (a or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
 console.log("🦖 [A]");
 
 Promise.resolve()
-  .then(() => {
+  .then(() => { // <1-a[1]>
     console.log("💙 [B]")
     return Promise.resolve(1);
+    // <3-a[2]> <5-a[3]>
   })
-  .then((d) => {
+  .then((d) => { // <7-a[4]>
     console.log("💙 [C]", d);
   });
 
 Promise.resolve()
-  .then(() => {
+  .then(() => { // <2-b[1]>
     console.log("💚 [D]");
     return 2;
   })
-  .then((d) => {
+  .then((d) => { // <4-b[2]>
     console.log("💚 [E]", d);
   })
-  .then(() => {
+  .then(() => { // <6-b[3]>
     console.log("💚 [F]")
   });
 
@@ -142,33 +169,40 @@ console.log("🦖 [G]");
 
 これまで見てきた Promise chain の比較であれば、💙 と 💚  が順番に出力されてくるはずですが、そうはなりません。
 
-この理由としては、最初に言ったとおり `then()` メソッドに渡すコールバックから Promise などの `.then()` メソッドを持つオブジェクト (**Thenable** と呼ばれるオブジェクト) が返されると、もとの `then()` メソッドから返される Promise を解決するために通常の値を返す時に加えて追加で２つのコールバックがマイクロタスクとして発生するためです。
+この理由としては、最初に言ったとおり `then()` メソッドに渡すコールバックから Promise などの `then()` メソッドを持つオブジェクト (**Thenable** と呼ばれるオブジェクト) が返されると、もとの `then()` メソッドから返される Promise を解決するために通常の値を返す時に加えて追加で２つのコールバックがマイクロタスクとして発生するためです。
 
 これまでの解説だと、上記のような普通の値を返す chain と Promise を返す chain の比較がなかったため、Promise を返している chain においても一見正しい解説のように見えてしまっているはずですが、コールバック関数で Promise を返している場合、**実際にはマイクロタスクが追加で２つ発生しています**。
 
 実際、もう片方の chain の `then` コールバックから返る値を Promise オブジェクトに変更すれば最初のコードと同じ出力順番にすることができます。
 
 ```js:fakePattern.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: どちらの promise chain かの識別 (a or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
 console.log("🦖 [A]");
 
 Promise.resolve()
-  .then(() => {
+  .then(() => { // <1-a[1]>
     console.log("💙 [B]")
     return Promise.resolve(1);
+    // <3-a[2]> <5-a[3]>
   })
-  .then((d) => {
+  .then((d) => { // <9-a[4]>
     console.log("💙 [C]", d);
   });
 
 Promise.resolve()
-  .then(() => {
+  .then(() => { // <2-b[1]>
     console.log("💚 [D]");
     return Promise.resolve(2); // Promise にした
+    // <4-b[2]> <6-b[3]>
   })
-  .then((d) => {
+  .then((d) => { // <8-b[4]>
     console.log("💚 [E]", d);
   })
-  .then(() => {
+  .then(() => { // <10-b[5]>
     console.log("💚 [F]")
   });
 
@@ -189,14 +223,16 @@ console.log("🦖 [G]");
 これは、発生するマイクロタスクの数をつじつま合わせして出力の順序を調整しただけで、実は最初のコードよりも発生するマイクロタスクが増加しています。
 
 :::message alert
-さきに言っておくと、この挙動の違いを明確に理解するには ECMAScript の仕様をしっかり見る必要があります。とはいえ、仕様自体が非常に解読困難で冗長なものでもあるので、掻い摘んで概要を説明していきたいと思います。
+さきに言っておくと、この挙動の違いを明確に理解するには ECMAScript の仕様をしっかり見る必要があります。とはいえ、仕様自体が非常に解読困難で冗長なものでもあるので、概要を説明していきたいと思います。
+
+ただし、概要だけでもかなり長くなるので結果をまとめた表を [解決値の違いによる挙動のまとめ](#解決値の違いによる挙動のまとめ) の見出しにまとめたので、そちらから見てもらっても構いません。
 :::
 
 # Thenable とは
 
 まず始めに、Thenable について解説しておきます。
 
-Thenable とは `.then` というメソッドを持つオブジェクトの総称です。例えば、Promise は `.then` メソッドを持つので Thenable であると言えます。また、自分で適当な挙動の `.then` メソッドを実装したオブジェクトの場合でも Thenable と言えます。つまり、**Thenable であるからと言って必ずしも Promise だとは限らない** ので注意してくだださい。
+Thenable とは `then` というメソッドを持つオブジェクトの総称です。例えば、Promise は `then` メソッドを持つので Thenable であると言えます。また、自分で適当な挙動の `then` メソッドを実装したオブジェクトの場合でも Thenable と言えます。つまり、**Thenable であるからと言って必ずしも Promise だとは限らない** ので注意してくだださい。
 
 以下のように `then` メソッドが実装されていれば、await や promise chain で利用でき、実装されている `then` メソッドが実行されます。
 
@@ -209,13 +245,14 @@ const thenable = {
 
 (async () => {
   const v = await thenable;
+  // 内包する値 42 を抽出できる
   console.log(v); // => 42
 })();
 ```
 
-このように `.then` メソッドを持っていれば、await 評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promise 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
+このように `then` メソッドを持っていれば、await 評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promise 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
 
-つまり、Promise 以外の `.then` を持つオブジェクト (ECMAScirpt 実装ではない Promise) などがネイティブの Promise のように扱えるようにした仕組みが Thenable と言えます。
+つまり、Promise 以外の `then` を持つオブジェクト (ECMAScirpt 実装ではない Promise) などがネイティブの Promise のように扱えるようにした仕組みが Thenable と言えます。
 
 さて、実はそういったオブジェクトそのものを使いたいからこの概念の説明をしたわけではありません。問題である Promise.prototype.then の挙動について説明するのに必要なのでこの概念の解説をしています。
 
@@ -437,7 +474,7 @@ const resolve = (resoltion) => {
   try {
    // step.9/11
     thenAction = resolution.then;
-    // 解決値の .then を取得
+    // 解決値の then を取得
   } catch (thenError) {
     // step.10 (a/b) : then へのアクセスで例外が発生したら直ちに拒否する
     RejectPromise(promise, thenError);
@@ -460,9 +497,9 @@ promsie オブジェクトの内部状態を実際に遷移させるのは [Fulf
 >   - a. Perform [FulfillPromise](https://tc39.es/ecma262/#sec-fulfillpromise)(promise, resolution).
 >   - b. Return undefined.
 
-step.12 では [IsCallable](https://tc39.es/ecma262/#sec-iscallable) という抽象操作を使って、オブジェクトの `.then` が呼び出し可能なメソッドであるかどうかを判定し、呼び出し不可能な場合には、`resolution` が `.then` メソッドを持たないオブジェクトであることがわかり、FulfillPromise を使って直ちに履行して `return undefined` で `resolve` 関数を終了させます。
+step.12 では [IsCallable](https://tc39.es/ecma262/#sec-iscallable) という抽象操作を使って、オブジェクトの `then` が呼び出し可能なメソッドであるかどうかを判定し、呼び出し不可能な場合には、`resolution` が `then` メソッドを持たないオブジェクトであることがわかり、FulfillPromise を使って直ちに履行して `return undefined` で `resolve` 関数を終了させます。
 
-そうではない場合には、呼び出し可能な `.then` メソッドを持つオブジェクトである、つまり Thenable であることが判明します。ここからがこのチャプターの中枢となります。
+そうではない場合には、呼び出し可能な `then` メソッドを持つオブジェクトである、つまり Thenable であることが判明します。ここからがこのチャプターの中枢となります。
 
 `resolution` が Thenable である場合の処理を step.13 から step.16 で行います。
 
@@ -486,7 +523,7 @@ const resolve = (resoltion) => {
   try {
    // step.9/11
     thenAction = resolution.then;
-    // 解決値の .then を取得
+    // 解決値の then を取得
   } catch (thenError) {
     // step.10 (a/b) : then へのアクセスで例外が発生したら直ちに拒否する
     RejectPromise(promise, thenError);
@@ -541,16 +578,16 @@ Promise.resolve(42)
   .then(x => console.log(x));
 ```
 
-`Proimse.resolve(42)` は履行した promise インスタンスなので、chain されている `.then()` メソッドのコールバック関数はただちに、マイクロタスクとして発行されます。このときのマイクロタスクの実体である Job は NewPromiseReactoinJob で作成されています。これが一個目のマイクロタスクです。
+`Proimse.resolve(42)` は履行した promise インスタンスなので、chain されている `then()` メソッドのコールバック関数はただちに、マイクロタスクとして発行されます。このときのマイクロタスクの実体である Job は NewPromiseReactoinJob で作成されています。これが一個目のマイクロタスクです。
 
-イベントループでコールバックがマイクロタスクが処理されるとき、`.then` メソッドの実行であらかじめ CreateResolutionFunctions で作成された `resolve` 関数が `resolution` として Thenable な値である `Promise.reslve(42 + 1)` を使って呼び出されます。
+イベントループでコールバックがマイクロタスクが処理されるとき、`then` メソッドの実行であらかじめ CreateResolutionFunctions で作成された `resolve` 関数が `resolution` として Thenable な値である `Promise.reslve(42 + 1)` を使って呼び出されます。
 
 ```js
 // このような関数の実行が起きる
 resolve(Promise.resolve(43));
 ```
 
-これによって今まで実装してきたような `resolve` 関数が呼び出されます。場合分けで見たように `resolution` の値は Thenable (promise オブジェクトなので `.then` メソッドを持っている) なので、アルゴリズムステップの step.13 から step.16 が実行されますね。NewPromiseResolveThenableJob 操作で作成される Job がマイクロタスクとしてエンキューされます。これが二個目に発生するマイクロタスクとなります。
+これによって今まで実装してきたような `resolve` 関数が呼び出されます。場合分けで見たように `resolution` の値は Thenable (promise オブジェクトなので `then` メソッドを持っている) なので、アルゴリズムステップの step.13 から step.16 が実行されますね。NewPromiseResolveThenableJob 操作で作成される Job がマイクロタスクとしてエンキューされます。これが二個目に発生するマイクロタスクとなります。
 
 ## NewPromiseResolveThenableJob
 
@@ -706,11 +743,11 @@ const resolve = (resoltion) => {
 
 ```js
 Promise.resolve(42)
-  .then(x => {
+  .then(x => { // １個目のマイクロタスク
     return Promise.resolve(x + 1);
-  }) // マイクロタスク３個が完了して次の then のコールバックを発行できるようになった
+  }) // ここで更に発生する2個のマイクロタスクが完了して次の then のコールバックを発行できるようになった
   .then(x => console.log(x));
-  // マイクロタスク４個目でコンソール出力完了
+  // 4個目のマイクロタスクでコンソール出力
 ```
 
 # 解決値の違いによる挙動のまとめ
@@ -726,37 +763,62 @@ Thenable なオブジェクト | (step.13-16) `thenable.then(resolve, reject)` �
 
 解決値が Promise オブジェクトの場合にはそれが settled になるまでにマイクロタスクが少なくとも確実に３個発生することに注意してください。つまり、Promise chain において `then` メソッドのコールバックで proimse オブジェクトを返すとマイクロタスクが３個発生することになります。
 
+```js
+/* <n> は発生しているマイクロタスクの追跡順番 */
+Promise.resolve(42)
+  .then(x => { // <1>
+    return Promise.resolve(x + 1);
+    // <2> <3>
+  })
+  .then(x => { // <4>
+    console.log(x);
+  });
+```
+
+上のコードでは、まず `x => { return Promise.resolve(x + 1);}` という `then` のコールバック関数が１個目のマイクロタスクとして発行されます。その時、コールバック関数の返り値が Promise オブジェクトなので追加のマイクロタスクが発生します。
+
+具体t系には `Promise.resolve(x + 1).then(resolve, reject)` の呼び出し自体を行う関数が２個目のマイクロタスクとして発行されて、その `resolve` 関数が３個目のマイクロタスクとして発行されます。それが実行されると、`then` 自体から返る Promise オブジェクト自体(元の未解決 Promise オブジェクト) が解決し、chain してある `then` のコールバック `x => console.log(x)` が４個目のマイクロタスクとして発行されます。
+
 # Promise chain のネストをフラット化する弊害
 
-この話に関連して、Promise chain のネストを行うことで通常発生するマイクロタスク３個からいくつか軽減することができます。
+『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise chain はなるべくネストさせずにフラットにするようにと解説しましたが、上記の `then` のコールバックから返される値の種類によって発生するマイクロタスク数が異なることに影響を受けて Promise chain のネストをフラット化するとコンソール出力が行われるマイクロタスクが遅延します。
 
 ```js:nestVsFlat.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: フラット(f) か ネスト(n) か
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
 const increment = (num) => {
   return Promise.resolve(num + 1)
 };
 
-// フラット化すると A を出力するまでマイクロタスクが 3個 かかる
+// フラット化すると A を出力するまでマイクロタスクを3個消費する
 increment(1)
-  .then(num => increment(num)) // ３個可能消費
-  .then(num => console.log("A", num));
+  .then(num => increment(num)) // ３個消費 <1-f[1]> <3-f[2]> <5-f[3]>
+  .then(num => console.log("A", num)); // <7-f[4]>
   // ４個目のマイクロタスクで出力
+  // chain 全体で４個のマイクロタスクが発生
 
-// ネストしたままだと B を出力するまでマイクロタスクが 1個 かかる
-increment(2)
-  .then(num => { // １個目
+// ネストしたままだと B を出力するまでマイクロタスクを1個消費する
+increment(1)
+  .then(num => { // <2-n[1]>
     return increment(num)
       .then(num => console.log("B", num));
+      //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ <4-n[2]>
       // ２個目のマイクロタスクで出力
+      // <6-n[3]> <8-n[4]>
   });
+// chain 全体で４個のマイクロタスクが発生
 
 /* RESULT
 ❯ deno run nestVsFlat.js
-B 4
+B 3
 A 3
 */
 ```
 
-フラット化していると処理の流れが見やすいですが、コールバックから返る値である Thenable の `.then` メソッドの起動がマイクロタスクとして発生してしまうので、無駄なマイクロタスクが発生することになります。
+フラット化していると処理の流れが見やすいですが、コールバックから返る値である Thenable の `then` メソッドの起動がマイクロタスクとして発生してしまうので、コンソール出力を行うコールバックのマイクロタスクが実行されるまでにマイクロタスクが発生することになります。それぞれの Promise chain で発生するマイクロタスクの合計は同じですが出力が起きるためのマイクロタスクの順序が異なります。
 
 ただし、以下で説明するようにそもそも仕様最適化されている async/await が使えるので、async/await を使った方がマイクロタスクの発生をおさえ、さらに読みやすいコードが書けます。
 
@@ -782,9 +844,9 @@ https://github.com/tc39/ecma262/pull/1250/files
 
 これを引き起こしている直接的な操作は [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作から呼び出される [IsPromise](https://tc39.es/ecma262/#sec-ispromise) という抽象操作です。この操作では以下のアルゴリズムステップで引数 `x` がオブジェクトでなかったり、`[[PromiseState]]` という内部スロットを持たなければ `false` 値を返して Promise オブジェクトでないことを判定します。
 
-> 1. If x [is not an Object](https://tc39.es/ecma262/#sec-object-type), return false.
-> 2. If x does not have a \[\[PromiseState\]\] internal slot, return false.
-> 3. Return true.
+> - 1. If x [is not an Object](https://tc39.es/ecma262/#sec-object-type), return false.
+> - 2. If x does not have a \[\[PromiseState\]\] internal slot, return false.
+> - 3. Return true.
 
 結局、仕様の最適化は async 関数の await 式の評価で promise を Thenable から引き離して、無駄な処理を削減するようにしたことが大きいです。
 
