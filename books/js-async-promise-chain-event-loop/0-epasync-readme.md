@@ -109,7 +109,7 @@ chapters:
   - 9-epasync-dont-nest-promise-chain # 『Promise chain はネストさせない』
   - 10-epasync-dont-use-side-effect # 『コールバックで副作用となる非同期処理』
   - 11-epasync-omit-return-by-arrow-shortcut # 『アロー関数で return を省略』する』
-  - m-epasync-promise-prototype-then # 『Promise.prototype.then メソッドの仕様挙動』
+  - m-epasync-promise-prototype-then # 『番外編 Promise.prototype.then メソッドの仕様挙動』
   - h-epasync-catch-finally # 『catch メソッドと finally メソッド』
   - 12-epasync-wrapping-macrotask # 『古い非同期APIをPromiseでラップする』
   - 13-epasync-loop-is-nested # 『イベントループは内部にネストしたループがある』

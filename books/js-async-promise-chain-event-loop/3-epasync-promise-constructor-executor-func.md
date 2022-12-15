@@ -20,6 +20,10 @@ Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript �
 
 また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "Promise-based API" のことを指しており、Promise 自体が API であるわけではないので注意してください。他の解説によっては、Promise の静的メソッドである `Promise.all()` などを指している場合もあります。
 
+:::message alert
+この本ではそうしませんが、他の解説では Promise API といっているときは JavaScript エンジンの文脈で話していることがあり、その場合に `Promise.all` や `Promsie.allSettled`、また `Promise(executor)` コンストラクタなどについて Promise API と言っている場合あるので注意してください。
+:::
+
 # Promise コンストラクタ
 
 コード上で `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
@@ -80,7 +84,7 @@ JavaScript では「関数は値」なのでこのように関数を他の値の
 
 `Promise()` コンストラクタの引数として渡されるコールバック関数である `executor` の引数である `resolve` と  `reject` もコールバック関数です。慣習的に `resolve` や `reject` となっていますが実際には名前は何でも OK です。`executor` の中において、`resolve()` 関数は Promise インスタンスを履行(Fullfilled)状態にしたいという時に呼び出し、`reject()` は Promise インスタンスを拒否(Rejected)状態にしたいという時に呼び出します。
 
-この２つの関数はクセがあるので注意します(後述)。
+この２つの関数はクセがあるので注意してください。(後述)。
 
 `executor` は基本的には無名関数(匿名関数)でアロー関数の省略形などがよく使われるので注意してください。ここから、徐々に変形していきます。
 

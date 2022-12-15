@@ -99,7 +99,7 @@ Promise インスタンスは `then()`/`catch()`/`finally()` などの**プロ�
 実際どのようにマイクロタスクが動くかを JS Visualizer 9000 で可視化してみたので以下のページから確認してみてください。
 
 - [thenCallbackIsAsync.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGhlbkNhbGxiYWNrSXNBc3luYy5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwoKY29uc3QgcHJvbWlzZSA9IG5ldyBQcm9taXNlKHJlc29sdmUgPT4gewogIGNvbnNvbGUubG9nKCJbMl0gVGhpcyBsaW5lIGlzIFN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICByZXNvbHZlKCJSZXNvbHZlZCEiKTsKfSk7Cgpwcm9taXNlLnRoZW4odmFsdWUgPT4gewogIGNvbnNvbGUubG9nKCJbNF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7Cn0pOwoKY29uc29sZS5sb2coIlszXSBTeW5jIHByb2Nlc3MiKTsK)
-- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
+- ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
 このように Promise chain において `.then()` メソッドのコールバックは Promise インスタンスがすでに履行(Fullfilled)状態であっても一旦はマイクロタスクキューへと送られてしまうので、どんなときでもそのコールバックの実行は非同期的になってしまいます。
 

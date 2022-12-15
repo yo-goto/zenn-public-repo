@@ -171,7 +171,7 @@ MDN
 
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 
-## [Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)
+## [番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)
 
 - [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
 - [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)

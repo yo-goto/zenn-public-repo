@@ -282,7 +282,7 @@ console.log("🦖 [3] sync");
 
 Promise chain で書き直した方は async 関数内部で Promise 処理を `return` していないので副作用が生じていますし、気づきにくいですが発生するマイクロタスクの数が異なっています。Promise chain と async/await を発生するマイクロタスクの数を同じにした上で同じ実行順序に書き直すのは相当に内部を理解していないと難しいです。
 
-これについては『[Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then#仕様最適化の遺構)』のチャプターで解説しています。
+これについては『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then#仕様最適化の遺構)』のチャプターで解説しています。
 :::
 
 # await 式
@@ -933,7 +933,7 @@ async 関数内で try/catch/finally を使えば、今までのようにチェ�
 
 ここまで見てきたように、await 式は基本的には Promise インスタンスを評価するものですが、Promise インスタンスでない単なる値も評価できてしまいます(そのようなことをする意味自体はあまりない)。
 
-そのような場合に何が起きるかというと、await 式で評価する値を一旦 Promise インスタンスでラッピングしてから、値を取り出します。実はこれによって無駄なマイクロタスクと Promise インスタンスが生成されるので、本当にやる意味がないです。
+そのような場合に何が起きるかというと、例外を発生させずに、await 式で評価する値を一旦 Promise インスタンスでラッピングしてから、値を取り出します。実はこれによって無駄なマイクロタスクと Promise インスタンスが生成されるので、コードを書く上では基本的にやる意味がないです。
 
 ```js
 (async function increment() {
@@ -947,6 +947,10 @@ async 関数内で try/catch/finally を使えば、今までのようにチェ�
   .finally(() => console.log("最後に実行"));
 ```
 
-なぜこのようなことが起きるのかというと、仕様でそうするように決まっているからとして言えません。裏でどのようなことが起きているのかは次のチャプターで確認します。
+なぜこのようなことが起きるのかというと、[Await(value)](https://tc39.es/ecma262/#await) 操作の以下の仕様でそうするように決まっているからです。これは `Promise.prototype.then` メソッドに渡すコールバック関数から通常の値が返されたときに `then` メソッドからは常に新しい Promise インスタンスが返るのと同じような話です。コールバックで何を返そうが Promise が返されるのと同じで、await で何を評価しようが Promise として処理されるようになっています。
+
+> - 2. Let promise be ? [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve)([%Promise%](https://tc39.es/ecma262/#sec-promise-constructor), value).
+
+具体的に裏でどのようなことが起きているのかは次のチャプターで確認します。
 
 とにかく、await 式は基本的には Promise インスタンスを評価して値を取り出すものであると意識するのが重要です。

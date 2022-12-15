@@ -9,18 +9,14 @@ aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 
 :::message alert
-このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を受けています。
+このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
 :::
 
-# このチャプターについて
+# このチャプターについてz
 
 このチャプターは、別のチャプター『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』の続きとしての内容となります。
 
 `then()` メソッドのコールバックにおいて、単なる Promise インスタンスを返すだけでなく、非同期 API や Promise chain などによって最終的に Promise インスタンスが返る場合を考えます。
-
-:::message alert
-このチャプターでの解説全体に大きな間違いがあったので修正予定です。
-:::
 
 # 副作用とは
 
@@ -99,6 +95,7 @@ returnPromise("1st Promise", "[2]")
     console.log("👦 Resolved value: ", value);
     // return しない場合は副作用となり値が渡らない
     returnPromise("2nd Promise", "[6]")
+    // 🔥 このコールバックからは Promise が返されないので追加のマイクロタスクが発生しない
   })
   .then((value) => {
     // この value は undefined となる
@@ -111,6 +108,7 @@ returnPromise("3rd Promise", "[3]")
     console.log("👦 Resolved value: ", value);
     // Promise インスタンスについては必ず return するようにする
     return returnPromise("4th Promise", "[8]")
+    // 🔥 このコールバックからは Promise が返されるので追加のマイクロタスクが２つ発生する
   })
   .then((value) => {
     console.log("👦 [10] Async");
@@ -166,6 +164,7 @@ returnPromise("1st Promise", "[B]")
         console.log("👦 Resolved value:", value);
         return "Pass next value";
       });
+    // 🔥 このコールバックからは Promise が返されるので追加のマイクロタスクが２つ発生する
   })
   .then((value) => {
     console.log("👦 [F] Async");
@@ -231,6 +230,7 @@ returnPromise("1st Promise", "[B]", "[C]")
     console.log("👦 Resolved value: ", value);
     // ここで敢えて return しないとどういう実行順番になるか?
     returnPromise("2nd Promise", "[E]", "[F]");
+    // 🔥 このコールバックからは Promise が返されないので追加のマイクロタスクが発生しない
   })
   .then((value) => {
     console.log("👦 [G] Async");
@@ -260,10 +260,11 @@ console.log("🦖 [H] Sync");
 :::
 
 最後の出力である `Resovled value` のところが `undefined` になっているので、値 `"2nd Promise"` が繋げていないことがわかります。
-実行順番については、基本的に Promise インスタンスを返すような処理は `return` しないと順番を保証できないのですが、今回の場合は `returnPromise("2nd Promise", "[E]", "[F]");` が完了してから、次の `then()` メソッドのコールバックが実行されていますね。その理由としては、Microtask を供給する Promise が少ないからたまたまそうなっているだけです。実際の動きを Visualizer で確認してみてください。
+実行順番については、基本的に Promise インスタンスを返すような処理は `return` しないと順番を保証できないのですが、今回の場合は `returnPromise("2nd Promise", "[E]", "[F]");` が完了してから、次の `then()` メソッドのコールバックが実行されていますね。その理由としては、マイクロタスクを供給する Promise が少ないからたまたまそうなっているだけです。実際の動きを Visualizer で確認してみてください。
 
 - [promiseShouldBeReturnedNest.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LmpzCmNvbnNvbGUubG9nKCJbQS0xXSBTeW5jIHByb2Nlc3MiKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIsIG5leHRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgY29uc29sZS5sb2coYCR7b3JkZXJ9IFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgJHtuZXh0T3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICByZXR1cm4gdmFsdWU7CiAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0QtNV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCIybmQgUHJvbWlzZSIsICJbRS02XSIsICJbRi03XSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ctOF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSC0zXSBTeW5jIHByb2Nlc3MiKTs%3D)
-- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
+- ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
+- ⚠️ 注意: JS Visualizer では可視化されていないマイクロタスクが存在しています
 
 Promise インスタンスを返すような処理を `return` しない場合に事項順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise chain を伸ばしています。実行順番を予想してみてください。
 
@@ -291,6 +292,7 @@ returnPromise("1st Promise", "[B]", "[C]", "[D]")
     console.log("👦 [E] Async");
     console.log("👦 Resolved value: ", value);
     returnPromise("2nd Promise", "[F]", "[G]", "[H]");
+    // 🔥 このコールバックからは Promise が返されないので追加のマイクロタスクが発生しない
   })
   .then((value) => {
     console.log("👦 [I] Async");
@@ -328,7 +330,8 @@ console.log("🦖 [N] Sync");
 言葉で説明するのが難しいので、実際に見てみてください。
 
 - [promiseShouldBeReturnedNest-3rd.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LTNyZC5qcwpjb25zb2xlLmxvZygiW0EtMV0gU3luYyBwcm9jZXNzIik7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyLCBzZWNvbmRPcmRlciwgdGhpcmRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgICBjb25zb2xlLmxvZyhgJHtvcmRlcn0gVGhpcyBsaW5lIGlzIChBKVN5bmNocm9ub3VzbHkgZXhlY3V0ZWRgKTsKICAgICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7c2Vjb25kT3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICAgIHJldHVybiB2YWx1ZTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7dGhpcmRPcmRlcn0gQWRkaXRpb25hbCBuZXN0ZWQgY2hhaW5gKTsKICAgICAgcmV0dXJuIHZhbHVlOwogICAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIsICJbRC01XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0UtNl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVyblByb21pc2UoIjJuZCBQcm9taXNlIiwgIltGLTddIiwgIltHLThdIiwgIltILTEwXSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ktOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbTi0zXSBTeW5jIHByb2Nlc3MiKTsK)
-- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
+- ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
+- ⚠️ 注意: JS Visualizer では可視化されていないマイクロタスクが存在しています
 
 とにかく、Promise インスタンスを返すような処理は Promise chain において、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
 

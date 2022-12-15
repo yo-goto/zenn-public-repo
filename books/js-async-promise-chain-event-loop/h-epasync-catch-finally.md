@@ -176,7 +176,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 ```
 
 ということで実行順番は次のようになります。もし `catch()` メソッドがマイクロタスクを発行しな k れば、`[E-8]` の実行順番は `[G-5]`   よりも先に来るはずですが、そうはなりません。
- 
+
 ```sh
 ❯ v8 catchMicrotask-3.js
 🦖 [A-1] MAINLINE: Start

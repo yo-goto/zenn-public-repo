@@ -167,7 +167,7 @@ Promise.resolve()
 - [Task vs Microtask - JS Visualizer](https://www.jsv9000.app/?code=Ly8gVGFzayB2cyBNaWNyb3Rhc2sKY29uc29sZS5sb2coIlsxXSIpCgpzZXRUaW1lb3V0KGZ1bmN0aW9uIGEoKSB7CiAgY29uc29sZS5sb2coIlszXSIpOwp9LCAwKTsKClByb21pc2UucmVzb2x2ZSgpLnRoZW4oZnVuY3Rpb24gYigpIHsKICBjb25zb2xlLmxvZygiWzJdIik7Cn0pOwo%3D)
 
 :::message alert
-注意: JS Visuzlizer では**実質的に最初のタスクとなるグローバルコンテキストは可視化されない**ので最初のマイクロタスク・タスク実行のタイミングについて誤解しないように注意してください。上のコードの実行順番が理解できない理由はこれです。
+注意: JS Visualizer では**実質的に最初のタスクとなるグローバルコンテキストは可視化されない**ので最初のマイクロタスク・タスク実行のタイミングについて誤解しないように注意してください。上のコードの実行順番が理解できない理由はこれです。
 
 説明のところに「**Synchronously execute the script as though it were a function body**. Run until the Call Stack is empty.」という様に言葉では書かれているのですが、最初のタスクとして処理されるグローバルコンテキストそのものは可視化されないので最初このことに気づくのは難しいです。
 :::

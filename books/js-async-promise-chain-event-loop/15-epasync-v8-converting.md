@@ -899,11 +899,17 @@ resumable function foo3() {
 
 `resolvePromise()` の部分に注目してください。`implicit_promise` を `Promise.resolve(42)` という Promise インスタンスで resolve を試みています。`resolvePromise()` 自体は `resolve()` 関数とやっていることは同じなので、`resolvePromise()` は resolve する対象を引数にとって外部から Promise 解決ができる `resolve()` 関数として考えてください。
 
-ECMAScript の仕様では「`resolve()` 関数に渡された Promise の `then()` メソッドを呼ぶという処理をマイクロタスクとして実行する」と決まっています。
+ECMAScript の仕様では「`resolve()` 関数に渡された Promise の `then` メソッドを呼ぶという処理をマイクロタスクとして実行する」と決まっています。
 
 こちらについては、uhyo さんの記事で詳しく解説されています。
 
 https://zenn.dev/uhyo/articles/return-await-promise
+
+具体的な仕様は以下の [NewPromiseResolveThenable](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 抽象操作の step.1-b です。
+
+>   - b. Let thenCallResult be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([HostCallJobCallback](https://tc39.es/ecma262/#sec-hostcalljobcallback)(then, thenable, « resolvingFunctions.\[\[Resolve\]\], resolvingFunctions.\[\[Reject\]\] »)).
+
+これについては『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターでも新しく解説しています。
 
 :::message alert
 ここでいう `resolve()` 関数とは Promise コンストラクタの引数となる executor 関数の引数として渡す `resolve` コールバック関数のことで、`Promise.resolve()` のことではないことに注意してください。
@@ -938,6 +944,12 @@ MDN でも引数として与えられた値がプロミスならそのプロミ�
 
 > Promise.resolve() メソッドは、与えられた値で解決した Promise オブジェクトを返します。その値がプロミスであった場合は、そのプロミスが返されます。
 > ([Promise.resolve() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve) より引用)
+
+この挙動は仕様的には `Promise.resolve` 関数から呼び出される [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作内の step.1 に記述されています。
+
+> - 1. If [IsPromise](https://tc39.es/ecma262/#sec-ispromise)(x) is true, then
+>   - a. Let xConstructor be ? [Get](https://tc39.es/ecma262/#sec-get-o-p)(x, "constructor").
+>   - b. If [SameValue](https://tc39.es/ecma262/#sec-samevalue)(xConstructor, C) is true, return x.
 :::
 
 この記事では V8 エンジンの内部変換で考えるので、上の記事にように通常の関数に戻して考えるのではなく、async 関数の内部変換後に起きることでそのまま考えてみます。

@@ -8,10 +8,6 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise chain で値を繋ぐ』
 ---
 
-:::message alert
-このチャプターの解説は『[第２章 - Promise インスタンスと連鎖](sec-02-epasync)』のチャプターに追記した「内容の間違い」の影響を受けている可能性があります。
-:::
-
 # このチャプターについて
 
 前のチャプターを通して、Promise chain の基本的な動きが分かったと思います。ここからは値を Promise chain において値をつないでいく処理を考えてみたいと思います。
@@ -125,7 +121,7 @@ console.log("🦖 [4] MAINLINE(End): Sync");
 動きは前のコードと同じなので解説はしません。JS Visualizer 9000 で可視化したものは以下です。
 
 - [returnPromiseByFuncArg2AddChainValue.js](https://www.jsv9000.app/?code=Ly8gcmV0dXJuUHJvbWlzZUJ5RnVuY0FyZzJBZGRDaGFpblZhbHVlLW51bU5PLmpzCmNvbnNvbGUubG9nKCJbMV0gTUFJTkxJTkUoU3RhcnQpOiBTeW5jIFByb2Nlc3MiKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIpID0%2BIHsKICByZXR1cm4gbmV3IFByb21pc2UoKHJlc29sdmUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKGAke29yZGVyfSBTeW5jIFByb2Nlc3NgKTsKICAgIHJlc29sdmUocmVzb2x2ZWRWYWx1ZSk7CiAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbMl0iKQogIC50aGVuKCh2YWx1ZTEpID0%2BIHsKICAgIGNvbnNvbGUubG9nKCJbNV06IiwgdmFsdWUxKTsKICAgIHJldHVybiAidmFsdWUgZnJvbSAxc3QgdGhlbiI7CiAgfSkKICAudGhlbigodmFsdWUyKSA9PiB7CiAgICBjb25zb2xlLmxvZygiWzddOiIsIHZhbHVlMik7CiAgICAvLyByZXR1cm4gInZhbHVlIGZyb20gMm5kIHRoZW4iOwogIH0pCiAgLnRoZW4oKHZhbHVlMykgPT4gewogICAgY29uc29sZS5sb2coIls5XToiLCB2YWx1ZTMpOwogIH0pOwoKcmV0dXJuUHJvbWlzZSgiMm5kIFByb21pc2UiLCAiWzNdIikKICAudGhlbigodmFsdWUxKSA9PiB7CiAgICBjb25zb2xlLmxvZygiWzZdOiIsIHZhbHVlMSk7CiAgICByZXR1cm4gInZhbHVlIGZyb20gMXN0IHRoZW4iOwogIH0pCiAgLnRoZW4oKHZhbHVlMikgPT4gewogICAgY29uc29sZS5sb2coIls4XToiLCB2YWx1ZTIpOwogICAgcmV0dXJuICJ2YWx1ZSBmcm9tIDJuZCB0aGVuIjsKICB9KQogIC50aGVuKCh2YWx1ZTMpID0%2BIHsKICAgIGNvbnNvbGUubG9nKCJbMTBdOiIsIHZhbHVlMyk7CiAgfSk7Cgpjb25zb2xlLmxvZygiWzRdIE1BSU5MSU5FKEVuZCk6IFN5bmMgUHJvY2VzcyIpOwo%3D)
-- ⚠️ 注意: JS Visuzlizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
+- ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
 ポイントとしては、`return` 文をコメントアウトしてある `then()` コールバックの次の `then()` コールバックでは、渡されるはずの値がないので `undefined` となっている点です。何も `return` しない場合には次の `then()` メソッドのコールバックの入力値は `undefined` となるので注意してください。
 
