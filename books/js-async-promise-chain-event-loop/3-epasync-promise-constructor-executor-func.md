@@ -174,7 +174,7 @@ const promise2 = new Promise(res => res("Promise履行時の値"));
 `executor` 関数の引数である `res` 関数と静的メソッドである `Promise.resolve()` は別物であることに注目してください。
 
 :::message
-`Promise.resolve()` と `reject()` 関数(上の例では `res()`)が別モノであるということが実は async/await の挙動などで関わってくるので注意してください。特に `resolve()` 関数はかなり特殊で再帰性などの特徴が関わります。つまり、**完全に等価ではない**ので、「大体同じ」として扱っています。
+`Promise.resolve()` と `resolve()` 関数(上の例では `res()`)が別モノであるということが実は async/await の挙動などで関わってくるので注意してください。特に `resolve()` 関数はかなり特殊で再帰性などの特徴が関わります。つまり、**完全に等価ではない**ので、「大体同じ」として扱っています。
 :::
 
 この `Promise.resolve()` は最も文字数が少なく書けるので、Promise オブジェクトの初期化やテストコードを書く際に活用できる便利なショートカットとして覚えてください。実際に Promise オブジェクトを作成する際には `new Promise(excutor)` が基本となります。

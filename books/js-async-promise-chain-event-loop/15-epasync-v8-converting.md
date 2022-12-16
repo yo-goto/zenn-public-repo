@@ -559,7 +559,7 @@ resumable function fooZ() {
   // <- await 式
   promise = promiseResolve(Promise.resolve(42)); // プロミスなのでそのまま返す
   // promise が Settled になったら処理再開を告げるマイクロタスクを発行
-  // すでに Settled となるので直ちにマイクロタスクを発行
+  // 最初から fulfillled(Settled) となるので直ちにマイクロタスクを発行
   performPromiseThen(
     promise,
     res => resume(«fooZ», res),

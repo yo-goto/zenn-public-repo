@@ -289,41 +289,49 @@ Promise 系列の仕様を理解するために必要な抽象操作は [Promise
 
 Job というのは実際には内部的な仕様の型 (Specifiaction type) である抽象クロージャ ([Abstact Closure](https://tc39.es/ecma262/#sec-abstract-closure)) という型の値です。
 
-Promise 関連の Job (マイクロタスク) を作る直接の注意操作は以下の２つとなります。そして、この２つがこれまでの問題の中心とります。
+Promise 関連の Job (マイクロタスク) を作る直接の抽象操作は以下の２つとなります。そして、この２つがこれまでの問題の中心とります。
 
-- [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob)
-- [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob)
+- [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) : Promise の解決時に発行される Job (マイクロタスク) を作成する操作
+- [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) : 解決値が Thenable の場合に上記の Job から更に追加の Job (マイクロタスク) を作成する操作
+
+[NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) で作成される PromiseReactionJob と呼ばれる Job (Abstract closure) がこれまで扱ってきたイベントループで処理されるマイクロタスクの実体となります。Promise chain だけでなく、async/await でもこの Job は発行されます。
+
+一方で、async/await の仕様の最適化で削除されたものの Promise chain においてはいまだに仕様に残っている特殊な追加のマイクロタスクを発生させる操作が [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) となります。この操作によって当該の問題となっている追加発生するマイクロタスクが生成されることになります。
+
+従って、この NewPromiseResolveThenableJob 抽象操作の呼び出しが行われる経路を特定し、この操作によって作成される Job (マイクロタスク) がどのような挙動を引き置きしているのかを理解することで問題を解決できます。NewPromiseResolveThenableJob 抽象操作を呼び出しているのは図に記載していますが、[CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) という抽象操作によって作成される [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) です。
+
+まずは CreateResolvingFunctions 抽象操作から見ていきましょう。
 
 # CreateResolvingFunctions
 
-さて、ここからは本格的に問題となる仕様の部分について触れていきます。
+それでは、ここから本格的に問題となる仕様の部分について実際に触れていきます。
 
-`Promise.prototype.then` のコールバックから返される値によって異なる挙動が起きますが、この問題を起こしている抽象操作の実体は [CreateResolvingFunctinos](https://tc39.es/ecma262/#sec-createresolvingfunctions) で作成される [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) という関数です。
+`Promise.prototype.then` のコールバックから返される値の種類によって異なる処理が発生しますが、この問題を起こしている抽象操作の実体は [CreateResolvingFunctinos](https://tc39.es/ecma262/#sec-createresolvingfunctions) で作成される [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) という関数です。
 
-仕様的にはこのような名前がついていますが、その正体はかなり身近なもので、`new Promise(executor)` という Promise インスタンス作成時に渡すコールバック関数 `executor` の引数となる `resolve` 関数です。
+仕様的にはこのような名前がついていますが、その正体はかなり身近なもので、`new Promise(executor)` という Promise インスタンス作成時に渡すコールバック関数である `executor` の引数となる `resolve` 関数です。
 
 ```js
 const p = new Promise((resolve, reject) => {
-  //                  ^^^^^^^↑ これ
+  //               これ↑^^^^^^^
   resolve(42); // この関数が Promise Resolve Functions で作成される関数
 });
 
 p.then(console.log); // => 42
 ```
 
-今までなんとなく `resolve()` という関数を使ってきましたが、この関数が「実際にやること」が定義されているのが Promise Resolve Functions です。
+今まではなんとなく `resolve()` という関数を使ってきましたが、この関数が「実際にやること」が定義されているのが Promise Resolve Functions の仕様です。
 
-Promise コンストラクタを使ってプロミスインスタンスを作成すると、CreateResolvingFunction 抽象操作が呼び出され、解決用の関数である [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) と拒否用の関数である [Promise Reject Functions](https://tc39.es/ecma262/#sec-promise-reject-functions) が作成されます。そしてこれらことが今まで見てきた `resolve` 関数と `reject` 関数そのものです。
+Promise コンストラクタを使ってプロミスインスタンスを作成すると、CreateResolvingFunction 抽象操作が呼び出され、解決用の関数である [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) と拒否用の関数である [Promise Reject Functions](https://tc39.es/ecma262/#sec-promise-reject-functions) が作成されます。そしてこれらことが今まで見てきた `resolve` 関数と `reject` 関数そのものであり実体です。
 
 『[Promise の基本概念](a-epasync-promise-basic-concept)』や『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターでも説明しましたが、`reject` 関数に比べて、`resolve` 関数は非常に複雑です。これは Unwrapping の能力が関係しており、`reject` 関数では引数の `reason` に何を渡そうが拒否すると決まっていますが、`resolve` 関数では引数にわたす `resolution` (解決値) の値の種類よって処理内容が変わるので、複雑になっています。
 
-`Promise.prototype.then` でもこの `resolve` 関数が実は使われており (図示してある)、コールバックから返される値が引数の `resolution` (解決値) として使われます。従って、`resolve` 関数の処理の場合分けを考える必要があるという話になります。
+`Promise.prototype.then` でも**この `resolve` 関数が実は使われており** (呼び出し図に注目)、コールバックから返される値が引数の `resolution` (解決値) として使われます。従って、`resolve` 関数の処理の場合分けを考える必要があるという話になります。
 
 # then から resolve 関数が呼び出される仕組み
 
 `Promise.prototype.then` から `resolve` 関数が呼び出されるというのは仕様を見てもかなり分かりづらいので補足しておきます。
 
-`Promise.prototype.then` が呼び出されると PerformPromiseThen 抽象操作が呼び出される前に [Promise コンストラクタ](https://tc39.es/ecma262/#sec-promise-executor) によって新しい Promise インスタンスが作成されます。実際には以下のステップで発生しています。
+`Promise.prototype.then` が呼び出されると PerformPromiseThen 抽象操作が呼び出される前に [Promise コンストラクタ](https://tc39.es/ecma262/#sec-promise-executor) によって新しい Promise インスタンスが作成されます。実際には仕様の以下のステップで発生しています。
 
 > - 3. Let C be ? [SpeciesConstructor](https://tc39.es/ecma262/#sec-speciesconstructor)(promise, [%Promise%](https://tc39.es/ecma262/#sec-promise-constructor)).
 > - 4. Let resultCapability be ? [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability)(C).
@@ -353,14 +361,14 @@ NewPromiseReactiobJob は上で説明したように Job (マイクロタスク)
 
 この NewPromiseReactionJob 操作を呼び起こすと、then 操作の最初で NewPromiseCapability 操作をつかって内部的に作り出した CreateResolvingFunctions の関数を呼び出したことになるため、`resolve` 関数の呼び出しが起きています。
 
-実際に `resolve` 関数や `reject` 関数が呼び出されるのは仕様の以下のステップです。[PromiseCapability Record](https://tc39.es/ecma262/#sec-promisecapability-records) (promise の状態にアクセスできるようにしたヘルパーオブジェクトのようなもの) のフィールド `[[Resolve]]` と `[[Reject]]` にはそれぞれ `resolve` 関数と `reject` 関数が保持されており、[Call](https://tc39.es/ecma262/#sec-call) 抽象操作で関数の呼び出しを行っています。
+実際に `resolve` 関数や `reject` 関数が呼び出されるのは仕様の以下のステップです。[PromiseCapability Record](https://tc39.es/ecma262/#sec-promisecapability-records) (promise の状態にアクセスできるようにしたヘルパーオブジェクトのようなもの) のフィールド `[[Resolve]]` と `[[Reject]]` にはそれぞれ `resolve` 関数と `reject` 関数が保持されており、仕様内の以下のステップで [Call](https://tc39.es/ecma262/#sec-call) 抽象操作を使って関数呼び出しを行います。
 
 > - h. If handlerResult is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
 >   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Reject\]\], undefined, « handlerResult.\[\[Value\]\] »).
 > - i. Else,
 >   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Resolve\]\], undefined, « handlerResult.\[\[Value\]\] »).
 
-このようにして仕様内部では `Promise.prototype.then` から `resolve` 関数と `reject` 関数が呼び出せるようになっています。
+このようにして仕様内部では `Promise.prototype.then` から CreateResolvingFunctions 操作で作成した `resolve` 関数と `reject` 関数が呼び出せるようになっています。
 
 # Promise Resolve Functions
 
@@ -403,19 +411,36 @@ ECMAScript のアルゴリズムステップにおける "Lex x be someValue" �
 
 さて、step.1 から step.4 まではこんな感じですが、実は Promise Resolve Functinos のアルゴリズムステップの前にはこのような記述がありました。
 
-> A promise resolve function is an anonymous built-in function that has [[Promise]] and [[AlreadyResolved]] internal slots.
+> A promise resolve function is an anonymous built-in function that has \[\[Promise\]\] and \[\[AlreadyResolved\]\] internal slots.
 >
 > When a promise resolve function is called with argument resolution, the following steps are taken:
 
 Promise Resole Function は `[[Promise]]` と `[[AlradyResolve]]` という内部スロットを持つ無名のビルトイン関数 (ECMAScript に備え付けの関数) であり、引数 `resolution` で呼び出されることで記述されているアルゴリズムステップを実行するとのことです。
 
-さて、この引数 `resolution` が重要です。`resolve` 関数が呼び出されるのは以下のような形式となっていますね。
+実はこの引数 `resolution` が非常に重要です。`resolve` 関数が呼び出されるのは以下のような形式となっていますね。
 
 ```js
 resolve(resolution);
 ```
 
-`new Promise(executor)` の形式であれば、`resolve()` 関数の引数として `resolution` にわたすのは新しくインスタンス化する Promise オブジェクトの内包させて履行させたい値でした。そして、Promise.prototype.then のコールバック関数で返す値もこの `resolution` として扱われて最終的に `resolve` 関数が呼び出されるわけです。
+`new Promise(executor)` の形式であれば、`resolve()` 関数の引数として `resolution` に渡すのは新しくインスタンス化する Promise オブジェクトの内包させて履行させたい値でした。
+
+```js
+const p = new Promise(resolve => {
+  resolve(42); // 履行値を reslution として渡す
+});
+```
+
+そして、Promise.prototype.then のコールバック関数で返す値もこの `resolution` として扱われて最終的に `resolve` 関数が呼び出されるわけです。
+
+```js
+Promise.resolve(42)
+  .then(x => {
+    return x + 1;
+    //     ^^^^^
+    // resolution として resolve 関数に渡される値 43
+  })
+```
 
 `resolve` 関数の実装では、この引数 `resolution` の値の種類によって処理が変わるので場合分けすることになります。その箇所は以下の仕様の step.7 から step.16 となります (step.5-6 は省略します)。
 
@@ -562,31 +587,33 @@ const resolve = (resoltion) => {
 }
 ```
 
-さて、`resolution` の値が Thenable の場合には NewPromiseThenableJob 操作によって作成される Job がマイクロタスクとして発行されることになります。
+`resolution` の値が Thenable の場合には NewPromiseThenableJob 操作によって作成される Job がマイクロタスクとして発行されることになります。
 
 ## 発生するマイクロタスクを考える
 
-さて、実装をだいたい把握したところで、以下のような実際のコードで発生するマイクロタスクについて考えましょう。
+さて、`resolve` 関数の実装をだいたい把握したところで、以下のような実際のコードで発生するマイクロタスクについて考えましょう。
 
 ```js
 Promise.resolve(42)
   .then(x => {
     // このコールバック関数の実行で起きることを考える
     return Promise.resolve(x + 1);
+    //     ^^^^^^^^^^^^^^^^^^^^^^
+    // resolution として resolve 関数に渡される値
   })
   .then(x => console.log(x));
 ```
 
-`Proimse.resolve(42)` は履行した promise インスタンスなので、chain されている `then()` メソッドのコールバック関数はただちに、マイクロタスクとして発行されます。このときのマイクロタスクの実体である Job は NewPromiseReactoinJob で作成されています。これが一個目のマイクロタスクです。
+`Proimse.resolve(42)` は履行した promise インスタンスなので、chain されている `then()` メソッドのコールバック関数は直ちにマイクロタスクとして発行されます。このときのマイクロタスクの実体である Job は NewPromiseReactoinJob 抽象操作で作成されています。これが一個目のマイクロタスクです。
 
-イベントループでコールバックがマイクロタスクが処理されるとき、`then` メソッドの実行であらかじめ CreateResolutionFunctions で作成された `resolve` 関数が `resolution` として Thenable な値である `Promise.reslve(42 + 1)` を使って呼び出されます。
+イベントループでコールバックがマイクロタスクが処理されるとき、`then` メソッドの実行であらかじめ CreateResolutionFunctions で作成された `resolve` 関数が Thenable な値である `Promise.reslve(42 + 1)` を引数 `resolution` として使って呼び出されます。
 
 ```js
 // このような関数の実行が起きる
 resolve(Promise.resolve(43));
 ```
 
-これによって今まで実装してきたような `resolve` 関数が呼び出されます。場合分けで見たように `resolution` の値は Thenable (promise オブジェクトなので `then` メソッドを持っている) なので、アルゴリズムステップの step.13 から step.16 が実行されますね。NewPromiseResolveThenableJob 操作で作成される Job がマイクロタスクとしてエンキューされます。これが二個目に発生するマイクロタスクとなります。
+これによって今まで実装してきたような `resolve` 関数が呼び出されます。場合分けで見たように `resolution` の値は Thenable (Promise オブジェクトは `then` メソッドを持っている) なので、アルゴリズムステップの step.13 から step.16 が実行されます。これによって NewPromiseResolveThenableJob 操作で作成される Job がマイクロタスクとしてエンキューされます。これが二個目に発生するマイクロタスクとなります。
 
 ## NewPromiseResolveThenableJob
 
@@ -779,7 +806,8 @@ Promise.resolve(42)
   .then(x => { // <1-p[1]>
     console.log("💙 [1]")
     return Promise.resolve(x + 1);
-    // <3-p[2]> <5-p[3]>
+    // <3-p[2]> Promise.resolev(43).then の呼び出し
+    // <5-p[3]> resolve 関数の実行
   })
   .then(x => { // <7-p[4]>
     console.log("👻 [3] PROMISE", x)
@@ -790,14 +818,14 @@ Promise.resolve(42)
     console.log("💚 [2]")
     const thenable = {
       then(onFulfilled) {
-        queueMicrotask(() => {
-          onFulfilled(x + 1)
+        queueMicrotask(() => { // コールバック関数をマイクロタスクとして発行する
+          onFulfilled(x + 1);
         });
       }
     };
     return thenable;
-    // <4-t[2]> <6-t[3]>
-    // thenable.then(resolve, reject)
+    // <4-t[2]> thenable.then の呼び出し
+    // <6-t[3]> () => { resolve(42 + 1); } の実行
   })
   .then(x => { // <8-t[4]>
     console.log("🦄 [4] THENABLE", x)
@@ -881,13 +909,13 @@ A 3
 */
 ```
 
-フラット化していると処理の流れが見やすいですが、コールバックから返る値である Thenable の `then` メソッドの起動がマイクロタスクとして発生してしまうので、コンソール出力を行うコールバックのマイクロタスクが実行されるまでにマイクロタスクが発生することになります。それぞれの Promise chain で発生するマイクロタスクの合計は同じですが出力が起きるためのマイクロタスクの順序が異なります。とはいっても、このような挙動の違いは理解の上では必要ですが、実用上なにかの問題があるというわけではないのでそこまで気にする必要はありません。
+フラット化していると処理の流れが見やすいですが、コールバックから返る値である Thenable の `then` メソッドの起動がマイクロタスクとして発生してしまうので、コンソール出力を行うコールバックのマイクロタスクが実行されるまでに追加でマイクロタスクが発生することになります。それぞれの Promise chain で発生するマイクロタスクの合計は同じですが出力が起きるためのマイクロタスクの発生順序が異なります。とはいっても、このような挙動の違いは理解の上では必要ですが、実用上なにかの問題があるというわけではないのでそこまで気にする必要はありません。
 
-また、以下で説明するようにそもそも仕様最適化されている async/await が使えるので、async/await を使った方がマイクロタスクの発生をおさえ、さらに読みやすいコードが書けます。
+また、以下で説明するようにそもそも仕様最適化されている async/await が使えるのであれば、async/await を使った方がマイクロタスクの発生を押さえた上に読みやすいコードが書けます。
 
 # 仕様最適化の遺構
 
-async/await と Promise chain でマイクロタスクの発生数が異なるという事象が起きますが、この Thenable の話が関与しています。
+async/await と Promise chain でマイクロタスクの発生数が異なるという事象が起きますが、`resolution` として使われる Thenable の話が関与しています。
 
 『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説していますが、async/await は V8 エンジンサイドからの以下の PR で仕様自体の最適化がなされました。
 
@@ -901,25 +929,59 @@ https://github.com/tc39/ecma262/pull/1250/files
 - 2. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo; _promise_ &raquo;).
 ```
 
-何が起きたかを説明すると、[NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作と [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) の呼び出しがなくなり、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作がここに挿入されました。
+この箇所で何が起きたかを説明すると、[NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作と [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) の呼び出しがなくなり、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作がここに挿入されました。
 
-`await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が Promise 以外の Thenable の場合だと、そのまま返すのではなく、一旦 Promise でラップすることになります (これは通常の値を評価するときとまったく同じです)。ただし、Promise オブジェクトだけは特別扱いして、そのまま返すようになりました。
+`await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が Promise 以外の Thenable の場合だと一旦 Promise でラップすることになります (これは通常の値を評価するときとまったく同じです)。ただし、Promise オブジェクトだけは特別扱いして**そのまま返す**ようになりました。実際の PromiseResolve 操作の仕様のステップが以下の部分です。
 
-これを引き起こしている直接的な操作は [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作から呼び出される [IsPromise](https://tc39.es/ecma262/#sec-ispromise) という抽象操作です。この操作では以下のアルゴリズムステップで引数 `x` がオブジェクトでなかったり、`[[PromiseState]]` という内部スロットを持たなければ `false` 値を返して Promise オブジェクトでないことを判定します。
+> - 1. If [IsPromise](https://tc39.es/ecma262/#sec-ispromise)(x) is true, then
+>   - a. Let xConstructor be ? [Get](https://tc39.es/ecma262/#sec-get-o-p)(x, "constructor").
+>   - b. If [SameValue](https://tc39.es/ecma262/#sec-samevalue)(xConstructor, C) is true, return x.
+
+PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma262/#sec-ispromise) という抽象操作の判定によって Promise オブジェクトかどうかを判定しています。この操作では以下のアルゴリズムステップで引数 `x` がオブジェクトでなかったり、`[[PromiseState]]` という内部スロットを持たなければ `false` 値を返して Promise オブジェクトでないことを判定します。
 
 > - 1. If x [is not an Object](https://tc39.es/ecma262/#sec-object-type), return false.
 > - 2. If x does not have a \[\[PromiseState\]\] internal slot, return false.
 > - 3. Return true.
 
-結局、仕様の最適化は async 関数の await 式の評価で promise を Thenable 全体から引き離して、無駄な処理を削減するようにしたことが大きいです。
+結局、仕様の最適化は async 関数の await 式の評価で Promise を Thenable 全体から引き離して、無駄な処理を削減するようにしたことが大きいです。
 
 しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が Promise の場合を特別扱いしていません。
 
-つまり、`return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、そのためのマイクロタスクが増加することになります。そして 解決時には [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されます。
+`return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、その前に [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されてマイクロタスクが増加することになります。一方 async/await ではそもそも NewPromiseResolveThenableJob 操作が発生しません。
 
 つまり、`Promise.prototype.then` の方の仕様は async/await であった最適化がされていないので、コールバック関数で Promise を返している場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
 
-例えば、以下のように実際にまったく同じ処理を Promise chain と async/await で記述したときには最適化されている async/await の方が先に終了します。
+『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで「`Promise.resolve` と `executor` 関数の `resolve` 関数は同じようなものであるが、完全に等価ではない」と述べました。`resolve` は引数 `resolution` に Promise を取るとマイクロタスクが追加発生する一方で、`Promise.resolve` は引数が Promise だとそのまま返します。この違いによって２つを競争させたときには `Promise.resolve` を使った方がマイクロタスクの発生が少ないため先に終了できます。
+
+```js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: どちらの promise chain かの識別 (a or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
+new Promise(resolve => {
+  resolve(Promise.resolve("A"));
+  // 🔥 引数が Promise なら２つの追加のマイクロタスクが発生
+  // <1-a[1]> Promise.reoslve("A").then(resolve, reject) の呼び出し
+  // <3-a[2]> resolve 関数の実行
+}).then(console.log); // <4-a[3]>
+//      ^^^^^^^^^^^ ３個目のマイクロタスクで出力
+
+// こちらが先に終了する
+Promise.resolve(Promise.resolve("B")) // 引数が Promise ならそのまま返す
+  .then(console.log); // <2-b[1]>
+  //   ^^^^^^^^^^^^ １個目のマイクロタスクで出力
+
+/* RESULT
+❯ deno run pResolveExeResolve.js
+B
+A
+*/
+```
+
+Promise chain と async/await の違いはこのような `resolve` 関数と `Promise.resolve` 関数のどちらを使用するかという話に帰結します。最適化の結果として `Promise.resolve` で使用されている PromiseResolve 操作が async/await で使われるようになったのでマイクロタスクが減ったわけです。
+
+例えば、以下のようにまったく同じ処理を Promise chain と async/await で記述したときには仕様が最適化されている async/await の方が先に終了します。
 
 ```js:countMt.js
 /* <n-t[m]> は発生しているマイクロタスクの追跡順番
