@@ -2,7 +2,7 @@
 title: "番外編 Promise.prototype.then メソッドの仕様挙動"
 cssclass: zenn
 date: 2022-11-02
-modified: 2022-12-14
+modified: 2022-12-16
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
@@ -57,7 +57,7 @@ Promise.resolve(42)
   //  マイクロタスク２個目で出力
 ```
 
-一方、以下のように `then` のコールバックで Promise オブジェクトが返されている場合には合計4個のマイクロタスクが発生し、その4個目のマイクロタスクでコンソールへの出力となります。
+一方、以下のように `then` のコールバックで Promise オブジェクトが返されている場合には合計 4 個のマイクロタスクが発生し、その 4 個目のマイクロタスクでコンソールへの出力となります。
 
 ```js
 Promise.resolve(42)
@@ -325,7 +325,7 @@ Promise コンストラクタを使ってプロミスインスタンスを作成
 
 『[Promise の基本概念](a-epasync-promise-basic-concept)』や『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターでも説明しましたが、`reject` 関数に比べて、`resolve` 関数は非常に複雑です。これは Unwrapping の能力が関係しており、`reject` 関数では引数の `reason` に何を渡そうが拒否すると決まっていますが、`resolve` 関数では引数にわたす `resolution` (解決値) の値の種類よって処理内容が変わるので、複雑になっています。
 
-`Promise.prototype.then` でも**この `resolve` 関数が実は使われており** (呼び出し図に注目)、コールバックから返される値が引数の `resolution` (解決値) として使われます。従って、`resolve` 関数の処理の場合分けを考える必要があるという話になります。
+`Promise.prototype.then` でも **この `resolve` 関数が実は使われており** (呼び出し図に注目)、コールバックから返される値が引数の `resolution` (解決値) として使われます。従って、`resolve` 関数の処理の場合分けを考える必要があるという話になります。
 
 # then から resolve 関数が呼び出される仕組み
 
@@ -846,9 +846,9 @@ Promise.resolve(42)
 
 解決値の値の種類 | (ステップ) 起こる処理
 --|--
-元の promise そのもの | (step.7) 例外を throw して直ちに解決対象の promise を拒否する
+元の promise そのもの | (step.7) 例外を throw して解決対象の promise を直ちに拒否する
 オブジェクトでない値 | (step.8) 解決対象の promise をその解決値で直ちに履行する
-Thenable ではないオブジェクト | (step.12)  解決対象の promise をその解決値で直ちに履行する
+Thenable ではないオブジェクト | (step.12) 解決対象の promise をその解決値で直ちに履行する
 Thenable なオブジェクト | (step.13-16) `thenable.then(resolve, reject)` を呼び出すためのマイクロタスクを発行される。Thenable が Promise の場合にはさらにそのマイクロタスクから `resolve` 関数が追加のマイクロタスクとして発行されて、最終的に解決対象の promise が履行される
 
 解決値が Promise オブジェクトの場合にはそれが settled になるまでにマイクロタスクが３個発生することに注意してください。つまり、Promise chain において `then` メソッドのコールバックで proimse オブジェクトを返すとマイクロタスクが３個発生することになります。
@@ -868,13 +868,14 @@ Promise.resolve(42)
 
 上のコードでは、まず `x => { return Promise.resolve(x + 1);}` という `then` のコールバック関数が１個目のマイクロタスクとして発行されます。その時、コールバック関数の返り値が Promise オブジェクトなので追加のマイクロタスクが発生します。
 
-具体t系には `Promise.resolve(x + 1).then(resolve, reject)` の呼び出し自体を行う関数が２個目のマイクロタスクとして発行されて、その `resolve` 関数が３個目のマイクロタスクとして発行されます。それが実行されると、`then` 自体から返る Promise オブジェクト自体(元の未解決 Promise オブジェクト) が解決し、chain してある `then` のコールバック `x => console.log(x)` が４個目のマイクロタスクとして発行されます。
+具体的には `Promise.resolve(x + 1).then(resolve, reject)` の呼び出し自体を行う関数が２個目のマイクロタスクとして発行されて、その `resolve` 関数が３個目のマイクロタスクとして発行されます。それが実行されると、`then` 自体から返る Promise オブジェクト自体 (元の未解決 Promise オブジェクト) が解決し、chain してある `then` のコールバック `x => console.log(x)` が４個目のマイクロタスクとして発行されます。
 
 # Promise chain のネストをフラット化する弊害
 
 『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise chain はなるべくネストさせずにフラットにするようにと解説しましたが、上記の `then` のコールバックから返される値の種類によって発生するマイクロタスク数が異なることに影響を受けて Promise chain のネストをフラット化するとコンソール出力が行われるマイクロタスクが遅延します。
 
-```js:nestVsFlat.js
+```js
+// nestVsFlat.js
 /* <n-t[m]> は発生しているマイクロタスクの追跡順番
   n: 全体のマイクロタスクのカウント
   t: フラット(f) か ネスト(n) か
@@ -931,7 +932,7 @@ https://github.com/tc39/ecma262/pull/1250/files
 
 この箇所で何が起きたかを説明すると、[NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作と [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) の呼び出しがなくなり、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作がここに挿入されました。
 
-`await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が Promise 以外の Thenable の場合だと一旦 Promise でラップすることになります (これは通常の値を評価するときとまったく同じです)。ただし、Promise オブジェクトだけは特別扱いして**そのまま返す**ようになりました。実際の PromiseResolve 操作の仕様のステップが以下の部分です。
+`await thenable` という処理があったときには、 [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 操作で await 式の評価対象が Promise 以外の Thenable の場合だと一旦 Promise でラップすることになります (これは通常の値を評価するときとまったく同じです)。ただし、Promise オブジェクトだけは特別扱いして **そのまま返す** ようになりました。実際の PromiseResolve 操作の仕様のステップが以下の部分です。
 
 > - 1. If [IsPromise](https://tc39.es/ecma262/#sec-ispromise)(x) is true, then
 >   - a. Let xConstructor be ? [Get](https://tc39.es/ecma262/#sec-get-o-p)(x, "constructor").
@@ -947,7 +948,7 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 
 しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が Promise の場合を特別扱いしていません。
 
-`return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、その前に [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されてマイクロタスクが増加することになります。一方 async/await ではそもそも NewPromiseResolveThenableJob 操作が発生しません。
+`return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、その前に [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されてマイクロタスクが増加することになります。一方 async/await ではそもそも NewPromiseResolveThenableJob 操作が await 式では発生しません(※ ただし async 関数本体の最後で `return thenable` 処理があると発生します)。最適化前の仕様では `await promise` という処理があれば `then` メソッドのコールバックで `return promise` した場合と同じく常に NewPromiseResolveThenableJob が実行されて追加のマイクロタスクが発生していましたが、このための無駄な Promise のラッピングとそれを解決するために発生する PromiseResolveThenableJob は ResolvePromise 操作を使うようにした最適化で削減されました。
 
 つまり、`Promise.prototype.then` の方の仕様は async/await であった最適化がされていないので、コールバック関数で Promise を返している場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
 
@@ -961,7 +962,7 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 */
 new Promise(resolve => {
   resolve(Promise.resolve("A"));
-  // 🔥 引数が Promise なら２つの追加のマイクロタスクが発生
+  // 🔥 引数が Promise なら２つのマイクロタスクが発生
   // <1-a[1]> Promise.reoslve("A").then(resolve, reject) の呼び出し
   // <3-a[2]> resolve 関数の実行
 }).then(console.log); // <4-a[3]>
@@ -1024,7 +1025,7 @@ console.log("🦖 [2] G: sync");
 */
 ```
 
-[Promise chain のネストをフラット化する弊害](#promise-chain-のネストをフラット化する弊害)の項目で見たように、ネストをそのままにすれば以下のように出力順番を調整できますが、結局発生しているマイクロタスクの合計では async/await よりも Promise chain の方が多くなります。
+[Promise chain のネストをフラット化する弊害](#promise-chain-のネストをフラット化する弊害) の項目で見たように、ネストをそのままにすれば以下のように出力順番を調整できますが、結局発生しているマイクロタスクの合計では async/await よりも Promise chain の方が多くなります。
 
 ```js:countMtX.js
 /* <n-t[m]> は発生しているマイクロタスクの追跡順番
