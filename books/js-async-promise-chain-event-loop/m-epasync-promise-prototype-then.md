@@ -271,7 +271,7 @@ Promise 系列の仕様を理解するために必要な抽象操作は [Promise
 
 例えば、Promise の静的メソッドである [Promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) は内部的に大半の作業を `PromiseResolve` という抽象操作に委任しています。
 
-![algorithm-steps](/images/js-async/img_ecma-algorithm-step.jpg)
+![algorithm-steps](/images/js-async/img_ecma-algorithm-step.jpg)*[https://tc39.es/ecma262/#sec-promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) より*
 
 このような各アルゴリズムステップを見て関係をたどり理解するのはかなり大変なので、コアとなる抽象操作については簡易的な図でまとめておきました。それぞれの操作は以下のような呼び出し関係となっています。
 

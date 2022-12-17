@@ -267,7 +267,7 @@ async/await では最初の await 式でのみ暗黙的に async 関数から返
 :::details 仕様解説
 実際、`performPromiseThen` という関数は ECMAScript 仕様に存在している [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) という抽象操作であり、以下のように `Promise.prototype.then` メソッドの仕様から呼び出されています。
 
-![algorithm-steps](/images/js-async/img_PerfromPromiseThen-spec.jpg)
+![algorithm-steps](/images/js-async/img_PerfromPromiseThen-spec.jpg)*[https://tc39.es/ecma262/#sec-promise.prototype.then](https://tc39.es/ecma262/#sec-promise.prototype.then) より*
 
 以下のような操作で promise の状態が履行状態であれば、コールバックとして登録してある再開関数がマイクロタスクとしてエンキューされて実行されます。
 
