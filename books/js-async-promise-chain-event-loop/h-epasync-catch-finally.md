@@ -313,7 +313,7 @@ https://github.com/tc39/ecma262/pull/584
 
 identity 関数と thrower 関数の説明は仕様の外での解説でよく利用されるもので、MDN の [Promise.prototype.then()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) のページでは上で解説したような関数でそのまま解説されています。
 
-![identity-thower](/images/js-async/img_identity-thrower-functions.jpg)
+![identity-thower](/images/js-async/img_identity-thrower-functions.jpg)*[Promise.prototype.then() - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) より*
 
 ただし、述べたように仕様からはこれらの関数の記述が一切削除されてしまったので、仕様内で identity などを検索してもヒットすることはありません。
 
