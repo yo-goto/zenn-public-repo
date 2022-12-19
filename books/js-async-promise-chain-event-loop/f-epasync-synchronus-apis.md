@@ -2,7 +2,7 @@
 title: "同期 API とブロッキング"
 cssclass: zenn
 date: 2022-06-15
-modified: 2022-12-03
+modified: 2022-12-19
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『同期 API とブロッキング』
@@ -205,7 +205,7 @@ Deno.writeTextFile(path, inputData) // [A]
   // [A] の完了に関わらず [B] を開始
   const data = Deno.readTextFile(path); // [B]
   console.log("[3]", data); // [C]
-  // そもそも Proimise インスタンスから値が取り出せていないので Promise{ <pending> } が出力される
+  // そもそも Promise インスタンスから値が取り出せていないので Promise{ <pending> } が出力される
 })();
 ```
 
@@ -218,11 +218,11 @@ Deno でも考え方は同じですが、Node では、Promise-based な File Sy
 
 非同期 API を使って「同時に複数のことができる」からといって **競合するような複数の API 操作は同時にしてはいけない** ということです。それらは順番に完了を待って行うようにしましょう。特定の実行順番が守られている操作群に対して関係の無い操作を同時に行うのなら大丈夫です。もちろん同期 API を使うならそもそも同時に複数のことをやらないので、そういった心配は必要ないです。
 
-その一方で、関連のない複数操作を並列化 (非同期 API 処理は同時に複数実行できる) させて、効率化を測ることができます。複数の Promise 処理を１つずつ await するのではなく、処理を起動した後で `Promise.allSetteld()` などの静的メソッドでまとめて await する (`await Promise.allSettled([...promises])`) ことで並列化できます。これについては第３章の『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターであらためて解説します。
+その一方で、競合しない複数操作を並列化 (非同期 API 処理は同時に複数実行できる) させて、効率化を測ることができます。複数の Promise 処理を１つずつ await するのではなく、処理を起動した後で `Promise.allSetteld()` などの静的メソッドでまとめて await する (`await Promise.allSettled([...promises])`) ことで並列化できます。これについては第３章の『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターであらためて解説します。
 
 # API の補足と標準モジュール
 
-## API としてのグローバルオブジェクト
+## API としてのビルトインオブジェクト
 
 API という言葉は非常にわかりづらく、とにかく曖昧なので読む人によっては非常に混乱させる用語です。文脈や視点に応じて ECMAScript のビルトインオブジェクトあるいはコンストラクタ関数のことを API と呼んでいる人も見かけます。JavaScript エンジンの外側からそれらを見た時には API と呼べるかもしれませんが、基本的に混乱の元になるので、この本では JavaScript エンジンから呼び出せるエンジンの外側にある環境から提供される機能のことを API として呼ぶことにして、ビルトインオブジェクトのことはビルトインオブジェクトと明言するようにしてます。(初学者はこれに気をつけないと意味不明になります)。
 

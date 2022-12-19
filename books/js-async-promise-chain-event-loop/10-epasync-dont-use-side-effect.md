@@ -8,15 +8,15 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 
-:::message alert
-このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
-:::
-
 # このチャプターについてz
 
 このチャプターは、別のチャプター『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』の続きとしての内容となります。
 
 `then()` メソッドのコールバックにおいて、単なる Promise インスタンスを返すだけでなく、非同期 API や Promise chain などによって最終的に Promise インスタンスが返る場合を考えます。
+
+:::message alert
+このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
+:::
 
 # 副作用とは
 

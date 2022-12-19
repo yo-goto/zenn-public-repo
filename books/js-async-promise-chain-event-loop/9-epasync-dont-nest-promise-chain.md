@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise chain はネストさせない』
 ---
 
-:::message alert
-このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
-:::
-
 # このチャプターについて
 
 このチャプターでは、Promise chain におけるネストについて、アンチパターンとしての話と、原理的な話を行います。
+
+:::message alert
+このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
+:::
 
 # Promise chain をネストしてみる
 

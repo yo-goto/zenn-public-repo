@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『then メソッドのコールバックで Promise インスタンスを返す』
 ---
 
-:::message alert
-このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
-:::
-
 # このチャプターについて
 
 このチャプターは短いですが、Promise chain を理解する上で重要なので１つのチャプターとして独立させています。チャプターは飛びますが、『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』のチャプターでも使う知識なので注意してください。
+
+:::message alert
+このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
+:::
 
 # then メソッドのコールバックで Promise インスタンスを返す
 

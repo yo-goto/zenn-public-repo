@@ -234,6 +234,8 @@ https://www.jsv9000.app
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2022-12-19
+  - 『[catch メソッドと finally メソッド](f-epasync-asynchronous-apis)』のチャプターで then/catch/finally についての情報を詳細に更新
 - 2022-12-15
   - 誤りのあった他の波及チャプターを修正し、修正チャプターを番外編と位置づけた
 - 2022-12-14

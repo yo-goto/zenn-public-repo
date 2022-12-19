@@ -2,7 +2,7 @@
 title: "V8 エンジンによる async/await の内部変換"
 cssclass: zenn
 date: 2022-05-14
-modified: 2022-12-14
+modified: 2022-12-19
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『V8 エンジンによる async/await の内部変換』
@@ -15,7 +15,7 @@ aliases: Promise本『V8 エンジンによる async/await の内部変換』
 仕様を直接見るよりも、V8 エンジンでどうなっているかを見た方が分かりやすいので V8 からアプローチします。前のチャプターで見たとおり、async/await では若干謎の挙動が存在しています。V8 エンジンの内部変換コードを見ることでその謎は解決できます。
 
 :::message
-このチャプターは『[V8エンジンによる内部変換コードでasync/awaitの挙動を理解する](https://zenn.dev/estra/articles/asyncawait-v8-converting)』の記事と同じ内容になるので、すでに読まれた方はスキップしてもらって構いません。
+このチャプターは『[V8エンジンによる内部変換コードでasync/awaitの挙動を理解する](https://zenn.dev/estra/articles/asyncawait-v8-converting)』の記事と同じ内容にとなるので、すでに読まれた方はスキップしてもらって構いません。
 :::
 
 さて、『[V8 エンジンについて](e-epasync-v8-engine)』のチャプターで V8 エンジンについての予備知識はいれておきましたね。このチャプターでは、V8 公式のブログ記事とプレゼン動画を元に解説していきます。
@@ -117,7 +117,7 @@ function promiseResolve(v) {
 
 基本的なステップはコメントに書いた通りです。
 
-- (0) V8 エンジンによって async 関数自体が実行を一時停止して後から再開できる関数として、reusable(再開可能) のマーキングをし、async 関数自体の返り値となる Promise インスタンスとして `implicit_promise` を作成します
+- (0) V8 エンジンによって async 関数自体が実行を一時停止して後から再開できる関数として、resumable(再開可能) のマーキングをし、async 関数自体の返り値となる Promise インスタンスとして `implicit_promise` を作成します
 - (1) await 式の評価対象について Promise インスタンスでないならラッピングして `promise` に代入します
 - (2) `promise` が Settled になったときのハンドラを同期的にアタッチします
 - (3) async 関数の処理を `suspend()` で一時停止して、Promise インスタンスである `implicit_promise` を呼び出し元へと返却します
@@ -1591,8 +1591,8 @@ V8 の舞台裏を見ることで async/await の挙動が理解できたと思�
 
 await 式によって async 関数内の実行フローが分割され制御が行ったり来たりしますが、それは Promise chain での連鎖的なマイクロタスク発行による逐次実行と同じです。async 関数では処理再開を告げるマイクロタスクとして `PromiseReactionJob` がコールスタックに積まれ、async 関数の関数実行コンテキストが再びプッシュされてコールスタックのトップになることで実行再開となります。
 
-非同期処理の本質的な部分は **イベントループにおけるタスクとマイクロタスクの処理** です。
+非同期処理の本質的なメカニズムは **イベントループにおけるタスクとマイクロタスクの処理** です。
 
 Promise chain も async/await も本質的には **イベントループにおけるマイクロタスクの連鎖的な処理** です。言うなれば **マイクロタスク連鎖 (Microtask chain)** です。
 
-V8 エンジンでは async/await の内部変換が行われており、これによって **最適化されたマイクロタスクの連鎖的処理** を実現しています。
+V8 エンジンでは async/await の内部変換が行われており、これによって **最適化されたマイクロタスクの連鎖的処理** を実現しています (仕様自体の最適化のおかげで他のエンジンでも同様)。
