@@ -23,7 +23,7 @@ JavaScript の「非同期処理」ってやっぱりかなり難しくないで
 今回の記事では、JavaScript Engine の１つである V8 が内部で変換するコードから async/await の挙動を理解するための解説を試みたいと思います。V8 エンジンからアプローチすることで async/await の分かりづらい挙動を掌握して非同期処理を打倒します。
 
 :::message alert
-**注意: async/await に Promise の知識は必要か?**
+**async/await に Promise の知識は必要か?**
 
 async/await の前に Promise の基礎と Promise チェーンを理解しておくのをおすすめします(できればイベントループも)。
 
@@ -31,9 +31,9 @@ async/await は Promise の機能を代替するのではなく、Promise ベー
 
 具体的に言えば、非同期関数(async function)自体が **Promise インスタンスを返す**ので Promise チェーンができますし、await 式自体も基本的には **Promise インスタンスを評価して解決値を取り出す**というものだからです。
 
-その他にも、**Promise Combinator** と呼ばれる `Promise.all()`、`Promise.race()`、`Promise.any()`、`Promise.allSettled()` は Promise の静的メソッドであり、これらを使うことで**複数の Promise 処理を合成**できますが、これも async/await が Promise を扱っていることを理解できてないと `await Promise.all([promise1, promise2])` などの処理が分からなくなります。
+その他にも、Promise Combinator と呼ばれる `Promise.all()`、`Promise.race()`、`Promise.any()`、`Promise.allSettled()` は Promise の静的メソッドであり、これらを使うことで複数の Promise 処理を合成できますが、これも async/await が Promise を扱っていることを理解できてないと `await Promise.all([promise1, promise2])` などの処理が分からなくなります。
 
-モダンな非同期 API の仕組みとして一般化しつつある **Promise-based API** についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか**が分からなくなります。TypeScript において非同期処理を扱うにも **Promise の型注釈**ができなければ[型安全なコードは書けないので](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop#async-%E9%96%A2%E6%95%B0%E3%81%AE%E6%84%8F%E5%91%B3)、Promise の知識が必要です。
+モダンな非同期 API の仕組みとして一般化しつつある Promise-based API についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか**が分からなくなります。TypeScript において非同期処理を扱うにも Promise の型注釈ができなければ[型安全なコードは書けないので](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop#async-%E9%96%A2%E6%95%B0%E3%81%AE%E6%84%8F%E5%91%B3)、Promise の知識が必要です。
 :::
 
 今回の記事は Zenn の Book の方で公開している『イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理』で収録する予定の前記事となります。非同期処理の理解に欠かすことのできない Promise チェーンとイベントループについて解説しているので興味がある方は是非確認してみてください。この記事を理解する上でも役立つと思います。
@@ -41,6 +41,8 @@ async/await は Promise の機能を代替するのではなく、Promise ベー
 https://zenn.dev/estra/books/js-async-promise-chain-event-loop
 
 :::details ChageLog
+- 2022-12-19
+  - チャプター最新版と同期
 - 2022-05-11
   - 全体的に微修正
   - PromiseReactionJob が抜けていたので追加
@@ -65,12 +67,13 @@ https://v8.dev/blog/fast-async#await-under-the-hood
 
 https://v8.dev
 
->V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone**, or can be embedded into any C++ application.
->(上記公式ページより引用)
+> V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone**, or can be embedded into any C++ application.
+> ([上記公式ページ](https://v8.dev)より引用)
 
 V8 は Google が提供するオープンソースの JavaScript エンジンかつ WebAssembly エンジンでもあります。つまり、**ECMAScript と WebAssembly を実装しています**。V8 自体は C++ で書かれており、主に Chrome ブラウザ(正確には Chrome のオープンソース部分である Chromium)で利用されています。
 
 JavaScript Engine は他にもいくつかあります。他の JavaScript エンジンとブラウザ環境との関係性は『サバイバル TypeScript』で分かりやすい図と共に解説されているので参考にしてください。
+
 https://typescriptbook.jp/overview/ecmascript#ecmascript%E3%81%A8%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E3%81%AE%E9%96%A2%E4%BF%82%E6%80%A7
 
 V8 の凄いところは、Chrome だけでなく、Node, Deno といったランタイム環境やクロスプラットフォームのデスクトップアプリケーションを開発するための Electron などで利用されている JavaScript Engine であるということです。
@@ -91,7 +94,7 @@ V8 自体は JavaScript Engine なので DOM については一切感知しま�
 :::message
 Chrome では Libevent とレンダリングエンジン Blink、Node では Libuv, Deno では Tokio などのライブラリによって非同期 I/O の仕組みなどを挿入しつつ独自のイベントループを実装しています。
 
-とは言っても、イベントループ自体はブラウザ環境では HTML 仕様に従い、Node や Deno も可能な限りブラウザ環境に近づくように実装されていますので、本質的な部分は共通しています。
+とは言っても、イベントループ自体はブラウザ環境では HTML 仕様に従い、Node や Deno も可能な限りブラウザ環境に近づくように実装されていますので、抽象的な動作メカニズム部分は共通しています。
 :::
 
 V8 エンジンは GoogleChromeLabs が提供する jsvu(**JavaScript engine Version Updater**)を使ってインストールでき、ソースからビルドすることなく利用できます。V8 エンジンはローカル環境においてスタンドアロンで実行できるため、ECMAScript の実装について簡単にローカルでテストできます。
@@ -114,6 +117,8 @@ d8>
 
 さて、V8 エンジンについての予備知識を頭に入れたところで本題に入りましよう。
 
+---
+
 # V8 エンジンによる内部変換コード
 
 それでは、V8 開発チームの Maya Lekova 氏と Benedikt Meurer 氏によるプレゼン動画『Holding on to your Performance Promises』と、それに基づく V8 エンジン公式サイトのブログ記事『Faster async functions and promises』を元にして async/await の V8 エンジンでの内部変換コードを見ていきます。
@@ -125,12 +130,14 @@ https://v8.dev/blog/fast-async#await-under-the-hood
 https://youtu.be/DFP5DKDQfOc
 
 :::message
-ブログ記事と動画において、「以前の ECMAScript の仕様では async/await のオーバーヘッド(余計な Promise インスタンスとマイクロタスクの生成)があったため、V8 エンジンでそれを改善した上で、**ECMAScript の仕様自体にその最適化をマージし**、V8 エンジンだけでなく**あらゆるエンジンで同じ最適化ができるようにした**」ということが述べられています。
+ブログ記事と動画において、「以前の ECMAScript の仕様では async/await のオーバーヘッド (余計な Promise インスタンスとマイクロタスクの生成) があったため、V8 エンジンでそれを改善した上で、**ECMAScript の仕様自体にその最適化をマージし**、V8 エンジンだけでなく **あらゆるエンジンで同じ最適化ができるようにした**」ということが述べられています。
 
 https://github.com/tc39/ecma262/pull/1250
 
 このチャプターではそれらを全部すっ飛ばして結論としての変換コードから見ていきますので、注意してください。細かい部分については元々の動画とブログを参考にしてください。
 :::
+
+## 内部変換後のコード
 
 では結論として、V8 エンジンでは次のような async/await を内部的に変換しています。
 
@@ -141,7 +148,38 @@ async function foo(v) {
 }
 ```
 
-変換後は以下のようになります(実際に公式ブログ記事に示されているものですが、疑似コード的なものであると考えられます)。
+変換後は以下のようになります。実際に公式ブログ記事に示されているものですが、これは疑似コードです。
+
+```js:V8エンジンによる変換コード
+resumable function foo(v) {
+  implicit_promise = createPromise();
+  promise = promiseResolve(v);
+  performPromiseThen(
+    promise,
+    res => resume(«foo», res),
+    err => throw(«foo», err));
+  w = suspend(«foo», implicit_promise);
+  resolvePromise(implicit_promise, w);
+}
+
+function promiseResolve(v) {
+  if (v is Promise) return v;
+  promise = createPromise();
+  resolvePromise(promise, v);
+  return promise;
+}
+```
+
+:::message
+上のコードは擬似コードですが、使用されている関数は ECMAScript 仕様内の抽象操作 (仕様のみに存在するプログラマからはアクセスできない操作) と同じ名前であり、実際に仕様に存在している操作です。例えば、上記の `promiseResolve` 関数は仕様の [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作であり、`performPromiseThen` 関数も [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) 抽象操作です。
+
+これらの V8 実装は [V8 Torque](https://v8.dev/docs/torque) (TypeScript ライクな V8 エンジンの開発専用の言語) や C++ で GitHub リポジトリの [builtins](https://github.com/v8/v8/tree/main/src/builtins) の場所に記載されています。
+
+- [v8/src/builtins/promise-abstract-operations.tq](https://github.com/v8/v8/blob/main/src/builtins/promise-abstract-operations.tq)
+- [v8/src/builtins/promise-then.tq](https://github.com/v8/v8/blob/main/src/builtins/promise-then.tq)
+:::
+
+分かりやすくするために変換コードに補足のコメントを追加しておきます。
 
 ```js:V8エンジンによる変換コード
 // 途中で一時停止できる関数として resumable (再開可能) のマーキング
@@ -178,7 +216,7 @@ function promiseResolve(v) {
 
 基本的なステップはコメントに書いた通りです。
 
-- (0) V8 エンジンによって async 関数自体が実行を一時停止して後から再開できる関数として、reusable(再開可能)のマーキングをし、async 関数自体の返り値となる Promise インスタンスとして `implicit_promise` を作成します
+- (0) V8 エンジンによって async 関数自体が実行を一時停止して後から再開できる関数として、resumable(再開可能) のマーキングをし、async 関数自体の返り値となる Promise インスタンスとして `implicit_promise` を作成します
 - (1) await 式の評価対象について Promise インスタンスでないならラッピングして `promise` に代入します
 - (2) `promise` が Settled になったときのハンドラを同期的にアタッチします
 - (3) async 関数の処理を `suspend()` で一時停止して、Promise インスタンスである `implicit_promise` を呼び出し元へと返却します
@@ -187,9 +225,13 @@ function promiseResolve(v) {
 
 変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。async 関数はどんなときでも、Promise インスタンスを返します。async 関数の処理が一時停止して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
 
+:::details 仕様解説
+この `implictPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文指向操作から呼び出される [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promise コンストラクタ関数で実際に Promise インスタンスが作成されています。
+:::
+
 再び、async 関数の処理が再開し、最終的に async 関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise chain などで利用できるようになります。
 
-`implicit_promise = createPromise()` は後から解決される Promise インスタンス `implicit_promise` を作成し、`resolvePromise(implicit_promise, w)` では作成したその Promise インスタンスを後から `w` で解決しています。細かい実装は分からないので、ここではそういうものだと考えてください。
+`implicit_promise = createPromise()` は後から解決される Promise インスタンス `implicit_promise` を作成し、`resolvePromise(implicit_promise, w)` では作成したその Promise インスタンスを後から `w` で解決しています。細かい実装を無視してここではそういうものだと考えてください。
 
 ということで、上記コードの説明としてもう少しコメントを追加しておきたいと思います。`v` は `v = Promise.resolve(42)` というように値 `42` で既に履行されている Promise インスタンスとして想定します。
 
@@ -203,9 +245,9 @@ resumable function foo(v) {
   // 非同期処理を一時停止(susupend)したときもこれが呼び出し元に返ってきている
 
   // １つの await 式 (必ず１つはマイクロタスクが生成される)
-  // 1. v を promise でラップする
+  // (1). v を promise でラップする
   promise = promiseResolve(v); // v がプロミスでないならラッピング
-  // 2. foo を再開するハンドラのアタッチ
+  // (2). foo を再開するハンドラのアタッチ
       // Promise.prototype.then() が裏側で行っていることと同じ
       // promise が Settled になったらマイクロタスクを発行
       // マイクロタスクは PromiseReactionJob で async 関数の処理再開を告げる
@@ -214,7 +256,7 @@ resumable function foo(v) {
     res => resume(«foo», res),
     err => throw(«foo», err));
     // アタッチしているだけでとりあえず次に進む
-  // 3. foo (async 関数)を一時停止して implicit_promise を caller へと返す
+  // (3). foo (async 関数)を一時停止して implicit_promise を caller へと返す
   w = suspend(«foo», implicit_promise);
   // ここまでが１つの await で、foo のコンテキストを一旦ポップする
   // w には await 式の評価結果の値が代入される(yields 42 from the await)
@@ -317,11 +359,26 @@ async/await では最初の await 式でのみ暗黙的に async 関数から返
 
 ## await 式は確実にマイクロタスクを１つ発行する
 
-`performPromiseThen()` の箇所に注目してほしいのですが、これは `Promise.prototype.then()` が舞台裏でやっていることと本質的に同じとなります。
+`performPromiseThen()` の箇所に注目してほしいのですが、これは `Promise.prototype.then()` が舞台裏でやっていることと本質的に同じことです。
 
-`peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。
+:::details 仕様解説
+実際、`performPromiseThen` という関数は ECMAScript 仕様に存在している [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) という抽象操作であり、以下のように `Promise.prototype.then` メソッドの仕様から呼び出されています。
 
-この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で async 関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。`then()` メソッドのようにマイクロタスクが発行されるので、Promise chain で考えれば理解できるはずです。
+![algorithm-steps](/images/js-async/img_PerfromPromiseThen-spec.jpg)*[https://tc39.es/ecma262/#sec-promise.prototype.then](https://tc39.es/ecma262/#sec-promise.prototype.then) より*
+
+以下のような操作で promise の状態が履行状態であれば、コールバックとして登録してある再開関数がマイクロタスクとしてエンキューされて実行されます。
+
+```js
+performPromiseThen(
+  promise,
+  res => resume(«foo», res), // onFulfilled (再開)
+  err => throw(«foo», err)); // onRejected (throw)
+```
+:::
+
+`peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。仕様的には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) という抽象操作から作成されます。
+
+この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で async 関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。つまり、`then()` メソッドのようにマイクロタスクが発行されるので、Promise chain で考えれば理解できるはずです。
 
 ## await 式が２個ある場合
 
@@ -337,7 +394,7 @@ async function foo2(v, x) {
 }
 ```
 
-↓ V8 エンジンによる変換として考えられるコード。
+V8 エンジンによる変換として考えられるコードは以下のようになります。
 
 ```js:V8エンジンによる変換コード
 resumable function foo2(v, x) {
@@ -375,7 +432,7 @@ resumable function foo2(v, x) {
 
 さて、基本的な変換が分かったので、もう少し深く潜ってみたいと思います。この変換を基本系に色々な async/await を考えてみます。
 
-こちらの uhyo さんの記事で紹介されているような色々なパターンと、その速度(マイクロタスクをいくつ発行するか)についても考えてみましょう。
+こちらの uhyo さんの記事で紹介されているような色々なパターンと、その速度 (マイクロタスクをいくつ発行するか) についても考えてみましょう。
 
 https://zenn.dev/uhyo/articles/return-await-promise
 
@@ -408,7 +465,7 @@ console.log("🦖 [2] MAINLINE: End");
 
 通常の関数なので V8 エンジンによる async/await の変換はありません。
 
-`Promise.resolve().then()` によって同期的に(直ちに)マイクロタスクキューへコールバックがマイクロタスクとして発行されます。また、即時実行関数の中でも履行状態で作成される Promise インスタンスが返されるため、次の `then()` メソッドのコールバックが同期的に(直ちに)マイクロタスクキューへマイクロタスクとして発行されます。ということで、関数内部で余計なマイクロタスクは発生しません。
+`Promise.resolve().then()` によって同期的に (直ちに) マイクロタスクキューへコールバックがマイクロタスクとして発行されます。また、即時実行関数の中でも履行状態で作成される Promise インスタンスが返されるため、次の `then()` メソッドのコールバックが同期的に (直ちに) マイクロタスクキューへマイクロタスクとして発行されます。ということで、関数内部で余計なマイクロタスクは発生しません。
 
 これを V8 エンジンで実行すると次のように予測が簡単な出力を得ます。Chrome、Node、Deno でやっても全部同じです。
 
@@ -456,7 +513,7 @@ resumable function empty() {
 そして `peformPromiseThen()` が無いのでマイクロタスクは１つも発行されず、async 関数から返ってくる Promise インスタンスはただちに履行状態となります。
 
 :::message
-async 関数(Async function)はどんなときでも必ず Promise インスタンスを返します。
+async 関数 (Async function) はどんなときでも必ず Promise インスタンスを返します。
 :::
 
 それでは、次のコードの実行順番を予測します。
@@ -520,7 +577,7 @@ resumable function foo4() {
 
   // <- await 式
   promise = promiseResolve(42); // プロミスでないのでラップする
-  // promise が Settled になったら処理再開のためのマイクロタスクを発行
+  // promise が Settled になったら処理再開を告げるマイクロタスクを発行
   // すでに Settled となるので直ちにマイクロタスクを発行
   performPromiseThen(
     promise,
@@ -546,9 +603,9 @@ function promiseResolve(v) {
 }
 ```
 
-await 式というのは通常は Promise インスタンスを評価し、Promise インスタンスの評価結果としてその履行値を返すという使いかたをしますが、Promise インスタンスでないものも評価できます。
+await 式というのは通常は Promise インスタンスを評価し、Promise インスタンスの評価結果としてその履行値を返すという使い方をしますが、Promise インスタンスでないものも評価できます。
 
-その場合は、`promise = promiseResolve(42)` であるように、Promise インスタンスでない場合として新しい Promise でラッピングされます(await 式で評価する値自体で解決する Promise インスタンス)。
+その場合は、`promise = promiseResolve(42)` であるように、Promise インスタンスでない場合として新しい Promise でラッピングされます (await 式で評価する値自体で解決する Promise インスタンス)。
 
 いずれにせよ `performPromiseThen()` を行うため、作成された Promise インスタンスが Settled になるまで待ち、Settled になった時点で async 関数の処理再開を告げるマイクロタスクを発行します。この場合は Promise インスタンスがすぐに履行状態になるので、同期的にマイクロタスクを直ちに発行します。
 
@@ -607,8 +664,8 @@ resumable function fooZ() {
 
   // <- await 式
   promise = promiseResolve(Promise.resolve(42)); // プロミスなのでそのまま返す
-  // promise が Settled になったら処理再開のためのマイクロタスクを発行
-  // すでに Settled となるので直ちにマイクロタスクを発行
+  // promise が Settled になったら処理再開を告げるマイクロタスクを発行
+  // 最初から fulfillled(Settled) となるので直ちにマイクロタスクを発行
   performPromiseThen(
     promise,
     res => resume(«fooZ», res),
@@ -625,7 +682,7 @@ resumable function fooZ() {
   // (つまりthenのコールバックを起動できるまでマイクロタスク一個分)
 }
 function promiseResolve(v) {
-  // プロミスなのでそのまま返す 
+  // プロミスなのでそのまま返す
   if (v is Promise) return v;
   promise = createPromise();
   resolvePromise(promise, v);
@@ -633,7 +690,7 @@ function promiseResolve(v) {
 }
 ```
 
-この場合は実は `await 42` と同じで、内部的にマイクロタスクを１つ発行することになります。そういう訳で、`await` で**何を評価しようが少なくともマイクロタスク１つが発行される**ことになります。各 await 式において最低でも１つマイクロタスクが発行されます。
+この場合は実は `await 42` と同じで、内部的にマイクロタスクを１つ発行することになります。そういう訳で、`await` で **何を評価しようが少なくともマイクロタスク１つが発行される** ことになります。つまり、各 await 式において最低でも１つマイクロタスクが発行されます。
 
 ということで、次のように `Math.random() < 0.5` で 50% ずつの確率で分岐するコードでは実行結果は同じになります。
 
@@ -671,7 +728,7 @@ Promise.resolve()
 console.log("🦖 [3] MAINLINE: End");
 ```
 
-実行順番は次のようになります(どちらの場合でも同じ)。
+実行順番は次のようになります (どちらの場合でも同じ)。
 
 ```sh
 ❯ v8 awaitPlainValu.js
@@ -706,7 +763,7 @@ resumable function foo9() {
   // <- await 式
   promise = promiseResolve(Promise.resolve("😭").then(value => console.log(value)));
   // promise インスタンスなのでそのまま返す
-  // promise が Settled になったら処理再開のためのマイクロタスクを発行
+  // promise が Settled になったら処理再開を告げるマイクロタスクを発行
   // その前に一回はマイクロタスクが必要
   performPromiseThen(
     promise,
@@ -733,7 +790,7 @@ function promiseResolve(v) {
 }
 ```
 
-何を await しようがマイクロタスクは確実に１個発行されますが、今回のケースでは、`promise` が Settled になるまでに１つマイクロタスクが必要となります。それが実行されてから、`promise` が Settled になりマイクロタスクが再び発行されるので、マイクロタスクは合計２つ必要となります(今までの場合よりも一個多い)。
+何を await しようがマイクロタスクは確実に１個発行されますが、今回のケースでは、`promise` が Settled になるまでに１つマイクロタスクが必要となります。それが実行されてから、`promise` が Settled になりマイクロタスクが再び発行されるので、マイクロタスクは合計２つ必要となります (今までの場合よりも一個多い)。
 
 実際のコードを考えてみましょう。ここまで来ると非常に予測が難しくなります。
 
@@ -798,7 +855,7 @@ resumable function foo0() {
 }
 ```
 
-await も return も無い場合と同じく、この場合はマイクロタスクが１つも発生しません。ということは、この async 関数から返される Promise インスタンスは同期的に(直ちに)履行状態となります。
+await も return も無い場合と同じく、この場合はマイクロタスクが１つも発生しません。ということは、この async 関数から返される Promise インスタンスは同期的に (直ちに) 履行状態となります。
 
 ```js
 // asyncSpeed0.js
@@ -857,9 +914,9 @@ resumable function foo4() {
   implicit_promise = createPromise();
 
   // <- await 式
-  promise = promiseResolve(Promise.resolve()); // プロミスならそのまま返す
-  // promise が Settled になったら処理再開のためのマイクロタスクを発行
-  // すでに Settled なのですぐにマイクロタスクを発行
+  promise = promiseResolve(Promise.resolve(42)); // プロミスならそのまま返す
+  // promise が Settled になったら処理再開を告げるマイクロタスクを発行
+  // すでに Settled なので直ちにマイクロタスクを発行
   performPromiseThen(
     promise,
     res => resume(«foo4», res),
@@ -887,7 +944,7 @@ function promiseResolve(v) {
 }
 ```
 
-この場合はマイクロタスクが１つですみます。後で説明しますが、実は `return Promise.resolve(42)` では１つでは済みません。
+この場合はマイクロタスクが１つで済みます。後で説明しますが、実は `return Promise.resolve(42)` では１つとなりません。
 
 実際のコードで再び考えてみましょう。
 
@@ -922,7 +979,7 @@ console.log("🦖 [2] MAINLINE: End");
 
 ## return Promise.resolve(42) の場合
 
-さて、実はこれが一番やっかいなパターンです。結論から言うと、`return await Promise.resolve(42)` の場合はマイクロタスク１つで済んだのに、`return Promise.resolve(42)` の場合にはマイクロタスクが２つ発生します。
+さて、実はこれが一番やっかいなパターンです。結論から言うと、`return await Promise.resolve(42)` の場合はマイクロタスクが１つで済んだのに、`return Promise.resolve(42)` の場合にはマイクロタスクが２つ発生します。
 
 再び単純な async 関数を考えてみます。
 
@@ -932,50 +989,118 @@ async function foo3() {
 }
 ```
 
-↓ V8 エンジンによる内部変換コードとして想定されるコード。
+V8 エンジンによる内部変換コードとして想定されるコードは以下となります。
 
 ```js:V8_Converting
 resumable function foo3() {
   implicit_promise = createPromise();
-  // suspend 時に呼び出し元に返される Promise インスタンス
+
   // <- await 式 なし ->
+
   resolvePromise(implicit_promise, Promise.resolve(42));
   // return する値 Promise.resolve(42) で implicit_promise を resolve する
   // この時に内部ではマイクロタスクが2つ生成される(resolve関数にPromiseを渡すから)
 }
 ```
 
-`resolvePromise()` の部分に注目してください。`implicit_promise` を `Promise.resolve(42)` という Promise インスタンスで resolve を試みています。`resolvePromise()` 自体は `resolve()` 関数とやっていることは同じです。
+`resolvePromise()` の部分に注目してください。`implicit_promise` を `Promise.resolve(42)` という Promise インスタンスで resolve を試みています。`resolvePromise()` 自体は `resolve()` 関数とやっていることは同じなので、`resolvePromise()` は resolve する対象を引数にとって外部から Promise 解決ができる `resolve()` 関数として考えてください。
 
-ECMAScript の仕様において `resolve()` 関数に渡された Promise の `then()` メソッドを呼ぶというマイクロタスクを発行するというように決まっています。
+ECMAScript の仕様では「`resolve()` 関数に渡された Promise の `then` メソッドを呼ぶという処理をマイクロタスクとして実行する」と決まっています。
 
 こちらについては、uhyo さんの記事で詳しく解説されています。
 
 https://zenn.dev/uhyo/articles/return-await-promise
 
-:::message alert
-ここでいう、`resolve()` 関数とは Promise コンストラクタの引数となる executor 関数の引数として渡す `resolve` コールバック関数のことで、`Promise.resolve()` のことではないことに注意してください。
+具体的な仕様は以下の [NewPromiseResolveThenable](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 抽象操作の step.1-b です。
 
-つまり、`resolve(Promise.resolve(42))` と `Promise.resolve(Promise.resolve(42))` は違います。`resolve()` 関数が特殊であり、`Promise.resolve()` の**引数が Promise インスタンスの場合は変換せずにそのまま返します**。
+>   - b. Let thenCallResult be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([HostCallJobCallback](https://tc39.es/ecma262/#sec-hostcalljobcallback)(then, thenable, « resolvingFunctions.\[\[Resolve\]\], resolvingFunctions.\[\[Reject\]\] »)).
+
+:::message alert
+ここでいう `resolve()` 関数とは Promise コンストラクタの引数となる executor 関数の引数として渡す `resolve` コールバック関数のことで、`Promise.resolve()` のことではないことに注意してください。
+
+つまり、`resolve(Promise.resolve(42))` と `Promise.resolve(Promise.resolve(42))` は違います。`resolve()` 関数が特殊であり、`Promise.resolve()` の **引数が Promise インスタンスの場合は変換せずにそのまま返します**。例えば、以下のように `queueMicrotask()` と競争させても、直ちにマイクロタスクを発行していることがわかります。
+
+```js
+console.log("🦖 [1]");
+
+Promise.resolve(Promise.resolve(Promise.resolve(42)))
+  .then((d) => {
+    // １つ目のマイクロタスク
+    console.log("💙 [3]", d);
+  });
+
+queueMicrotask(() => {
+  // ２つ目のマイクロタスク
+  console.log("🔥 [4]");
+});
+
+console.log("🦖 [2]");
+
+/*
+🦖 [1]
+🦖 [2]
+💙 [3] 42
+🔥 [4]
+*/
+```
+
+MDN でも引数として与えられた値がプロミスならそのプロミス自体を返すと説明されています。
+
+> Promise.resolve() メソッドは、与えられた値で解決した Promise オブジェクトを返します。その値がプロミスであった場合は、そのプロミスが返されます。
+> ([Promise.resolve() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve) より引用)
+
+この挙動は仕様的には `Promise.resolve` 関数から呼び出される [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve) 抽象操作内の step.1 に記述されています。
+
+> - 1. If [IsPromise](https://tc39.es/ecma262/#sec-ispromise)(x) is true, then
+>   - a. Let xConstructor be ? [Get](https://tc39.es/ecma262/#sec-get-o-p)(x, "constructor").
+>   - b. If [SameValue](https://tc39.es/ecma262/#sec-samevalue)(xConstructor, C) is true, return x.
 :::
 
 この記事では V8 エンジンの内部変換で考えるので、上の記事にように通常の関数に戻して考えるのではなく、async 関数の内部変換後に起きることでそのまま考えてみます。
 
 `resolvePromise()` という操作は以前に作成した Promise インスタンスに対して、コンストラクタ外部から resolve を起動して第二引数の値によって解決を試みるという操作ですが、基本的にはコンストラクタで `resolve()` するのと変わりません。
 
-V8 内部変換で実際にどのようにしているかは分かりませんが、通常 Promise コンストラクタで resolve するところを外部から resolve を試みることができます。
+V8 内部変換で実際にどのようにしているかは分かりませんが、通常は Promise コンストラクタで resolve するところですが、コンストラクタの外部から resolve するということが実は可能です。
+
 https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-the-promise-constructor-scope
 
-つまり、`resolvePromise()` では以下のようなことを行っています。実際には Promise インスタンスは以前に作成したもので、外部から resolve していますが、分かりやすいようにあえてコンストラクタ関数で考えています。
+```js
+let promiseResolve, promiseReject;
+
+const promise = new Promise((resolve, reject) => {
+  promiseResolve = resolve;
+  promiseReject = reject;
+}).then(() => console.log("resolve完了"));
+
+setTimeout(() => {
+  console.log("Start");
+  promiseResolve();
+  console.log("End");
+}, 1000);
+
+/* 出力結果
+Start
+End
+resolve完了
+*/
+```
+
+V8 での変換後のコードにある `resolvePromise()` を再度考えます。
+
+```js
+  resolvePromise(implicit_promise, Promise.resolve(42));
+```
+
+コンストラクタ外部からの resolve ができることを踏まると、結局このコードは以下のようなことを行っています。実際には Promise インスタンスは以前に作成したもので、外部から resolve していますが、分かりやすいようにあえてコンストラクタ関数で考えています。
 
 ```js:V8_convertingで考える
-// Promise.resolve(42) で implciit_proise を resolve する
+// Promise.resolve(42) で implicit_proise を resolve する
 const implicit_promise = new Promise(resolve => {
   resolve(Promise.resolve(42));
 });
 ```
 
-`resolve()` 関数に渡された Promise の `then()` メソッドを呼ぶというマイクロタスクを発行するというように決まっているわけですから上のコードは次のようになります。分かりづらいですが、マイクロタスクを発行するために、`Promise.resolve().then()` が上から包んでいます。
+このとき、「`resolve()` 関数に渡された Promise の `then()` メソッドを呼ぶマイクロタスクを発行する」というように仕様で決まっているわけですから上のコードは次のよう変形できます。文字通り `resolve()` 関数に渡されている `Promise.resolve(42)` の `then()` メソッドを呼び出します。分かりづらいですが、マイクロタスクを発行するために、`Promise.resolve().then()` が上から包んでいます。
 
 ```js
 const implicit_promise = new Promise(resolve => {
@@ -985,9 +1110,23 @@ const implicit_promise = new Promise(resolve => {
 });
 ```
 
-ということで、`implicit_promise` が Settled になるまでに、上のコードではあきらかにマイクロタスクを２つ必要としています(`then()` メソッドのコールバック関数がマイクロタスクとして２回発行されます)。
+少し分かりやすくするために、あえて `queueMicrotask()` API を使って書き直すと次のようになります。
 
-またもや実際のコードで実行順番を考えてみましょう。
+```js
+const implicit_promise = new Promise(resolve => {
+  // Promise.resolve(42) の then メソッドを呼び出すマイクロタスクを発行する
+  queueMicrotask(() => {
+    // このコールバックが１つ目のマイクロタスク
+    Promise.resolve(42).then(resolve);
+    //                       ^^^^^^^ このコールバックが2つ目のマイクロタスク
+  });
+  // 合計二個のマイクロタスクが必要
+});
+```
+
+ということで、`implicit_promise` が Settled になるまでに、上のコードではあきらかにマイクロタスクを２つ必要としています (`then()` メソッドのコールバック関数がマイクロタスクとして２回発行されます)。
+
+実際のコードで実行順番を考えてみましょう。
 
 ```js
 // asyncSpeed3.js
@@ -1038,12 +1177,12 @@ async function foo3() {
 }
 ```
 
-V8 での async/await の内部変換では await 式ごとに次の箇所が必要となりました(以下は `foo4` の場合)。
+V8 での async/await の内部変換では await 式ごとに次の箇所が必要となりました (以下は `foo4` の場合)。
 
 ```js:foo4におけるawait式の変換
   promise = promiseResolve(Promise.resolve()); // プロミスならそのまま返す
-  // promise が Settled になったら処理再開のためのマイクロタスクを発行
-  // すでに Settled なのですぐにマイクロタスクを発行
+  // promise が Settled になったら処理再開を告げるマイクロタスクを発行
+  // すでに Settled なので直ちにマイクロタスクを発行
   performPromiseThen(
     promise,
     res => resume(«foo4», res),
@@ -1081,18 +1220,21 @@ Promise インスタンス以外で resolve を試みるとマイクロタスク
 Unwrapping については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』のチャプターで解説しました。
 :::
 
-ただし、この `Promise.resolve()` と `resolve()` の２つには注意すべき違いがあります。
+ただし、この `Promise.resolve()` と Executor 関数の `resolve()` の２つには注意すべき違いがあります。
 
-上で見たようにまずは `resolve()` 関数に Promise インスタンスを渡した場合は注意が必要です。次のようなコードで Promise インスタンスで resolve を試みることでコードの実行順番が直感的に予測しずらくなります。
+上で見たようにまずは Executor 関数の `resolve()` 関数に Promise インスタンスを渡した場合は注意が必要です。次のようなコードで Promise インスタンスで resolve を試みることでコードの実行順番が直感的に予測しずらくなります。
 
 ```js
 // コードの参照元 : https://twitter.com/ferdaber/status/1098318363305099264?s=20&t=Qu2h-Aa0IhI5Lh-bxPkcOw
+
 new Promise(resolve => {
   resolve('a');
 }).then(console.log);
+
 new Promise(resolve => {
   resolve(Promise.resolve('b'));
-}).then(console.log)
+}).then(console.log);
+
 Promise.resolve(Promise.resolve('c')).then(console.log);
 ```
 
@@ -1109,7 +1251,7 @@ b
 ```js
 new Promise(resolve => {
   resolve(Promise.resolve('b'));
-}).then(console.log)
+}).then(console.log);
 ```
 
 このコードは上で見たように ECMAScript の仕様において `resolve()` 関数に渡された Promise の `then()` メソッドを呼ぶというマイクロタスクを発行するというように決まっているわけですから、次のように変換できます。
@@ -1119,7 +1261,19 @@ new Promise(resolve => {
   Promise.resolve().then(() => {
     Promise.resolve('b').then(resolve);
   });
-}).then(console.log)
+}).then(console.log);
+```
+
+分かりやすく `queueMicrotask()` API を使って書き直すと次のようになります。
+
+```js
+new Promise(resolve => {
+  queueMicrotask(() => { // このコールバックが１つ目のマイクロタスク
+    Promise.resolve('b').then(resolve);
+    //                        ^^^^^^^ このコールバックが2つ目のマイクロタスク
+  });
+  // この Promise が解決されるまで２つのマイクロタスクが必要
+}).then(console.log);
 ```
 
 そういう訳で、この Promise インスタンスが履行状態となるまでにマイクロタスクが２個必要となり、出力順番は a → c → b となるわけです。
@@ -1133,7 +1287,7 @@ new Promise((resolve) => {
 }).then(value => console.log("[1]", value)); // <1-Sync>
 
 Promise.resolve(Promise.resolve(Promise.resolve("I")))
-  .then(value => console.log("[2]", value)) // <2-Sync>
+  .then(value => console.log("[2]", value)); // <2-Sync>
 
 new Promise((resolve) => {
   resolve(Promise.resolve("S")); // <3-Sync> <5-Async>
@@ -1146,7 +1300,7 @@ Promise.resolve(Promise.resolve("U"))
 
 `Promise.resolve(Promise.resolve(42))` の場合と `resolve(Promise.resolve(42))` の場合では話が違うので注意してください。
 
-`Promise.resolve()` の引数に Promise インスタンスを渡すと**マイクロタスクは発生せずにそのまま引数の Promise インスタンスが返ってきます**。ということで、上のように `Promise.resolve()` 自体をいくらネストしようが内部でマイクロタスクは発生せずに直ちに履行状態となります。
+`Promise.resolve()` の引数に Promise インスタンスを渡すと **マイクロタスクは発生せずにそのまま引数の Promise インスタンスが返ってきます**。ということで、上のように `Promise.resolve()` 自体をいくらネストしようが内部でマイクロタスクは発生せずに直ちに履行状態となります。
 
 従って、実行結果は次のようになります。
 
@@ -1163,7 +1317,7 @@ Promise.resolve(Promise.resolve("U"))
 
 ### どっちを使うべき?
 
-スタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`)の方が詳細に情報が表示されます。
+スタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`) の方が詳細に情報が表示されます。
 
 これについては、azukiazusa さんの記事で解説されています。
 
@@ -1175,9 +1329,11 @@ https://zenn.dev/qnighy/articles/3a999fdecc3e81#%E9%9D%9E%E5%90%8C%E6%9C%9F%E3%8
 
 具体的にどちらが優れているかというのは、それぞれ意見があると思いますが、マイクロタスクの発生が増加することで直感的に処理予測がしづらくなるので `return await` の方が個人的にはいいかなと思います。
 
+他にも、Deno のビルトインリンターでは async 関数内部に await 式が無いことで怒られてしまう上に、そもそも async 関数と await 式の両者があることで非同期の振る舞いを記述することが基本です。そして、どちらを使うべきか分からないようなことになるくらいなら、Promise は await 式で常に評価するというようにすべて同じように扱った方が迷わずに済みます。
+
 ## await async function の場合
 
-基本形はすべてわかったので、少し応用を考えてみたいと思います。今度は await 式で async function (の返り値)を評価してみます。
+基本形はすべてわかったので、少し応用を考えてみたいと思います。今度は await 式で async function (の返り値) を評価してみます。
 
 ```js:fooW
 async function fooPrevious() {
@@ -1281,7 +1437,7 @@ async function fooPrevious() {
   // await 式ごとに確実にマイクロタスクが１つ発生する
   // micortask++
   console.log("🦄 [6] <4-Async> MICRO: after await in async function");
-  value++; 
+  value++;
   return value;
 })().then((value) =>
   console.log("👻 [8] <5-Async> MICRO: then after async function:", value)
@@ -1365,7 +1521,7 @@ Promise.resolve()
 console.log("🦖 [2] MAINLINE: End");
 ```
 
-Rejected 状態の Promise インスタンスにチェーンされている `then()` メソッドの**コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
+Rejected 状態の Promise インスタンスにチェーンされている `then()` メソッドの **コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
 
 :::message
 『[catch メソッドと finally メソッド](h-epasync-catch-finally)』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise chain の実行となります。
@@ -1493,33 +1649,36 @@ console.log("🦖 [2] MAINLINE: End");
 ```
 
 # async/await の最適化
+
 以上、async/await の挙動について、V8 エンジンの内部変換コードから解説を試みてみました。
 
-最初に述べたよう ECMAScript の仕様自体が async/await の最適化(かつては V8 において `--harmony-await-optimization` というフラグで使用されていた機能)をマージしました。
+最初に述べたよう ECMAScript の仕様自体が async/await の最適化 (かつては V8 において `--harmony-await-optimization` というフラグで使用されていた機能) をマージしました。
 
 https://github.com/tc39/ecma262/pull/1250
 
-2017 年時点での async/await の仕様では、１つの await 式に２つの追加の Promise インスタンスと少なくとも３つのマイクロタスクが必要だったため非常に無駄が多かったですが、ECMAScript の仕様自体が最適化されたため、それを実装する**他の JavaScript エンジンでも同様に async/await の高速化をできるようになった**そうです。
+2017 年時点での async/await の仕様では、１つの await 式に２つの追加の Promise インスタンスと少なくとも３つのマイクロタスクが必要だったため非常に無駄が多かったですが、ECMAScript の仕様自体が最適化されたため、それを実装する **他の JavaScript エンジンでも同様に async/await の高速化をできるようになった** そうです。
 
 :::message alert
-V8 のブログ記事を見て node の version 8 から version 10 に更新すると async/await の挙動が変わるというのが最初紹介されていますが。これはバグが治ったというだけで、その時点での仕様では正しいのですが、この最適化がマージされたことによって再び version 8 と同じ挙動(実行順番)となりました。自分もこれを読んだときは最初混乱しました。ブログ記事は構成が微妙で最後まで読まないとちゃんと理解できないようになっていますので注意してください。省略した `throwaway` Promise についてもそうです。参照する場合は最後までしっかり読まないと誤解するので気をつけてください。
+V8 のブログ記事を見て node の version 8 から version 10 に更新すると async/await の挙動が変わるというのが最初紹介されていますが。これはバグが治ったというだけで、その時点での仕様では正しいのですが、この最適化がマージされたことによって再び version 8 と同じ挙動 (実行順番) となりました。筆者もこれを読んだときは最初混乱しました。ブログ記事は構成が微妙で最後まで読まないとちゃんと理解できないようになっていますので注意してください。省略した `throwaway` Promise についてもそうです。参照する場合は最後までしっかり読まないと誤解するので気をつけてください。
 
 参考:
 [node.js - JS Promise's inconsistent execution order between nodejs versions - Stack Overflow](https://stackoverflow.com/questions/62032674/js-promises-inconsistent-execution-order-between-nodejs-versions)
 :::
 
-このように、async/await のオーバーヘッド(余計な Promise インスタンスとマイクロタスクの生成)を削減し最適化したことで async/await は高速化し、async stack trace による Debuggability(デバッグのしやすさ) の向上も伴って、async/await の機能は手書きの Promise に勝るようになったとのことです。
+このように、async/await のオーバーヘッド (余計な Promise インスタンスとマイクロタスクの生成) を削減し最適化したことで async/await は高速化し、async stack trace による Debuggability(デバッグのしやすさ) の向上も伴って、async/await の機能は手書きの Promise に勝るようになったとのことです。
 
->**async/await outperforms hand-written promise code now**. The key takeaway here is that we significantly reduced the overhead of async functions — **not just in V8, but across all JavaScript engines, by patching the spec**.
->([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用、太字は筆者強調)
+> **async/await outperforms hand-written promise code now**. The key takeaway here is that we significantly reduced the overhead of async functions — **not just in V8, but across all JavaScript engines, by patching the spec**.
+> ([Faster async functions and promises · V8](https://v8.dev/blog/fast-async) より引用、太字は筆者強調)
 
 そして、開発者にも手書きの Promise よりも async/await の使用と V8 がネイティブに提供する Promise 実装を使用するように勧めています。
 
->And we also have some nice performance advice for JavaScript developers:
->- **favor async functions and await over hand-written promise code**, and
->- stick to the native promise implementation offered by the JavaScript engine to benefit from the shortcuts, i.e. avoiding two microticks for await.
+> And we also have some nice performance advice for JavaScript developers:
+> - **favor async functions and await over hand-written promise code**, and
+> - stick to the native promise implementation offered by the JavaScript engine to benefit from the shortcuts, i.e. avoiding two microticks for await.
 >
->([Faster async functions and promises · V8](https://v8.dev/blog/fast-async)より引用、太字は筆者強調)
+> ([Faster async functions and promises · V8](https://v8.dev/blog/fast-async) より引用、太字は筆者強調)
+
+---
 
 # まとめ
 
@@ -1529,7 +1688,8 @@ async/await を理解できるようになるには、Promise とイベントル
 
 Promise チェーンも async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** でしょうか。
 
-V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています。
+V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています(仕様自体の最適化のおかげで他のエンジンでも同様)。
+
 
 ここまで見てきたように ECMAScript の仕様だけではなく、V8 エンジンで何が起きているかを知ることで理解できることがあったり、パフォーマンス上でいいことがありそうです。
 
