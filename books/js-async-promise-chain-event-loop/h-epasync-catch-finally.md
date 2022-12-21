@@ -137,7 +137,7 @@ Promise.reject(42)
 拒否されたプロミスが `finally()` ハンドラしか持たない場合、JavaScript ランタイムは依然として未処理のプロミス拒否に関するメッセージを出力します。そのメッセージを回避するためには、`then()` や `catch()` で拒否ハンドラを追加する必要があります。
 :::
 
-また、上のコードの中間に `then` を挿入しても、`then()` のコールバックは実行されません (実際には `x => { throw x; }` のような後述する thrower 関数がコールバックとして実行されていま s)。
+また、上のコードの中間に `then` を挿入しても、`then()` のコールバックは実行されません (実際には後述する `x => { throw x; }` のような thrower 関数がコールバックとして実行されています)。
 
 ```js
 Promise.reject(42)
@@ -300,7 +300,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 
 `then` メソッドは `then(onFulfilled, onRejected)` というフォーマットですが、`onFulfilled` に自動置換される関数は identity 関数で、`onRejected` に自動置換される関数は thrower 関数と呼ばれます。
 
-identity 関数は日本語では「恒等関数」とも呼ばれ、`(x) => x` のように引数をそのまま return ような関数です。一方、thrower 関数は `(x) => { throw x; }` のように引数をそのまま throw するような関数です。昔の仕様ではこれらの関数のことが明言されていましたが、実際の仕様的には架空の関数であり、PromiseReactionJob 内部から動作を決定できるようにするためとの理由で ECMAScript の仕様から以下の PR で削除されてしましました。
+identity 関数は日本語では「恒等関数」とも呼ばれ、`(x) => x` のように引数をそのまま return ような関数です。一方、thrower 関数は `(x) => { throw x; }` のように引数をそのまま throw するような関数です。昔の仕様ではこれらの関数のことが明言されていましたが、実際の仕様的には架空の関数であり、PromiseReactionJob 内部から動作を決定できるようにするためとの理由で ECMAScript の仕様から以下の PR で削除されてしまいました。
 
 https://github.com/tc39/ecma262/pull/584
 
@@ -359,7 +359,7 @@ Promise.reject(42)
   .catch(x => console.log(x)); // => 42
 ```
 
-先程の例と同じ用に `then` のコールバックは両者ともに省略されて `undefined` なので、置換が起きて `then(x => x, x => { throw x; })` として呼び出されます。
+先程の例と同じ用に `then` のコールバックは両者ともに省略されて `undefined` なので、関数の置換が起きて `then(x => x, x => { throw x; })` として呼び出されます。
 
 chain 元の Promise インスタンスは reason `42` で拒否されているため、拒否用のコールバック関数として `x => { throw x; }` がマイクロタスクとして発行されます。値 `42` で例外が throw されますが、`catch` で補足されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
 
