@@ -914,7 +914,7 @@ ECMAScript の仕様では「`resolve()` 関数に渡された Promise の `then
 
 https://zenn.dev/uhyo/articles/return-await-promise
 
-具体的な仕様は以下の [NewPromiseResolveThenable](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 抽象操作の step.1-b です。
+具体的な仕様は以下の [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 抽象操作の step.1-b です。
 
 >   - b. Let thenCallResult be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([HostCallJobCallback](https://tc39.es/ecma262/#sec-hostcalljobcallback)(then, thenable, « resolvingFunctions.\[\[Resolve\]\], resolvingFunctions.\[\[Reject\]\] »)).
 
@@ -1429,7 +1429,7 @@ console.log("🦖 [2] MAINLINE: End");
 Rejected 状態の Promise インスタンスにチェーンされている `then()` メソッドの **コールバック関数は実行されませんが、マイクロタスク自体は発行します**。ということで、実行順番は次のようになります。
 
 :::message
-『[catch メソッドと finally メソッド](h-epasync-catch-finally)』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドはコールバックが実行されないときでもマイクロタスクを発生させて、その連鎖的な処理によって Promise chain の実行となります。
+『[catch メソッドと finally メソッド](h-epasync-catch-finally)』のチャプターで見たとおり、`catch()` メソッドや `then()` メソッドに登録したコールバックが直接実行されないときでも内部的に置換された identity 関数や thrower 関数によるマイクロタスクを発生させて、その連鎖的な処理によって Promise chain の実行となります。
 :::
 
 ```sh
@@ -1446,7 +1446,7 @@ Rejected 状態の Promise インスタンスにチェーンされている `the
 👍 [9] <8-Async> MICRO: [Finally]
 ```
 
-async 関数では、try/catch/finally の構文が使用できますので、async 関数内で `await Promise.reject(new Error("reason"))` 以降の処理もできます。
+async 関数では、try/catch/finally の構文が使用できるので、async 関数内で `await Promise.reject(new Error("reason"))` 以降の処理もできます。
 
 ```js
 (async function fooRX() {
@@ -1582,6 +1582,10 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 > - stick to the native promise implementation offered by the JavaScript engine to benefit from the shortcuts, i.e. avoiding two microticks for await.
 >
 > ([Faster async functions and promises · V8](https://v8.dev/blog/fast-async) より引用、太字は筆者強調)
+
+:::message
+この async/await の仕様最適化によって起こる Promise chain との発生するマイクロタスク数の違いについては『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then#仕様最適化の遺構)』のチャプターで解説しています。
+:::
 
 # async/await のまとめ
 

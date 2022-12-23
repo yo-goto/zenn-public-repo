@@ -174,6 +174,7 @@ returnPromise("1st Promise", "2")
         console.log("👦 Resolved value: ", value);
         return "from [9] callback";
       });
+    // 🔥 この then メソッドから返される Promise を解決するために後で追加で２つのマイクロタスクが発生する
   })
   .then((value) => {
     // cb2
@@ -192,7 +193,7 @@ returnPromise("1st Promise", "2")
 
 **修正**: `returnPromise("1st Promise", "2").then(cb1)` のコールバック `cb1` からは Promise が返されていたので実はこの `then` メソッドから返る Promise インスタンスを解決するために追加で２つのマイクロタスクが発生します。これについては『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』で解説しました。
 
-この追加発生するマイクロタスクを extraA-1 としましょう。
+この追加発生するマイクロタスクの１つ目を extraA-1 としましょう。extraA-1 自体は `returnPromise("2nd Promise", "6").then(callbackNext).then(resolve, reject)` の呼び出しを行う関数です。
 
 ```sh:マイクロタスクキュー
 <-- callbackNext2 <-- extraA-1
@@ -202,31 +203,31 @@ returnPromise("1st Promise", "2")
 
 **修正**: `returnPromise("3rd Promise", "3").then(cb3)` のコールバック `cb3` からは Promise が返されていたので実はこの `then` メソッドから返る Promise インスタンスを解決するために追加で２つのマイクロタスクが発生します。
 
-この追加発生するマイクロタスクを extraB-1 としましょう。
+この追加発生するマイクロタスクを extraB-1 としましょう。extraB-1 自体は `returnPromise("4th Promise", "8").then(callbackNext2).then(resolve, reject)` の呼び出しを行う関数です。
 
 ```sh:マイクロタスクキュー
 <-- extraA-1 <-- extraB-1
 ```
 
-extraA-1 が実行されると更に追加のマイクロタスクが１つ発生するのでそれを extraA-2 としましょう。
+extraA-1 が実行されると更に追加のマイクロタスクが１つ発生するのでそれを extraA-2 としましょう。extraA-2 自体は `resolve` 関数の実行を行う関数です(ほぼ `resolve` 関数そのものです)。
 
 ```sh:マイクロタスクキュー
 <-- extraB-1 <-- extraA-2
 ```
 
-次に extraB-1 も実行されますが、これからも追加の２つ目のマイクロタスクが発生するので、それを extraB-2 としましょう。
+次に extraB-1 も実行されますが、これからも追加の２つ目のマイクロタスクが発生するので、それを extraB-2 としましょう。extraB-2 自体は `resolve` 関数の実行を行う関数です(ほぼ `resolve` 関数そのものです)
 
 ```sh:マイクロタスクキュー
 <-- extraA-2 <-- extraB-2
 ```
 
-そしてついに extraA-2 が処理されることで、`returnPromise("1st Promise", "2").then(cb1).` から返る Promise インスタンスが履行したことになり、chain していた `then(cb2)` からコールバック関数 `cb2` がマイクロタスクとしt発行されます。
+そしてついに extraA-2 が処理されることで、`returnPromise("1st Promise", "2").then(cb1)` から返る Promise インスタンスが履行したことになり、chain していた `then(cb2)` からコールバック関数 `cb2` がマイクロタスクとしt発行されます。
 
 ```sh:マイクロタスクキュー
 <-- extraB-2 <-- cb2
 ```
 
-次に extraB-2 が処理されることで `returnPromise("3rd Promise", "3").then(cb3).` から返る Promise インスタンスが履行したことになり、chain していた `then(cb4)` からコールバック関数 `cb4` がマイクロタスクとしt発行されます。
+次に extraB-2 が処理されることで `returnPromise("3rd Promise", "3").then(cb3)` から返る Promise インスタンスが履行したことになり、chain していた `then(cb4)` からコールバック関数 `cb4` がマイクロタスクとしt発行されます。
 
 ```sh:マイクロタスクキュー
 <-- cb2 <-- cb4

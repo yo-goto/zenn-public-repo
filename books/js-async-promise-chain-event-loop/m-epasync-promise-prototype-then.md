@@ -929,6 +929,8 @@ A 3
 
 # 仕様最適化の遺構
 
+## async/await の最適化
+
 async/await と Promise chain でマイクロタスクの発生数が異なるという事象が起きますが、`resolution` として使われる Thenable の話が関与しています。
 
 『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説していますが、async/await は V8 エンジンサイドからの以下の PR で仕様自体の最適化がなされました。
@@ -959,11 +961,15 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 
 結局、仕様の最適化は async 関数の await 式の評価で Promise を Thenable 全体から引き離して、無駄な処理を削減するようにしたことが大きいです。
 
+## Promise.prototype.then の未最適化部分
+
 しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が Promise の場合を特別扱いしていません。
 
 `return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、その前に [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されてマイクロタスクが増加することになります。一方 async/await では `await thenable` での Thenable が Promise である場合にはそもそも NewPromiseResolveThenableJob 操作が発生しません(※ Promise 以外の Thenable だと発生しますし、async 関数本体の最後で `return thenable` 処理がある時も発生します)。最適化前の仕様では `await promise` という処理があれば `then` メソッドのコールバックで `return promise` した場合と同じく常に NewPromiseResolveThenableJob が実行されて追加のマイクロタスクが発生していましたが、このための無駄な Promise のラッピングとそれを解決するために発生する PromiseResolveThenableJob は ResolvePromise 操作を使うようにした最適化で削減されました。
 
 つまり、`Promise.prototype.then` の方の仕様は async/await であったような最適化がされていないので、コールバック関数で Promise を返している場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
+
+## async/awatit と Promise chain の比較
 
 『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで「`Promise.resolve` と `executor` 関数の `resolve` 関数は同じようなものであるが、完全に等価ではない」と述べました。`resolve` は引数 `resolution` に Promise を取るとマイクロタスクが追加発生する一方で、`Promise.resolve` は引数が Promise だとそのまま返します。この違いによって２つを競争させたときには `Promise.resolve` を使った方がマイクロタスクの発生が少ないため先に終了できます。
 
@@ -1082,3 +1088,19 @@ console.log("🦖 [2] G: sync");
 💚 [6] A: async 2
 */
 ```
+
+## 根本的な仕様最適化のプロポーザル
+
+現在 Promise 関連で追加発生する余計なマイクロタスクは Thenable のための [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 操作に集約されるといっても過言ではありません。
+
+NewPromiseResolveThenableJob 操作は [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) 操作である `resolve` 関数から呼び出されるので、この仕様から NewPromiseResolveThenableJob 操作をうまく除去できれば、この操作に依存している async 関数本体の `return promise` や `Promise.prototype.then` において追加発生するマイクロタスクを１つ除去できるはずです。
+
+:::message
+async 関数内部で `return promise` という処理があると２つの追加のマイクロタスクが発生してしまうことは、『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting#return-promiseresolve42-の場合)』のチャプターで解説しています。
+:::
+
+そして、それに対しての抜本的な最適化を行うようにする仕様プロポーザルが以下となります。
+
+https://github.com/tc39/proposal-faster-promise-adoption
+
+このプロポーザル自体がかなり最近作成されたもので、まだ [Stage 1](https://tc39.es/process-document/) なので時間はかかりますが、これがマージされれば、このチャプターなど今まで理解に苦しめられていた追加のマイクロタスクの発生が軽減されます。

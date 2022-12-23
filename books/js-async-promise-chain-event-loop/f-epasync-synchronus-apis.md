@@ -4,6 +4,7 @@ cssclass: zenn
 date: 2022-06-15
 modified: 2022-12-19
 AutoNoteMover: disable
+url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/f-epasync-synchronus-apis"
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『同期 API とブロッキング』
 ---
