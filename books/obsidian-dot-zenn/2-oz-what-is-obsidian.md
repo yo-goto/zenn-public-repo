@@ -128,7 +128,7 @@ https://publish.obsidian.md/help-ja/
 
 実際に現在の筆者のメイン保管庫は以下のようなグラフが全体で構築されています。
 
-![img](/images/oz/img_oz-main-vault-graph.png)
+![img](/images/oz/img_oz-main-vault-graph.jpg)
 
 このような全体グラフを見る使い方は基本的にあまりしませんが、自身のナレッジベースの成長度合いがひと目で分かるのでたまに見て満足しています。
 
