@@ -44,7 +44,10 @@ https://www.amazon.co.jp/dp/B09P1LHDPY
 
 また、この本では網羅的にすべての基本操作を触れるわけではないないため、網羅的な情報を知りたい場合には以下のドキュメントを参考にするようにしてください。
 
+https://help.obsidian.md
+
 https://publish.obsidian.md/help-ja/
+
 
 # ChangeLog
 
