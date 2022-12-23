@@ -142,7 +142,7 @@ https://publish.obsidian.md/help-ja/
 
 より分かりやすい例としては、`#type/Zenn` という Zenn の記事や本のチャプターにつけているタグで検索すると以下のようなグラフ構造が出現します。
 
-![img](/images/oz/img_oz-typezenn-network.png)
+![img](/images/oz/img_oz-typezenn-network.jpg)
 
 Zenn についてはこのグラフを成長させていくことで自身の発信具合がわかります。
 
