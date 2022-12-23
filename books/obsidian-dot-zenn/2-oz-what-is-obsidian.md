@@ -27,7 +27,7 @@ Obsidian (オブシディアン) とは「マークダウンエディタであ�
 
 https://obsidian.md
 
-![](/images/oz/img_oz-obsidian-app-appearence.jpg)
+![エディタ画像](/images/oz/img_oz-obsidian-app-appearence.jpg)
 
 クロスプラットフォームで開発されており、Windows/Mac/Linux 用のデスクトップ版と Android/iOS 用のモバイル版がリリースされています。
 
@@ -56,7 +56,7 @@ Obsidian は「マークダウン」のフォーマットによってドキュ�
 
 [公式サイト](https://obsidian.md) にも記載されているように Obsidain は個人にとっての「第二の脳 (Second brain)」となるようなツールを目指しています。
 
-![](/images/oz/img_oz-official-page-start.jpg)
+![エディタ画像](/images/oz/img_oz-official-page-start.jpg)
 
 PKM ツールは [Evernote](https://evernote.com/intl/jp) や [Notion](https://www.notion.so/ja-jp) などのデジタルメモツールが挙げられますが、昨今は [Scrapbox](https://scrapbox.io/product) や [Roam Research](https://roamresearch.com/)、[Logseq](https://logseq.com/)、Obsidian といった [networked thought](https://nesslabs.com/networked-thinking)(ネットワーク化された思考) を補助し｢[第二の脳をつくる](https://www.buildingasecondbrain.com/)｣ためのアプリケーションツールが注目されています。
 
@@ -82,10 +82,11 @@ Obsidian では、上記の開発コンセプトを実現するために開発�
 
 ```md
 ウィキリンク記法
-[[wikilinks]]
+[[fileName]]
 
 通常のマークダウンのリンク記法
-[wikilinks](path/to/wikilins)
+[linkName](path/to/fileName)
+[linkName](fileName)
 ```
 
 NameA というノートから NameB というノートは `[[NameB]]` という具合にリンクを作成します。作成したリンクは HTML のハイパーリンクのように表示され、クリックすることでそのノートを開いたり、辿ることができます。
@@ -96,10 +97,11 @@ NameA というノートから NameB というノートは `[[NameB]]` という
 
 ```md
 ウィキリンク記法
-![[wikilinks]]
+![[fileName]]
 
 通常のマークダウンのリンク記法
-![wikilinks](path/to/wikilins)
+![linkName](path/to/fileName)
+![linkName](fileName)
 ```
 
 例えば以下の画像の右側のノートを左のノートに埋め込みしていますが、引用ブロックの様に埋め込み対象のノート内容が表示され、リンクされていることを示すリンクボタンが表示されます。
@@ -223,7 +225,7 @@ https://youtu.be/vLBd_ADeKIw
 
 https://github.com/obsidianmd/obsidian-docs
 
-ちないみにドキュメント翻訳はこれがはじめてだであったため稚拙な翻訳箇所があるかもいません。また、主な翻訳を行った時点においてはフォーマッターやリンターなどを導入していなかったこともあり、修正が必要な箇所がいくつかあると思うので、是非とも協力いただけると助かります。
+ちなみにドキュメント翻訳はこれがはじめてであったため稚拙な翻訳箇所がいくつかあるかもしません。また、主な翻訳を行った時点においてはフォーマッターやリンターなどを導入していなかったこともあり、修正が必要な箇所がいくつかあると思うので、是非とも協力いただけると助かります。
 
 採用した翻訳ルールなどは公式リポジトリの以下のドキュメントにすべてまとめています。このドキュメントでは現時点でも UI とドキュメントの翻訳に使用する主要な対応語彙の追跡を行っています。
 
