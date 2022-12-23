@@ -19,11 +19,11 @@ Zenn の記事でも使われているようにマークダウンファイルの
 
 ```md:Zennの記事用フロントマター
 ---
-title: "" 
-emoji: "😸" 
-type: "tech" 
-topics: [] 
-published: true 
+title: ""
+emoji: "😸"
+type: "tech"
+topics: []
+published: true
 ---
 ```
 

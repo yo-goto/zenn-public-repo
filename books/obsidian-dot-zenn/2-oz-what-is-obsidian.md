@@ -47,8 +47,8 @@ Catalyst ライセンスは開発サポートのためのライセンスであ�
 
 また、有料アドオンサービスとして次の２つの機能が別途提供されています。
 
-- [Obsidian Sync](https://obsidian.md/sync) (8$/月)
-- [Obsidian Publish](https://obsidian.md/publish) (16$/月)
+- [Obsidian Sync](https://obsidian.md/sync) (8$/月) (10＄/月 または 96＄/年)
+- [Obsidian Publish](https://obsidian.md/publish) (１サイトにつき 20＄/月 または 192＄/年)
 
 Publish は自分のノートをインターネット上に公開できるサービスであり、個人で公開するだけでなく他ユーザーが共同編集できるコラボレーション機能やパスワードによって閲覧者を制限できる機能が提供されています。
 

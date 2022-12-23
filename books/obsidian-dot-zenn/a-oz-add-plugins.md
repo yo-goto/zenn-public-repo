@@ -303,12 +303,12 @@ Format | 日時の使用フォーマット (デフォルトで `dddd, MMMM Do YY
 
 ```diff md
 - 日本語englishひらがな
-+ 日本語 english ひらがな
 - カタカナenglishカタカナ
-+ カタカナ english カタカナ
 - ﾊﾝｶｸｶﾀｶﾅenglish１２３全角数字
-+ ﾊﾝｶｸｶﾀｶﾅ english１２３全角数字
 - 한글english한글
++ 日本語 english ひらがな
++ カタカナ english カタカナ
++ ﾊﾝｶｸｶﾀｶﾅ english１２３全角数字
 + 한글 english 한글
 ```
 
@@ -316,8 +316,8 @@ Format | 日時の使用フォーマット (デフォルトで `dddd, MMMM Do YY
 
 ```diff md
 - 中文字符串[english](http://example.com)中文字符串。
-+ 中文字符串 [english](http://example.com) 中文字符串。
 - 中文字符串`code`中文字符串。
++ 中文字符串 [english](http://example.com) 中文字符串。
 + 中文字符串 `code` 中文字符串。
 ```
 
@@ -327,7 +327,7 @@ Old Note Admonitor プラグインはファイルの編集日時などから古�
 
 https://github.com/tadashi-aikawa/obsidian-old-note-admonitor
 
-Qiita で以下のような古い記事であることの警告を見たことがあると思いますが、このプラグインを使うことで保管庫内のノートに対して警告を出すことが可能となります。
+[Qiita](https://qiita.com) において以下のような古い記事であることの警告表示を見たことがあると思いますが、このプラグインを使うことで保管庫内のノートに対して警告を出すことが可能となります。
 
 ![qiitaの古い記事警告](/images/oz/img_oz-qiita-old-article-admonition.jpg)
 

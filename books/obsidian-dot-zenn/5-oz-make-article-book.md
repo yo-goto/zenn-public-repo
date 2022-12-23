@@ -2,7 +2,7 @@
 title: "記事や本を作成しよう"
 cssclass: zenn
 date: 2022-12-23
-modified: 2022-12-23
+modified: 2022-12-24
 url: "https://zenn.dev/estra/articles/oz-make-article-book"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian  "]
@@ -217,4 +217,6 @@ Zenn では GitHub のリポジトリからデプロイできるため、継続�
 
 また、『[プラグインを導入しよう](a-oz-add-plugins.md)』のチャプターで紹介した [Old Note Admonitor](https://github.com/tadashi-aikawa/obsidian-old-note-admonitor) プラグインなどを利用すれば、古い記事やチャプターであることがひと目で分かるので編集すべきタイミングが簡単にわかります。
 
-記事やチャプターを生きたものとするために、ぜひ継続的に編集していきましょう。
+記事やチャプターを生きたものとするために、ぜひ継続的に編集していきましょう。継続的な編集を行うことによって、[たった１つのアウトプット記事](https://zenn.dev/estra/articles/js-async-programming-roadmap) から 60 万文字を超えるドキュメントが生まれる可能性もあります。
+
+https://zenn.dev/estra/books/js-async-promise-chain-event-loop
