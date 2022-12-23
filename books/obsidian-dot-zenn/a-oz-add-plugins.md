@@ -11,9 +11,9 @@ aliases: OZ本『プラグインを導入しよう』
 
 # このチャプターについて
 
-このチャプターでは、ノート作成や Zenn での執筆の観点から役立つようないくつかのプラグインを紹介し、その使い方を解説します。
+このチャプターではノート作成や Zenn での執筆の観点から役立つようないくつかのプラグインを紹介し、その基本的な使い方を解説します。
 
-# プラグインについて
+# プラグインシステム
 
 Obsidian では VSCode のようにプラグインシステムを採用しており、２種類のタイプのプラグインが存在しています。
 
@@ -197,9 +197,9 @@ Obsidian Linter は名前の通りのリンタープラグインです。公式�
 
 https://github.com/platers/obsidian-linter
 
-Pretteir や日本語なら Textlint に相当する機能を持っており、メモ内の修正可能な箇所について自動的にフォーマットしてくれます。
+Pretteir や日本語なら Textlint の一部に相当する機能を持っており、メモ内の修正可能な箇所について自動的にフォーマットしてくれます。
 
-このプラグインさえ入れておけば、Obsidian 内のメモや記事などのフォーマットを簡単に統一することができ、一定のクォリティを保つことができます。
+このプラグインさえ入れておけば、Obsidian 内のメモや記事などのフォーマットを簡単に統一することができ、一定のクオリティを保つことができます。
 
 あるいは、Textlint などで厳密に校正する必要がない個人的なメモなどのフォーマットはこれで十分でしょう。日常的なメモなどは Linter プラグインによってフォーマットしておき、記事などおの厳密な校正や執筆を行う際には VSCode などに移動して行うようにすると便利です。
 
@@ -303,12 +303,12 @@ Format | 日時の使用フォーマット (デフォルトで `dddd, MMMM Do YY
 
 ```diff md
 - 日本語englishひらがな
-- カタカナenglishカタカナ
-- ﾊﾝｶｸｶﾀｶﾅenglish１２３全角数字
-- 한글english한글
 + 日本語 english ひらがな
+- カタカナenglishカタカナ
 + カタカナ english カタカナ
+- ﾊﾝｶｸｶﾀｶﾅenglish１２３全角数字
 + ﾊﾝｶｸｶﾀｶﾅ english１２３全角数字
+- 한글english한글
 + 한글 english 한글
 ```
 
@@ -323,17 +323,30 @@ Format | 日時の使用フォーマット (デフォルトで `dddd, MMMM Do YY
 
 # Old Note Admonitor
 
-この項目では、 古いノートに対して警告を表示する Old Note Admonitor を紹介します。
-
 Old Note Admonitor プラグインはファイルの編集日時などから古い内容であれば視覚的な警告を表示してくれるプラグインです。
 
 https://github.com/tadashi-aikawa/obsidian-old-note-admonitor
 
-このプラグインを使うことで例えば、古いノートや Zenn で１年前に公開した記事などを再度ひらた時に以下のような警告を出してくれます。
+Qiita で以下のような古い記事であることの警告を見たことがあると思いますが、このプラグインを使うことで保管庫内のノートに対して警告を出すことが可能となります。
 
-![img](/images/oz/img_oz-old-note-adomonitor-ex.jpg)
+![qiitaの古い記事警告](/images/oz/img_oz-qiita-old-article-admonition.jpg)
+
+例えば、１年前に作成した古いノートや Zenn で公開した記事などを再度ひらた時に以下のような画面で警告を出してくれます。
+
+![olde note admonitorのサンプル画像](/images/oz/img_oz-old-note-adomonitor-ex.jpg)*https://github.com/tadashi-aikawa/obsidian-old-note-admonitor より*
 
 どのくらいの日時までを許容するかやメッセージなどは設定から変更できます。
 
 ![img](/images/oz/img_oz-old-note-admonitor-setting.jpg)
 
+# AutoNoteMover
+
+AutoNoteMover プラグインは正規表現で指定したファイル名規則に合致するフィアルを自動的に指定しておいたフォルダに移動してくれるコミュニティプラグインです。
+
+https://github.com/farux/obsidian-auto-note-mover
+
+例えば、この本のチャプターは `[n]-oz-` (`[n]` は数字またはアルファベット)というスラグパターンを利用しているので、`^\w-oz-` のような正規表現を指定しておけば、自動的に名前の条件が一致するファイルを Zenn リポジトリの本フォルダに移動してくれます。
+
+プラグイン設定画面の Trigger を Automatic にして、Add new ruls の項目にフォルダと正規表現を指定しておくことで自動移動が実現できます。
+
+![autonotemoverの設定画面](/images/oz/img_oz-autonotemover.jpg)

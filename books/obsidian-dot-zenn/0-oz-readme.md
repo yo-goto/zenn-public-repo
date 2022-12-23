@@ -2,7 +2,7 @@
 title: "README"
 cssclass: zenn
 date: 2022-12-19
-modified: 2022-12-23
+modified: 2022-12-24
 url: "https://zenn.dev/estra/articles/mbo-00-readme"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian "]
@@ -20,14 +20,15 @@ aliases:
 - [x] [[3-oz-thinking-way]]
 - [x] [[4-oz-make-zenn-repo]]
 - [x] [[a-oz-add-plugins]]
-- [ ] [[5-oz-make-article-book]]
-- [ ] [[6-oz-reuse-memo]]
+- [x] [[5-oz-make-article-book]]
+- [x] [[6-oz-reuse-memo]]
 - [x] [[b-oz-css-snippets]]
 
 未番号
 
 サブ
 [[y-oz-epilogue]]
+
 
 [[Obsidian本のアイデアキャンバス.canvas]]
 
@@ -76,7 +77,12 @@ aliases:
 
 ## YAML
 
-```yaml
 chapters:
-  - mbo-1-bigin # 『はじめに』
-```
+  - 1-oz-begin # [[1-oz-begin|OZ本『はじめに』]]
+  - 2-oz-what-is-obsidian # [[2-oz-what-is-obsidian|OZ本『Obsidian とは』]]
+  - 3-oz-thinking-way # [[3-oz-thinking-way|OZ本『Obsidian の考え方』]]
+  - 4-oz-make-zenn-repo # [[4-oz-make-zenn-repo|OZ本『保管庫と Zenn リポジトリの作成』]]
+  - a-oz-add-plugins # [[a-oz-add-plugins|OZ本『プラグインを導入しよう』]]
+  - 5-oz-make-article-book # [[5-oz-make-article-book|OZ本『記事や本を作成しよう』]]
+  - 6-oz-reuse-memo # [[6-oz-reuse-memo|OZ本『情報を再利用しよう』]]
+  - b-oz-css-snippets # [[b-oz-css-snippets|OZ本『カスタム CSS スニペットでデザインしよう』]]

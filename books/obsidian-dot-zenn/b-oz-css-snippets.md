@@ -2,7 +2,7 @@
 title: "カスタム CSS スニペットでデザインしよう"
 cssclass: zenn
 date: 2022-12-22
-modified: 2022-12-23
+modified: 2022-12-24
 url: "https://zenn.dev/estra/articles/mbo-css-snippets"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian "]
@@ -59,10 +59,10 @@ https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties
 
 https://developer.mozilla.org/ja/docs/Web/CSS/var
 
-Obsidian にはダークとライトという２つのベーステーマがあるので、それぞれで利用する CSS 変数は対応する `.theme-dark` クラスと `.theme-light` クラスで定義します。
+Obsidian にはダークとライトという２つのベーステーマがあるので、それぞれで利用する CSS 変数は対応する `theme-dark` クラスと `theme-light` クラスで定義します。
 
 ```css
-/* 両方おnテーマで利用する */
+/* ダークとライトの両方のテーマで利用する */
 .theme-dark,
 .theme-light {
   --sdf-header-color-border-left-h1: gray;
@@ -198,16 +198,15 @@ Obsidian の最新エディタではビューモードに「リーディング�
   labeling
   ----------------------- */
   background: var(--sdf-header-color-background-h1-for-label);
-  border-left: 7px solid var(--sdf-header-color-border-left-h1);
-  border-bottom-left-radius: 3px;
-  border-top-left-radius: 3px;
+  border-radius: 3px;
+  border: solid 1px white;
 
   /* -----------------------
   spacing (この項目は important が必要)
   ----------------------- */
-  padding-left: 10px !important;
-  padding-bottom: 2px !important;
   padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  padding-left: 5px !important;
 }
 
 /* =======================
@@ -295,16 +294,15 @@ Obsidian の最新エディタではビューモードに「リーディング�
   labeling
   ----------------------- */
   background: var(--sdf-header-color-background-h1-for-label);
-  border-left: 7px solid var(--sdf-header-color-border-left-h1);
-  border-bottom-left-radius: 3px;
-  border-top-left-radius: 3px;
+  border-radius: 3px;
+  border: solid 1px white;
 
   /* -----------------------
   spacing (この項目は important が必要)
   ----------------------- */
-  padding-left: 10px !important;
-  padding-bottom: 2px !important;
   padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  padding-left: 5px !important;
 }
 
 /* =======================
