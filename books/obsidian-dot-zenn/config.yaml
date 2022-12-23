@@ -1,0 +1,16 @@
+title: "Obsidian.Zenn"
+summary: "新時代のマークダウンノートアプリ Obsidian を使って Zenn で記事や本を作ろう。
+"
+topics: ["Obsidian", "Zenn", "Markdown", "vscode", "Blog"]
+published: true
+price: 0
+chapters:
+  - 1-oz-begin # 『はじめに』
+  - 2-oz-what-is-obsidian #『Obsidian とは』
+  - 3-oz-thinking-way
+  - 4-oz-make-zenn-repo
+  - a-oz-add-plugins
+  - 5-oz-make-article-book
+  - 6-oz-reuse-memo
+  - b-oz-css-snippets
+
