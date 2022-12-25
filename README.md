@@ -1,7 +1,10 @@
 ---
 date: 2022-08-15
-aliases: [Zenn README, Zenn公開リポジトリ]
-tags: [" #type/zenn  "]
+modified: 2022-12-25
+tags: [" #type/zenn "]
+aliases:
+  - Zenn README
+  - Zenn公開リポジトリ
 ---
 
 # Zenn 公開リポジトリ
@@ -10,7 +13,7 @@ PADAone(estra) 名義で [Zenn](https://zenn.dev/estra) に無料公開してい
 
 タイポや内容についての修正などをプルリクエストで受け付けています。
 
-有料公開しているもの(あるいはその予定のもの)は別の Private リポジトリで管理しているので注意してください。
+有料公開しているもの (あるいはその予定のもの) は別の Private リポジトリで管理しているので注意してください。
 
 ## Zenn での執筆
 
@@ -27,4 +30,4 @@ PADAone の Zenn での執筆方法については以下の記事で書いてい
 
 - [Zennで本を作ってみた感想と本作りで得た知見](https://zenn.dev/estra/articles/zenn-book-making-impression)
 - [Zenn & Hugo in Obsidian : OHZフローによるナレッジベースとアウトプットコンテンツの完全統括](https://zenn.dev/estra/articles/ohzflow-zenn-hugo-obsidian)
-
+- [Obsidian.Zenn](https://zenn.dev/estra/books/obsidian-dot-zenn)
