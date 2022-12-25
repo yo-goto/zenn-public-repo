@@ -2,7 +2,7 @@
 title: "はじめに"
 cssclass: zenn
 date: 2022-12-19
-modified: 2022-12-24
+modified: 2022-12-25
 url: "https://zenn.dev/estra/articles/1-mbo-begin"
 AutoNoteMover: disable
 tags: [" #obsidian #type/zenn/book  "]
@@ -15,14 +15,14 @@ aliases: OZ本『はじめに』
 この本は『[無料 Zenn Book Advent Calendar 2022](https://adventar.org/calendars/8063)』の 23 日目の本となります。
 :::
 
-この本では、マークダウンエディタであり PKM (Personal Knowledge Management) ツールでもある [Obsidian](https://obsidian.md) を利用して Zenn で記事や本を作成する方法について解説します。
+この本ではマークダウンエディタであり PKM (Personal Knowledge Management) ツールでもある [Obsidian](https://obsidian.md) を利用して Zenn で記事や本を作成する方法について解説します。
 
-主に次の記事をベースとして執筆しています。
+内容については主に次の記事をベースとして執筆しています。
 
 - [Zenn & Hugo in Obsidian : OHZフローによるナレッジベースとアウトプットコンテンツの完全統括](https://zenn.dev/estra/articles/ohzflow-zenn-hugo-obsidian)
 - [Zennで本を作ってみた感想と本作りで得た知見](https://zenn.dev/estra/articles/zenn-book-making-impression)
 
-これらの記事を踏まえ、実際に筆者が本を作成して得た知見や方法論などを交えて Obsidian の使い方を習得し、実際に Obsidian を使って Zenn で記事や本を作成してみようというのがこの本の趣旨となります。
+上記の記事を踏まえ、筆者が実際に本を作成して得た知見や方法論などを交え、Obsidian を使って Zenn で記事や本を作成してみようというのがこの本の趣旨となります。
 
 従って、Obsidian の一般的な使い方の解説を中心とした本ではないので注意してください。また、個人的な使い方を多分に含み、定期的な更新によって本の内容が完成していくような形式を取っているので注意してください。
 
@@ -47,7 +47,6 @@ https://www.amazon.co.jp/dp/B09P1LHDPY
 https://help.obsidian.md
 
 https://publish.obsidian.md/help-ja/
-
 
 # ChangeLog
 

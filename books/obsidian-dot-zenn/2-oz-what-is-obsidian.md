@@ -2,7 +2,7 @@
 title: "Obsidian とは"
 cssclass: zenn
 date: 2022-12-22
-modified: 2022-12-24
+modified: 2022-12-25
 url: "https://zenn.dev/estra/articles/mbo-02-what-is-obsidian"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian  "]
@@ -31,7 +31,7 @@ https://obsidian.md
 
 クロスプラットフォームで開発されており、Windows/Mac/Linux 用のデスクトップ版と Android/iOS 用のモバイル版がリリースされています。
 
-上記 URL の公式サイトからデスクトップ版をダウンロードすることができます。デスクトップアプリ自体は Electron をベースに図のサードパーティライブラリを使って開発されており、VSCode と同じ様に HTML/CSS/JavaScript などの Web 技術を利用して拡張機能などの開発を行うことができます。
+デスクトップ版は上記 URL の公式サイトからダウンロードすることができますが、デスクトップアプリ自体は Electron をベースに図のサードパーティライブラリを使って開発されており、VSCode と同じ様に HTML/CSS/JavaScript などの Web 技術を利用して拡張機能などの開発を行うことができます。
 
 ![Electron製の図](/images/oz/img_oz-electron-based.jpg)*筆者作成*
 
@@ -47,7 +47,7 @@ Catalyst ライセンスは開発サポートのためのライセンスであ�
 
 また、有料アドオンサービスとして次の２つの機能が別途提供されています。
 
-- [Obsidian Sync](https://obsidian.md/sync) (8$/月) (10＄/月 または 96＄/年)
+- [Obsidian Sync](https://obsidian.md/sync) (10＄/月 または 96＄/年)
 - [Obsidian Publish](https://obsidian.md/publish) (１サイトにつき 20＄/月 または 192＄/年)
 
 Publish は自分のノートをインターネット上に公開できるサービスであり、個人で公開するだけでなく他ユーザーが共同編集できるコラボレーション機能やパスワードによって閲覧者を制限できる機能が提供されています。

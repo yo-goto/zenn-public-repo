@@ -2,15 +2,15 @@
 title: "README"
 cssclass: zenn
 date: 2022-12-19
-modified: 2022-12-24
-url: "https://zenn.dev/estra/articles/mbo-00-readme"
+modified: 2022-12-25
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian "]
 aliases:
   - OZ-README
-  - Obsidian本『Obsidianで記事や本を作ろう』
+  - OZ本『Obsidianで記事や本を作ろう』
   - OZ本
 ---
+url: https://zenn.dev/estra/books/obsidian-dot-zenn
 
 ## MOC
 
@@ -29,7 +29,6 @@ aliases:
 サブ
 [[y-oz-epilogue]]
 
-
 [[Obsidian本のアイデアキャンバス.canvas]]
 
 ## アウトライン
@@ -45,7 +44,6 @@ aliases:
     - 本を更新していこう
     - **メモを記事にしよう**
 - **見出しの粒度で再利用しよう**
-- ~~プラグインを開発しよう~~
 - **スタイリングスニペットでカスタマイズしよう** → [[Obsidian 特定クラスのノート背景色を変更|Obsidianで公開ノートに視覚的警告を出す]] → [[b-oz-css-snippets|OZ本『カスタム CSS スニペットでカスタマイズしよう』]]
 
 ## テーマ

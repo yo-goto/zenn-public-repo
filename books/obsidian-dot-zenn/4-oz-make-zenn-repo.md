@@ -2,7 +2,7 @@
 title: "保管庫と Zenn リポジトリの作成"
 cssclass: zenn
 date: 2022-12-22
-modified: 2022-12-22
+modified: 2022-12-25
 url: "https://zenn.dev/estra/articles/oz-make-zenn-repo"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian  "]
@@ -15,7 +15,7 @@ aliases: OZ本『保管庫と Zenn リポジトリの作成』
 
 # 保管庫を作成しよう
 
-リポジトリを作成する前に Obsidian では個人のナレッジベースとなる保管庫(Valut)をまずは作成する必要があります。保管庫とはフォルダそのものですが、保管庫として Obsidian に登録しておくことでそのフォルダ内部のノートをインデックス化してリンクによるネットワークを構築できるようになります。
+リポジトリを作成する前に Obsidian では個人のナレッジベースとなる保管庫 (Valut) をまずは作成する必要があります。保管庫とはフォルダそのものですが、保管庫として Obsidian に登録しておくことでそのフォルダ内部のノートをインデックス化してリンクによるネットワークを構築できるようになります。
 
 Obsidian をインストールして起動すると以下のようなスタートアップ画面が表示されます。
 
@@ -183,7 +183,7 @@ Zenn のテンプレートリポジトリなどから GitHub で作成した場�
 この場合には VSCode の Zenn プラグインなどが利用できないので注意してください。
 :::
 
-リポジトリのセットアップができたら、GitHub の Web ページからリポジトリを作成するか GitHub CLI の `gh create repo` コマンドを使ってコマンドラインからリポジトリを作成してください。
+リポジトリのセットアップができたら、GitHub の Web ページからリポジトリを作成するか [GitHub CLI](https://cli.github.com) の `gh create repo` コマンドを使ってコマンドラインからリポジトリを作成してください。
 
 ```sh
 ❯ gh repo creae zenn-repo --public "Zenn用公開リポジトリ"
