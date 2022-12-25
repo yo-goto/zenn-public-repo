@@ -2,7 +2,7 @@
 title: "番外編 Promise.prototype.then メソッドの仕様挙動"
 cssclass: zenn
 date: 2022-11-02
-modified: 2022-12-19
+modified: 2022-12-25
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
@@ -375,7 +375,7 @@ NewPromiseReactiobJob は上で説明したように Job (マイクロタスク)
 :::message
 **ギュメ記号について**  
 
-`« »` は「[ギュメ](https://ja.wikipedia.org/wiki/%E6%8B%AC%E5%BC%A7)」と呼ばれる記号です。この[ギュメ記号](https://tc39.es/ecma262/#sec-list-and-record-specification-type)は ECMAScript では、仕様内の List 型 (仕様型) を表現するためのリテラル記法として利用されます。例えば、`« 1, 2 »` は、2 つの要素を持ち、それぞれが特定の値で初期化されたリスト値を定義している。新しい空の List は `« »` と表現することができます。
+`« »` は「[ギュメ](https://ja.wikipedia.org/wiki/%E6%8B%AC%E5%BC%A7)」と呼ばれる記号です。この [ギュメ記号](https://tc39.es/ecma262/#sec-list-and-record-specification-type) は ECMAScript では、仕様内の List 型 (仕様型) を表現するためのリテラル記法として利用されます。例えば、`« 1, 2 »` は、2 つの要素を持ち、それぞれが特定の値で初期化されたリスト値を定義している。新しい空の List は `« »` と表現することができます。
 
 [Call](https://tc39.es/ecma262/#sec-call) のような抽象操作の引数で `aurgumentList` と定義されていれば、呼び出し側ではこのギュメ記号を使った List 型リテラルで引数を表現していることが多いです。
 :::
@@ -965,11 +965,11 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 
 しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が Promise の場合を特別扱いしていません。
 
-`return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、その前に [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されてマイクロタスクが増加することになります。一方 async/await では `await thenable` での Thenable が Promise である場合にはそもそも NewPromiseResolveThenableJob 操作が発生しません(※ Promise 以外の Thenable だと発生しますし、async 関数本体の最後で `return thenable` 処理がある時も発生します)。最適化前の仕様では `await promise` という処理があれば `then` メソッドのコールバックで `return promise` した場合と同じく常に NewPromiseResolveThenableJob が実行されて追加のマイクロタスクが発生していましたが、このための無駄な Promise のラッピングとそれを解決するために発生する PromiseResolveThenableJob は ResolvePromise 操作を使うようにした最適化で削減されました。
+`return thenable` という処理が `then()` メソッドのコールバック関数であると、Thenable が持つ `then` メソッドが実行されて解決されるまで、その `then()` メソッドから返る Promise オブジェクトが解決できないので、その前に [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が起動して、[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) が実行されてマイクロタスクが増加することになります。一方 async/await では `await thenable` での Thenable が Promise である場合にはそもそも NewPromiseResolveThenableJob 操作が発生しません (※ Promise 以外の Thenable だと発生しますし、async 関数本体の最後で `return thenable` 処理がある時も発生します)。最適化前の仕様では `await promise` という処理があれば `then` メソッドのコールバックで `return promise` した場合と同じく常に NewPromiseResolveThenableJob が実行されて追加のマイクロタスクが発生していましたが、このための無駄な Promise のラッピングとそれを解決するために発生する PromiseResolveThenableJob は ResolvePromise 操作を使うようにした最適化で削減されました。
 
 つまり、`Promise.prototype.then` の方の仕様は async/await であったような最適化がされていないので、コールバック関数で Promise を返している場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
 
-## async/awatit と Promise chain の比較
+## async/await と Promise chain の比較
 
 『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで「`Promise.resolve` と `executor` 関数の `resolve` 関数は同じようなものであるが、完全に等価ではない」と述べました。`resolve` は引数 `resolution` に Promise を取るとマイクロタスクが追加発生する一方で、`Promise.resolve` は引数が Promise だとそのまま返します。この違いによって２つを競争させたときには `Promise.resolve` を使った方がマイクロタスクの発生が少ないため先に終了できます。
 

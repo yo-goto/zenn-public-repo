@@ -1,13 +1,15 @@
 ---
 title: "V8エンジンによる内部変換コードでasync/awaitの挙動を理解する"
+published: true
+cssclass: zenn
 emoji: "👻"
 type: "tech"
 topics: [V8, ECMAScript, JavaScript, 非同期処理, promise]
-published: true
 date: 2022-05-08
+modified: 2022-12-24
 url: "https://zenn.dev/estra/articles/asyncawait-v8-converting"
-aliases: [記事_V8エンジンによる変換コードでasync/awaitの挙動を理解する]
 tags: [" #V8 #JavaScript/async  "]
+aliases: 記事『V8エンジンによる変換コードでasync/awaitの挙動を理解する』
 ---
 
 # はじめに
@@ -25,15 +27,15 @@ JavaScript の「非同期処理」ってやっぱりかなり難しくないで
 :::message alert
 **async/await に Promise の知識は必要か?**
 
-async/await の前に Promise の基礎と Promise チェーンを理解しておくのをおすすめします(できればイベントループも)。
+async/await の前に Promise の基礎と Promise チェーンを理解しておくのをおすすめします (できればイベントループも)。
 
-async/await は Promise の機能を代替するのではなく、Promise ベースの非同期処理の利便性を向上させるものです。async/await 自体が **Promise というシステム自体に基づいた拡張的な機能**なので、Promise 自体を理解できていないと雰囲気で使うしかなくなってしまいます。
+async/await は Promise の機能を代替するのではなく、Promise ベースの非同期処理の利便性を向上させるものです。async/await 自体が **Promise というシステム自体に基づいた拡張的な機能** なので、Promise 自体を理解できていないと雰囲気で使うしかなくなってしまいます。
 
-具体的に言えば、非同期関数(async function)自体が **Promise インスタンスを返す**ので Promise チェーンができますし、await 式自体も基本的には **Promise インスタンスを評価して解決値を取り出す**というものだからです。
+具体的に言えば、非同期関数 (async function) 自体が **Promise インスタンスを返す** ので Promise チェーンができますし、await 式自体も基本的には **Promise インスタンスを評価して解決値を取り出す** というものだからです。
 
 その他にも、Promise Combinator と呼ばれる `Promise.all()`、`Promise.race()`、`Promise.any()`、`Promise.allSettled()` は Promise の静的メソッドであり、これらを使うことで複数の Promise 処理を合成できますが、これも async/await が Promise を扱っていることを理解できてないと `await Promise.all([promise1, promise2])` などの処理が分からなくなります。
 
-モダンな非同期 API の仕組みとして一般化しつつある Promise-based API についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか**が分からなくなります。TypeScript において非同期処理を扱うにも Promise の型注釈ができなければ[型安全なコードは書けないので](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop#async-%E9%96%A2%E6%95%B0%E3%81%AE%E6%84%8F%E5%91%B3)、Promise の知識が必要です。
+モダンな非同期 API の仕組みとして一般化しつつある Promise-based API についても、API の処理結果やそれに付随する処理が Promise を返してくるなどを理解していないと、**どこで await すべきか**、**なぜ await すべきか** が分からなくなります。TypeScript において非同期処理を扱うにも Promise の型注釈ができなければ [型安全なコードは書けないので](https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop#async-%E9%96%A2%E6%95%B0%E3%81%AE%E6%84%8F%E5%91%B3)、Promise の知識が必要です。
 :::
 
 今回の記事は Zenn の Book の方で公開している『イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理』で収録する予定の前記事となります。非同期処理の理解に欠かすことのできない Promise チェーンとイベントループについて解説しているので興味がある方は是非確認してみてください。この記事を理解する上でも役立つと思います。
@@ -53,6 +55,7 @@ https://zenn.dev/estra/books/js-async-promise-chain-event-loop
 :::
 
 # 参考文献
+
 今回記事を書くにあたって参照したメインテーマに関する文献になります。
 
 https://zenn.dev/uhyo/articles/return-await-promise
@@ -68,9 +71,9 @@ https://v8.dev/blog/fast-async#await-under-the-hood
 https://v8.dev
 
 > V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. **It implements ECMAScript and WebAssembly**, and runs on Windows 7 or later, macOS 10.12+, and Linux systems that use x64, IA-32, ARM, or MIPS processors. **V8 can run standalone**, or can be embedded into any C++ application.
-> ([上記公式ページ](https://v8.dev)より引用)
+> ([上記公式ページ](https://v8.dev) より引用)
 
-V8 は Google が提供するオープンソースの JavaScript エンジンかつ WebAssembly エンジンでもあります。つまり、**ECMAScript と WebAssembly を実装しています**。V8 自体は C++ で書かれており、主に Chrome ブラウザ(正確には Chrome のオープンソース部分である Chromium)で利用されています。
+V8 は Google が提供するオープンソースの JavaScript エンジンかつ WebAssembly エンジンでもあります。つまり、**ECMAScript と WebAssembly を実装しています**。V8 自体は C++ で書かれており、主に Chrome ブラウザ (正確には Chrome のオープンソース部分である Chromium) で利用されています。
 
 JavaScript Engine は他にもいくつかあります。他の JavaScript エンジンとブラウザ環境との関係性は『サバイバル TypeScript』で分かりやすい図と共に解説されているので参考にしてください。
 
@@ -89,7 +92,7 @@ JavaScript の実行環境において JavaScript Engine である V8 が担当�
 参考文献
 https://hackernoon.com/javascript-v8-engine-explained-3f940148d4ef
 
-V8 自体は JavaScript Engine なので DOM については一切感知しませんし、Web API も(ごく一部を覗いて)提供しませんので、それらは V8 を埋め込む環境によって実装されて提供される必要があります。**V8 はデフォルトのイベントループとタスクキュー/マイクロタスクキューを保有しています**が、環境は独自のイベントループを実装し、複数のタスクキューを設けて、マイクロタスクのチェックポイント(いつマイクロタスクを処理するか)を定めることができます。
+V8 自体は JavaScript Engine なので DOM については一切感知しませんし、Web API も (ごく一部を覗いて) 提供しませんので、それらは V8 を埋め込む環境によって実装されて提供される必要があります。**V8 はデフォルトのイベントループとタスクキュー/マイクロタスクキューを保有しています** が、環境は独自のイベントループを実装し、複数のタスクキューを設けて、マイクロタスクのチェックポイント (いつマイクロタスクを処理するか) を定めることができます。
 
 :::message
 Chrome では Libevent とレンダリングエンジン Blink、Node では Libuv, Deno では Tokio などのライブラリによって非同期 I/O の仕組みなどを挿入しつつ独自のイベントループを実装しています。
@@ -97,7 +100,7 @@ Chrome では Libevent とレンダリングエンジン Blink、Node では Lib
 とは言っても、イベントループ自体はブラウザ環境では HTML 仕様に従い、Node や Deno も可能な限りブラウザ環境に近づくように実装されていますので、抽象的な動作メカニズム部分は共通しています。
 :::
 
-V8 エンジンは GoogleChromeLabs が提供する jsvu(**JavaScript engine Version Updater**)を使ってインストールでき、ソースからビルドすることなく利用できます。V8 エンジンはローカル環境においてスタンドアロンで実行できるため、ECMAScript の実装について簡単にローカルでテストできます。
+V8 エンジンは GoogleChromeLabs が提供する jsvu(**JavaScript engine Version Updater**) を使ってインストールでき、ソースからビルドすることなく利用できます。V8 エンジンはローカル環境においてスタンドアロンで実行できるため、ECMAScript の実装について簡単にローカルでテストできます。
 
 https://github.com/GoogleChromeLabs/jsvu
 
@@ -1684,12 +1687,11 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 
 async/await を理解できるようになるには、Promise とイベントループ、マイクロタスクの知識が必要不可欠です。await 式によって非同期関数内の実行フローが分割され制御が行ったり来たりしますが、それは Promise チェーンでの連鎖的なマイクロタスク発行による逐次実行と同じです。非同期関数では処理再開を告げるマイクロタスクとして `PromiseReactionJob` がコールスタックに積まれ、非同期関数の関数実行コンテキストが再びプッシュされてコールスタックのトップになることで実行再開となります。
 
-非同期処理の本質的な部分は**イベントループにおけるタスクとマイクロタスクの処理**です。
+非同期処理の本質的な部分は **イベントループにおけるタスクとマイクロタスクの処理** です。
 
-Promise チェーンも async/await も本質的には**イベントループにおけるマイクロタスクの連鎖的な処理**です。言うなれば **マイクロタスク連鎖(Microtask chain)** でしょうか。
+Promise チェーンも async/await も本質的には **イベントループにおけるマイクロタスクの連鎖的な処理** です。言うなれば **マイクロタスク連鎖 (Microtask chain)** でしょうか。
 
-V8 エンジンでは async/await の内部変換が行われており、これによって**最適化されたマイクロタスクの連鎖的処理**を実現しています(仕様自体の最適化のおかげで他のエンジンでも同様)。
-
+V8 エンジンでは async/await の内部変換が行われており、これによって **最適化されたマイクロタスクの連鎖的処理** を実現しています (仕様自体の最適化のおかげで他のエンジンでも同様)。
 
 ここまで見てきたように ECMAScript の仕様だけではなく、V8 エンジンで何が起きているかを知ることで理解できることがあったり、パフォーマンス上でいいことがありそうです。
 
@@ -1702,4 +1704,3 @@ https://v8.dev/features/top-level-await
 ECMAScript の仕様の読み方なども載っていて面白いです。
 
 https://v8.dev/blog/understanding-ecmascript-part-1
-
