@@ -2,13 +2,13 @@
 title: "README"
 cssclass: zenn
 date: 2022-12-19
-modified: 2022-12-25
+modified: 2023-01-04
 AutoNoteMover: disable
 tags: [" #type/zenn/book #obsidian "]
 aliases:
+  - OZ本
   - OZ-README
   - OZ本『Obsidianで記事や本を作ろう』
-  - OZ本
 ---
 url: https://zenn.dev/estra/books/obsidian-dot-zenn
 

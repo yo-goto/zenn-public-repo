@@ -2,7 +2,7 @@
 title: "はじめに"
 cssclass: zenn
 date: 2022-12-19
-modified: 2022-12-25
+modified: 2023-01-04
 url: "https://zenn.dev/estra/articles/1-mbo-begin"
 AutoNoteMover: disable
 tags: [" #obsidian #type/zenn/book  "]
@@ -40,7 +40,7 @@ https://www.amazon.co.jp/dp/B09HZ38SFZ
 
 ちなみに PADAone が Obsidian について寄稿した記事は以下の本で紹介されています。
 
-https://www.amazon.co.jp/dp/B09P1LHDPY
+https://www.amazon.co.jp/dp/B0BQZRZQ86
 
 また、この本では網羅的にすべての基本操作を触れるわけではないないため、網羅的な情報を知りたい場合には以下のドキュメントを参考にするようにしてください。
 
