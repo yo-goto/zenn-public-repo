@@ -2,7 +2,7 @@
 title: "Promise chain はネストさせない"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-11-02
+modified: 2023-01-06
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise chain はネストさせない』
@@ -90,17 +90,17 @@ console.log("🦖 [4] Sync");
   2. `returnPromise("1st Promise", "2")` が同期処理されて `then(cb1)` のコールバック `cb1` が直ちがマイクロタスクキューへと送られる
   3. `returnPromise("3rd Promise", "3")` が同期処理されて `then(cb3)` のコールバック `cb3` が直ちにマイクロタスクキューへと送られる
   4. `console.log("🦖 [4] Sync")` が同期処理される
-  5. イベントループの次のステップへ移行(同期処理がすべて終わり、グローバルコンテキストがポップしてコールスタックが空になったので、「マイクロタスクのチェックポイント」となる)
+  5. イベントループの次のステップへ移行 (同期処理がすべて終わり、グローバルコンテキストがポップしてコールスタックが空になったので、「マイクロタスクのチェックポイント」となる)
 2. 「マイクロタスクキューのすべてのマイクロタスクを実行する」
   6. `cb1` が実行される
 
-この `cb1` の実行が問題です。`return returnPromise("2nd Promise", "6")` に注目すると、`returnPromise()` 関数は直ちに履行状態になる Promise インスタンスを返すので、`then(callbackNext)` のコールバック `callbackNext` が直ちにマイクロタスクキューへと送られます。現時点のマイクロタスクキューには次のコールバック関数がマイクロタスクとして追加されています。
+この `cb1` の実行が問題です。`return returnPromise("2nd Promise", "6")` に注目すると、`returnPromise()` 関数は直ちに履行状態になる Promise インスタンスを返すので、`then(callbackNext)` のコールバック `callbackNext` が直ちにマイクロタスクキューへと送られます。`cb1` が実行される時点でのマイクロタスクキューには `cb3` コールバック関数がマイクロタスクとして追加されており、先頭にある状態です。
 
 ```sh:マイクロタスクキュー
-<-- cb3
+(先頭) <-- cb3
 ```
 
-この時点での `cb1` に注目してみます。
+マイクロタスクキューの先頭にある `cb1` について考えてみます。
 
 ```js
 returnPromise("1st Promise", "2")
@@ -113,12 +113,31 @@ returnPromise("1st Promise", "2")
     return returnPromise("2nd Promise", "6").then(callbackNext);
     // 返される Promise インスタンスが履行状態なので then のコールバック関数が直ちにマイクロタスクキューへと送られる
 
-    // 🔥 この then メソッドから返される Promise を解決するために後で追加で２つのマイクロタスクが発生する
+    // 🔥 この then メソッドから返される Promise を解決するために追加で２つのマイクロタスクが発生する
+    // ただちに追加のマイクロタスクである一つ目がエンキューされることに注意
   }) // ここで返される Promise chain はまだ待機状態
   .then(cb2);
 ```
 
-さて、ここが混乱しやすいところですが、Promise chain において `then()` メソッドのコールバック関数内で、`return` によって Promise インスタンスを返した場合はその解決値(resolve された値)が次の `then()` メソッドのコールバック関数の引数として渡されます。
+コールバック関数内の処理が上から下の順番に実行されていきます。
+
+コールバック関数内で Promise オブジェクト (Promise chain) を返却していますが、`returnPromise("2nd Promise", "6")` は直ちに履行するので、chain されている `then` メソッドに登録されたコールバック関数 `callbackNext` が直ちにマイクロタスクとしてエンキューされます。この時点でのマイクロタスクキューの状態は次のようになります。
+
+```sh:マイクロタスクキュー
+(先頭) <-- cb3 <-- callbackNext
+```
+
+`then` メソッドのコールバック内で Promise オブジェクトを返すと追加のマイクロタスクが２つ発生しました。これについては『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』と『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しました。追加のマイクロタスクは連鎖的に２つ発生するわけですが、一つ目の追加のマイクロタスクはこの `cb1` の実行時に直ちにマイクロタスクキューへとエンキューされます。このマイクロタスクは `extraA-1` という名前にしておきましょう。
+
+従って、マイクロタスクとして `cb1` が処理完了した時点でのマイクロタスクキューの状態は以下のようになります。
+
+```sh:マイクロタスクキュー
+(先頭) <-- cb3 <-- callbackNext <-- extraA-1
+```
+
+マイクロタスクキューについてはこのようなことになりますが、別の観点でも考えてみましょう。
+
+混乱しやすいところですが、Promise chain において `then()` メソッドのコールバック関数内で、`return` によって Promise インスタンスを返した場合はその Promise インスタンスの内包する値、つまり解決値 (resolve された値) が次の `then()` メソッドのコールバック関数の引数として渡されます。
 
 いまコールバック関数内で `return` しているのは `returnPromise("2nd Promise", "6")` ではなく、`returnPromise("2nd Promise", "6").then(callbackNext)` なので、`then(callbackNext)` で返される Promise インスタンスの resolve した値が `then(cb2)` のコールバック関数 `cb2` の引数として渡されるはずです。
 
@@ -126,15 +145,15 @@ returnPromise("1st Promise", "2")
 
 `then()` メソッドのコールバック関数内で待機状態の Promise インスタンスを返した場合はそれが解決されない限り、その `then()` メソッドから返ってくる Promise インスタンスも待機状態のままとなります。
 
-ここで考えるのは親のコールバック関数 `cb1` を登録していた `then(cb1)` から返される Promise インスタンスです。この `cb1` から返される Promise インスタンスが解決されない `then(cb1)` から返される Promise インスタンスの状態が履行状態にはならず待機状態のもままで、次の `then()` メソッドのコールバック関数をマイクロタスクキューへと送ることができません。
+ここで考えるのは親のコールバック関数 `cb1` を登録していた `then(cb1)` から返される Promise インスタンスです。この `cb1` から返される Promise インスタンスが解決されないままだと `then(cb1)` から返される Promise インスタンスの状態が履行状態にはならず待機状態のもままで、次の `then(cb2)` メソッドのコールバック関数 `cb2` をマイクロタスクキューへと送ることができません。
 
-それはそれとして、`callbackNext` がマイクロタスクキューへと送られた後、イベントループのステップは「マイクロタスクキューのすべてのマイクロタスクを実行する」の状態にあります。現時点でマイクロタスクキューの先頭にあるタスクはコールバック関数 `cb3` なので、このコールバックが次に実行されます。
+それはそれとして、`callbackNext` と `extraA-1` がマイクロタスクキューへと送られた時にはイベントループのステップは「マイクロタスクキューのすべてのマイクロタスクを実行する」の状態にあります。現時点でマイクロタスクキューの先頭にあるタスクはコールバック関数 `cb3` なので、このコールバックが次に実行されます。
 
 ```sh:マイクロタスクキュー
-<-- cb3 <-- callbackNext
+(先頭) <-- cb3 <-- callbackNext <-- extraA-1
 ```
 
-コールバック関数 `cb3` に注目してみます。
+それでは次に実行されるはずのコールバック関数 `cb3` に注目してみます。
 
 ```js
 returnPromise("3rd Promise", "3")
@@ -147,35 +166,83 @@ returnPromise("3rd Promise", "3")
     return returnPromise("4th Promise", "8").then(callbackNext2);
     // 返される Promise インスタンスが履行状態なので then のコールバック関数が直ちにマイクロタスクキューへと送られる
 
-    // 🔥 この then メソッドから返される Promise を解決するために後で追加で２つのマイクロタスクが発生する
+    // 🔥 この then メソッドから返される Promise を解決するために追加で２つのマイクロタスクが発生する
+    // ただちに追加のマイクロタスクである一つ目がエンキューされることに注意
   }) // ここで返される Promise chain はまだ待機状態
   .then(cb4);
 ```
 
-全く同じように、`callbackNext2` が直ちにマイクロタスクキューへと追加されます。
+全く同じように、`callbackNext2` とコールバック関数内で Promise オブジェクトが返されたことにより発生する２つの追加のマイクロタスクの１つ目である `extraB-1` が直ちにマイクロタスクキューへと追加されます。
 
 ```sh:マイクロタスクキュー
-<-- callbackNext <-- callbackNext2
+(先頭) <-- callbackNext <-- extraA-1 <-- callbackNext2 <-- extraB-1
 ```
 
-`returnPromise("3rd Promise", "3").then(cb3)` から返される Promise インスタンスはまだ待機状態となります。イベントループの状態もそのままなので、再びマイクロタスクキューの先頭のマイクロタスクが実行されます。
+`returnPromise("3rd Promise", "3").then(cb3)` から返される Promise インスタンスはまだ待機状態となります。イベントループの状態もそのままなので、再びマイクロタスクキューの先頭にあるマイクロタスク `callbackNext` が実行されます。
+
+```sh:マイクロタスクキュー
+(先頭) <-- extraA-1 <-- callbackNext2 <-- extraB-1
+```
+
+`callbackNext` が実行されることで、コールバック関数 `cb1` から返却していた Promise オブジェクトが解決することになります。これによって `then(cb1)` から返る Promise オブジェクトを解決する準備が完了し、さらに追加発生してた `extraA-1` が次のマイクロタスクキューの先頭になり実行されることで、追加発生する２つ目のマイクロタスク (名前は `extraA-2` としておきます) がマイクロタスクキューへと発行されます。
+
+```sh:マイクロタスクキュー
+(先頭) <-- callbackNext2 <-- extraB-1 <-- extraA-2
+```
+
+先頭のマイクロタスクは `callbackNext2` となり、これが実行されます。
+
+```js
+returnPromise("3rd Promise", "3")
+  .then((value) => { // cb3
+    console.log("👦 [7] Async");
+    console.log("👦 Resolved value: ", value);
+
+    return returnPromise("4th Promise", "8")
+      .then((value) => { // callbackNext2
+        console.log('👦 [10] Async');
+        console.log('👦 Resolved value: ', value);
+        return 'from [10] callback';
+      });
+    // 返される Promise インスタンスが履行状態なので then のコールバック関数が直ちにマイクロタスクキューへと送られる
+
+    // 🔥 この then メソッドから返される Promise を解決するために追加で２つのマイクロタスクが発生する(ただちに追加のマイクロタスクである一つ目がエンキューされることに注意)
+    // extraB-1
+    // extraB-2
+  }) // ここで返される Promise chain はまだ待機状態
+  .then(cb4);
+```
+
+`callbackNext` のときと同じ様に `callbackNext2` が実行されることで、コールバック関数 `cb3` から返却していた Promise オブジェクトが解決することなります。これによって `then(cb3)` から返る Promise オブジェクトを解決する準備が完了します。
+
+現時点のマイクロタスクキューの状態は次のようになります。
+
+```sh:マイクロタスクキュー
+(先頭) <-- extraB-1 <-- extraA-2
+```
+
+さらに追加発生していた `extraB-1` が次のマイクロタスクキューの先頭になり実行されることで、追加発生する２つ目のマイクロタスク (名前は `extraB-2` としておきます) がマイクロタスクキューへと発行されます。
+
+```sh:マイクロタスクキュー
+(先頭) <-- extraA-2 <-- extraB-2
+```
+
+そして、次のマイクロタスクキュー先頭にある `extraA-2` が実行されることで、`then(cb1)` から返る Promise オブジェクトが解決して履行します。
 
 ```js
 returnPromise("1st Promise", "2")
-  .then((value) => {
-    // cb1
+  .then((value) => { // cb1
     console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
 
     return returnPromise("2nd Promise", "6")
-      .then((value) => {
-        // callbackNext
+      .then((value) => { // callbackNext
         console.log("👦 [9] Async");
         console.log("👦 Resolved value: ", value);
         return "from [9] callback";
       });
-    // 🔥 この then メソッドから返される Promise を解決するために後で追加で２つのマイクロタスクが発生する
-  })
+      // extraA-1 --> extraA-2
+  }) // 解決されて履行したので次の cb2 がマイクロタスクとして発行される
   .then((value) => {
     // cb2
     console.log("👦 [11] Async");
@@ -183,54 +250,38 @@ returnPromise("1st Promise", "2")
   });
 ```
 
-`callbackNext` が実行されると `cb1` コールバック内において結局、`"from [9] callback"` という文字列で解決された Promise インスタンスが結局 `return` されたことになります。つまり、`return Promise.resolve("from [9] callback")` と同じです。
-
-次のように書きましたが、`then()` メソッドのコールバック関数内で待機状態の Promise が解決されて履行状態になったので、その `then()` メソッドから返ってくる Promise インスタンスも解決されて履行状態となります。
-
-> `then()` メソッドのコールバック関数内で待機状態の Promise インスタンスを返した場合はそれが解決されない限り、その `then()` メソッドから返ってくる Promise インスタンスも待機状態のままとなります。
-
-`returnPromise("1st Promise", "2").then(cb1)` から返される Promise インスタンスが待機状態から~~履行状態に移行したので、次の `then(cb2)` のコールバック関数 `cb2` がマイクロタスクキューへと直ちに送られます~~(間違い)。
-
-**修正**: `returnPromise("1st Promise", "2").then(cb1)` のコールバック `cb1` からは Promise が返されていたので実はこの `then` メソッドから返る Promise インスタンスを解決するために追加で２つのマイクロタスクが発生します。これについては『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』で解説しました。
-
-この追加発生するマイクロタスクの１つ目を extraA-1 としましょう。extraA-1 自体は `returnPromise("2nd Promise", "6").then(callbackNext).then(resolve, reject)` の呼び出しを行う関数です。
+`then(cb1)` の次に chain している `then(cb2)` のコールバック関数 `cb2` がようやくマイクロタスクとして発行されます。
 
 ```sh:マイクロタスクキュー
-<-- callbackNext2 <-- extraA-1
+(先頭) <-- extraB-2 <-- cb2
 ```
 
-そして、再びマイクロタスクキューの先頭にあるマイクロタスクであるコールバック関数 `callbackNext2` が実行されて同じのように、`returnPromise("3rd Promise", "3").then(cb3)` から返される Promise インスタンスが~~履行状態となり、次の `then(cb4)` のコールバック関数 `cb4` がマイクロタスクキューへと直ちに送られます~~(間違い)。
+次にマイクロタスクキュー先頭にある `extraB-2` が実行されることで、同じ様に `then(cb3)` から返る Promise オブジェクトが解決して履行します。
 
-**修正**: `returnPromise("3rd Promise", "3").then(cb3)` のコールバック `cb3` からは Promise が返されていたので実はこの `then` メソッドから返る Promise インスタンスを解決するために追加で２つのマイクロタスクが発生します。
+```js
+returnPromise("3rd Promise", "3")
+  .then((value) => { // cb3
+    console.log("👦 [7] Async");
+    console.log("👦 Resolved value: ", value);
 
-この追加発生するマイクロタスクを extraB-1 としましょう。extraB-1 自体は `returnPromise("4th Promise", "8").then(callbackNext2).then(resolve, reject)` の呼び出しを行う関数です。
-
-```sh:マイクロタスクキュー
-<-- extraA-1 <-- extraB-1
+    return returnPromise("4th Promise", "8")
+      .then((value) => { // callbackNext2
+        console.log('👦 [10] Async');
+        console.log('👦 Resolved value: ', value);
+        return 'from [10] callback';
+      });
+      // extraB-1 --> extraB-2
+  }) // 解決されて履行したので次の cb4 がマイクロタスクとして発行される
+  .then((value) => { // cb4
+    console.log('👦 [12] Async');
+    console.log('👦 Resolved value: ', value);
+  });
 ```
 
-extraA-1 が実行されると更に追加のマイクロタスクが１つ発生するのでそれを extraA-2 としましょう。extraA-2 自体は `resolve` 関数の実行を行う関数です(ほぼ `resolve` 関数そのものです)。
+現時点でのマイクロタスクキューの状態は次のようになります。
 
 ```sh:マイクロタスクキュー
-<-- extraB-1 <-- extraA-2
-```
-
-次に extraB-1 も実行されますが、これからも追加の２つ目のマイクロタスクが発生するので、それを extraB-2 としましょう。extraB-2 自体は `resolve` 関数の実行を行う関数です(ほぼ `resolve` 関数そのものです)
-
-```sh:マイクロタスクキュー
-<-- extraA-2 <-- extraB-2
-```
-
-そしてついに extraA-2 が処理されることで、`returnPromise("1st Promise", "2").then(cb1)` から返る Promise インスタンスが履行したことになり、chain していた `then(cb2)` からコールバック関数 `cb2` がマイクロタスクとしt発行されます。
-
-```sh:マイクロタスクキュー
-<-- extraB-2 <-- cb2
-```
-
-次に extraB-2 が処理されることで `returnPromise("3rd Promise", "3").then(cb3)` から返る Promise インスタンスが履行したことになり、chain していた `then(cb4)` からコールバック関数 `cb4` がマイクロタスクとしt発行されます。
-
-```sh:マイクロタスクキュー
-<-- cb2 <-- cb4
+(先頭) <-- cb2 <-- cb4
 ```
 
 そして、同じように、`cb2`、`cb4` の順番で実行されて終わります。ということで、出力は次のようになります。
@@ -279,15 +330,16 @@ returnPromise('1st Promise', '2')
     console.log('👦 [5] Async');
     console.log('👦 Resolved value: ', value);
 
+    // ここでは <3-a[2]> と <4-a[3]> の２つのマイクロタスクが直ちに発行されることに注意
     return returnPromise('2nd Promise', '6')
       .then((value) => { // <3-a[2]>
         console.log('👦 [9] Async');
         console.log('👦 Resolved value: ', value);
         return 'from [9] callback';
       });
-    // Promise を返しているため追加のマイクロタスクが２つ発生
-    // <5-a[3]>
-    // <7-a[4]>
+    // 🔥 promise を返しているため追加のマイクロタスクが２つ発生
+    // <4-a[3]> returnPromise('2nd Promise', '6').then(cb).then(resolve, reject) の呼び出し
+    // ↪ <7-a[4]> resolve 関数の実行
   })
   .then((value) => { // <9-a[5]>
     console.log('👦 [11] Async');
@@ -299,15 +351,16 @@ returnPromise('3rd Promise', '3')
     console.log('👦 [7] Async');
     console.log('👦 Resolved value: ', value);
 
+    // ここでは <5-b[2]> と <6-a[3]> の２つのマイクロタスクが直ちに発行されることに注意
     return returnPromise('4th Promise', '8')
-      .then((value) => { // <4-b[2]>
+      .then((value) => { // <5-b[2]>
         console.log('👦 [10] Async');
         console.log('👦 Resolved value: ', value);
         return 'from [10] callback';
       });
-    // Promise を返しているため追加のマイクロタスクが２つ発生
-    // <6-b[3]>
-    // <8-b[4]>
+    // 🔥 promise を返しているため追加のマイクロタスクが２つ発生
+    // <6-b[3]> returnPromise('4th Promise', '8').then(cb).then(resolve, reject) の呼び出し
+    // ↪ <8-b[4]> resolve 関数の実行
   })
   .then((value) => { // <10-b[5]>
     console.log('👦 [12] Async');
@@ -464,4 +517,3 @@ Promise chain はこのようにネストさせずに流れを見やすくしま
 :::message
 実はネストをフラット化することで発生するマイクロタスクの順番が前後しますが、実用上は何も問題ありません。この話題については『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで詳しく解説します。
 :::
-

@@ -2,7 +2,7 @@
 title: "EPAsync book 管理ノート"
 cssclass: zenn
 date: 2022-08-14
-modified: 2022-12-19
+modified: 2023-01-04
 url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #JavaScript/async  "]
@@ -57,6 +57,9 @@ aliases:
 - [x-epasync-epilogue](x-epasync-epilogue)
 - [y-epasync-conclusion](y-epasync-conclusion)
 - [z-epasync-reference](z-epasync-reference)
+
+解析図
+- [[非同期処理を理解するために必要な知識.canvas]]
 
 ## 管理用ノート
 

@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 
-# このチャプターについてz
+# このチャプターについて
 
 このチャプターは、別のチャプター『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』の続きとしての内容となります。
 
@@ -94,8 +94,8 @@ returnPromise("1st Promise", "[2]")
     console.log("👦 [5] Async");
     console.log("👦 Resolved value: ", value);
     // return しない場合は副作用となり値が渡らない
-    returnPromise("2nd Promise", "[6]")
-    // 🔥 このコールバックからは Promise が返されないので追加のマイクロタスクが発生しない
+    returnPromise("2nd Promise", "[6]");
+    // 🐝 このコールバックからは Promise が返されていないので追加のマイクロタスクが発生しない
   })
   .then((value) => {
     // この value は undefined となる
@@ -574,6 +574,7 @@ doAsyncTask()
   .then(() => {
     const data = doSthAsyncA(path);
     return data;
+  })
   .then(data => {
     const processedData_1st = doSthAsyncB(data);
     return processedData_1st;

@@ -28,11 +28,16 @@ aliases:
 
 ## 参考文献
 
-こちらのチャプターの解説で使用する ECMASciript の仕様のコードは以下のブログ記事のシリーズのものを参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
+こちらのチャプターの解説で使用する ECMASciript の仕様のコードは [ESLint](https://eslint.org) の開発者である Nicholas C. Zakas 氏のブログ記事シリーズから参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
 
 - [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
 - [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)
 - [Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/)
+- [Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/)
+
+また、上のシリーズで実装された Promise のライブラリは以下のリポジトリで公開されています。このライブラリをローカルで実行し、`console.log` などを入れてみるとメカニズムの理解が容易となります。
+
+https://github.com/humanwhocodes/pledge
 
 また ECMAScript の仕様そのものを理解するためには以下の記事が参考になるので興味があれば参考にしてみてください。
 
@@ -263,17 +268,21 @@ const thenable = {
 
 まず ECMAScript の仕様には「**抽象操作 (Abstract Operation)**」というものが記述されています。
 
-抽象操作とは、ECMAScript 仕様の内部で利用される関数の操作で、プログラマーからはアクセスできません。意味合いとしては単純に仕様の編集者が何回も同じことを書かないように「長い表記を省略するため」というのが大きいです。
+抽象操作とは ECMAScript 仕様の内部で利用される関数であり、JavaScript から直接呼び出すことはできません。意味合いとしては単純に仕様の編集者が何回も同じことを書かないように「長い表記を省略して完結に記述できるようにする」というのが大きいです。
 
-仕様を理解するにはこの抽象操作によるアルゴリズムステップを理解していくことになります。
+ECMAScript 仕様のプロトタイプメソッドや静的メソッド、抽象操作についてはそれぞれ「アルゴリズムステップ (Algorithm steps)」というものが定義されています。アルゴリズムステップとは仕様が定義する操作の挙動を表現しているため、仕様を理解するためにはこれらのアルゴリズムステップを理解していくことになります。
 
-Promise 系列の仕様を理解するために必要な抽象操作は [Promise Abstract Operations](https://tc39.es/ecma262/#sec-promise-abstract-operations) の項目に記載されています。ただし、ここに記述されている抽象操作からは他の項目にある抽象操作も呼び出されるので理解するのには様々な操作をたどっていく必要があります。
+アルゴリズムステップは以下のようなリストで表現されています。また、１つのアルゴリズムステップは連続したサブステップに細分化されることがあり、サブステップは字下げされて、それ自体がさらに字下げされたサブステップに分割されることがあります。
 
-例えば、Promise の静的メソッドである [Promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) は内部的に大半の作業を `PromiseResolve` という抽象操作に委任しています。
+![アルゴリズムムステップ](/images/js-async/img_ecmascript-algorithm-steps.jpg)*[https://tc39.es/ecma262/#sec-algorithm-conventions](https://tc39.es/ecma262/#sec-algorithm-conventions) より*
+
+さて、Promise 系列の仕様を理解するために必要な抽象操作は [Promise Abstract Operations](https://tc39.es/ecma262/#sec-promise-abstract-operations) の項目に記載されています。ただし、ここに記述されている抽象操作からは他の項目にある抽象操作も呼び出されるので理解するのには様々な操作をたどっていく必要があります。
+
+例えば Promise の静的メソッドである [Promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) は内部的に大半の作業を `PromiseResolve` という抽象操作に委任しています。以下の ECMA 仕様において、`Promise.resolve` 内部のアルゴリズムステップから抽象操作が呼び出されています。
 
 ![algorithm-steps](/images/js-async/img_ecma-algorithm-step.jpg)*[https://tc39.es/ecma262/#sec-promise.resolve](https://tc39.es/ecma262/#sec-promise.resolve) より*
 
-このような各アルゴリズムステップを見て関係をたどり理解するのはかなり大変なので、コアとなる抽象操作については簡易的な図でまとめておきました。それぞれの操作は以下のような呼び出し関係となっています。
+プロトタイプメソッドや静的メソッドの仕様を見てみると、このようにそれぞれのアルゴリズムステップ内で抽象操作が呼び出され、さらにその抽象操作から別の抽象操作が呼び出されるという依存関係が構築されているので仕様挙動を理解するためにはそれぞれの操作をたどっていき関係性を把握していく必要があります。各アルゴリズムステップを見て関係をたどって理解するのはかなり大変な作業なので、コアとなる抽象操作については簡易的な図でまとめておきました。それぞれの操作は以下のような呼び出し関係となっています。
 
 ![promise抽象操作](/images/js-async/PromiseSpec.excalidraw.png)
 
@@ -289,10 +298,14 @@ Promise 系列の仕様を理解するために必要な抽象操作は [Promise
 
 Job というのは実際には内部的な仕様の型 (Specifiaction type) である抽象クロージャ ([Abstact Closure](https://tc39.es/ecma262/#sec-abstract-closure)) という型の値です。
 
+抽象クロージャの作成時には指定されたアルゴリズムステップと複数の値のコレクションをキャプチャします。簡単にいえば、抽象クロージャは関数の挙動を示すものであり、実際に [CreateBuiltinFunction](https://tc39.es/ecma262/#sec-createbuiltinfunction) という抽象操作は抽象クロージャを引数にしてその抽象クロージャが記述した振る舞いを持つ関数オブジェクトが作成されます。
+
 Promise 関連の Job (マイクロタスク) を作る直接の抽象操作は以下の２つとなります。そして、この２つがこれまでの問題の中心とります。
 
-- [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) : Promise の解決時に発行される Job (マイクロタスク) を作成する操作
-- [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) : 解決値が Thenable の場合に上記の Job から更に追加の Job (マイクロタスク) を作成する操作
+抽象操作 | 説明
+--|--
+[NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) | Promise の解決時に発行される Job (マイクロタスク) を作成する操作
+[NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) | 解決値が Thenable の場合に上記の Job から更に追加の Job (マイクロタスク) を作成する操作
 
 [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) で作成される PromiseReactionJob と呼ばれる Job (Abstract closure) がこれまで扱ってきたイベントループで処理されるマイクロタスクの実体となります。Promise chain だけでなく、async/await でもこの Job は発行されます。
 
@@ -883,6 +896,197 @@ Promise.resolve(42)
 
 具体的には `Promise.resolve(x + 1).then(resolve, reject)` の呼び出し自体を行う関数が２個目のマイクロタスクとして発行されてイベントループで処理されると、その `resolve` 関数が３個目のマイクロタスクとして発行されます。それが実行されると、`then` 自体から返る Promise オブジェクト自体 (元の未解決 Promise オブジェクト) が解決し、chain してある `then` のコールバック `x => console.log(x)` が４個目のマイクロタスクとして発行されます。
 
+# 解決値が Promise chain の場合
+
+解決値が Promise chain であった場合にはどうなるでしょうか。`then()` メソッドからは常に新しい Promise オブジェクトが返るので、もちろんこれは解決値が Promise オブジェクトである場合に相当します。ただし、発生するマイクロタスクの発生順番については混乱しやすいので注意してください。
+
+比較しやすいように、まずは解決値が単純な `Promise.resolve(1)` で生成されただけの Promise の場合を考えてみます。
+
+```js
+// simpleReturnPromise.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: Promise chain の識別 (a or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
+console.log("🦖 [1]");
+
+Promise.resolve(1)
+  .then(x => console.log("👻 [3]")) // <1-a[1]>
+  .then(x => console.log("👻 [5]")) // <3-a[2]>
+  .then(x => console.log("👻 [6]")) // <5-a[3]>
+  .then(x => console.log("👻 [7]")) // <7-a[4]>
+  .then(x => console.log("👻 [9] S: 終了")) // <9-a[5]>
+
+Promise.resolve(2)
+  .then(x => { // <2-b[1]>
+    console.log("💙 [4]");
+    const p1 = Promise.resolve(x + 1);
+    return p1;
+    // -> resolve(Promise.resolve(43))
+    // 🔥 promise を返すので追加のマイクロタスクが２個発生
+    // <4-b[2]> p1.then(reoslve, reject) の呼び出し
+    // ↪ <6-b[3]> resolve() の実行
+  })
+  .then(x => console.log("💙 [8] P: 終了", x)); // <8-b[4]>
+
+console.log("🦖 [2]");
+
+/* RESULT
+❯ deno run simpleReturnPromise.js
+🦖 [1]
+🦖 [2]
+👻 [3]
+💙 [4]
+👻 [5]
+👻 [6]
+👻 [7]
+💙 [8] P: 終了 3
+👻 [9] S: 終了
+*/
+```
+
+上記コードの以下の箇所に注目します。マイクロタスク `<2-b[1]>` がイベントループにおいて処理されるときに、追加発生するマイクロタスクの１つ目である PromiseResolveThenableJob がマイクロタスクキューへとただちにエンキューされます。
+
+```js
+Promise.resolve(2)
+  .then(x => { // <2-b[1]>
+    console.log("💙 [4]");
+    const p1 = Promise.resolve(x + 1);
+    return p1;
+    // -> resolve(Promise.resolve(43))
+    // 🔥 promise を返すので追加のマイクロタスクが２個発生
+    // <4-b[2]> p1.then(reoslve, reject) の呼び出し
+    // ↪ <6-b[3]> resolve() の実行
+  })
+  .then(x => console.log("💙 [8] P: 終了", x)); // <8-b[4]>
+```
+
+次に `Promise.resolve(2).then(callback)` によって最後の `then` メソッドから返る Promise オブジェクトが解決値となる場合を考えてみます。コールバック関数の `return` の値として触接書いても良いですが、分かりやすくするためにあえて `p2` という変数で定義しておきます。
+
+```js
+// simpleReturnPromiseChain.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: promise chain の識別 (a or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
+console.log("🦖 [1]");
+
+Promise.resolve(1)
+  .then(x => console.log("👻 [3]")) // <1-a[1]>
+  .then(x => console.log("👻 [5]")) // <3-a[2]>
+  .then(x => console.log("👻 [7]")) // <6-a[3]>
+  .then(x => console.log("👻 [8]")) // <8-a[4]>
+  .then(x => console.log("👻 [10] A 終了")) // <10-a[5]>
+
+Promise.resolve(2)
+  .then(x => { // <2-b[1]>
+    console.log("💙 [4]");
+
+    const p2 = Promise.resolve(2).then(x => { //  <4-b[2]>
+      console.log("💚 [6]");
+      return x;
+    });
+
+    return p2;
+    // -> resolve(p2)
+    // 🔥 promise を返すので追加のマイクロタスクが２個発生
+    // <5-b[3]> p2.then(resolve, reject) の呼び出し
+    // ↪ <7-b[4]> resolve の実行
+  })
+  .then(x => console.log("💙 [9] B 終了", x)); // <9-b[5]>
+
+console.log("🦖 [2]");
+
+/* RESULT
+❯ deno run simpleReturnPromiseChain.js
+🦖 [1]
+🦖 [2]
+👻 [3]
+💙 [4]
+👻 [5]
+💚 [6]
+👻 [7]
+👻 [8]
+💙 [9] B 終了 2
+👻 [10] A 終了
+*/
+```
+
+上記コードの以下の箇所に注目します。マイクロタスク `<2-b[1]>` がイベントループにおいて処理されるときに注意してください。`p2` は `Promise.resolve(2)` から始まる Promise chain であり、`p2` 自体は最後の `then` メソッドから返る Promise オブジェクトを参照しています。マイクロタスク `<2-b[1]>` が処理されるとき、p2 の Promise chain の `then` メソッドのコールバックが直ちにマイクロタスク `<4-b[2]>` として発行されます(`Promise.resolve(2)` が最初から履行しているため)。
+
+```js
+Promise.resolve(2)
+  .then(x => { // <2-b[1]>
+    console.log("💙 [4]");
+
+    const p2 = Promise.resolve(2).then(x => { //  <4-b[2]>
+      console.log("💚 [6]");
+      return x;
+    }); // ← この then から返る Promise オブジェクトが p2 であり、p2.then メソッドが thenAction となる
+
+    return p2;
+    // -> resolve(p2)
+    // 🔥 promise を返すので追加のマイクロタスクが２個発生
+    // <5-b[3]> p2.then(resolve, reject) の呼び出し
+    // ↪ <7-b[4]> resolve の実行
+  })
+  .then(x => console.log("💙 [9] B 終了", x)); // <9-b[5]>
+```
+
+コールバック最後で `return p2` という処理が実行されることで、内部的には `resolve(p2)` という解決関数に解決値 `p2` が渡されて実行されることになります。解決値 `p2` は Promise オブジェクトであるため、追加のマイクロタスクが発生します。１つ目のマイクロタスクが NewPromiseResolveThenableJob 操作で作成される PromiseResolveThenableJob です。このマイクロタスクは `p2.then(resolve, reject)` を呼び出す処理です。`p2` は `Promise.resolve(2).then(callback)` という Promise chain を代入していましたが、`then` から返る新しい Promise オブジェクトを実際には参照しているので、さらにその Promise オブジェクトは `then` メソッドを持っています。この `then` を実行するための処理が１つ目の追加のマイクロタスクであることに注意してください。このマイクロタスクも `<2-b[1]>` マイクロタスクの処理時において直ちに発行されるため、順番的には `<4-b[2]>` の次である `<5-b[3]>` となります(🔥 この順番は分かりづらいので注意してください)。
+
+`then` メソッドのコールバック関数の戻り値は内部的には `resolve` 関数の引数である解決値 `resolution` として渡されるという話でした。上記の解決値による違いは結局は `resolve` 関数の引数が問題なので、以下のように直接的に `resolve` 関数で考えてみるのもよいでしょう。
+
+```js
+// simpleResolveRel.js
+/* <n-t[m]> は発生しているマイクロタスクの追跡順番
+  n: 全体のマイクロタスクのカウント
+  t: promise chain の識別 (c or b)
+  m: それぞれの処理の中でのマイクロタスクのカウント
+*/
+console.log("🦖 [1]");
+
+new Promise(resolve => {
+  const p1 = Promise.resolve("A");
+  resolve(p1);
+  // 🔥 追加のマイクロタスクが２つ発生
+  // <1-c[1]> p1.then(resolve, reject) の呼び出し
+  // ↪ <4-c[2]> resolve 関数の実行
+}).then(y => {
+    // <6-c[3]>
+    console.log("💙 [4]", y);
+    return 55;
+  })
+  .then(x => console.log("💙 [6] C: 終了", x)); // <8-c[4]>
+
+new Promise(resolve => {
+  // この中で直ちにマイクロタスクが２つ発生することに注意
+  const p2 = Promise.resolve("B").then(y => { // <2-b[1]>
+    console.log("💚 [3]", y);
+    return 55;
+  });
+
+  resolve(p2);
+  // 🔥 追加のマイクロタスクが２つ発生
+  // <3-b[2]> p2.then(resolve, reject) の呼び出し
+  // ↪ <5-b[3] resolve 関数の実行
+}).then(x => console.log("💚 [5] B: 終了", x));// <7-b[4]>
+
+console.log("🦖 [2]");
+
+/* RESULT
+❯ deno run simpleResolveRel.js
+🦖 [1]
+🦖 [2]
+💚 [3] B
+💙 [4] A
+💚 [5] B: 終了 55
+💙 [6] C: 終了 55
+*/
+```
+
 # Promise chain のネストをフラット化する弊害
 
 『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise chain はなるべくネストさせずにフラットにするようにと解説しましたが、上記の `then` のコールバックから返される値の種類によって発生するマイクロタスク数が異なることに影響を受けて Promise chain のネストをフラット化するとコンソール出力が行われるマイクロタスクが遅延します。
@@ -900,8 +1104,8 @@ const increment = (num) => {
 
 // フラット化すると A を出力するまでマイクロタスクを3個消費する
 increment(1)
-  .then(num => increment(num)) // ３個消費 <1-f[1]> <3-f[2]> <5-f[3]>
-  .then(num => console.log("A", num)); // <7-f[4]>
+  .then(num => increment(num)) // ３個消費 <1-f[1]> <3-f[2]> <6-f[3]>
+  .then(num => console.log("A", num)); // <8-f[4]>
   // ４個目のマイクロタスクで出力
   // chain 全体で４個のマイクロタスクが発生
 
@@ -912,7 +1116,8 @@ increment(1)
       .then(num => console.log("B", num));
       //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ <4-n[2]>
       // ２個目のマイクロタスクで出力
-      // <6-n[3]> <8-n[4]>
+      // 追加のマイクロタスクが２個発生
+      // <5-n[3]> <7-n[4]>
   });
 // chain 全体で４個のマイクロタスクが発生
 
@@ -1011,17 +1216,20 @@ Promise chain と async/await の違いはこのような `resolve` 関数と `P
 */
 console.log("🦖 [1] G: sync");
 
+// 合計で4つのマイクロタスクが発生
 Promise.resolve(1)
-  .then((x) => { // <1-p[1]>
+  .then(x => { // <1-p[1]>
     console.log("💙 [3] P: async", x);
     return Promise.resolve(2);
-    // 🔥 コールバックから Promise を返しているので追加のマイクロタスクが２つ発生
-    // <3-p[2]> <5-p[3]>
+    // 🔥 promise を返すので追加のマイクロタスクが２個発生
+    // <3-p[2]> Promise.resolve(2).then(resolve, reject) の呼び出し
+    // ↪ <5-p[3]> resolve 関数の実行
   })
   .then((y) => { // <6-p[4]>
     console.log("💙 [6] P: async", y);
   });
 
+// 合計で２つのマイクロタスクが発生
 (async () => {
   const x = await Promise.resolve(1);
   // <2-a[1]>
@@ -1056,14 +1264,15 @@ console.log("🦖 [1] G: sync");
 
 // 合計で4つのマイクロタスクが発生
 Promise.resolve(1)
-  .then((x) => { // <1-p[1]>
+  .then(x => { // <1-p[1]>
     console.log("💙 [3] P: async", x);
     return Promise.resolve(2)
       .then((y) => { // <3-p[2]>
         console.log("💙 [5] P: async", y);1
       });
-    // 🔥 コールバックから Promise を返しているので追加のマイクロタスクが２つ発生
-    // <5-p[3]> <6-p[4]>
+    // 🔥 promise を返すので追加のマイクロタスクが２個発生
+    // <4-p[3]> promise.then(resolve, reject) の呼び出し
+    // ↪ <6-p[4]> resolve 関数の実行
   });
 
 // 合計で2つのマイクロタスクが発生
@@ -1072,7 +1281,7 @@ Promise.resolve(1)
   // <2-a[1]>
   console.log("💚 [4] A: async", x);
   const y = await Promise.resolve(2);
-  // <4-a[2]>
+  // <5-a[2]>
   console.log("💚 [6] A: async", y);
 })();
 
@@ -1088,6 +1297,8 @@ console.log("🦖 [2] G: sync");
 💚 [6] A: async 2
 */
 ```
+
+やってることの意味合いは本質的には同じですが、発生するマイクロタスクの数が異なることからも Promise chain と async/await は厳密にはシンタックスシュガーではないということが分かります。
 
 ## 根本的な仕様最適化のプロポーザル
 
