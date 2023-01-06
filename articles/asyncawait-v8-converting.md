@@ -185,7 +185,7 @@ function promiseResolve(v) {
 分かりやすくするために変換コードに補足のコメントを追加しておきます。
 
 ```js:V8エンジンによる変換コード
-// 途中で一時停止できる関数として resumable (再開可能) のマーキング
+// 途中で一次中断できる関数として resumable (再開可能) のマーキング
 resumable function foo(v) {
   implicit_promise = createPromise();
   // (0) async 関数の返り値となる Promise インスタンスを作成
@@ -198,7 +198,7 @@ resumable function foo(v) {
     res => resume(«foo», res),
     err => throw(«foo», err));
 
-  // (3) async 関数 foo を一時停止して implicit_promise を呼び出し元へと返す
+  // (3) async 関数 foo を一次中断して implicit_promise を呼び出し元へと返す
   w = suspend(«foo», implicit_promise);
   // (4) w = のところから async 関数の処理再開となる
 
@@ -219,14 +219,14 @@ function promiseResolve(v) {
 
 基本的なステップはコメントに書いた通りです。
 
-- (0) V8 エンジンによって async 関数自体が実行を一時停止して後から再開できる関数として、resumable(再開可能) のマーキングをし、async 関数自体の返り値となる Promise インスタンスとして `implicit_promise` を作成します
+- (0) V8 エンジンによって async 関数自体が実行を一次中断して後から再開できる関数として、resumable(再開可能) のマーキングをし、async 関数自体の返り値となる Promise インスタンスとして `implicit_promise` を作成します
 - (1) await 式の評価対象について Promise インスタンスでないならラッピングして `promise` に代入します
 - (2) `promise` が Settled になったときのハンドラを同期的にアタッチします
-- (3) async 関数の処理を `suspend()` で一時停止して、Promise インスタンスである `implicit_promise` を呼び出し元へと返却します
+- (3) async 関数の処理を `suspend()` で一次中断して、Promise インスタンスである `implicit_promise` を呼び出し元へと返却します
 - (4) `promise` が Settled となり次第、async 関数の処理を再開し、await 式の評価結果を `w` に代入するところから処理再開となります
 - (5) 最終的に async 関数内部で `return` していた値で `implicit_promise` を resolve することで呼び出し元に返されていた Promise インスタンスが Settled となります
 
-変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。async 関数はどんなときでも、Promise インスタンスを返します。async 関数の処理が一時停止して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
+変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。async 関数はどんなときでも、Promise インスタンスを返します。async 関数の処理が一次中断して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
 
 :::details 仕様解説
 この `implictPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文指向操作から呼び出される [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promise コンストラクタ関数で実際に Promise インスタンスが作成されています。
@@ -239,13 +239,13 @@ function promiseResolve(v) {
 ということで、上記コードの説明としてもう少しコメントを追加しておきたいと思います。`v` は `v = Promise.resolve(42)` というように値 `42` で既に履行されている Promise インスタンスとして想定します。
 
 ```js:V8エンジンによる変換コード
-// 途中で一時停止できる関数として resumable (再開可能) のマーキング
+// 途中で一次中断できる関数として resumable (再開可能) のマーキング
 // async 関数からは、susupend のところまで行った時点で処理を中断して Pending 状態の Promise インスタンス(implicit_promise)が呼び出し元に返される
 // 通常の return は意味がない(generator の yield と同じ)
 resumable function foo(v) {
   implicit_promise = createPromise();
   // async 関数の返り値となる promise インスタンスを作成
-  // 非同期処理を一時停止(susupend)したときもこれが呼び出し元に返ってきている
+  // 非同期処理を一次中断(susupend)したときもこれが呼び出し元に返ってきている
 
   // １つの await 式 (必ず１つはマイクロタスクが生成される)
   // (1). v を promise でラップする
@@ -259,7 +259,7 @@ resumable function foo(v) {
     res => resume(«foo», res),
     err => throw(«foo», err));
     // アタッチしているだけでとりあえず次に進む
-  // (3). foo (async 関数)を一時停止して implicit_promise を caller へと返す
+  // (3). foo (async 関数)を一次中断して implicit_promise を caller へと返す
   w = suspend(«foo», implicit_promise);
   // ここまでが１つの await で、foo のコンテキストを一旦ポップする
   // w には await 式の評価結果の値が代入される(yields 42 from the await)
@@ -290,7 +290,7 @@ function promiseResolve(v) {
     promise,
     res => resume(«foo», res),
     err => throw(«foo», err));
-  // (3) async 関数 foo を一時停止して implicit_promise を呼び出し元へと返す
+  // (3) async 関数 foo を一次中断して implicit_promise を呼び出し元へと返す
   w = suspend(«foo», implicit_promise);
 ```
 
@@ -309,7 +309,7 @@ const .promise = @promiseResolve(x);
 :::details ジェネレータ関数の yield
 上のコードの書き方で `yield` というキーワードがでてきましたが、async 関数と `yield` キーワードが内部で利用できるジェネレータ関数には関係性があります。
 
-まず、ジェネレータ関数では `yield` の数だけ関数の処理を一時停止して値を生み出すことができます。
+まず、ジェネレータ関数では `yield` の数だけ関数の処理を一次中断して値を生み出すことができます。
 
 ```js:yieldSample.js
 // ジェネレータ関数の定義
@@ -326,13 +326,13 @@ const generator = generatorFn(5);
 
 // ジェネレータオブジェクトの next メソッドでイテレータリザルトを返す
 console.log(generator.next()); // => { value: 6, done: false }
-console.log("関数を一時停止してなにか別の処理");
+console.log("関数を一次中断してなにか別の処理");
 
 console.log(generator.next()); // => { value: 30, done: false }
-console.log("関数を一時停止してなにか別の処理");
+console.log("関数を一次中断してなにか別の処理");
 
 console.log(generator.next()); // => { value: 0, done: false }
-console.log("関数を一時停止してなにか別の処理");
+console.log("関数を一次中断してなにか別の処理");
 
 console.log(generator.next()); // => { value: undefined, done: true }
 console.log("ジェネレータ関数内のすべての処理を終了");
@@ -342,16 +342,16 @@ console.log("ジェネレータ関数内のすべての処理を終了");
 ```sh
 ❯ deno run yieldSample.js
 { value: 6, done: false }
-関数を一時停止してなにか別の処理
+関数を一次中断してなにか別の処理
 { value: 30, done: false }
-関数を一時停止してなにか別の処理
+関数を一次中断してなにか別の処理
 { value: 0, done: false }
-関数を一時停止してなにか別の処理
+関数を一次中断してなにか別の処理
 { value: undefined, done: true }
 ジェネレータ関数内のすべての処理を終了
 ```
 
-async/await では最初の await 式でのみ暗黙的に async 関数から返される Promise インスタンスを `yield` していると考えることができます。それ以降は await 式による評価のたびに一時停止しますが、呼び出し元に値を返しません。最終的に async 関数内の処理がすべて完了すると async 関数内で `return` されている値で最初に返した Promise インスタンスを履行します。
+async/await では最初の await 式でのみ暗黙的に async 関数から返される Promise インスタンスを `yield` していると考えることができます。それ以降は await 式による評価のたびに一次中断しますが、呼び出し元に値を返しません。最終的に async 関数内の処理がすべて完了すると async 関数内で `return` されている値で最初に返した Promise インスタンスを履行します。
 
 あるいは async 関数内部でジェネレータが使われているとも考えることができます。実際、async/await が ECMAScript に導入されるまではこのジェネレータ関数と Promise インスタンスを組み合わせて async 関数のようなものつくっていたそうです。async 関数を使ったコードを Babel や TypeScript で古い JavaScript にトランスパイルする際にはジェネレータ関数と Promise インスタンスを組み合わせて実現しています。
 
@@ -421,7 +421,7 @@ resumable function foo2(v, x) {
     res => resume(«foo2», res),
     err => throw(«foo2», err));
   suspend(«foo2», implicit_promise);
-  // implicit_promise はすでに返されているのでここでは一時停止するだけ
+  // implicit_promise はすでに返されているのでここでは一次中断するだけ
   // 中断かつ処理再開のポイント
 
   console.log("Microtask2");
@@ -586,7 +586,7 @@ resumable function foo4() {
     promise,
     res => resume(«foo4», res),
     err => throw(«foo4», err));
-  // async 関数を一時停止して、呼び出し元に implicit_promise を返す
+  // async 関数を一次中断して、呼び出し元に implicit_promise を返す
   suspend(«foo4», implicit_promise);
   // await 式 -> (再開処理だが特にやることはない)
 
@@ -673,7 +673,7 @@ resumable function fooZ() {
     promise,
     res => resume(«fooZ», res),
     err => throw(«fooZ», err));
-  // async 関数を一時停止して、呼び出し元に implicit_promise を返す
+  // async 関数を一次中断して、呼び出し元に implicit_promise を返す
   suspend(«fooZ», implicit_promise); // await 式 ->
   // 再開処理だが特にやることはない
 
@@ -924,7 +924,7 @@ resumable function foo4() {
     promise,
     res => resume(«foo4», res),
     err => throw(«foo4», err));
-  // async 関数を一時停止して、呼び出し元に implicit_promise を返す
+  // async 関数を一次中断して、呼び出し元に implicit_promise を返す
   value = suspend(«foo4», implicit_promise); // await 式 ->
   // <- value = に await 式の評価結果が入るところから再開処理 ->
   // value には Promiseから取り出された値(この場合は 42)が入る
@@ -1578,7 +1578,7 @@ V8 の内部変換で考えてみるとこんな感じでしょうか。
       res => resume(«fooRX», res),
       err => throw(«fooRX», err)); // throw される
     suspend(«fooRX», implicit_promise);
-    // async 関数を一時停止して、呼び出し元に implicit_promise を返す
+    // async 関数を一次中断して、呼び出し元に implicit_promise を返す
 
     // 実行されない
     console.log("これは実行されない");

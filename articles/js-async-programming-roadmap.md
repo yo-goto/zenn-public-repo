@@ -950,7 +950,7 @@ async function foo(v) {
 V8 エンジンは上の async 関数を内部的に以下のようなコードへと変換しています。
 
 ```js:V8エンジンによる変換コード
-// 途中で一時停止できる関数として resumable (再開可能) のマーキング
+// 途中で一次中断できる関数として resumable (再開可能) のマーキング
 resumable function foo(v) {
   implicit_promise = createPromise();
   // (0) async 関数の返り値となる Promise インスタンスを作成
@@ -963,7 +963,7 @@ resumable function foo(v) {
     res => resume(«foo», res),
     err => throw(«foo», err));
 
-  // (3) async 関数 foo を一時停止して implicit_promise を呼び出し元へと返す
+  // (3) async 関数 foo を一次中断して implicit_promise を呼び出し元へと返す
   w = suspend(«foo», implicit_promise);
   // (4) w = のところから async 関数の処理再開となる
 
