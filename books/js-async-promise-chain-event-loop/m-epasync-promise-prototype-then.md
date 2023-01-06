@@ -962,7 +962,7 @@ Promise.resolve(2)
   .then(x => console.log("💙 [8] P: 終了", x)); // <8-b[4]>
 ```
 
-次に `Promise.resolve(2).then(callback)` によって最後の `then` メソッドから返る Promise オブジェクトが解決値となる場合を考えてみます。コールバック関数の `return` の値として触接書いても良いですが、分かりやすくするためにあえて `p2` という変数で定義しておきます。
+次に `Promise.resolve(2).then(callback)` によって最後の `then` メソッドから返る Promise オブジェクトが解決値となる場合を考えてみます。コールバック関数の `return` の値として直接書いても良いですが、分かりやすくするためにあえて `p2` という変数で定義しておきます。
 
 ```js
 // simpleReturnPromiseChain.js
@@ -1086,6 +1086,10 @@ console.log("🦖 [2]");
 💙 [6] C: 終了 55
 */
 ```
+
+上のコードで発生するマイクロタスクの順番を図示してみると以下のようになります。
+
+![マイクロタスクの順番](/images/js-async/img_microtask-enqueu-sec.png)
 
 # Promise chain のネストをフラット化する弊害
 
@@ -1298,7 +1302,7 @@ console.log("🦖 [2] G: sync");
 */
 ```
 
-やってることの意味合いは本質的には同じですが、発生するマイクロタスクの数が異なることからも Promise chain と async/await は厳密にはシンタックスシュガーではないということが分かります。
+やってることの意味合いは同じですが、発生するマイクロタスクの数が異なることからも Promise chain と async/await は厳密にはシンタックスシュガーではないということが分かります。
 
 ## 根本的な仕様最適化のプロポーザル
 
