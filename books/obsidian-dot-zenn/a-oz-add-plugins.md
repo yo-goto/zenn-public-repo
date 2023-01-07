@@ -354,3 +354,7 @@ https://github.com/farux/obsidian-auto-note-mover
 プラグイン設定画面の Trigger を Automatic にして、Add new ruls の項目にフォルダと正規表現を指定しておくことで自動移動が実現できます。
 
 ![autonotemoverの設定画面](/images/oz/img_oz-autonotemover.jpg)
+
+# Obsidian Git
+
+Obsidian Git は選択した
