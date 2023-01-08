@@ -918,7 +918,7 @@ https://zenn.dev/uhyo/articles/return-await-promise
 
 >   - b. Let thenCallResult be [Completion](https://tc39.es/ecma262/#sec-completion-ao)([HostCallJobCallback](https://tc39.es/ecma262/#sec-hostcalljobcallback)(then, thenable, « resolvingFunctions.\[\[Resolve\]\], resolvingFunctions.\[\[Reject\]\] »)).
 
-これについては『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターでも新しく解説しています。
+これについては『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターでも新しく解説しています。
 
 :::message alert
 ここでいう `resolve()` 関数とは Promise コンストラクタの引数となる executor 関数の引数として渡す `resolve` コールバック関数のことで、`Promise.resolve()` のことではないことに注意してください。
@@ -1584,7 +1584,7 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 > ([Faster async functions and promises · V8](https://v8.dev/blog/fast-async) より引用、太字は筆者強調)
 
 :::message
-この async/await の仕様最適化によって起こる Promise chain との発生するマイクロタスク数の違いについては『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then#仕様最適化の遺構)』のチャプターで解説しています。
+この async/await の仕様最適化によって起こる Promise chain との発生するマイクロタスク数の違いについては『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then#仕様最適化の遺構)』のチャプターで解説しています。
 :::
 
 # async/await のまとめ

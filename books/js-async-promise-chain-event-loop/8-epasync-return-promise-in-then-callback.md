@@ -13,7 +13,7 @@ aliases: Promise本『then メソッドのコールバックで Promise イン�
 このチャプターは短いですが、Promise chain を理解する上で重要なので１つのチャプターとして独立させています。チャプターは飛びますが、『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』のチャプターでも使う知識なので注意してください。
 
 :::message alert
-このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
+このチャプターの解説は『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
 :::
 
 # then メソッドのコールバックで Promise インスタンスを返す
@@ -110,7 +110,7 @@ Promise.resolve(42)
 
 `return Promise.resolve(x + 1)` という処理で、Promise インスタンスが返されると、そのコールバックが登録されている `then` メソッド自体から返る Promise インスタンスを解決するために必要なマイクロタスクが２つ発生してしまいます。このマイクロタスクの実体は追加の１つ目についてはコールバックから返した Promise インスタンスの `then` メソッドの呼び出しで、追加の２つ目については呼び出された `then` メソッドの `resolve` 関数となります。
 
-この段階では何を言っているかのよくわからない思いますが、とにかく、`then` メソッドのコールバックで Promise を返すと追加のマイクロタスクが２つ発生するということだけ覚えておいてください。この挙動についての詳細は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説します。
+この段階では何を言っているかのよくわからない思いますが、とにかく、`then` メソッドのコールバックで Promise を返すと追加のマイクロタスクが２つ発生するということだけ覚えておいてください。この挙動についての詳細は『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説します。
 
 このように普通の場合に比べて Promise を返すコールバックの実行ではマイクロタスクが追加で２つ発生することから以下のような両方のケースの Promise chain を競争させると通常の値を返している方の Promise chain の処理の方が早く終ることになります。
 

@@ -355,6 +355,3 @@ https://github.com/farux/obsidian-auto-note-mover
 
 ![autonotemoverの設定画面](/images/oz/img_oz-autonotemover.jpg)
 
-# Obsidian Git
-
-Obsidian Git は選択した

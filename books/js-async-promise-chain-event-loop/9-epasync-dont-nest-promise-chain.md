@@ -13,7 +13,7 @@ aliases: Promise本『Promise chain はネストさせない』
 このチャプターでは、Promise chain におけるネストについて、アンチパターンとしての話と、原理的な話を行います。
 
 :::message alert
-このチャプターの解説は『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
+このチャプターの解説は『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
 :::
 
 # Promise chain をネストしてみる
@@ -127,7 +127,7 @@ returnPromise("1st Promise", "2")
 (先頭) <-- cb3 <-- callbackNext
 ```
 
-`then` メソッドのコールバック内で Promise オブジェクトを返すと追加のマイクロタスクが２つ発生しました。これについては『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』と『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しました。追加のマイクロタスクは連鎖的に２つ発生するわけですが、一つ目の追加のマイクロタスクはこの `cb1` の実行時に直ちにマイクロタスクキューへとエンキューされます。このマイクロタスクは `extraA-1` という名前にしておきましょう。
+`then` メソッドのコールバック内で Promise オブジェクトを返すと追加のマイクロタスクが２つ発生しました。これについては『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』と『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しました。追加のマイクロタスクは連鎖的に２つ発生するわけですが、一つ目の追加のマイクロタスクはこの `cb1` の実行時に直ちにマイクロタスクキューへとエンキューされます。このマイクロタスクは `extraA-1` という名前にしておきましょう。
 
 従って、マイクロタスクとして `cb1` が処理完了した時点でのマイクロタスクキューの状態は以下のようになります。
 
@@ -515,5 +515,5 @@ console.log('🦖 [4] Sync');
 Promise chain はこのようにネストさせずに流れを見やすくします。
 
 :::message
-実はネストをフラット化することで発生するマイクロタスクの順番が前後しますが、実用上は何も問題ありません。この話題については『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』のチャプターで詳しく解説します。
+実はネストをフラット化することで発生するマイクロタスクの順番が前後しますが、実用上は何も問題ありません。この話題については『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで詳しく解説します。
 :::

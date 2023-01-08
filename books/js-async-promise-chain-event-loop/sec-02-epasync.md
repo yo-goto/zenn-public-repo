@@ -20,7 +20,7 @@ aliases: EPAsync 第２章
 
 # 間違いについて
 
-この章にかつてあった間違った解説については、別個で新しいチャプター『[番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)』を用意して解説しています。
+この章にかつてあった間違った解説については、別個で新しいチャプター『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』を用意して解説しています。
 
 影響を受けていたチャプターについても修正を施したため、上記のチャプターは第２章の番外編というポジションに位置づけました(ECMAScript 仕様そのもの解説を含むため)。
 
@@ -37,7 +37,7 @@ aliases: EPAsync 第２章
 - [Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)
 - [コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)
 - [アロー関数で return を省略する](11-epasync-omit-return-by-arrow-shortcut)
-- [番外編 Promise.prototype.then メソッドの仕様挙動](m-epasync-promise-prototype-then)
+- [番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
 - [catch メソッドと finally メソッド](h-epasync-catch-finally)
 - [古い非同期 API を Promise でラップする](12-epasync-wrapping-macrotask)
 - [イベントループは内部にネストしたループがある](13-epasync-loop-is-nested)

@@ -116,7 +116,7 @@ chapters:
   - h-epasync-catch-finally # 『catch メソッドと finally メソッド』
   - 12-epasync-wrapping-macrotask # 『古い非同期APIをPromiseでラップする』
   - 13-epasync-loop-is-nested # 『イベントループは内部にネストしたループがある』
-  - m-epasync-promise-prototype-then # 『番外編 Promise.prototype.then メソッドの仕様挙動』
+  - m-epasync-promise-prototype-then # 『番外編 - Promise.prototype.then の仕様挙動』
   - sec-03-epasync # 『第３章 - async 関数と await 式の挙動』
   - 14-epasync-chain-to-async-await # 『Promise chain から async 関数へ』
   - 15-epasync-v8-converting # 『V8 エンジンによる async/await の内部変換』

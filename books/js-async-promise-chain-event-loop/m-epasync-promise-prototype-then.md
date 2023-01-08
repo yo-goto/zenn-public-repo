@@ -1,12 +1,12 @@
 ---
-title: "番外編 Promise.prototype.then メソッドの仕様挙動"
+title: "番外編 - Promise.prototype.then の仕様挙動"
 cssclass: zenn
 date: 2022-11-02
 modified: 2022-12-25
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
-  - Promise本『番外編 Promise.prototype.then メソッドの仕様挙動』
+  - Promise本『番外編 - Promise.prototype.then の仕様挙動』
   - thenメソッドの勘違いの修正
 ---
 
@@ -35,7 +35,7 @@ aliases:
 - [Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/)
 - [Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/)
 
-また、上のシリーズで実装された Promise のライブラリは以下のリポジトリで公開されています。このライブラリをローカルで実行し、`console.log` などを入れてみるとメカニズムの理解が容易となります。
+また、上のシリーズで実装された Promise のライブラリは以下のリポジトリで公開されています。このライブラリをローカルインストールしてライブラリ内部を `console.log` などを入れて改造してみて実行することでメカニズムの理解が容易となります。
 
 https://github.com/humanwhocodes/pledge
 
