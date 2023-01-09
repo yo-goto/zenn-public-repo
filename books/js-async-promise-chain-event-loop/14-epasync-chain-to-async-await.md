@@ -284,7 +284,7 @@ console.log("🦖 [3] sync");
 
 Promise chain で一部書き直したコードの方は async 関数内部で Promise 処理を `return` していないので副作用が生じていますし、気づきにくいですが発生するマイクロタスクの数が異なっています。Promise chain と async/await を発生するマイクロタスクの数を完全に同じにした上で同じ実行順序に書き直すのは相当に内部を理解していないと困難です(最適化されている async/await 側に対して Promise chain で追加発生するマイクロタスクを無理矢理に追加したりしないと実現できないため、元々の async/await のコードに無駄な処理をつけ足すことになる)。
 
-これについては『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then#仕様最適化の遺構)』のチャプターで解説しています。
+これについては『[番外編 - 仕様の比較と発展](n-epasync-promise-spec-compare)』のチャプターで解説しています。
 :::
 
 # await 式

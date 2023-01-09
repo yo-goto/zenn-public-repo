@@ -171,16 +171,6 @@ MDN
 
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 
-## [番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
-
-- [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
-- [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)
-- [Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/)
-- [Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/)
-- [humanwhocodes/pledge: A custom promise implementation for JavaScript](https://github.com/humanwhocodes/pledge)
-- [Understanding the ECMAScript spec, part 1](https://v8.dev/blog/understanding-ecmascript-part-1)
-- [How to Read the ECMAScript Specification](https://timothygu.me/es-howto/)
-
 ## [catch メソッドと finally メソッド](h-epasync-catch-finally)
 
 MDN
@@ -278,6 +268,24 @@ MDN
 - [deno lint rule no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types)
 - [deno lint rule no-explicit-any](https://lint.deno.land/?q=any#no-explicit-any)
 - [Async Await try-catch hell - YouTube](https://www.youtube.com/watch?v=ITogH7lJTyE)
+
+# [第５章 - 番外編](sec-05-epasync)
+
+## [番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
+
+- [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
+- [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)
+- [Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/)
+- [Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/)
+- [humanwhocodes/pledge: A custom promise implementation for JavaScript](https://github.com/humanwhocodes/pledge)
+- [Understanding the ECMAScript spec, part 1](https://v8.dev/blog/understanding-ecmascript-part-1)
+- [How to Read the ECMAScript Specification](https://timothygu.me/es-howto/)
+
+## [番外編 - 仕様の比較と発展](n-epasync-promise-spec-compare)
+
+- [Normative: Reduce the number of ticks in async/await by MayaLekova · Pull Request #1250 · tc39/ecma262](https://github.com/tc39/ecma262/pull/1250/files)
+- [tc39/proposal-faster-promise-adoption: Reduce the number of microtask ticks required to adopt the state of a promise](https://github.com/tc39/proposal-faster-promise-adoption)
+
 
 # その他
 

@@ -54,6 +54,7 @@ aliases:
 - [j-epasync-ts-promise-type-annotation](j-epasync-ts-promise-type-annotation)
 - [k-epasync-iterator-generator](k-epasync-iterator-generator)
 - [m-epasync-promise-prototype-then](m-epasync-promise-prototype-then)
+- [n-epasync-promise-spec-compare](n-epasync-promise-spec-compare)
 - [x-epasync-epilogue](x-epasync-epilogue)
 - [y-epasync-conclusion](y-epasync-conclusion)
 - [z-epasync-reference](z-epasync-reference)
@@ -91,7 +92,6 @@ aliases:
 `config.yml` に記載するチャプターデータ。
 
 ```yaml
-chapters:
   - 1-epasync-begin # 『はじめに』
   - sec-01-epasync # 『第１章 - API を提供する環境と実行メカニズム』
   - f-epasync-asynchronous-apis # 『非同期 API と環境』
@@ -116,7 +116,6 @@ chapters:
   - h-epasync-catch-finally # 『catch メソッドと finally メソッド』
   - 12-epasync-wrapping-macrotask # 『古い非同期APIをPromiseでラップする』
   - 13-epasync-loop-is-nested # 『イベントループは内部にネストしたループがある』
-  - m-epasync-promise-prototype-then # 『番外編 - Promise.prototype.then の仕様挙動』
   - sec-03-epasync # 『第３章 - async 関数と await 式の挙動』
   - 14-epasync-chain-to-async-await # 『Promise chain から async 関数へ』
   - 15-epasync-v8-converting # 『V8 エンジンによる async/await の内部変換』
@@ -127,6 +126,9 @@ chapters:
   - 19-epasync-async-loop # 『反復処理の制御』
   - k-epasync-iterator-generator # 『イテレータとイテラブルとジェネレータ関数』
   - j-epasync-ts-promise-type-annotation # 『TypeScript における Promise の型注釈』
+  - sec-05-epasync # 『第５章 - 番外編』
+  - m-epasync-promise-prototype-then # 『番外編 - Promise.prototype.then の仕様挙動』
+  - n-epasync-promise-spec-compare # 『番外編 - 仕様の比較と発展』
   - y-epasync-conclusion # 『総括 - 非同期処理のまとめ』
   - x-epasync-epilogue # 『あとがき』
   - z-epasync-reference # 『参考文献』

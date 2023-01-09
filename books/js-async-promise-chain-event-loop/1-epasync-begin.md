@@ -238,6 +238,9 @@ https://www.jsv9000.app
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2023-01-09
+  - 『[第５章 - 番外編](sec-05-epasync)』のチャプターを追加
+  - 『[番外編 - 仕様の比較と発展](n-epasync-promise-spec-compare)』のチャプターを追加
 - 2022-12-19
   - 『[catch メソッドと finally メソッド](f-epasync-asynchronous-apis)』のチャプターで then/catch/finally についての情報を詳細に更新
 - 2022-12-15
