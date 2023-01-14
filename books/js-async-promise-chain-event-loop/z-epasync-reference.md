@@ -271,7 +271,7 @@ MDN
 
 # [第５章 - 番外編](sec-05-epasync)
 
-## [番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
+## [Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
 
 - [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
 - [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)
@@ -281,7 +281,7 @@ MDN
 - [Understanding the ECMAScript spec, part 1](https://v8.dev/blog/understanding-ecmascript-part-1)
 - [How to Read the ECMAScript Specification](https://timothygu.me/es-howto/)
 
-## [番外編 - 仕様の比較と発展](n-epasync-promise-spec-compare)
+## [Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)
 
 - [Normative: Reduce the number of ticks in async/await by MayaLekova · Pull Request #1250 · tc39/ecma262](https://github.com/tc39/ecma262/pull/1250/files)
 - [tc39/proposal-faster-promise-adoption: Reduce the number of microtask ticks required to adopt the state of a promise](https://github.com/tc39/proposal-faster-promise-adoption)

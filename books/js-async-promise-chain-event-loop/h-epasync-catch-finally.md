@@ -276,7 +276,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 
 まずは `catch` と `finally` が `then` (`Promise.prototype.then`) を利用していることを確認しておきましょう。
 
-詳しくは 『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しますが、ECMAScript の仕様を見てます。
+詳しくは 『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しますが、ECMAScript の仕様を見てます。
 
 [Promise.prototype.catch(onRejected)](https://tc39.es/ecma262/#sec-promise.prototype.then) のアルゴリズムステップは引数 `onRejected` (コールバック) を取って以下のように実行されます。
 
@@ -317,7 +317,7 @@ identity 関数と thrower 関数の説明は仕様の外での解説でよく�
 ただし、現在の仕様からは上記の identity 関数と thrower 関数の記述が削除されてしまったので、仕様内で identity などをいくら検索しても正確にヒットすることはありません。(※ `finally` メソッドについては別途 identity に相当する valueThunk 関数と thrower 関数があり、そちらで引っかかることがあるのでややこしい)。
 
 :::details 仕様解説
-『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説していますが、実は identity 関数と thrower 関数の挙動実体は [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) で作成される抽象クロージャであり、その挙動の主要な部分は [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) と呼ばれる操作で作成される `resolve` 関数と `reject` 関数です。これは `new Promise(executor)` で Promise インスタンスを作成するときに `executor` 関数の引数として渡す `resolve` 関数と `reject` 関数そのものです。それらが呼び出される箇所は [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) の以下のステップです。
+『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説していますが、実は identity 関数と thrower 関数の挙動実体は [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) で作成される抽象クロージャであり、その挙動の主要な部分は [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) と呼ばれる操作で作成される `resolve` 関数と `reject` 関数です。これは `new Promise(executor)` で Promise インスタンスを作成するときに `executor` 関数の引数として渡す `resolve` 関数と `reject` 関数そのものです。それらが呼び出される箇所は [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) の以下のステップです。
 
 > - h. If handlerResult is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
 >   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Reject\]\], undefined, « handlerResult.\[\[Value\]\] »).

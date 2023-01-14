@@ -70,7 +70,7 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 :::message
 Unwrapping については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』で解説しています。そちらを参照してください。
 
-また仕様的に何が起きるのかについては『[番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しています。
+また仕様的に何が起きるのかについては『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しています。
 :::
 
 難しいですが、Fate の概念は他の文章を読むときには役立つことがあります。または、`Promise.fullfill()` というメソッドではなく `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。

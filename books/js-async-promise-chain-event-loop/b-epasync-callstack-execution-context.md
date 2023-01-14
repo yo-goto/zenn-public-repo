@@ -22,12 +22,12 @@ aliases: Promise本『コールスタックと実行コンテキスト』
 
 『What the heck is the event loop anyway?』の動画でみてもらったように、コールスタックには関数などが積まれているように見えますが、正確にはコールスタックに積まれるのは実行コンテキスト(Execution context)と呼ばれるものです。
 
-実行コンテキストとはなんでしょうか。[ECMAScript 2023 の 9.4 Execution Context](https://tc39.es/ecma262/#sec-execution-contexts) の項目をみてみると次のように記述されています。
+実行コンテキストとはなんでしょうか。ECMAScript 仕様の [Execution Context](https://tc39.es/ecma262/#sec-execution-contexts) の項目をみてみると次のように記述されています。
 
 > **An execution context is a specification device that is used to track the runtime evaluation of code** by an ECMAScript implementation. **At any point in time, there is at most one execution context per agent that is actually executing code**. This is known as **the agent's running execution context**. All references to the running execution context in this specification denote the running execution context of the surrounding agent.
 >
 > **The execution context stack is used to track execution contexts**. **The running execution context is always the top element of this stack**. A new execution context is created whenever control is transferred from the executable code associated with the currently running execution context to executable code that is not associated with that execution context. **The newly created execution context is pushed onto the stack and becomes the running execution context**.
-> ([ECMAScript® 2023 Language Specification](https://tc39.es/ecma262/#sec-execution-contexts) より引用、太字は筆者強調)
+> ([https://tc39.es/ecma262/#sec-execution-contexts](https://tc39.es/ecma262/#sec-execution-contexts) より引用、太字は筆者強調)
 
 引用で示されているように、実行コンテキスト(Execution context)はコードの実行時評価を追跡するために使用される機構であり、どの時点でも実際にコードを実行している実行コンテキストはエージェント(Agent)あたり最大で１つとなります。これはエージェントの実行中実行コンテキスト(**Agent's runninng execution context**)として知られています。
 

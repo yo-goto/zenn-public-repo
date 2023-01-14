@@ -1,12 +1,12 @@
 ---
-title: "番外編 - 仕様の比較と発展"
+title: "Promise chain と async/await の仕様比較"
 cssclass: zenn
 date: 2023-01-09
 modified: 2023-01-09
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
-  - "Promise本『番外編 - 仕様の比較と発展』"
+  - "Promise本『Promise chain と async/await の仕様比較』"
 ---
 
 # このチャプターについて

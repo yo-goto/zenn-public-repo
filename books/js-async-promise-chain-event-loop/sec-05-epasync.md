@@ -16,6 +16,6 @@ alieases: [EPAsync 第５章]
 
 # チャプター
 
-- [番外編 - Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
-- [番外編 - 仕様の比較と発展](n-epasync-promise-spec-compare)
+- [Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
+- [Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)
 

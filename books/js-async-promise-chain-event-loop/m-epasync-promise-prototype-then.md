@@ -1,12 +1,12 @@
 ---
-title: "番外編 - Promise.prototype.then の仕様挙動"
+title: "Promise.prototype.then の仕様挙動"
 cssclass: zenn
 date: 2022-11-02
 modified: 2023-01-09
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases:
-  - Promise本『番外編 - Promise.prototype.then の仕様挙動』
+  - Promise本『Promise.prototype.then の仕様挙動』
   - thenメソッドの勘違いの修正
 ---
 
@@ -318,14 +318,12 @@ Host hook である HostEnqueuePromiseJob 操作の ECMA 仕様は以下のよ�
 
 ![hostenqueuepromisejob ecma spec](/images/js-async/img_hostEnqueuPromiseJob-ecma.jpg)*[https://tc39.es/ecma262/#sec-hostenqueuepromisejob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob) より*
 
-Host hook なので ECMAScript の外部ソースである(ホストである) HTML 仕様でも定義されています。
+Host hook なので ECMAScript の外部ソースである(ホストである) HTML 仕様でも以下のように定義されています。ECMAScript 仕様では「Job をスケジューリング」するという抽象的な操作であったものが HTML 仕様ではイベントループのマイクロタスクキューイング操作としてより具体的に定義されていることが分かりますね。
 
 ![hostenqueuepromisejob html spec](/images/js-async/img_hostEnqueuePromiseJob-html.jpg)*[https://html.spec.whatwg.org/webappapis.html#hostenqueuepromisejob](https://html.spec.whatwg.org/webappapis.html#hostenqueuepromisejob) より*
 
-ECMAScript 仕様では「Job をスケジューリング」するという抽象的な操作であったものが HTML 仕様ではイベントループのマイクロタスクキューイング操作としてより具体的に定義されていることが分かりますね。
-
 :::message
-HTML 仕様側に ECMAScript の抽象操作への記述が大量にあることからも、結局は両方の仕様を見ないと全体像がつかめないという罠があります。
+HTML 仕様側に ECMAScript 仕様側の抽象操作への記述が大量にあることからも、結局は両方の仕様を見ないと全体像がつかめないという罠があります。
 :::
 
 Promise 関連の Job (マイクロタスク) を作る直接の抽象操作は以下の２つとなります。そして、この２つがこれまでの問題の中心とります。
@@ -1162,5 +1160,5 @@ A 3
 
 フラット化していると処理の流れが見やすいですが、コールバックから返る値である Thenable の `then` メソッドの起動がマイクロタスクとして発生してしまうので、コンソール出力を行うコールバックのマイクロタスクが実行されるまでに追加でマイクロタスクが発生することになります。それぞれの Promise chain で発生するマイクロタスクの合計は同じですが出力が起きるためのマイクロタスクの発生順序が異なります。とはいっても、このような挙動の違いは理解の上では必要ですが、実用上なにかの問題があるというわけではないのでそこまで気にする必要はありません。
 
-また、『[番外編 - 仕様の比較と発展](n-epasync-promise-spec-compare)』のチャプターで説明するようにそもそも仕様最適化されている async/await が使えるのであれば、async/await を使った方がマイクロタスクの発生を抑制した上でさらに読みやすいコードが書けます。
+また、『[Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)』のチャプターで説明するようにそもそも仕様最適化されている async/await が使えるのであれば、async/await を使った方がマイクロタスクの発生を抑制した上でさらに読みやすいコードが書けます。
 
