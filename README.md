@@ -9,6 +9,8 @@ aliases:
 
 # Zenn 公開リポジトリ
 
+[![Likes](https://badgen.org/img/zenn/estra/likes?style=flat)](https://zenn.dev/estra) [![Articles](https://badgen.org/img/zenn/estra/articles?style=flat)](https://zenn.dev/estra) [![Books](https://badgen.org/img/zenn/estra/books?style=flat)](https://zenn.dev/estra?tab=books)
+
 PADAone(estra) 名義で [Zenn](https://zenn.dev/estra) に無料公開している記事や本を管理しているリポジトリです。
 
 タイポや内容についての修正などをプルリクエストで受け付けています。
