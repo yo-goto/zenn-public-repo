@@ -269,7 +269,7 @@ MDN
 - [deno lint rule no-explicit-any](https://lint.deno.land/?q=any#no-explicit-any)
 - [Async Await try-catch hell - YouTube](https://www.youtube.com/watch?v=ITogH7lJTyE)
 
-# [第５章 - 番外編](sec-05-epasync)
+# [第５章 - 仕様およびその他の番外編](sec-05-epasync)
 
 ## [Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
 

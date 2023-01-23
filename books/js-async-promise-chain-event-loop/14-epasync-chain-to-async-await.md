@@ -110,12 +110,12 @@ async 関数内部で何も `return` しなくても、必ず Promise インス�
 ```js
 // async 版の無名関数の即時実行
 (async function() {
-  // 処理内容
+  // ...処理内容
 })();
 
 // async 版のアロー関数の即時実行
 (async () => {
-  // 処理内容
+  // ...処理内容
 })();
 ```
 
@@ -140,7 +140,7 @@ Fn(); // すぐ呼び出し
 
 ## async 関数内部は同期処理
 
-『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async#同期か非同期か)』のチャプターで見たように **Promise コンストラクタ内部は同期処理**であり、`then()` で chain してはじめて非同期になりました。
+『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async#同期か非同期か)』のチャプターで見たように Promise コンストラクタの引数に渡す Executor 関数の内部は同期処理として実行され、Promise インスタンスに対して `then()` メソッドを使用することではじめて非同期になりました。
 
 ```js
 console.log("🦖 [1] sync");
@@ -188,14 +188,33 @@ MDN の説明でもあったように、`async` と `await` の２つのキー�
 > **The async and await keywords enable asynchronous, promise-based behavior** to be written in a cleaner style, avoiding the need to explicitly configure promise chains.
 > ([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用、太字は筆者強調)
 
-『[非同期 API と環境](f-epasync-asynchronous-apis#非同期という概念)』のチャプターでも、async 関数が「非同期」の性質を発揮するのは async 関数内部に await 式がある時のみと言っていましたね。実際、**最初の await 式の前は同期処理であり**、最初の await 式の時点からはじめて非同期となります。async 関数内部は await 式によって分割されており、最初の await 式までは同期的に処理されることが MDN でも明言されています。つまり、await 式が存在していなければ同期的に完了することになります。
+『[非同期 API と環境](f-epasync-asynchronous-apis#非同期という概念)』のチャプターでも、async 関数が「非同期」の性質を発揮するのは async 関数内部に await 式がある時のみと言っていましたね。実際、**最初の await 式の前は同期処理であり**、最初の await 式の時点からはじめて非同期となります。async 関数内部は await 式によって実行フローが分割され、最初の await 式までは同期的に処理されることが MDN でも明言されています。つまり、await 式が存在していなければ同期的に完了することになります。
 
 > The body of an async function can be thought of **as being split by zero or more await expressions**. **Top-level code, up to and including the first await expression (if there is one), is run synchronously. In this way, an async function without an await expression will run synchronously**. If there is an await expression inside the function body, however, the async function will always complete asynchronously.
 > ([async function - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) より引用、太字は筆者強調)
 
 :::message
-「非同期関数」という呼称で考えてしまうと「必ず非同期になる」というような誤解を招く可能性があるので「async 関数」という呼び方にした方が良いわけです。微妙な違いですが、async 関数なら「`async` キーワードが付いた関数」程度に捉えることができます。
+非同期関数という呼称で考えてしまうと「必ず非同期になる」というような誤解を招く可能性があるので async 関数という呼び方にした方が良いわけです。微妙な違いですが、async 関数なら「`async` キーワードが付いた関数」程度に捉えることができます。
 :::
+
+以下のように async 関数内部に存在する各 await 式によって実行フローが分割されます。そして分割された処理について最初のもの以外はそれぞれがマイクロタスクとして処理されることになります。
+
+```js:await 式によって async 関数内部の実行フローは分割される
+(async () => {
+  // 分割された実行フロー(0): 同期  → 最初の await までは同期的に処理される
+  // <------------------->
+  await 1;
+  // 分割された実行フロー(1): 非同期 → イベントループでマイクロタスクとして処理される
+  // <------------------->
+  await 2;
+  // 分割された実行フロー(2): 非同期 → イベントループでマイクロタスクとして処理される
+  // <------------------->
+  await 3;
+  // 分割された実行フロー(3): 非同期 → イベントループでマイクロタスクとして処理される
+})();
+```
+
+もう少し分かりやすく以下のようなコードで考えてみましょう。実行フローが分割されるとは、結局のところは各 await 式において `then()` の処理が起きているということです。
 
 ```js
 console.log("🦖 [1] sync");
@@ -203,10 +222,10 @@ console.log("🦖 [1] sync");
 (async () => {
   console.log("🦄 [2] sync");
   // ここまでは同期処理!!
-
+  // <------------------->
+  await Promise.resolve(1);
   // await 式の時点から非同期となる
   // Promise.resolve(1).then(() => console.log("👻 [4] async")) とほぼ同じ
-  await Promise.resolve(1);
   console.log("👻 [4] async");
 })();
 // await 式があれば async 関数は完了せずにその外の処理が行われるので「非同期」の現象が起きている
@@ -220,7 +239,7 @@ console.log("🦖 [3] sync");
 */
 ```
 
-async/await は Promise chain で書き直せますし、その逆もできます。Promise chain なら `then()` のコールバックを書いてはじめて非同期になるように async 関数なら await 式があってはじめて非同期になります。そして、**await 式のたびに `then()` をしているのと同じことになります**。
+async/await は Promise chain で書き直せますし、その逆もできます。Promise chain なら `then()` のコールバックを書いてはじめて非同期になるように async 関数なら await 式があってはじめて非同期になります。そして、**await 式のたびに `then()` をしているのと同じことになります**。次のチャプターで詳しく説明しますが、ECMAScript の仕様的にも `Promise.prototype.then` が利用する内部的操作を await 式も利用しているので同様の処理が起きていることになります。
 
 ```js
 console.log("🦖 [1] sync");
@@ -247,21 +266,20 @@ console.log("🦖 [3] sync");
 */
 ```
 
-上のコードの一部を実際に Promise chain で書き直すと次のようになります(※ 完全に元のコードと同等に書き直したわけではないので注意してください)。
+上のコードの一部を実際に Promise chain で書き直すと次のようになります(※ 元のコードの振る舞いを簡易的に模倣しているだけで完全に同じものとして書き直したわけではないので注意してください)。
 
 ```js
 console.log("🦖 [1] sync");
 
 (async () => {
   console.log("🦄 [2] sync");
-  // ここまでは同期処理!!
 
   Promise.resolve(1)
-    .then(() => {
+    .then(() => { // 非同期
       console.log("👻 [4] async");
       return Promise.resolve(2);
     })
-    .then(() => {
+    .then(() => { // 非同期
       console.log("👻 [5] async");
     });
 })();
@@ -277,25 +295,23 @@ console.log("🦖 [3] sync");
 */
 ```
 
-このように、async/await と Promise chain は共存できます。そして、Promise が理解できた上で async/await が分かると、共存させたり、相互に書き直すことができるようになります。
+このように、async/await と Promise chain は共存できます。そして、Promise chain が理解できた上で async/await が分かると、共存や相互に書き直すことができるようになります。
 
 :::message alert
-『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターなどを見てもらえればわかりますが、実は上の２つのコードは同等という訳ではありません。イメージしやすいように書いているだけなので注意してください。
+『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターなどを見てもらえればわかりますが、実は上の２つのコードは完全に同等という訳ではありません。イメージしやすいように書いているだけなので注意してください。
 
-Promise chain で一部書き直したコードの方は async 関数内部で Promise 処理を `return` していないので副作用が生じていますし、気づきにくいですが発生するマイクロタスクの数が異なっています。Promise chain と async/await を発生するマイクロタスクの数を完全に同じにした上で同じ実行順序に書き直すのは相当に内部を理解していないと困難です(最適化されている async/await 側に対して Promise chain で追加発生するマイクロタスクを無理矢理に追加したりしないと実現できないため、元々の async/await のコードに無駄な処理をつけ足すことになる)。
+Promise chain で一部書き直したコードの方は async 関数内部で Promise 処理を `return` していないので副作用が生じていますし、気づきにくいですが発生するマイクロタスクの数が異なっています。そもそも Promise chain と async/await を発生するマイクロタスクの数を完全に同じにした上で同じ実行順序に書き直すのは相当に内部を理解していないと困難です(仕様が最適化されている async/await 側に対して Promise chain で追加発生するマイクロタスクを無理矢理に追加したりしないと同じ挙動を実現できないため、元々の async/await のコードに無駄な処理をつけ足すことになります)。
 
-これについては『[Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)』のチャプターで解説しています。
+Promise chain よりも async/await の方が色々な側面で優れているという話になりますが、これについては『[Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)』のチャプターで解説しています。
 :::
 
 # await 式
 
 async 関数の基本については解説したので、もう１人の登場人物である await 式について詳しく見ていきましょう。
 
-さて、async 関数では内部で await 式を使って「**非同期処理の完了を待つ**」ことができると解説されることが多いですが、この「待つ」は非常に混乱させるワードなので注意してください。
+さて、async 関数では内部で await 式を使って「**非同期処理の完了を待つ**」ことができると解説されることが多いですが、この「待つ」は非常に混乱させるワードなので注意してください。そもそも「非同期処理の完了を待つ」という文言は単体だと非同期 API などについての情報が抜け落ちてしまっているのでここでの「非同期処理」はカッコが必要です。
 
-そもそも「非同期処理の完了を待つ」という文言は単体だと非同期 API などについての情報が抜け落ちてしまっているのでここでの「非同期処理」はカッコが必要です。
-
-結論としては、**「完了を待つ」という考え方自体がそもそもよろしくない**のですが、ちょっと考えてみましょう。
+結論としては、**「完了を待つ」という考え方自体がそもそもよろしくない**のですが、この考え方について考えてみましょう。
 
 ## どんな作業の完了を「待つ」のか
 
@@ -367,7 +383,7 @@ function promiseTimer(delay) {
 
 「待つ」という言葉から直感的に想起するのは「そこで完全に処理が止まる」ということですが、そんなことが起きてしまったらメインスレッドを「ブロッキング」することになり、『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで説明した「非同期処理(というテーマ)」の目的である「環境が並列的にバックグラウンドで作業している間もメインスレッドをブロッキングすることなく別の作業を続けられるようにすること」が崩れてしまうことになります。
 
-async/await は Promise chain を変形することで書くことができますし、内部的にも Promise の処理に基づいています(これについては『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説します)。そして、**Promise chain を学習してきましたが、ブロッキングなんて起きていませんでしたよね**。await 式の「待つ」は非同期 API の作業を起点とした一連の作業「A(非同期 API の作業) したら B(コールバック関数) する、B したら C(コールバック関数) する」という逐次処理を行う時に、 A が終わっていないのに B はできないので、非同期 API の作業を環境が終わらせるまで順番的に A の次に行いたい B という作業を行わないで、**別の作業をメインスレッドで続ける**ということを意味します。「非同期 API の並列的作業である A がバックグラウンドで環境が処理している間は、その async 関数内の処理は一時的に中断させて、別のことをメインスレッドで行う」というのが「async/await でできること」であり「やりたいこと」です。
+async/await は Promise chain を変形することで書くことができますし、内部的にも Promise の処理に基づいています(これについては『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで解説します)。これまで Promise chain について学習してきましたが**ブロッキングなんて起きていませんでしたよね**。await 式の「待つ」は非同期 API の作業を起点とした一連の作業「A(非同期 API の作業) したら B(コールバック関数) する、B したら C(コールバック関数) する」という逐次処理を行う時に、 A が終わっていないのに B はできないので、非同期 API の作業を環境が終わらせるまで順番的に A の次に行いたい B という作業を行わないで、**別の作業をメインスレッドで続ける**ということを意味します。「非同期 API の並列的作業である A がバックグラウンドで環境が処理している間は、その async 関数内の処理は一時的に中断させて、別のことをメインスレッドで行う」というのが「async/await でできること」であり「やりたいこと」です。
 
 ```js:immediate.js
 (async () => {
@@ -477,7 +493,7 @@ Promise chain でブロッキングが起きていなかった様に async/await
 
 ## Promise chain を async/await で書き直す
 
-async/await は Promise chain で書き直せるのでシンタックスシュガーであると言われます。実際にはそれ以上のもの(発生するマイクロタスクの数が少なかったり、デバッグなどで得られる効能が Promise chain よりも高いなどの性質がある)ですが、現時点では Promise chain と同等なものであると考えてください。本質的なメカニズムは同じです。
+async/await は Promise chain で書き直せるのでシンタックスシュガーであると言われます(厳密には異なります)。実際にはそれ以上のもの(発生するマイクロタスクの数が少なかったり、デバッグなどで得られる効能が Promise chain よりも高いなどの性質がある)ですが、現時点では Promise chain と同等なものであると考えてください。本質的なメカニズムは同じです。
 
 例えば次のコードを考えてみましょう。
 
@@ -949,10 +965,8 @@ async 関数内で try/catch/finally を使えば、今までのようにチェ�
   .finally(() => console.log("最後に実行"));
 ```
 
-なぜこのようなことが起きるのかというと、[Await(value)](https://tc39.es/ecma262/#await) 操作の以下の仕様でそうするように決まっているからです。これは `Promise.prototype.then` メソッドに渡すコールバック関数から通常の値が返されたときに `then` メソッドからは常に新しい Promise インスタンスが返るのと同じような話です。コールバックで何を返そうが Promise が返されるのと同じで、await で何を評価しようが Promise として処理されるようになっています。
+なぜこのようなことが起きるのかというと、ECMAScript の [Await(value)](https://tc39.es/ecma262/#await) 操作の以下の仕様でそうするように決まっているからです。これは `Promise.prototype.then` メソッドに渡すコールバック関数から通常の値が返されたときに `then` メソッドからは常に新しい Promise インスタンスが返るのと同じような話です。コールバックで何を返そうが Promise が返されるのと同じで、await で何を評価しようが Promise として処理されるようになっています。
 
 > - 2. Let promise be ? [PromiseResolve](https://tc39.es/ecma262/#sec-promise-resolve)([%Promise%](https://tc39.es/ecma262/#sec-promise-constructor), value).
 
-具体的に裏でどのようなことが起きているのかは次のチャプターで確認します。
-
-とにかく、await 式は基本的には Promise インスタンスを評価して値を取り出すものであると意識するのが重要です。
+具体的に裏でどのようなことが起きているのかは次のチャプターで確認します。とにかく、await 式は基本的には Promise インスタンスを評価して値を取り出すものであると意識するのが重要です。

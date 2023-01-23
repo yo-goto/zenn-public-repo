@@ -43,7 +43,7 @@ chapters:
   - 19-epasync-async-loop # 『反復処理の制御』
   - k-epasync-iterator-generator # 『イテレータとイテラブルとジェネレータ関数』
   - j-epasync-ts-promise-type-annotation # 『TypeScript における Promise の型注釈』
-  - sec-05-epasync # 『第５章 - 番外編』
+  - sec-05-epasync # 『第５章 - 仕様およびその他の番外編』
   - m-epasync-promise-prototype-then # 『Promise.prototype.then の仕様挙動』
   - n-epasync-promise-spec-compare # 『Promise chain と async/await の仕様比較』
   - y-epasync-conclusion # 『総括 - 非同期処理のまとめ』

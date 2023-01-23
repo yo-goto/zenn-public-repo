@@ -318,7 +318,7 @@ Host hook である HostEnqueuePromiseJob 操作の ECMA 仕様は以下のよ�
 
 ![hostenqueuepromisejob ecma spec](/images/js-async/img_hostEnqueuPromiseJob-ecma.jpg)*[https://tc39.es/ecma262/#sec-hostenqueuepromisejob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob) より*
 
-Host hook なので ECMAScript の外部ソースである(ホストである) HTML 仕様でも以下のように定義されています。ECMAScript 仕様では「Job をスケジューリング」するという抽象的な操作であったものが HTML 仕様ではイベントループのマイクロタスクキューイング操作としてより具体的に定義されていることが分かりますね。
+Host hook なので ECMAScript の外部ソースである(ホストである) HTML 仕様でも以下のように定義されています。ECMAScript 仕様では「Job をスケジューリング」するという抽象的な操作であったものが HTML 仕様ではイベントループにおける「マイクロタスクのキューイング操作」としてより具体的に定義されていることが分かりますね。
 
 ![hostenqueuepromisejob html spec](/images/js-async/img_hostEnqueuePromiseJob-html.jpg)*[https://html.spec.whatwg.org/webappapis.html#hostenqueuepromisejob](https://html.spec.whatwg.org/webappapis.html#hostenqueuepromisejob) より*
 
@@ -364,7 +364,9 @@ p.then(console.log); // => 42
 
 Promise コンストラクタを使ってプロミスインスタンスを作成すると、CreateResolvingFunction 抽象操作が呼び出され、解決用の関数である [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) と拒否用の関数である [Promise Reject Functions](https://tc39.es/ecma262/#sec-promise-reject-functions) が作成されます。そしてこれらことが今まで見てきた `resolve` 関数と `reject` 関数そのものであり実体です。
 
-『[Promise の基本概念](a-epasync-promise-basic-concept)』や『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターでも説明しましたが、`reject` 関数に比べて、`resolve` 関数は非常に複雑です。これは Unwrapping の能力が関係しており、`reject` 関数では引数の `reason` に何を渡そうが拒否すると決まっていますが、`resolve` 関数では引数にわたす `resolution` (解決値) の値の種類よって処理内容が変わるので、複雑になっています。
+『[Promise の基本概念](a-epasync-promise-basic-concept)』や『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターでも説明しましたが、`reject` 関数に比べて、`resolve` 関数は非常に複雑です。これは Unwrapping の能力が関係しており、`reject` 関数では引数の `reason` (拒否理由) として何を渡そうが拒否すると決まっていますが、`resolve` 関数では引数の `resolution` (解決値) の値の種類よって処理内容が変わるため複雑になっています。
+
+![resolveとrejectの仕様](/images/js-async/img_spec-diff-resolve-reject.jpg)
 
 `Promise.prototype.then` でも **この `resolve` 関数が実は使われており** (呼び出し図に注目)、コールバックから返される値が引数の `resolution` (解決値) として使われます。従って、`resolve` 関数の処理の場合分けを考える必要があるという話になります。
 
