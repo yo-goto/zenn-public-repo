@@ -1246,7 +1246,7 @@ type Animal2 = { // 代入
 
 ```ts
 // 関数の型と unedfined 型と null 型のユニオン型
-type OnFullfilled<T, TResult1> = ((value: T) => TResult1 | PromiseLike<TResult1>)
+type OnFulfilled<T, TResult1> = ((value: T) => TResult1 | PromiseLike<TResult1>)
   | undefined
   | null;
 // 関数の型と unedfined 型と null 型のユニオン型
@@ -1257,7 +1257,7 @@ type OnRejcted<TReulst2> = ((reason: any) => TResult2 | PromiseLike<TResult2>)
 // 型変数はリンクしているので注意
 interface Promise<T> {
   then<TResult1 = T, TResult2 = never>(
-    onfulfilled?: OnFullfilled<T, TReulst1>,  // optional
+    onfulfilled?: OnFulfilled<T, TReulst1>,  // optional
     onrejected?: OnRejcted<TResult2> // optional
   ): Promise<TResult1 | TResult2>;
 

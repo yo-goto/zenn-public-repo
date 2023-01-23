@@ -83,7 +83,7 @@ promise
 ```
 :::
 
-`resolve()` や `reject()` でコールバック関数内の処理は止まりません。ですが、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターで言ったとおり、Promise インスタンスが一度 Settled (Fullfilled または Rejected 状態) になったらもう二度とそのインスタンスの状態は変わりません。従って、一度状態が変化したら、いくら `resolve()` や `reject()` を呼び出しても何も効果を得ることはできません。解決値が変わったり、例外が発生することもありません。
+`resolve()` や `reject()` でコールバック関数内の処理は止まりません。ですが、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターで言ったとおり、Promise インスタンスが一度 Settled (Fulfilled または Rejected 状態) になったらもう二度とそのインスタンスの状態は変わりません。従って、一度状態が変化したら、いくら `resolve()` や `reject()` を呼び出しても何も効果を得ることはできません。解決値が変わったり、例外が発生することもありません。
 
 `resolve()` や `reject()` は Promise インスタンスの状態を変えるの試みるだけです。
 
@@ -234,7 +234,7 @@ promise2
 
 `promise2` に対して Promise インスタンスで resolve を試みているため `promise2` 自体の Fate は Resolved です。そして、`promise2` 自体の履行値や拒否理由は `promise1` で `resolve()` や  `reject()` を行った値となります。
 
-この様に resolve の行為は単に引数の値で Promise インスタンスを Fullfilled 状態にするものではありません。**Promise インスタンスで resolve した結果として Rejected 状態になることもあります**。`promise2` は `Promise1` の状態や履行値、拒否理由に対して自身の状態と値すべてを委ねています。
+この様に resolve の行為は単に引数の値で Promise インスタンスを Fulfilled 状態にするものではありません。**Promise インスタンスで resolve した結果として Rejected 状態になることもあります**。`promise2` は `Promise1` の状態や履行値、拒否理由に対して自身の状態と値すべてを委ねています。
 
 :::message
 この挙動は仕様的には [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 抽象操作から作成される [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) に定義されています。`resolve` 関数の実体はこの関数です。詳細については『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しています。

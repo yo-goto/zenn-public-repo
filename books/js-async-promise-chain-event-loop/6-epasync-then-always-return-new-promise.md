@@ -82,7 +82,7 @@ console.log("🦖 [H] Sync");
 前のコードと考え方は同じです。まずはイベントループにおいて最初のタスクである「スクリプトの評価」で「すべての同期処理の実行」が行われます。コールスタックの一番下にグローバルコンテキストが積まれた状態で同期処理がどんどん行われていきます。
 
 - (1) `console.log("🦖 [A] Sync")` が同期処理される
-- (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fullfilled)状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちにマイクロタスクキューへと送られます。
+- (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fulfilled)状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちにマイクロタスクキューへと送られます。
 
 さて、ここまでは前のコードと同じですね。
 
@@ -100,7 +100,7 @@ Promise chain において、各 `then()` メソッドにおいて返ってく�
 ここで話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
 
 - Pending(待機状態)
-- Fullfilled(履行状態)
+- Fulfilled(履行状態)
 - Rejected(拒否状態)
 
 :::message
@@ -125,7 +125,7 @@ returnPromise("2nd Promise", "E").then(cb3).then(cb4);
 console.log("🦖 [H] Sync");
 ```
 
-1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行(Fullfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちにマイクロタスクキューへと送られます
+1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行(Fulfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちにマイクロタスクキューへと送られます
 2. `then(cb3)` で返ってくる別の Promise インスタンスはまだ待機状態なので `then(cb4)` のコールバック関数 `cb4` はまだキューへ送られずにそのまま待機となります
 3. 次の処理に進み、`console.log("[H] Sync")` が実行されます
 
@@ -199,9 +199,9 @@ console.log("🦖 [H] Sync");
 
 ```js
 // consolePromise.js
-console.log("[Fullfilled status]", new Promise(resolve => resolve("Resolved")));
+console.log("[Fulfilled status]", new Promise(resolve => resolve("Resolved")));
 
-console.log("[Fullfilled status]", Promise.resolve("Resolved"));
+console.log("[Fulfilled status]", Promise.resolve("Resolved"));
 
 console.log("[Pending status]", Promise.resolve("Resolved but").then(value => console.log(value)));
 
@@ -210,11 +210,11 @@ console.log("[Rejcted status]", Promise.reject("Rejected"))
 
 １つずつどうなるかを考えてみます。
 
-`new Promise(executor)` では、`executor` 関数自体は「同期的」に実行されるという話でしが。この場合は内部で直ちに `resolve()` 関数が呼ばれるので、作成した Promise インスタンスは履行(Fullfilled)状態となります。従って、コンソールに出力される Promise インスタンスは履行状態のものとなります。というわけで次の出力をまずは得ます。
+`new Promise(executor)` では、`executor` 関数自体は「同期的」に実行されるという話でしが。この場合は内部で直ちに `resolve()` 関数が呼ばれるので、作成した Promise インスタンスは履行(Fulfilled)状態となります。従って、コンソールに出力される Promise インスタンスは履行状態のものとなります。というわけで次の出力をまずは得ます。
 
 ```sh
 ❯ deno run consolePromise.js
-[Fullfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
 # ...
 ```
 
@@ -232,8 +232,8 @@ const promise = new Promise(res => {
 
 ```sh
 ❯ deno run consolePromise.js
-[Fullfilled status] Promise { "Resolved" }
-[Fullfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
 # ...
 ```
 
@@ -245,13 +245,13 @@ const promise = new Promise(res => {
 
 ```sh
 ❯ deno run consolePromise.js
-[Fullfilled status] Promise { "Resolved" }
-[Fullfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
 # ...
 ```
 
-待機(Pending)状態の Promise インスタンスを出力すると、このように `Promise { <pending> }` が表示されます。履行(Fullfilled)状態の Promise インスタンスは `Promise { 解決された値 }` というように出力されていますね。
+待機(Pending)状態の Promise インスタンスを出力すると、このように `Promise { <pending> }` が表示されます。履行(Fulfilled)状態の Promise インスタンスは `Promise { 解決された値 }` というように出力されていますね。
 
 `Promise.resolve().then(callback)` の `callback` ですが、現時点ではイベントループのステップは「スクリプトの評価」で、同期処理をすべて完了していません。コールバックの中身は `value => console.log(value)` というものなので、コンソールへ出力がなされますが、マイクロタスクキューへと送られるこのコールバックはイベントループの「スクリプトの評価」のステップが完了した後に実行されます。
 
@@ -271,8 +271,8 @@ const promise = new Promise((_, rej) => {
 
 ```sh
 ❯ deno run consolePromise.js
-[Fullfilled status] Promise { "Resolved" }
-[Fullfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
 [Rejcted status] Promise { <rejected> "Rejected" }
 # ...
@@ -290,8 +290,8 @@ const promise = new Promise((_, rej) => {
 
 ```sh
 ❯ deno run consolePromise.js
-[Fullfilled status] Promise { "Resolved" }
-[Fullfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
 [Rejcted status] Promise { <rejected> "Rejected" }
 Resolved but
@@ -304,8 +304,8 @@ Resolved but
 
 ```sh
 ❯ deno run consolePromise.js
-[Fullfilled status] Promise { "Resolved" }
-[Fullfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
+[Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
 [Rejcted status] Promise { <rejected> "Rejected" }
 Resolved but
@@ -316,8 +316,8 @@ error: Uncaught (in promise) Rejected
 
 ```sh
 ❯ node consolePromise.js
-[Fullfilled status] Promise { 'Resolved' }
-[Fullfilled status] Promise { 'Resolved' }
+[Fulfilled status] Promise { 'Resolved' }
+[Fulfilled status] Promise { 'Resolved' }
 [Pending status] Promise { <pending> }
 [Rejcted status] Promise { <rejected> 'Rejected' }
 Resolved but

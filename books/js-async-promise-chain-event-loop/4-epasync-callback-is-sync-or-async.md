@@ -80,9 +80,9 @@ console.log('🦖 [3] MAINLINE: Sync');
 
 Promise インスタンスは `then()`/`catch()`/`finally()` などの**プロトタイプメソッド**が使用できます。これによって、その Promise インスタンスの**状態が変化した後で**メソッドの引数として渡したコールスタック関数が「**非同期的に**」実行されることを保証できます。
 
-今回の場合、`new Promise(executor)` で作成した Promise インスタンスである `promise` は、コールバック関数である `executor` が同期的に実行されて、すぐさま `resolve()` 関数に出会い実行されるので、ただちに `Promise` インスタンスの状態が履行(Fullfilled)状態になります。
+今回の場合、`new Promise(executor)` で作成した Promise インスタンスである `promise` は、コールバック関数である `executor` が同期的に実行されて、すぐさま `resolve()` 関数に出会い実行されるので、ただちに `Promise` インスタンスの状態が履行(Fulfilled)状態になります。
 
-コードの行を順番に下へ行くと `promise.then(cb)` に出会いますが、ここではコールバックである `cb` は Promise インスタンスが Fullfilled 状態になった時点でマイクロタスクキューへと送られます。この時点で Promise インスタンスである `promise` は履行(Fullfilled)状態なので、直ちにコールバック関数がマイクロタスクキューへと送られます。
+コードの行を順番に下へ行くと `promise.then(cb)` に出会いますが、ここではコールバックである `cb` は Promise インスタンスが Fulfilled 状態になった時点でマイクロタスクキューへと送られます。この時点で Promise インスタンスである `promise` は履行(Fulfilled)状態なので、直ちにコールバック関数がマイクロタスクキューへと送られます。
 
 しかし、マイクロタスクキューにあるこのコールバック関数はすぐに実行されません。コードの実行を考える上で、イベントループではスクリプトの評価によるすべての同期処理が最初のタスクとなり、その最中はコールスタック上に匿名のグローバルコンテキストが一番下に積まれている訳です。
 
@@ -97,7 +97,7 @@ Promise インスタンスは `then()`/`catch()`/`finally()` などの**プロ�
 - [thenCallbackIsAsync.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gdGhlbkNhbGxiYWNrSXNBc3luYy5qcwpjb25zb2xlLmxvZygiWzFdIFN5bmMgcHJvY2VzcyIpOwoKY29uc3QgcHJvbWlzZSA9IG5ldyBQcm9taXNlKHJlc29sdmUgPT4gewogIGNvbnNvbGUubG9nKCJbMl0gVGhpcyBsaW5lIGlzIFN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICByZXNvbHZlKCJSZXNvbHZlZCEiKTsKfSk7Cgpwcm9taXNlLnRoZW4odmFsdWUgPT4gewogIGNvbnNvbGUubG9nKCJbNF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7Cn0pOwoKY29uc29sZS5sb2coIlszXSBTeW5jIHByb2Nlc3MiKTsK)
 - ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
-このように Promise chain において `.then()` メソッドのコールバックは Promise インスタンスがすでに履行(Fullfilled)状態であっても一旦はマイクロタスクキューへと送られてしまうので、どんなときでもそのコールバックの実行は非同期的になってしまいます。
+このように Promise chain において `.then()` メソッドのコールバックは Promise インスタンスがすでに履行(Fulfilled)状態であっても一旦はマイクロタスクキューへと送られてしまうので、どんなときでもそのコールバックの実行は非同期的になってしまいます。
 
 まとめると、次の２つは対比的な実行となります。
 

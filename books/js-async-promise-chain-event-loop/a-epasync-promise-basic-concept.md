@@ -29,12 +29,12 @@ https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates
 Promise インスタンスには次の３つの状態(**State**)があり、それぞれに排他的となっています(同時に１つの状態しか取りえないようになっています)。
 
 - Pending(待機状態)
-- Fullfilled(履行状態)
+- Fulfilled(履行状態)
 - Rejected(拒否状態)
 
 **Settled**(決定状態、不変状態)は実際の状態ではなく、Pending(待機状態)であるかないかを言い表すための言葉です。**Pending でなければ Settled だと言えます**。
 
-複数の Promise の完了を待つことができる Promise の静的メソッド `Promise.allSettled()` などの意味もこれです。Fullfilled か Rejected かは気にせず、とりあえず Settled になっているかだけかだけに注意を払います。
+複数の Promise の完了を待つことができる Promise の静的メソッド `Promise.allSettled()` などの意味もこれです。Fulfilled か Rejected かは気にせず、とりあえず Settled になっているかだけかだけに注意を払います。
 
 重要なこととして、Settled になった Promise インスタンスの**状態は二度と変わりません**。
 
@@ -63,7 +63,7 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 
 翻訳した日本語で考えてしまうと用語がややこしくなるので、なるべくオリジナルの英単語を使って理解した方が良いです。特に日本語の "解決する" などの単語には注意を払った方が良いでしょう。
 
-とは言え、基本的には英語でもややこしく、"resolve" と言ったときに、単に fullfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fullfill であり、これは単に履行状態にするという意味で捉えることができます。
+とは言っても基本的に英語でもややこしく、"resolve" と言ったときに、単に fulfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fulfill であり、これは単に履行状態にするという意味で捉えることができます。
 
 動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` メソッドの挙動が `reject()` に比べて複雑で、再帰性が関与してくるからです。`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promise インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap ができないため単純に Rejected 状態に遷移します。
 
@@ -73,7 +73,7 @@ Unwrapping については『[resolve 関数と reject 関数の使い方](g-epa
 また仕様的に何が起きるのかについては『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しています。
 :::
 
-難しいですが、Fate の概念は他の文章を読むときには役立つことがあります。または、`Promise.fullfill()` というメソッドではなく `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。
+難しいですが、Fate の概念は他の文章を読むときには役立つことがあります。または、`Promise.fulfill()` というメソッドではなく `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。
 
 動詞や名詞などの意味合いの違いは次の Stack overflow の解答がわかりやすいです。上の図もこちらに記載されているものを参考に作成しました。
 

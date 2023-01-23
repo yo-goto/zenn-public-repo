@@ -1414,7 +1414,7 @@ Promise.resolve().then(() => console.log("👦 [3] <1-Sync> MICRO: then"));
   console.log("これは実行されない");
   // <2-Sync>
 })()
-  .then(() => console.log("👻 [(5)] <4-Async> 実行されないがマイクロタスクを発行 MICRO: [Fullfilled]"))
+  .then(() => console.log("👻 [(5)] <4-Async> 実行されないがマイクロタスクを発行 MICRO: [Fulfilled]"))
   .catch((err) => console.log("😭 [7] <6-Async> MICRO: [Rejected]", err.stack))
   .finally(() => console.log("👍 [9] <8-Async> MICRO: [Finally]"))
 
@@ -1521,7 +1521,7 @@ Promise.resolve().then(() => console.log("👦 [3] <1-Sync> MICRO: then"));
     console.log("👹 [5] <2-Sync> MICRO: 最後に実行");
   }
 })()
-  .then(() => console.log("👻 [6] <4-Async> MICRO: 実行される [Fullfilled]"))
+  .then(() => console.log("👻 [6] <4-Async> MICRO: 実行される [Fulfilled]"))
   .catch((err) => console.log("😭 [(8)] <6-Async> MICRO: 実行されないがマイクロタスクを発行 [Rejected]", err.stack))
   .finally(() => console.log("👍 [10] <8-Async> MICRO: 最後に実行 [Finally]"));
 
@@ -1533,7 +1533,7 @@ Promise.resolve()
 console.log("🦖 [2] MAINLINE: End");
 ```
 
-今回は、async 関数内の try/catch によって例外補足されているため、async 関数から返ってくる Promise インスタンス自体は Fullfilled であり、チェーンされた `then()` メソッドのコールバックも実行されます。`catch()` メソッドのコールバックは実行されませんが、マイクロタスクは発行されるので注意してください。
+今回は、async 関数内の try/catch によって例外補足されているため、async 関数から返ってくる Promise インスタンス自体は Fulfilled であり、チェーンされた `then()` メソッドのコールバックも実行されます。`catch()` メソッドのコールバックは実行されませんが、マイクロタスクは発行されるので注意してください。
 
 実際に実行すると次の出力を得ます。
 
@@ -1547,7 +1547,7 @@ console.log("🦖 [2] MAINLINE: End");
     at promiseRejectionRX.js:17:3
 👹 [5] <2-Sync> MICRO: 最後に実行
 🤪 [6] <3-Sync> MICRO: then
-👻 [6] <4-Async> MICRO: 実行される [Fullfilled]
+👻 [6] <4-Async> MICRO: 実行される [Fulfilled]
 🤪 [4] <5-Async> MICRO: then
 🤪 [9] <7-Async> MICRO: then
 👍 [10] <8-Async> MICRO: 最後に実行 [Finally]

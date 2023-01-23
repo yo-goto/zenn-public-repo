@@ -61,7 +61,7 @@ function executor(resolve, reject) {
   // 以下の処理は適当に形式をあわせて書いているだけです
   if (Math.random() < 0.5) { // 適当な条件
     resolve("Promise履行時の値");
-    // resolve 関数は Promise インスタンスを履行(Fullfilled)状態にしたい時に呼び出す
+    // resolve 関数は Promise インスタンスを履行(Fulfilled)状態にしたい時に呼び出す
   } else {
     reject("Promise拒否時の理由");
     // reject 関数は Promise インスタンスを拒否(Rejected)状態にしたい時に呼び出す
@@ -82,7 +82,7 @@ const promise = new Promise(executor);
 
 JavaScript では「関数は値」なのでこのように関数を他の値のように引数として渡すことができます。「コールバック関数」はこのように他の関数に引数として渡される関数のことを指します。
 
-`Promise()` コンストラクタの引数として渡されるコールバック関数である `executor` の引数である `resolve` と  `reject` もコールバック関数です。慣習的に `resolve` や `reject` となっていますが実際には名前は何でも OK です。`executor` の中において、`resolve()` 関数は Promise インスタンスを履行(Fullfilled)状態にしたいという時に呼び出し、`reject()` は Promise インスタンスを拒否(Rejected)状態にしたいという時に呼び出します。
+`Promise()` コンストラクタの引数として渡されるコールバック関数である `executor` の引数である `resolve` と  `reject` もコールバック関数です。慣習的に `resolve` や `reject` となっていますが実際には名前は何でも OK です。`executor` の中において、`resolve()` 関数は Promise インスタンスを履行(Fulfilled)状態にしたいという時に呼び出し、`reject()` は Promise インスタンスを拒否(Rejected)状態にしたいという時に呼び出します。
 
 この２つの関数はクセがあるので注意してください。(後述)。
 

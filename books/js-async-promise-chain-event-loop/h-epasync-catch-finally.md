@@ -32,9 +32,9 @@ new Promise((resolve, reject) => {
 
 上のように `reject()` 関数によって Promise インスタンスが Rejected 状態になった場合、チェインしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックが実行されて例外を捕捉します。
 
-逆に、`resolve()` 関数によって Promise インスタンスが Fullfilled 状態に場合には、`catch()` メソッドのコールバックは実行されません。
+逆に、`resolve()` 関数によって Promise インスタンスが Fulfilled 状態に場合には、`catch()` メソッドのコールバックは実行されません。
 
-一方、`finally()` メソッドは Promise インスタンスが Fullfilled 状態でも Rejected 状態でも関係なく、登録しているコールバックが実行されます。
+一方、`finally()` メソッドは Promise インスタンスが Fulfilled 状態でも Rejected 状態でも関係なく、登録しているコールバックが実行されます。
 
 ## 常に新しい Promise インスタンスが返ってくる
 
