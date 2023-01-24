@@ -116,7 +116,7 @@ randomTimer("3rd", "[C-1]")
   await fetch(urls[2])
     .then(response => response.text())
     .then(text => console.log(text));
-  console.log("すべてのfetch chainが完了しました");  
+  console.log("すべてのfetch chainが完了しました");
 })();
 ```
 
@@ -249,7 +249,7 @@ randomTimer("1st", "[A-1]")
 (async () => {
   await fetch(urls[0])
     .then(response => response.text())
-    .then(text => console.log(text)); 
+    .then(text => console.log(text));
   console.log("fetch chainの１つ目が完了しました");
 
   await fetch(urls[1])
@@ -288,11 +288,11 @@ async function middleStep() {
 
 async function smallStep() {
   // 非同期 API を起点にした chain の並列化(本質的には非同期 API の並列化)
-  const p1 = fetch(urls[0]).then(response => response.text()).then(text => console.log(text)); 
+  const p1 = fetch(urls[0]).then(response => response.text()).then(text => console.log(text));
   const p2 = Deno.writeTextFile(paths[0], inputData).then(() => console.log("書き込み完了しました"));
-  const p3 = fetch(urls[1]).then(response => response.text()).then(text => console.log(text)); 
+  const p3 = fetch(urls[1]).then(response => response.text()).then(text => console.log(text));
   const p4 = Deno.writeTextFile(paths[1], inputData).then(() => console.log("書き込み完了しました"));
-  
+
   return await Promise.allSettled([p1, p2, p3, p4]);
 }
 
@@ -477,7 +477,7 @@ import noAwait from "./noAwait.js";
 import noAwait from "./noAwait.js";
 
 (async () => {
-  await noAwait(); 
+  await noAwait();
   // noAwait の完了してから次の処理が実行される
   console.log("😅 noAwaitの処理は完了しました?");
 })();

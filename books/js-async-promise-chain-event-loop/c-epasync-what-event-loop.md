@@ -133,13 +133,39 @@ https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/
 > The main purpose of the scheduler is to decide which task gets to execute on the main thread at any given time. To enable this, the scheduler provides higher level replacements for the APIs that are used to post tasks on the main thread.
 > ([Blink Scheduler](https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/edit) より引用)
 
+コードベース上にあるドキュメントは以下です。
+- [Blink Scheduler](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/scheduler/README.md)
+- [Scheduling docs](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/platform/scheduler/links.md)
+
 Chrome ブラウザ環境では、環境実装のルールとしてどのようにタスクキューを優先するかを Blink scheduler によって選択させているようです。内部的にどのような順位になっているからを知りたい場合は上記ドキュメントを参照してください。
 
 https://docs.google.com/a/google.com/document/d/1SWpjgtwIaL_hIcbm6uGJKZ8o8R9xYre-yG0VDOjFBxU/edit
 
 https://nhiroki.jp/2017/12/10/javascript-parallel-processing#1-%E3%83%AC%E3%83%B3%E3%83%80%E3%83%AA%E3%83%B3%E3%82%B0%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%81%A8-javascript-%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%83%A2%E3%83%87%E3%83%AB
 
-ブラウザ環境でのイベントループでは、Node や Deno といったランタイム環境にはない、Blink 等の**レンダリングエンジンの存在があるため、レンダリングの作業そのものを考慮する必要があります**。逆にランタイム環境では、レンダリングのタスクが存在しないためシンプルになりますが、Node ではタスクの優先度をより細かくするなどの違いがあります。
+レンダリングエンジンである Blink は実は Chrome (Chromium) の中で非常に大きな役割を持っています。Blink は JavaScript エンジンである V8 エンジンを管理する上位コンポーネントとしてブラウザタブ内のコンテンツレンダリングに関わる全てを実装しており、具体的には以下のようなことを行っています。
+
+- DOM、CSS、WebIDL などを含む Web プラットフォーム仕様の実装
+- V8 エンジンを埋め込み JavaScript を実行
+- 基盤となるネットワークスタックからのリソースリクエスト
+- DOMツリーの構築
+- スタイルとレイアウトの計算
+- Chromeコンポジターの埋め込みとグラフィックの描写
+
+Blink が実際に行っていることについては以下の Google ドキュメントに概要が記載されています。
+
+https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/
+
+Web API のインターフェース仕様を記述する WebIDL などを実装していることから、Blink エンジン内で Promise-based API である `fetch` API などの実装も行われています。`fetch` API の実装はコードベース的には以下の場所にあります。
+
+https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/fetch/
+
+Chrome (Chromium) ブラウザが提供する API 機能の実装は主に以下の２つのディレクトリ内に存在しています。C++ コードを読めるならこれらのディレクトリにあるコードから実装を理解できます。
+
+- [third_party/blink/renderer/core/](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/)
+- [third_party/blink/renderer/modules/](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/modules/)
+
+話をイベントループに戻すと、ブラウザ環境でのイベントループでは、Node や Deno といったランタイム環境にはない、Blink 等の**レンダリングエンジンの存在があるため、レンダリングの作業そのものを考慮する必要があります**。逆にランタイム環境では、レンダリングのタスクが存在しないためシンプルになりますが、Node ではタスクの優先度をより細かくするなどの違いがあります。
 
 :::message
 イベントループの共通性質で述べたように、ブラウザ環境とランタイム環境のイベントループの大きな違いは「**レンダリングの作業があるかないか**」です。
@@ -258,7 +284,7 @@ while (true) {
   task = queue.pop();
   execute(task);
   // task はループにつき一個のみが処理される
-  
+
   // すべての Microtask を処理するためのループ
   while (micortaskQueue.hasTasks()) {
     doMicrotask();
@@ -308,9 +334,15 @@ https://youtu.be/cCOL7MC4Pl0
 
 https://web.dev/rendering-performance/#2.-js-css-greater-style-greater-paint-greater-composite
 
-上図に示したレンダリングパイプラインはかなり抽象化してあります。より具体的なレンダリングパイプラインは以下のページから参考にしてください。
+もう少し広範囲の視点で考えるとレンダリングパイプラインは HTML ファイルからスクリーン上までのピクセル描写までの工程と言えます。Blink のドキュメントでは以下のような工程として説明されています。Paint 後の Composite 作業については Main thread から同じ Renderer process 内の Compositor thread に移行して描画まで処理が行われます。
+
+![Blink内のレンダリングパイプライン](/images/js-async/img_rendering-pipeline-in-blink.jpg)*[How Blink works - Google ドキュメント](https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit#) より引用*
+
+レンダリングパイプラインの各工程についてのより具体的な解説は以下のページやスライドなどから参考にしてください。
 
 https://developer.chrome.com/blog/renderingng-architecture/
+
+https://docs.google.com/presentation/d/1boPxbgNrTU0ddsc144rcXayGA_WF53k96imRH8Mp34Y/edit#slide=id.p
 
 JavaScript はシングルスレッド言語であり、ブラウザ環境でユーザーの JavaScript コードはメインスレッド(Main thread)で実行されます。上述した通り、ブラウザ環境ではレンダリングの作業があります。そしてレンダリングのための作業もメインスレッドで行われます。従ってその作業を行っている間はそのスレッドで JavaScirpt を実行できません。
 
@@ -335,7 +367,7 @@ while (true) {
   task = queue.pop();
   execute(task);
   // task はループにつき一個のみが処理される
-  
+
   // すべての Microtask を処理するためのループ
   while (micortaskQueue.hasTasks()) {
     doMicrotask();
@@ -376,7 +408,7 @@ while (true) {
   task = queue.pop();
   execute(task);
   // task はループにつき一個のみが処理される
-  
+
   // すべての Microtask を処理するためのループ
   while (micortaskQueue.hasTasks()) {
     doMicrotask();
@@ -437,7 +469,7 @@ while (true) {
   task = queue.pop();
   execute(task);
   // Task は１つのみ実行する
-  
+
   // Microtask queue が完全に空になるまで処理する
   while (micortaskQueue.hasTasks()) {
     doMicrotask();
