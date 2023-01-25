@@ -2,7 +2,7 @@
 title: "catch メソッドと finally メソッド"
 cssclass: zenn
 date: 2022-05-14
-modified: 2022-12-19
+modified: 2023-01-25
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『catch メソッドと finally メソッド』
@@ -157,7 +157,7 @@ Promise.reject(42)
 
 ## 発生するマイクロタスク
 
-重要なこととして、`catch()` メソッドや `then()` メソッドは登録してあるコールバックが実行されないときでも実はマイクロタスクが発行されます。この原理については後で解説しますが、まずはその現象そのものについて確認しておきましょう。
+重要なこととして、`catch()` メソッドや `then()` メソッドは登録してあるコールバックが実行されないときでも実はマイクロタスクが発行されます。この原理については後で解説しますが、その現象そのものについて確認しておきましょう。
 
 例えば、`Promise.reject()` で拒否状態の Promise インスタンスに `then()` と `catch()` メソッドをチェーンしてみます。
 
@@ -274,9 +274,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 
 上記のような登録してあるコールバック関数が実行されなくても、マイクロタスクが必ず実行される理由は、`catch` メソッドと `finally` メソッドが内部的に `then` メソッドを利用していることと更にもう一つ理由があります。
 
-まずは `catch` と `finally` が `then` (`Promise.prototype.then`) を利用していることを確認しておきましょう。
-
-詳しくは 『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しますが、ECMAScript の仕様を見てます。
+まずは `catch` と `finally` が `then` (`Promise.prototype.then`) を利用していることを確認しておきましょう。これについて詳しくは 『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しますが、ECMAScript 仕様を見てます。
 
 [Promise.prototype.catch(onRejected)](https://tc39.es/ecma262/#sec-promise.prototype.then) のアルゴリズムステップは引数 `onRejected` (コールバック) を取って以下のように実行されます。
 
@@ -299,11 +297,11 @@ console.log("🦖 [J-2] MAINLINE: End");
 
 `then` メソッドは `then(onFulfilled, onRejected)` というフォーマットですが、`onFulfilled` に自動置換される関数は identity 関数で、`onRejected` に自動置換される関数は thrower 関数と呼ばれます。
 
-identity 関数は日本語では「恒等関数」とも呼ばれ、`(x) => x` のように引数をそのまま return ような関数です。一方、thrower 関数は `(x) => { throw x; }` のように引数をそのまま throw するような関数です。昔の仕様ではこれらの関数のことが明言されていましたが、実際の仕様的には架空の関数であり、PromiseReactionJob 内部から動作を決定できるようにするためとの理由で ECMAScript の仕様から以下の PR で削除されてしまいました。
+identity 関数は日本語では「恒等関数」とも呼ばれ、`(x) => x` のように引数をそのまま return するような関数です。一方、thrower 関数は `(x) => { throw x; }` のように引数をそのまま throw するような関数です。昔の仕様ではこれらの関数のことが明確に言及されていましたが、実際の仕様的には架空の関数であり、PromiseReactionJob 内部から動作を決定できるようにするためとの理由で ECMAScript の仕様から以下の PR で言及部分が削除されてしまいました。
 
 https://github.com/tc39/ecma262/pull/584
 
-仕様内での説明では以下が顕著な変更点です。
+この PR での顕著な変更点は以下の箇所です。Identity と Thrower の言及が削除されています。
 
 ```diff
 - The function that should be applied to the incoming value, and whose return value will govern what happens to the derived promise. If [[Handler]] is `"Identity"` it is equivalent to a function that simply returns its first argument. If [[Handler]] is `"Thrower"` it is equivalent to a function that throws its first argument as an exception.
@@ -325,7 +323,7 @@ identity 関数と thrower 関数の説明は仕様の外での解説でよく�
 >   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Resolve\]\], undefined, « handlerResult.\[\[Value\]\] »).
 :::
 
-仕様について解説してもここでは何を言ってるのか分かりづらいと思うので、内部置換されるコールバック関数についてはそのまま `(x) => x` というidentity 関数と `(x) => { throw x; }` という thower 関数であると考えておけばよいです。関数の実体が気になる場合には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) と [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 操作の仕様を確認するようにしてください。
+仕様について解説してもここでは何を言ってるのか分かりづらいと思うので、内部置換されるコールバック関数についてはそのまま `(x) => x` という identity 関数と `(x) => { throw x; }` という thower 関数であると考えておけばよいです。関数の実体が気になる場合には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) と [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 操作の仕様を確認するようにしてください。
 
 それでは上記の identity 関数と thrower 関数で自動置換されるというのはどのようなことがイメージできるようにサンプルを使って確認します。
 
@@ -398,4 +396,4 @@ Promise.reject(42)
 
 chain 元の Promise インスタンスは拒否理由 `42` で拒否されているため、`.catch()` では拒否用のコールバック関数として内部置換された `x => { throw x; }` の thrower 関数がマイクロタスクとして発行されます。値 `42` が例外として throw されますが、`.catch(x => console.log(x))` で補足されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
 
-コールバック関数が実行されていないように見えても chain において履行値や拒否理由の伝達が可能となっているのは、このように実は内部置換された identity 関数や thrower 関数がマイクロタスクとして発行されてイベントループで処理されているからです。
+コールバック関数が実行されていないように見えたとしても、Promise chain において履行値や拒否理由の伝達が可能となっているのは、このように内部置換された identity 関数や thrower 関数がマイクロタスクとして発行されてイベントループで処理されているからです。
