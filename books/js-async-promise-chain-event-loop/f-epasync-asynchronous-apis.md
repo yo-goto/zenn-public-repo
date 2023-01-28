@@ -50,7 +50,7 @@ aliases: Promise本『非同期 API と環境』
 
 そもそも、JavaScript というものには常に実行するための**環境**(**environment**)があり、その環境によって利用できる機能が異なります。環境にはいくつも種類があり、各環境での相違点として顕著なものが環境の提供する機能である API です。
 
-一方で、[JavaScript は ECMAScript という仕様に基づいて動作が定められているため](https://jsprimer.net/basic/introduction/#javascript-ecmascript)、実行する環境が異なっても共通する動作があります。別のチャプターで解説しますが、実際には環境に埋め込まれた JavaScript エンジンがこの ECMAScript という仕様を実装しています。ということで、より正確に表現するなら "ECMAScript エンジン" と呼べる代物ですね。例えば Chrome ブラウザ環境に埋め込まれている V8 という JavaScript エンジンは Node や Deno といったランタイム環境にも利用されています。クライアントサイド(ブラウザ環境)やサーバーサイド(ランタイム環境)で JavaScript が同じように使えるのはこの JavaScript エンジンのおかげです。
+一方で、[JavaScript は ECMAScript 仕様に基づいて動作が定められているため](https://jsprimer.net/basic/introduction/#javascript-ecmascript)、実行する環境が異なっても共通する動作があります。別のチャプターで解説しますが、実際には環境に埋め込まれた JavaScript エンジンがこの ECMAScript という仕様を実装しています。ということで、より正確に表現するなら "ECMAScript エンジン" と呼べる代物ですね。例えば Chrome ブラウザ環境に埋め込まれている V8 という JavaScript エンジンは Node や Deno といったランタイム環境にも利用されています。クライアントサイド(ブラウザ環境)やサーバーサイド(ランタイム環境)で JavaScript が同じように使えるのはこの JavaScript エンジンのおかげです。
 
 API は ECMAScript とはほとんど関係なく環境が独自に定義して提供しているものです。ただし、`setTimeout()` や  `console.log()` など様々な環境において同じ名前で API が提供されている場合がよくあります。実際には機能的にそれぞれ微妙に異なることがあります(この事実に初学者は最初気づけずに混乱します)。
 
