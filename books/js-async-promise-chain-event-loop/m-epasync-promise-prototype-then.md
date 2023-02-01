@@ -35,7 +35,7 @@ aliases:
 - [Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/)
 - [Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject() - Human Who Codes](https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/)
 
-また、上のシリーズで実装された Promise のライブラリは以下のリポジトリで公開されています。このライブラリをローカルインストールしてライブラリ内部を `console.log` などを入れて改造してみて実行することでメカニズムの理解が容易となります。
+また、上のシリーズで実装された Promise のライブラリ (Pledge) は以下のリポジトリで公開されています。このライブラリをローカルインストールしてライブラリ内部を `console.log` などを入れて改造してみて実行することでメカニズムの理解が容易となります。
 
 https://github.com/humanwhocodes/pledge
 
@@ -238,7 +238,7 @@ console.log("🦖 [G]");
 
 Thenable とは `then` というメソッドを持つオブジェクトの総称です。例えば、Promise は `then` メソッドを持つので Thenable であると言えます。また、自分で適当な挙動の `then` メソッドを実装したオブジェクトの場合でも Thenable と言えます。つまり、**Thenable であるからと言って必ずしも Promise だとは限らない** ので注意してくだださい。
 
-以下のように `then` メソッドが実装されていれば、await や promise chain で利用でき、実装されている `then` メソッドが実行されます。
+以下のように `then` メソッドが実装されていれば、await や Promise chain で利用でき、実装されている `then` メソッドが実行されます。
 
 ```js
 const thenable = {
@@ -254,11 +254,11 @@ const thenable = {
 })();
 ```
 
-このように `then` メソッドを持っていれば、await 評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promise 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
+このように `then` メソッドを持っていれば、await 式の評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promise 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
 
 つまり、Promise 以外の `then` を持つオブジェクト (ECMAScirpt 実装ではない Promise) などがネイティブの Promise のように扱えるようにした仕組みが Thenable と言えます。
 
-さて、実はそういったオブジェクトそのものを使いたいからこの概念の説明をしたわけではありません。問題である Promise.prototype.then の挙動について説明するのに必要なのでこの概念の解説をしています。
+さて、実はそういったオブジェクトそのものを使いたいからこの概念の説明をしたわけではありません。問題である `Promise.prototype.then` の挙動について説明するのに必要なのでこの概念の解説をしています。
 
 # 仕様の基礎
 
@@ -270,11 +270,13 @@ const thenable = {
 
 抽象操作とは ECMAScript 仕様の内部で利用される関数であり、JavaScript から直接呼び出すことはできません。意味合いとしては単純に仕様の編集者が何回も同じことを書かないように「長い表記を省略して完結に記述できるようにする」というのが大きいです。
 
-ECMAScript 仕様のプロトタイプメソッドや静的メソッド、抽象操作についてはそれぞれ「アルゴリズムステップ (Algorithm steps)」というものが定義されています。アルゴリズムステップとは仕様が定義する操作の挙動を表現しているため、仕様を理解するためには各操作のアルゴリズムステップを理解していくことになります。
+ECMAScript 仕様のプロトタイプメソッドや静的メソッド、抽象操作についてはそれぞれ「アルゴリズムステップ (Algorithm steps)」というものが定義されています。アルゴリズムステップが仕様が定義する操作の挙動を表現しているため、仕様を理解するためには各操作のアルゴリズムステップを理解していくことになります。
 
 アルゴリズムステップ自体は以下のようなリストで表現されています。また、１つのアルゴリズムステップは連続したサブステップに細分化されることがあり、サブステップは字下げされて、それ自体がさらに字下げされたサブステップに分割されることがあります。
 
 ![アルゴリズムムステップ](/images/js-async/img_ecmascript-algorithm-steps.jpg)*[https://tc39.es/ecma262/#sec-algorithm-conventions](https://tc39.es/ecma262/#sec-algorithm-conventions) より*
+
+このようなアルゴリズムステップの表現は HTML 仕様でもまったく同じです。
 
 さて、Promise 系列の仕様を理解するために必要な抽象操作は [Promise Abstract Operations](https://tc39.es/ecma262/#sec-promise-abstract-operations) の項目に記載されています。ただし、ここに記述されている抽象操作からは他の項目にある抽象操作も呼び出されるので、細かく理解するのには様々な操作をたどっていく必要があります。
 
@@ -287,6 +289,20 @@ ECMAScript 仕様のプロトタイプメソッドや静的メソッド、抽象
 ![promise抽象操作](/images/js-async/PromiseSpec.excalidraw.png)
 
 例えば `Promise.prototype.catch` や `Promise.prototype.finally` といったプロトタイプメソッドは、実は大半の作業を `Promise.prototype.then` にまかせており、さらに `Promise.prototype.then` は PerformPromiseThen という操作に多くの作業をまかせています。また、`Promise.prototype.then` や `Promise.resolve` や Await などの多くの操作から NewPromiseCapability 抽象操作が呼び出されて Promise オブジェクトの作成が行われています。
+
+## ECMAScript の V8 実装
+
+ちなみに、ECMAScript 仕様を直接見て各操作感の関係を辿るのが億劫なら、V8 エンジン側での実装を直接見て理解するのも一つの手です。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで言ったとおり、ECMAScript の V8 実装は [V8 Torque](https://v8.dev/docs/torque) (TypeScript ライクな V8 エンジンの開発専用の言語) や C++ で GitHub リポジトリの [builtins](https://github.com/v8/v8/tree/main/src/builtins) の場所に記載されています。
+
+ECMASciript の Promise にまつわる抽象操作の項目である Promise Abstract Operations は同じ名前のファイルとして [v8/src/builtins/promise-abstract-operations.tq](https://github.com/v8/v8/blob/main/src/builtins/promise-abstract-operations.tq) で記述されています(`.tq` 拡張子は **T**or**q**ue 言語で書かれたファイルです)。仕様に定義されている抽象操作が同じ名前の関数としてそのまま定義されていることが分かります。
+
+https://github.com/v8/v8/blob/a760f03a6e99bf4863d8d21c5f7896a74a0a39ea/src/builtins/promise-abstract-operations.tq#L150-L263
+
+仕様内のアルゴリズムステップの記述がコメントされており、各操作が TypeScript ライクに記述されているので場合によっては仕様よりも V8 実装を見たほうが理解しやすいです。
+
+ただし、GitHub のリポジトリはミラーリポジトリであり、GitHub 上では Torque のシンタックスハイライト等も無いので、実際のコードベースを調べるときは Chromium Code Search を利用するのが良いです。
+
+https://source.chromium.org/chromium/chromium/src/+/main:v8/src/builtins/promise-abstract-operations.tq
 
 ## Job とマイクロタスク
 
@@ -314,7 +330,7 @@ HTML 仕様の側では Host hook は以下のように述べられています�
 
 これらの操作は「ホスト環境(host environment)」によって異なる実装となることが述べられていますね。「ホスト(Host)」自体は Host hook などの [D Host Layer Points](https://tc39.es/ecma262/#sec-host-layering-points) に列挙された機能を定義する外部ソースであり、すべての Web ブラウザ実装の集合や WHATWG の HTML 仕様もホストに相当します。ホスト環境は Node や Chrome などの特定の環境を指します。
 
-Host hook である HostEnqueuePromiseJob 操作の ECMA 仕様は以下のように job と realm を引数にとって job を将来のある時点でスケジューリングするという操作であることが決まっていますが、簡素なもので要件などが定義されています。
+Host hook である HostEnqueuePromiseJob 操作の ECMA 仕様は以下のように job と realm を引数にとって job を将来のある時点でスケジューリングするという操作であることが決まっていますが、簡素なもので要件などのみが定義されています。
 
 ![hostenqueuepromisejob ecma spec](/images/js-async/img_hostEnqueuPromiseJob-ecma.jpg)*[https://tc39.es/ecma262/#sec-hostenqueuepromisejob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob) より*
 

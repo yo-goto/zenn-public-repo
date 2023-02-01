@@ -139,11 +139,11 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Object_
 
 ```js
 const iterableObject = {
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     let count = 0;
 
     const iterator = {
-      next() { 
+      next() {
         // 三項演算子で返すものを条件づけ
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
@@ -186,10 +186,10 @@ console.log(iterator.next()); //  => { value: undefined, done: true }
 
 ```js:sympleIterable.js
 const iterableObject = {
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     let count = 0;
     const iterator = {
-      next() { 
+      next() {
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
           : { value: undefined, done: true };
@@ -248,10 +248,10 @@ for (variable of IterableObject) {
 
 ```js:simpleForOf.js
 const iterableObject = {
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     let count = 0;
     const iterator = {
-      next() { 
+      next() {
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
           : { value: undefined, done: true };
@@ -470,7 +470,7 @@ const urls = [
 ```js
 (async () => {
   for (let i = 0; i < urls.length; i++) {
-    await fetchThenConsole(urls[i]); 
+    await fetchThenConsole(urls[i]);
     // fetchThenConsole() は async 関数
   }
   console.log("すべての非同期処理が完了しました");
@@ -483,7 +483,7 @@ const urls = [
 (async () => {
   // urls は配列でイテラブルなので for...of が使える
   for (const url of urls) {
-    await fetchThenConsole(url); 
+    await fetchThenConsole(url);
   }
   console.log("すべての非同期処理が完了しました");
 })();
@@ -586,7 +586,7 @@ const generatorIsIterable = generatorFn(1);
 
 // ジェネレータオブジェクトはイテラブルでもある
 for (const v of generatorIsIterable) console.log(v);
-/* 
+/*
 1
 2
 3
@@ -664,9 +664,9 @@ function* genFnA() {
 
 // 要素ごとに分解して書くとこうなる
 function* genFnB() {
-  yield 1;  
+  yield 1;
   yield 2;
-  yield 3;  
+  yield 3;
   yield "A";
   yield "B";
   yield "C";
@@ -880,11 +880,11 @@ JavaScript で反復子プロトコル(iterator protocol)と反復可能プロ�
 
 ```js:JavaScript
 const iterableObject = {
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     let count = 0;
 
     const iterator = {
-      next() { 
+      next() {
         const iteratorResult = (count < 3)
           ? { value: ++count, done: false }
           : { value: count, done: true };
@@ -916,7 +916,7 @@ const iterable: Iterable<number> = {
         const iteratorResult: IteratorResult<number> = (count < 3)
           ? { value: ++count, done: false }
           : { value: undefined, done: true };
-        
+
         return iteratorResult;
       }
     };
@@ -940,7 +940,7 @@ const iterable: Iterable<number> = {
         const iteratorResult: IteratorResult<number> = (count < 3)
           ? { value: ++count, done: false }
           : { value: undefined, done: true };
-        
+
         return iteratorResult;
       }
     };
@@ -1123,7 +1123,7 @@ const iterator: Iterator<number> = {
 const iterableObject = {
   [Symbol.iterator]() {
     let count = 0;
-    
+
     // イテレータ(iterator protocol を満たすオブジェクト)
     const iterator: Iterator<number> = {
       next() {
@@ -1201,7 +1201,7 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
   next(...args: [] | [TNext]): IteratorRestult<T, TReturn>;
   return(value: TReturn): IteratorResult<T, TReturn>;
   throw(e: any): IteratorResult<T, TReturn>;
-  [Symbol.iterator](): Generator<T, TReturn, TNext>;  
+  [Symbol.iterator](): Generator<T, TReturn, TNext>;
 }
 ```
 
@@ -1381,8 +1381,8 @@ interface AsyncIterable<T> {
 ```ts
 interface Iterator<T, TReturn = any, TNext = undefined> {
     next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
-    return?(value?: TReturn): IteratorResult<T, TReturn>; 
-    throw?(e?: any): IteratorResult<T, TReturn>; 
+    return?(value?: TReturn): IteratorResult<T, TReturn>;
+    throw?(e?: any): IteratorResult<T, TReturn>;
 }
 interface Iterable<T> {
     [Symbol.iterator](): Iterator<T>;
@@ -1437,7 +1437,7 @@ for await (const v of asyncGen(endpoint)) {
 ```ts
 async function* asyncGen(
   url: string
-): AsyncGenerator<string> { 
+): AsyncGenerator<string> {
   const res = await fetch(url);
   const text: string = await res.text();
   yield text;
