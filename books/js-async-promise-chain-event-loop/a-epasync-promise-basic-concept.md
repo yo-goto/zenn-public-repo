@@ -40,7 +40,7 @@ Promise インスタンスには次の３つの状態(**State**)があり、そ�
 
 **Settled**(決定状態、不変状態)は実際の状態ではなく、Pending(待機状態)であるかないかを言い表すための言葉です。**Pending でなければ Settled だと言えます**。
 
-複数の Promise の完了を待つことができる Promise の静的メソッド `Promise.allSettled()` などの意味もこれです。Fulfilled か Rejected かは気にせず、とりあえず Settled になっているかだけかだけに注意を払います。
+複数の Promise の完了を待つことができる Promise の静的メソッド `Promise.allSettled()` などの意味もこれです。Fulfilled か Rejected かは気にせず、とりあえず Settled になっているかだけに注意を払います。
 
 重要なこととして、Settled になった Promise インスタンスの**状態は二度と変わりません**。
 
