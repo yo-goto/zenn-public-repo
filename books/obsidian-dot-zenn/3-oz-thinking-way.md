@@ -178,6 +178,10 @@ VSCode で開くときは以下の拡張機能で Zenn の記事としてのプ�
 
 https://marketplace.visualstudio.com/items?itemName=negokaz.zenn-editor
 
+Zenn 公式からも以下の拡張機能が提供されています。こちらはローカルでの表示と github.dev での表示ができるので最近はこちらを利用しています。また、OSS として PR を受け付けているとのことで、自分も一部の機能をコントリビュートさせていただきました。
+
+https://marketplace.visualstudio.com/items?itemName=zenn.zenn-preview
+
 ## 相互移動の簡便化
 
 Obsidian には「デフォルトアプリで開く」というコマンドが存在しているので、例えば `Cmd+D` というようなホットキーを設定画面から設定しておくことで、マークダウンファイルのデフォルトアプリを VSCode にしておけば一瞬でノートを VSCode で開くようにできます。
