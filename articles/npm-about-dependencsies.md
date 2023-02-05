@@ -6,8 +6,9 @@ emoji: "🐉"
 type: "tech"
 topics: [npm, node]
 date: 2021-10-23
-modified: 2022-11-29
+modified: 2023-02-05
 url: "https://zenn.dev/estra/articles/npm-about-dependencsies"
+AutoNoteMover: disable
 tags: [" #node/npm #type/zenn "]
 aliases: 記事『npmの依存関係について勘違いしていたこと』
 ---
@@ -343,7 +344,7 @@ DAG と Tree の構造は下図のように異なる。
 |---|---|
 | ![DAG](/images/npm-dependencies/img_DAGStructure2.png) | ![Tree](/images/npm-dependencies/img_treeStructure.png) |
 
-そもそも "非循環依存関係の原則"(**Acyclic dependencies principle**) というソフトウェアデザイン原則が存在しているらしい。
+そもそも " 非循環依存関係の原則 "(**Acyclic dependencies principle**) というソフトウェアデザイン原則が存在しているらしい。
 これは「パッケージの依存関係は閉路を持たないようにする」という原則で、パッケージ作成などを行う際にはこの原則に従うことで、閉路 (cycle) を作成しないように、つまり DAG にするようにデザインしなくてはいけないとのこと (パッケージだけでなくコンポーネントについてもこの原則が適用される)。
 
 https://en.wikipedia.org/wiki/Acyclic_dependencies_principle?oldformat=true
@@ -1270,7 +1271,7 @@ ctest@1.0.0 /Users/roshi/Development/Testing/ctest
 
 https://pnpm.io/ja/
 
-上で解説したように npm では Primary として `package.json` に宣言していない Secondary から `require` や `import` ができてしまう。一方 pnpm の場合には store と呼ばれるグローバルな場所にパッケージを管理し、`node_modules` ディレクトリの構造自体をハードリンクやソフトリンクを使い実現している。現実的に `node_moduls` フォルダには Primary のディレクトリしか配置されない(かつシンボリックリンク)ので、Primary 以外を使おうとするとエラーとなる。
+上で解説したように npm では Primary として `package.json` に宣言していない Secondary から `require` や `import` ができてしまう。一方 pnpm の場合には store と呼ばれるグローバルな場所にパッケージを管理し、`node_modules` ディレクトリの構造自体をハードリンクやソフトリンクを使い実現している。現実的に `node_moduls` フォルダには Primary のディレクトリしか配置されない (かつシンボリックリンク) ので、Primary 以外を使おうとするとエラーとなる。
 
 例えば Express パッケージのみを pnpm でインストールした時には次のようなディレクトリ構造となる。`.pnpm` の隠しフォルダ配下には Seconary dependencies のフォルダが store 内にある実際のパッケージへのハードリンクとして作成される。
 

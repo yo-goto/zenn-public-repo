@@ -1,21 +1,26 @@
 ---
 title: "Denoのローカルfetchで非同期処理の練習"
+published: true
+cssclass: zenn
 emoji: "🧗‍♂️"
 type: "tech"
 topics: [Deno, fetch, 非同期処理, javascript]
-published: true
 date: 2022-04-06
+modified: 2023-02-05
 url: "https://zenn.dev/estra/articles/deno-fetch-local-file-async-practice"
-aliases: [記事_Denoのローカルfetchで非同期処理の練習]
+AutoNoteMover: disable
 tags: [" #deno #JavaScript/WebAPI/Fetch #type/zenn  "]
+aliases: 記事_Denoのローカルfetchで非同期処理の練習
 ---
 
-## fetchを練習したい
+## fetch を練習したい
+
 非同期処理について学んでいると、`fetch` などの処理を見かけることがよくあります。
 
 非同期処理をする API などの学習として `fetch` の練習などをしようとしても、`fetch` する対象データについては、公開されている API などを探したり、回数制限などを気にしたりする必要があるので、手軽に試すことが中々難しいです。また Node.js などの環境では標準で使うことができず、`node-fetch` などの外部ライブラリを `npm install` する必要があります。
 
 ## Deno Fetch
+
 そこで、手軽に練習できるものとして、 Deno のビルトイン API として提供さている `fetch` に注目しました。
 
 https://deno.land/manual@v1.20.4/runtime/web_platform_apis#fetch-api
@@ -28,7 +33,7 @@ https://deno.com/blog/every-web-api-in-deno#fetch-request-response-and-headers
 
 Deno の `fetch` の良い点として、ローカルファイルをローカルサーバーなどをたてることなく使える点があげられます。
 
-Deno v1.16 から  `file:` スキームでの `fetch` が行えるようにサポートされたので、サーバーなしで簡単にあつかえるようになりました。
+Deno v1.16 から `file:` スキームでの `fetch` が行えるようにサポートされたので、サーバーなしで簡単にあつかえるようになりました。
 
 :::message
 ここで紹介する Deno の機能は次のバージョンにおいてです。
@@ -39,6 +44,7 @@ deno 1.20.4
 :::
 
 ## 使い方
+
 Deno では絶対ファイル URL のみをサポートしているので、`fetch("./some.json")` のような相対パスによる `fetch` は機能しません。
 
 なので、こちらも webAPI である URL API の `URL()` コンストラクタと `import.meta` を使用することで、絶対ファイル URL を作成します。
@@ -98,7 +104,7 @@ console.log("sync process 2");
 
 実際に実行してみます。Deno はデフォルトでファイル読み書きなどに対してのセキュリティを設けているので `deno run` で実行する際にはパーミッションフラグが必要となります。
 
-今回はファイルの read を行いたいため、`--allow-read` フラグを実行するファイル名の前に入力して実行します(ファイル名の後だとコマンドライン引数として認識され、パーミッションフラグとしては使えなくなってしまうので注意してください)。
+今回はファイルの read を行いたいため、`--allow-read` フラグを実行するファイル名の前に入力して実行します (ファイル名の後だとコマンドライン引数として認識され、パーミッションフラグとしては使えなくなってしまうので注意してください)。
 
 ```js
 ❯ deno run --allow-read denoFetchLocal.js
@@ -109,7 +115,6 @@ got data from "file:///Users/roshi/Development/Testing/understanding-async/deno-
 In laboris aliquip pariatur aliqua officia veniam quis aliquip. Dolor eu magna reprehenderit pariatur pariatur labore officia. Sit irure et excepteur dolor. Minim tempor nisi nulla veniam mollit. Esse elit aute reprehenderit id minim non et anim non id. Quis sunt elit labore officia voluptate cillum incididunt labore mollit ea adipisicing dolor eiusmod. Veniam cupidatat mollit occaecat mollit ullamco.
 
 ```
-
 
 無事に `fetch` でファイル取得をできました。
 
@@ -123,4 +128,3 @@ https://qiita.com/access3151fq/items/48e17d1363de39d01ad1
 https://jsprimer.net/basic/async/
 
 https://jsprimer.net/use-case/ajaxapp/promise/
-

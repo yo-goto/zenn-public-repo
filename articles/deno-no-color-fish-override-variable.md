@@ -1,13 +1,16 @@
 ---
 title: "fishのVAR=VALステートメントでDenoの環境変数 NO_COLOR を上書きする"
+published: true
+cssclass: zenn
 emoji: "👽"
 type: "tech"
 topics: [fish, deno, 環境変数]
-published: true
 date: 2022-03-16
+modified: 2023-02-05
 url: "https://zenn.dev/estra/articles/deno-no-color-fish-override-variable"
-aliases: [記事_fishのVAR=VALステートメントでDenoの環境変数 NO_COLOR を上書きする]
+AutoNoteMover: disable
 tags: " #shell/fish/syntax  #deno/environment   "
+aliases: 記事_fishのVAR=VALステートメントでDenoの環境変数 NO_COLOR を上書きする
 ---
 
 # はじめに
@@ -17,9 +20,10 @@ tags: " #shell/fish/syntax  #deno/environment   "
 https://zenn.dev/estra/articles/zenn-fish-shell-argparse-unknown-options
 
 # VAR=VAL ステートメント
+
 `VAR=VAL` のシンタックスは他のシェルで使われているらしいですが、fish では v3.1 から利用できるようになっています。
 
-使い方としては、**コマンドの前で宣言して一時的に変数を上書きできる**というものになります。
+使い方としては、**コマンドの前で宣言して一時的に変数を上書きできる** というものになります。
 
 https://fishshell.com/docs/current/language.html#overriding-variables-for-a-single-command
 
@@ -63,7 +67,7 @@ $hoge: set in global scope, unexported, with 1 elements
 $hoge[1]: |bar|
 ```
 
-これによって、**外部コマンドに継承させる環境変数を一時的に上書きできます**。例えば、`VAR=VAL` のステートメントと[ブレース展開](https://fishshell.com/docs/current/language.html#brace-expansion)を組み合わせることによって、子プロセスで bash を立ち上げる際に継承させる `PATH` を `/usr/sbin:/sbin:/usr/bin:/bin` にできます。
+これによって、**外部コマンドに継承させる環境変数を一時的に上書きできます**。例えば、`VAR=VAL` のステートメントと [ブレース展開](https://fishshell.com/docs/current/language.html#brace-expansion) を組み合わせることによって、子プロセスで bash を立ち上げる際に継承させる `PATH` を `/usr/sbin:/sbin:/usr/bin:/bin` にできます。
 
 ```shell
 ❯ PATH={/usr,}/{s,}bin bash
@@ -133,7 +137,7 @@ https://zenn.dev/estra/articles/zenn-fish-shell-argparse-unknown-options
 
 ![](/images/deno-no-color-fish-override-variable/deno-run-no-ansi-color.jpg)
 
-`NO_COLOR` 環境変数は存在さえしていれば値自体はなんでもよいのですが(`NO_COLOR=true` などでも OK)、`VAR=VAL` のステートメントは値が空でも機能するので上記のコードで色無し出力が可能です。
+`NO_COLOR` 環境変数は存在さえしていれば値自体はなんでもよいのですが (`NO_COLOR=true` などでも OK)、`VAR=VAL` のステートメントは値が空でも機能するので上記のコードで色無し出力が可能です。
 
 実際に値なしの状態を調べてみても上書きでエクスポートできていますね。
 
@@ -153,4 +157,3 @@ https://no-color.org/
 Deno CLI のように `NO_COLOR` 環境変数を利用して色無しで出力できるライブラリやツールなどが確認できます。
 
 ![](/images/deno-no-color-fish-override-variable/no_color_org.jpg)
-
