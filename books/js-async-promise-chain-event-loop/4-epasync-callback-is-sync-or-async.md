@@ -136,7 +136,7 @@ console.log("🦖 [3] MAINLINE: Sync");
 ```sh
 ❯ deno run whatIsCallbackFn-basic.js
 🦖 [1] MAINLINE: Sync
-👻 [2] Sync by syncCall
+👻 [2] This line is Synchronously executed by syncCall
 🦖 [3] MAINLINE: Sync
 ```
 
@@ -152,7 +152,7 @@ const syncCall = (callback, order) => {
   callback([order, "Synchronously", syncCall.name]);
 };
 const asyncAPICall = (callback, order) => {
-  setTimeout(callback, 1000, [order, "Asynchrouously", asyncAPICall.name])
+  setTimeout(callback, 1000, [order, "Asynchronously", asyncAPICall.name])
 };
 const thenCall = (callback, order) => {
   return Promise.resolve([order, "Asynchronously", thenCall.name])
@@ -175,9 +175,9 @@ console.log("🦖 [5] MAINLINE: Sync");
 🦖 [1] MAINLINE: Sync
 🦖 [2] MAINLINE: Sync
 🦖 [3] MAINLINE: Sync
-👻 [4] Sync by syncCall
+👻 [4] This line is Synchronously executed by syncCall
 🦖 [5] MAINLINE: Sync
-👻 [6] Async by thenCall
+👻 [6] This line is Asynchronously executed by thenCall
 👻 [7] This line is Asynchrouously executed by asyncAPICall
 ```
 
