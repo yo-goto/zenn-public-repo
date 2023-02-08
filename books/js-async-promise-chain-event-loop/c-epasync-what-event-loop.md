@@ -548,7 +548,7 @@ while (true) {
   queue = getNextQueue();
   task = queue.pop();
   execute(task);
-  
+
   while (micortaskQueue.hasTasks()) {
     doMicrotask();
   }
@@ -590,7 +590,7 @@ https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-
 
 この講演で紹介されているイベントループの全体像は以下のようになっています。
 
-![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*[2016 Node Interactive.pdf](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
+![Node-event-loop](/images/js-async/img_node-event-loop-1.jpg)*[2016 Node Interactive.pdf](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw) より引用*
 
 上図での黄色い小さい箱が、Call stack で実行される JavaScript コードです。その黄色いボックス内部について拡大して見ているのが下図で、その内部はコールバック(つまり Task) を実行した後にマイクロタスクをキューが完全に空にするまで処理するためのループとなっています。
 
@@ -787,6 +787,59 @@ https://www.youtube.com/watch?list=TLGGmD0fij1sF90wNTA1MjAyMg&v=X9zVB9WafdE&feat
 
 https://developer.ibm.com/tutorials/learn-nodejs-the-event-loop/#why-you-need-to-understand-the-event-loop
 
+### イベントループの実装
+
+Node でのイベントループを実際に実装するのに使われているライブラリは Libuv (**Unicorn Velociraptor**) です。従って、次の Libuv の解説動画と合わせることで、C 言語のコードでのイベントループ全体像をつかむことができます。C 言語については詳しくありませんが、雰囲気はつかむことができました。
+
+@[youtube](sGTRmPiXD4Y)
+
+これまで擬似コードで理解していましたが、実装はこうなっており、Phase のサイクルが実現されていることが分かります。また、タイマーでのポーリング機構で時間のデルタを取るという処理のための時間更新処理が含まれています。
+
+```cpp:Node 環境のイベントループ中心部
+int uv_run(uv_loop_t* loop, uv_run_mode mode) {
+  int timeout, r, ran_pending;
+
+  r = uv__loop_alive(loop);
+  if (r!)
+    uv__update_time(loop);
+
+  while (r != 0 && loop->stop_flag == 0) {
+    uv_update_time(loop);
+    // イベントループ自体の時間の更新(タイマーはこの時間との差分を取る)
+    uv_run_timers(loop); // Timers phase
+    ran_pending = uv__run_pending(loop); // Pending I/O callbacks phase
+    uv__run_idle(loop); // Idle phase
+    uv__run_prepare(loop); // Prepare phase
+
+    timeout = 0;
+    if ((mode == UV_RUN_ONCE && !ran_pending) || mode == UV_RUN_DEFAULT)
+      timeout = uv_backend_timeout(loop);
+
+    uv_io_poll(loop, timeout); // Poll phase
+    uv_run_check(loop); // Check phase
+    uv_run_closing_handles(loop); // Close callbacks phase
+
+    if (mode == UV_RUN_ONCE) {
+      uv_update_time(loop);
+      uv_run_timers(loop);
+    }
+
+    // 待機中の Task が残っているかどうか確認する
+    r = uv__loop_alive(loop);
+    if (mode == UV_RUN_ONCE || mode == UV_RUN_NOWAIT)
+      break;
+  }
+
+  loop->stop_flag = 0;
+
+  return r;
+}
+```
+
+実際のコードはリポジトリ上だとこちらにあります。現時点(2023-02-08)での最新版イベントループです。Node のイベントループの実装について詳しく知りたい場合にはこのファイルを調査してください。
+
+https://github.com/nodejs/node/blob/28bf0317c2e2e745f38275d930e3ead9e301ee1a/deps/uv/src/unix/core.c#L382-L448
+
 ### タイマーの比較
 
 Phase では Timers が最初で Check よりも早く実行されるはずですが、遅延時間を指定しない `setTimeout()` と `setImmediate()` の比較をそれら単体でやると実行順序は不定となります。
@@ -812,7 +865,7 @@ timeout
 > The order in which the timers are executed will vary depending on the context in which they are called. If both are called from within the main module, then timing will be bound by the performance of the process (which can be impacted by other applications running on the machine).
 > ([The Node.js Event Loop, Timers, and process.nextTick() | Node.js](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout) より引用)
 
-I/O サイクル(Callback-based API の `fs` のメソッドのコールバックの中など)で呼び出すと決定的になり、`setImmediate()` のコールバックが常に先に実行されます。
+I/O サイクル(Callback-based API の `fs` のメソッドのコールバックの中など)で呼び出すと決定論的になり、`setImmediate()` のコールバックが常に先に実行されます。
 
 ```js
 const fs = require('fs');
@@ -822,7 +875,7 @@ fs.readFile("./test.md", () => {
   setTimeout(() => console.log("timeout"));
 });
 
-// 実行すると常に同じ順番になる(決定的)
+// 実行すると常に同じ順番になる(決定論的)
 // ❯ node ioCycle.js
 // immediate
 // timeout
@@ -883,6 +936,16 @@ while (tasksAreWaiting()) {
 ```
 
 ただし、Node 互換モードがあるので、そのモードを使用する際には、Node の nextTickQueue などをポリフィルを使って使用できることに注意してください。
+
+## イベントループの実装
+
+一応実装がどこにあるかも示しておきます。現時点(2023-02-08) 最新の Rust で書かれたイベントループの実行関数と tick (一周の処理) はリポジトリ上では次の場所にあります。Deno のイベントループの実装について詳しく調べたい場合はこのファイルを調査してください。
+
+https://github.com/denoland/deno/blob/161a4fea47d134fa6077910b794883ffb6e9b0c5/core/runtime.rs#L1238-L1438
+
+Rust が分からなくても雰囲気はつかめます。おそらく ops は Operations の略称ですし、実装では Node 互換モードのための NextTick を枯らすための処理があることが分かります。また、コメントで Dynamic import の解決や Unhandled Rejection に関しても記述されています。実行順番的には Dynamic import の解決 → NextTick を枯らす → Microtask を枯らす → Promise Rejection をチェックする、というようになっていますね。
+
+イベントループの基本動作メカニズム(タスクとマイクロタスクの関係)については理解できても、これらの細かい箇所は筆者もまだ理解しきれていない技術の部分であり、最終的にはこれらの部分を含めて理解するということになります(この本では未記載の箇所であり、将来的には全貌を解明するつもりです)。
 
 # 非同期処理を考える上でのイベントループ
 
