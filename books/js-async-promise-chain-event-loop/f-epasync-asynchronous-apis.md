@@ -472,7 +472,7 @@ Promise-based API は Promise インスタンスを返すため、Promise を介
 
 - (1) タスクベースの非同期 API
   - コールバックをタスクとして発行する
-  - 例: `setTimeout()` や `setInerval()` など
+  - 例: `setTimeout()` や `setInterval()` など
 - (2) マイクロタスクベースの非同期 API
   - (A) コールバックをマイクロタスクとして発行する非同期 API
     - 例: `queueMicrotask()` や `MutationObserver()` など
