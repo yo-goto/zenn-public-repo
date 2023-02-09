@@ -169,7 +169,7 @@ WHATWG の仕様的には後述するマイクロタスク(Microtask)はタス�
 ```js
 // タスクベースの非同期 API
 const timerId = setTimeout(() => {
-  console.log("⏰ TIMRES: task [Functional Execution Context]");
+  console.log("⏰ TIMERS: task [Functional Execution Context]");
 }, 1000);
 // 1000 ミリ秒後にタイマー用タスクキューにタスクを発行する
 ```
@@ -193,14 +193,14 @@ function setTimeout(
 
 https://doc.deno.land/deno/stable/~/setTimeout
 
-### setInvertal API
+### setInterval API
 
 タスクベースの非同期 API である、`setInterval()` は、`setInverval(cb, interval)` というように指定したインターバル時間が経過するたびに、引数のコールバック関数をタスクとしてタスクキューに発行します。
 
 ```js
 // タスクベースの非同期 API
-const inervalId = setInterval(() => {
-  console.log("⏰ TIMRES: task [Functional Execution Context]");
+const intervalId = setInterval(() => {
+  console.log("⏰ TIMERS: task [Functional Execution Context]");
 }, 1000);
 // 1000 ミリ秒経過するごとにタイマー用タスクキューにタスクを発行する
 ```
@@ -229,7 +229,7 @@ https://doc.deno.land/deno/stable/~/setInterval
 > Each [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop) has a microtask queue, which is a [queue](https://infra.spec.whatwg.org/#queue) of [microtasks](https://html.spec.whatwg.org/multipage/webappapis.html#microtask), initially empty. A microtask is a colloquial way of referring to a [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) that was created via the [queue a microtask](https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask) algorithm.
 > ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)
 
-イベントループは Currnetly running task (現在実行中のタスク) を持ち、さらに**単一の**マイクロタスクキュー(Microtask queue)を持つというように定義されていますね。
+イベントループは Currently running task (現在実行中のタスク) を持ち、さらに**単一の**マイクロタスクキュー(Microtask queue)を持つというように定義されていますね。
 
 仕様の『[spin the event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)』の項目では、次のように記載されています。
 
@@ -239,7 +239,7 @@ https://doc.deno.land/deno/stable/~/setInterval
 > task could be a [microtask](https://html.spec.whatwg.org/multipage/webappapis.html#microtask).
 > ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model:currently-running-task-5)より引用)
 
-イベントループの開始時にタスクをイベントループの Currently running task として扱いますが、この場合マイクロタスクであってもよいと書かれているので、現在実行中のタスクとマイクロタスクも Currnetly running task として考慮できます。従って、本質的にはタスクとマイクロタスクも同じ扱いで、コールスタック上にプッシュされた実行コンテキストであると理解できます。
+イベントループの開始時にタスクをイベントループの Currently running task として扱いますが、この場合マイクロタスクであってもよいと書かれているので、現在実行中のタスクとマイクロタスクも Currently running task として考慮できます。従って、本質的にはタスクとマイクロタスクも同じ扱いで、コールスタック上にプッシュされた実行コンテキストであると理解できます。
 
 # マイクロタスクキュー
 
@@ -297,7 +297,7 @@ queueMicrotask(() => {
 
 https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask
 
-単にマイクロタスクを作成したいだけなら、`Promise.resolve().then()` よりも `queueMicortask()` を使用することが推奨されます。`queueMicrotask()` を使用することで、マイクロタスクを作成するためにプロミスを使うことで発生するオーバーヘッドなどを回避できます。
+単にマイクロタスクを作成したいだけなら、`Promise.resolve().then()` よりも `queueMicrotask()` を使用することが推奨されます。`queueMicrotask()` を使用することで、マイクロタスクを作成するためにプロミスを使うことで発生するオーバーヘッドなどを回避できます。
 
 https://developer.mozilla.org/ja/docs/Web/API/HTML_DOM_API/Microtask_guide#enqueueing_microtasks
 
@@ -333,7 +333,7 @@ https://doc.deno.land/deno/stable/~/queueMicrotask
 
 ### MutationObserver API
 
-`MutationOberver()` コンストラクタ関数は MutationObserver API という大きなインタフェースの一部として提供されています。DOM 内の要素を監視して、何かの変更があった際にコールバックをマイクロタスクとして発火する Web API です。この API が発行するマイクロタスクは Promise とは関係なく、`MutationObserver()` 自体からも Promise ではなくオブザーバインスタンスが返ってくるので注意してください。
+`MutationObserver()` コンストラクタ関数は MutationObserver API という大きなインタフェースの一部として提供されています。DOM 内の要素を監視して、何かの変更があった際にコールバックをマイクロタスクとして発火する Web API です。この API が発行するマイクロタスクは Promise とは関係なく、`MutationObserver()` 自体からも Promise ではなくオブザーバインスタンスが返ってくるので注意してください。
 
 マイクロタスクキューは基本的に Promise 処理のための機構ですが、この Web API はその機構を利用します。
 
@@ -383,7 +383,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#ta
 
 - 新しい JavaScript のプログラムやサブプログラムが**直接的に実行される時**(**コンソールから**や、`<script>` 要素内のコードを実行するなどの形式で)
 - イベントが発火し、イベントのコールバック関数がタスクキューへと追加する時
-- `setTimeout()` や `setInterva()` で作成されたタイムアウトやインターバルの時間が経過し、登録しておいたコールバックがタスクキューへと追加される時
+- `setTimeout()` や `setInterval()` で作成されたタイムアウトやインターバルの時間が経過し、登録しておいたコールバックがタスクキューへと追加される時
 
 重要なこととして、イベントループにおいて最初のタスクはプログラムの実行開始そのものであり、コンソールから実行するときや、スクリプトタグのコードを実行する際に同期処理の部分はまとめてタスクとして実行されます。
 
@@ -397,7 +397,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#ta
   const foo = bar;
   foo.doSomething();
 
-  document.body.addEventLlistener('keydown', (event) => {
+  document.body.addEventListener('keydown', (event) => {
     // <-- task2
     if (event.key === 'PageDown') {
       location.href = "/#/36";
@@ -413,7 +413,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#ta
 
 チャプター『[コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)』で説明したようにコードが実行開始されると、グローバルコンテキスト(Global Execution Context)が作成されて、コールスタック(Call stack)上にそのグローバルコンテキストが積まれます。そして、同期処理の関数呼び出しなどはすべてこのグローバルコンテキストに積まれることで実行されていきます。同期処理部分がすべて実行されて、このグローバルコンテキストが破棄された後で、ある時間にキーダウンイベントなどをブラウザが受け取ると、Web API がそのイベントを受け取って `addEventListener()` で登録しておいたコールバックを別のタスクとしてイベント用のタスクキューへと送ります。
 
-イベントループはそのタスクが存在していることを確認し、元々スクリプトタグが評価された時点からイベントが発火されるまで時間がたっていたとしても、そのコールバック関数により作成される関数実行コンテキストをコールスタック上に配置して、Ruuning Execution Context として実行します(その際、タスクは Currently running task として扱われています)。
+イベントループはそのタスクが存在していることを確認し、元々スクリプトタグが評価された時点からイベントが発火されるまで時間がたっていたとしても、そのコールバック関数により作成される関数実行コンテキストをコールスタック上に配置して、Running Execution Context として実行します(その際、タスクは Currently running task として扱われています)。
 
 このように、`<script>` タグの読み込みから、スクリプト内の同期処理をすべて処理するまで最初のタスクとして考えることができます(もちろん内部で色々なプロセスを行っているのでしょうが)。
 

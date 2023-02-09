@@ -161,7 +161,7 @@ function Promise() { [native code] }
 JavaScript エンジンにはそれを埋め込む環境が提供する Web APIs などは通常含まれませんが、最低限の Web API もどきは提供されているようです。
 
 - `console.log()` などの Console API は提供されている(スタンドアロンでテストするためにも必要)
-- `setTimeout()` は存在するが `setInvertal()` は提供されていない
+- `setTimeout()` は存在するが `setInterval()` は提供されていない
 - Promise は ECMAScript のビルトインオブジェクトなのでもちろん存在する
 - `queueMicrotask()` は Web API なので提供されていない
 
@@ -171,7 +171,7 @@ JavaScript エンジンにはそれを埋め込む環境が提供する Web APIs
 
 ```js:v8SimpleTask.js
 // v8SimpleTask.js
-console.log("[1] 🦖 MAINELINE: Start [GEC]");
+console.log("[1] 🦖 MAINLINE: Start [GEC]");
 
 setTimeout(() => {
   console.log("[3] ⏰ TIMERS: timeout 5000ms");
