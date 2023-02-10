@@ -58,6 +58,7 @@ https://code.visualstudio.com/api/references/vscode-api
 ちなみに VSCode API では非同期処理は Thenable を返す処理となっています。
 
 > Being independent of a specific promise library is expressed in the API by the `Thenable`\-type. `Thenable` represents the common denominator which is the [then](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) method.
+> ([VS Code API | Visual Studio Code Extension API](https://code.visualstudio.com/api/references/vscode-api#promises) より引用)
 
 今回 PR した機能の実装に使った API は Thenable を返す処理が実際に結構多かったので、[非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop) をやっておいてよかったです😽
 :::
