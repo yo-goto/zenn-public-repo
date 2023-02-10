@@ -1,6 +1,6 @@
 ---
 title: "Zenn の VSCode Web 拡張にプルリクエストしてみた"
-published: false
+published: true
 cssclass: zenn
 emoji: "🚀"
 type: "tech"
