@@ -112,15 +112,15 @@ Web 拡張は構造自体は通常の拡張機能と同じものを共有して�
 今回取り組んだプルリクエストは以下のものです。バグは両者ともに YAML フロントマターのプレビューに関しての取り組みで、新規機能の提案としてはガイド機能と執筆時に使用するコマンドの追加、既存コマンドそのもののユーザビリティの向上、UI 上の表現設定などについてのものです。
 
 - B. 未発見のバグを修正
-  - [本のプレビューにおけるサマリー項目のバグ修正](#-アクティブファイルのプレビュー機能の実装)
-  - [公開予約時間が正しくプレビューされないバグを修正](#-公開予約時間が正しくプレビューされないバグを修正)
+  - 本のプレビューにおけるサマリー項目のバグ修正
+  - 公開予約時間が正しくプレビューされないバグを修正
 - C. 新規機能の提案・実装
-  - [チャプター作成機能の実装](#-チャプター作成機能の実装)
-  - [ガイド記事一覧機能の実装](#-ガイド記事一覧機能の実装)
-  - [英日コマンドのための部分的ローカライズの実施](#-英日コマンドのための部分的ローカライズの実施)
-  - [アクティブファイルのプレビュー機能の実装](#-アクティブファイルのプレビュー機能の実装)
+  - チャプター作成機能の実装
+  - ガイド記事一覧機能の実装
+  - 英日コマンドのための部分的ローカライズの実施
+  - アクティブファイルのプレビュー機能の実装
 
-## 🔖 本のプレビューにおけるサマリー項目のバグ修正
+## 🔖 (1) 本のプレビューにおけるサマリー項目のバグ修正
 
 https://github.com/zenn-dev/zenn-vscode-extension/pull/50
 
@@ -190,7 +190,7 @@ https://github.com/zenn-dev/zenn-editor/blob/75953c40fdc882c157bb27108b72cf8e6cf
 
 ただ、`yarn lint` でリンターを実行するのをわすれていたため型エラーになり、後で修正してもらいました。パッケージのメソッドの返り値の型を `uknown` から `any` などに変更するにはアンビエント宣言で上書きする必要があるようです (これは知らなかったです)。
 
-## ⏰ 公開予約時間が正しくプレビューされないバグを修正
+## ⏰ (2) 公開予約時間が正しくプレビューされないバグを修正
 
 https://github.com/zenn-dev/zenn-vscode-extension/pull/65
 
@@ -233,7 +233,7 @@ https://github.com/zenn-dev/zenn-vscode-extension/blob/b5106f3ac40f7a6415b899140
 
 ![published_atが正しくプレビューされる](/images/zenn-vscode-ext/img_zenn-ext-published-at-parse.jpg)
 
-## 📖 チャプター作成機能の実装
+## 📖 (3) チャプター作成機能の実装
 
 https://github.com/zenn-dev/zenn-vscode-extension/pull/53
 
@@ -298,7 +298,7 @@ TreeView の articles セクションには記事を作成するためのボタ�
 
 このボタンをクリックすると、記事作成時と同じくスラグ入力のプロンプが表示され、適切なスラグを入力することで対象となる本のディレクトリ内にチャプターファイルが作成されます。
 
-## 🗺️ ガイド記事一覧機能の実装
+## 🗺️ (4) ガイド記事一覧機能の実装
 
 https://github.com/zenn-dev/zenn-vscode-extension/pull/59
 
@@ -367,7 +367,7 @@ https://github.com/zenn-dev/zenn-vscode-extension/blob/b1d34b1d48e39d45b60678b6e
 
 ![コマンドプロンプトからの実行パターン](/images/zenn-vscode-ext/img_zenn-ext-openguide-prompt.jpg)
 
-## 🦋 英日コマンドのための部分的ローカライズの実施
+## 🦋 (5) 英日コマンドのための部分的ローカライズの実施
 
 https://github.com/zenn-dev/zenn-vscode-extension/pull/63
 
@@ -413,7 +413,7 @@ https://github.com/zenn-dev/zenn-vscode-extension/blob/152c3f56fa2cebaf31ba3e80a
 
 ![英日コマンドの両方がある](/images/zenn-vscode-ext/img_double-command-name.jpg)
 
-## 🦀 アクティブファイルのプレビュー機能の実装
+## 🦀 (6) アクティブファイルのプレビュー機能の実装
 
 https://github.com/zenn-dev/zenn-vscode-extension/pull/61
 
