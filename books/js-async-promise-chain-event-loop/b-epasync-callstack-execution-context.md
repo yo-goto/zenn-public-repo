@@ -133,50 +133,60 @@ Chrome などのブラウザ環境ではソースにブレークポイントを�
 
 ## タスクとなるコールバックの場合
 
-`setTimeout(callback, delay)` の場合のコールバック関数 `callback` は非同期的に処理されてタスクキュー(Task queue)へと追加されます。タスクキューへ追加されるタイミングは環境(Environment)がタイマーによって別スレッドで計測しています。指定した遅延時間 `delay` が経過したことが分かると、環境はそのコールバックをタスクキューへと送信します。`setTimeout()` や `setInterval()` で指定した時間を環境が並列的にバックグラウンドで計測してくれているおかげで、メインスレッドで別の作業ができます。
+:::message alert
+スクラップの [コメント](https://zenn.dev/link/comments/6f4fa06b9f805d) にて指摘していただいたコード最後の `console.log()` の実行コンテキストが抜け落ちてしまっている箇所を修正いたしました。
+:::
+
+`setTimeout(callback, delay)` の場合のコールバック関数 `callback` は非同期的に処理されてタスクキュー(Task queue) へと追加されます。タスクキューへ追加されるタイミングは環境 (Environment) がタイマーによって別スレッドで計測しています。指定した遅延時間 `delay` が経過したことが分かると、環境はそのコールバックをタスクキューへと送信します。`setTimeout()` や `setInterval()` で指定した時間を環境が並列的にバックグラウンドで計測してくれているおかげで、メインスレッドで別の作業ができます。
 
 例えば、次のように `setTimeout()` でタスクを発行するシンプルなスクリプトで考えてみます。ブラウザ環境とランタイム環境で考え方は変わりません。
 
 ```js:simpleTask.js
 // simpleTask.js
-console.log("[1] 🦖 MAINELINE: Start [Global Execution Context]");
+console.log("[1] 🦖 MAINELINE: Start [GEC]");
+
 setTimeout(function taskFunc() {
-  console.log("[3] ⏰ TIMERS: timeout 5000ms [Functional Execution Context (taskFunc)]");
+  console.log("[3] ⏰ TIMERS: timeout 5000ms [EFC]");
 }, 5000); // 5000 ミリ秒後にタスクキューへタスクを発行
-console.log("[2] 🦖 MAINELINE: End [Global Execution Context]");
+
+console.log("[2] 🦖 MAINELINE: End [GEC]");
 ```
 
 :::message
-説明しやすいようにコールバック関数にあえて名前をつけていまが、通常はアロー関数などで無名関数(匿名関数)になっているのが普通ですので注意してください。
+説明しやすいようにコールバック関数にあえて名前をつけていまが、通常はアロー関数などで無名関数 (匿名関数) になっているのが普通ですので注意してください。
 :::
 
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINELINE: Start [Global Execution Context]
-[2] 🦖 MAINELINE: End [Global Execution Context]
-[3] ⏰ TIMERS: timeout 5000ms [Functional Execution Context (taskFunc)]
+[1] 🦖 MAINELINE: Start [GEC]
+[2] 🦖 MAINELINE: End [GEC]
+[3] ⏰ TIMERS: timeout 5000ms [FEC (taskFunc)]
 ```
 
 この時に何が起こるかを考えてみます。コールスタックには次の図のような過程で実行コンテキストが積まれていきます。
 
 ![Execution Context Stack2](/images/js-async/img_executionContextStack_2_task.jpg)
 
-- (0 → 1) プログラムが開始されると、まずグローバルコンテキスト(GEC: Global Execution Context)が作成されて、コールスタック(Execution context stack)へとプッシュされます。プッシュされた実行コンテキスト(Execution context)はコールスタック上でトップになるので、グローバルコンテキストは Ruuning Execution Context へとなります。
-- (1 → 2) コードは上から読まれ、処理されていきます。`console.log()` 用の関数実行コンテキストが作成され、この実行コンテキストはコールスタックへとプッシュされます。プッシュされた実行コンテキストはコールスタック上でトップなので Ruuning Execution Context になります。
+- (0 → 1) プログラムが開始されると、まずグローバルコンテキスト (GEC: Global Execution Context) が作成されて、コールスタック (Execution context stack) へとプッシュされます。プッシュされた実行コンテキスト (Execution context) はコールスタック上でトップになるので、グローバルコンテキストは Running Execution Context へとなります。
+- (1 → 2) コードは上から読まれ、処理されていきます。`console.log()` 用の関数実行コンテキストが作成され、この実行コンテキストはコールスタックへとプッシュされます。プッシュされた実行コンテキストはコールスタック上でトップなので Running Execution Context になります。
 - (2 → 3 → 4) コンソールに出力がなされて、すぐにこの実行コンテキストはコールスタックからポップして破棄されます。再びグローバルコンテキストがトップになり、Running Execution Context となります。
-- (4 → 5) そして、次の処理である `setTimeout()` が実行され、その実行コンテキストである関数実行コンテキストがコールスタック上からプッシュされて Ruuniing Execution Context となります。これは非同期 API であるため環境にタイマーで指定時間 5000 ミリ秒を図るように指示します。
+- (4 → 5) そして、次の処理である `setTimeout()` が実行され、その実行コンテキストである関数実行コンテキストがコールスタック上からプッシュされて Running Execution Context となります。これは非同期 API であるため環境にタイマーで指定時間 5000 ミリ秒を図るように指示します。
 - (5 → 6) コールスタック上でトップの実行コンテキストはすぐにポップし破棄されます。呼び出し元であったグローバルコンテキストが再びトップで Running Execution Context となります。
-- (6 → 7) コールスタック上のトップはグローバルコンテキストであるため、Running Execution Context はグローバルコンテキストとなりますが、他の何も処理すべきものが残っていないのでグローバルコンテキストはすぐにポップし破棄されます。
-- (6 → 7 → 8) しばらく、コールスタックは空の状態となりますが(ブラウザ環境ならレンダリングの作業が一定時間の間隔でなされています)、`setTimeout()` で指定していた遅延時間 5000 ミリ秒が経過した時点で登録しておいたコールバック関数が Web API からタスクキューにタスクとして発行されます。
-- (8 → 9) タスクキューにあるタスクはコールスタック上へと関数実行コンテキストを積むことで実行されます。今回グローバルコンテキストは存在していませんので、一番下のコンテキストが `taskFunc()` による関数実行コンテキストとなります。
-- (9 → 10 → 11) コールバック関数 `taskFunc()` の中身がすべて実行されます。`console.log()` の実行コンテキストが上に積まれてコンソールに出力されますが、すぐにポップして破棄されます。
-- (11 → 12) コールバック関数 `taskFunc()` 内の処理がすべて終わったので実行コンテキストはポップして破棄されます。再びコールスタックは空の状態となります。
-- (8 → 9 → 10) グローバルスコープの処理がすべて終わったのでグローバルコンテキストがポップし破棄されます。これによりコールスタックは完全に空の状態になります(ブラウザ環境ならレンダリングの作業が一定間隔である)
+- (6 → 7 → 8) コード配置上最後にある `console.log()` 用の関数実行コンテキストが最初のステップと同じ要領で作成され、この実行コンテキストはコールスタックへとプッシュさて、Running Execution Context となり、コンソールに出力が実行されます。
+- (8 → 9 → 10) コールスタック上のトップはグローバルコンテキストであるため、Running Execution Context はグローバルコンテキストとなりますが、他の何も処理すべきものが残っていないのでグローバルコンテキストはすぐにポップします。
+- (10 → 11) しばらく、コールスタックは空の状態となりますが (ブラウザ環境ならレンダリングの作業が一定時間の間隔でなされています)、`setTimeout()` で指定していた遅延時間 5000 ミリ秒が経過した時点で登録しておいたコールバック関数が Web API からタスクキューにタスクとして発行されます。
+- (12 → 13) タスクキューにあるタスクはコールスタック上へと関数実行コンテキストを積むことで実行されます。今回グローバルコンテキストは存在していませんので、一番下のコンテキストが `taskFunc()` による関数実行コンテキストとなります。
+- (13 → 14) コールバック関数 `taskFunc()` の中身がすべて実行されます。`console.log()` の実行コンテキストが上に積まれてコンソールに出力されますが、すぐにポップして破棄されます。
+- (14 → 15) コールバック関数 `taskFunc()` 内の処理がすべて終わったので実行コンテキストはポップして破棄されます。再びコールスタックは空の状態となります。
 
 このように非同期のコールバックは同期処理がすべて処理され、コールスタックが空になった後で、タスクとしてコールスタックに送られて実行されるようになっています。最初にコールスタックが空になるのはグローバルコンテキストがポップした後です。
 
 # マイクロタスクになるコールバックの場合
+
+:::message alert
+スクラップの [コメント](https://zenn.dev/link/comments/6f4fa06b9f805d) にて指摘していただいたコード最後の `console.log()` の実行コンテキストが抜け落ちてしまっている箇所を修正いたしました。
+:::
 
 マイクロタスクのチェックポイント、つまり「いつマイクロタスクを実行するか」が非同期処理の制御予測には重要です。マイクロタスクのチェックポイントは「**コールスタックが空になった時点**」です。コールスタックが空になったら必ずマイクロタスクを処理し、マイクロタスクキュー内にあるすべてのマイクロタスクが完全になくなるまですべて処理します。
 
@@ -186,20 +196,22 @@ console.log("[2] 🦖 MAINELINE: End [Global Execution Context]");
 
 ```js:simpleMicroTask.js
 // simpleMicroTask.js
-console.log("[1] 🦖 MAINELINE: Start [Global Execution Context]");
+console.log("[1] 🦖 MAINELINE: Start [GEC]");
+
 Promise.resolve()
   .then(function microTaskFunc() {
-    console.log("[3] 👦 MICRO: [Functional Execution Context (microTaskFunc)]");
+    console.log("[3] 👦 MICRO: [FEC (microTaskFunc)]");
   }); // 直ちにマイクロタスクキューへマイクロタスクを発行する
-console.log("[2] 🦖 MAINELINE: End [Global Execution Context]");
+
+console.log("[2] 🦖 MAINELINE: End [GEC]");
 ```
 
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINELINE: Start [Global Execution Context]
-[2] 🦖 MAINELINE: End [Global Execution Context]
-[3] 👦 MICRO: [Functional Execution Context (microTaskFunc)]
+[1] 🦖 MAINELINE: Start [GEC]
+[2] 🦖 MAINELINE: End [GEC]
+[3] 👦 MICRO: [FEC (microTaskFunc)]
 ```
 
 流れは完全にタスクの場合と同じです。
@@ -207,6 +219,10 @@ console.log("[2] 🦖 MAINELINE: End [Global Execution Context]");
 タスクの場合は 5000 ミリ秒が経過した後でタスクが発行されていましたが、今回 `Promise.resolve().then()` の場合は直ちにコールバック関数をマイクロタスクキューへマイクロタスクとして発行します。従って、グローバルコンテキストがコールスタックからポップされた直後にコールスタックへと積まれて登録していたコールバック関数が実行されます。
 
 ![3](/images/js-async/img_executionContextStack_3_microtask.jpg)
+
+:::message alert
+冗長になるので図では、 `Promise.resolve()` の呼び出しと `then()` メソッドの呼び出しを一つの実行コンテキストとして表現しています。
+:::
 
 # マイクロタスクとタスクの実行
 
