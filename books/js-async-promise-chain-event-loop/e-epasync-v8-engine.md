@@ -65,7 +65,7 @@ V8 エンジンをスタンドアロンで利用できればほぼ素の ECMAScr
 
 ## jsvu
 
-そして、実際 V8 エンジンはスタンドアロンで利用できます。次の GoogleChromeLabs が提供している jsuv(JavaScript engine Version Updater) でローカルに簡単にインストールでき、ソースからコンパイルすることなく利用できます。
+そして、実際 V8 エンジンはスタンドアロンで利用できます。次の GoogleChromeLabs が提供している jsvu(JavaScript engine Version Updater) でローカルに簡単にインストールでき、ソースからコンパイルすることなく利用できます。
 
 https://github.com/GoogleChromeLabs/jsvu
 
@@ -183,15 +183,15 @@ setTimeout(() => {
   // 遅延時間 0 ms
 });
 
-console.log("[2] 🦖 MAINELINE: End [GEC]");
+console.log("[2] 🦖 MAINLINE: End [GEC]");
 ```
 
 V8 コマンドでは `deno run` や `node` とまったく同じ様にスクリプト名を引数に渡して JavaScript を実行できます。
 
 ```sh
 ❯ v8 v8SimpleTask.js
-[1] 🦖 MAINELINE: Start [GEC]
-[2] 🦖 MAINELINE: End [GEC]
+[1] 🦖 MAINLINE: Start [GEC]
+[2] 🦖 MAINLINE: End [GEC]
 [3] ⏰ TIMERS: timeout 5000ms
 [4] ⏰ TIMERS: timeout 0 ms
 ```
@@ -239,7 +239,7 @@ setTimeout(() => {
     });
   setTimeout(() => {
     // 5th Task
-    console.log("⏰ [13] TIMRES: setTimeout 4th");
+    console.log("⏰ [13] TIMERS: setTimeout 4th");
     Promise.resolve("2nd Promise")
       .then((value) => {
         console.log("👦 [14] MICRO: Resolved value:", value);
@@ -248,11 +248,11 @@ setTimeout(() => {
         console.log("👦 [15] MICRO: Next chain");
       });
   });
-  console.log("⏰ [5] TIMRES: [callback end]");
+  console.log("⏰ [5] TIMERS: [callback end]");
 });
 setTimeout(() => {
   // 3rd Task
-  console.log("⏰ [8] TIMRES: setTimeout 2nd [callback start]");
+  console.log("⏰ [8] TIMERS: setTimeout 2nd [callback start]");
   Promise.resolve("3rd Promise")
     .then((value) => {
       console.log("👦 [10] MICRO: Resolved value:", value);
@@ -266,7 +266,7 @@ setTimeout(() => {
 Promise.resolve()
   .then(() => {
     console.log("👦 [3] MICRO: then callback")
-    setTimeout(() => console.log("⏰ [12] TIMRES: 3rd")) // 4th Task
+    setTimeout(() => console.log("⏰ [12] TIMERS: 3rd")) // 4th Task
   });
 
 console.log("🦖 [2] MAINLINE: End");
@@ -281,15 +281,15 @@ console.log("🦖 [2] MAINLINE: End");
 🦖 [2] MAINLINE: End
 👦 [3] MICRO: then callback
 ⏰ [4] TIMERS: setTimeout 1st [callback start]
-⏰ [5] TIMRES: [callback end]
+⏰ [5] TIMERS: [callback end]
 👦 [6] MICRO: Resolved value: 1st Promise
 👦 [7] MICRO: Next chain
-⏰ [8] TIMRES: setTimeout 2nd [callback start]
+⏰ [8] TIMERS: setTimeout 2nd [callback start]
 ⏰ [9] TIMERS: [callback end]
 👦 [10] MICRO: Resolved value: 3rd Promise
 👦 [11] MICRO: Next chain
-⏰ [12] TIMRES: 3rd
-⏰ [13] TIMRES: setTimeout 4th
+⏰ [12] TIMERS: 3rd
+⏰ [13] TIMERS: setTimeout 4th
 👦 [14] MICRO: Resolved value: 2nd Promise
 👦 [15] MICRO: Next chain
 ```

@@ -210,7 +210,7 @@ while (queue.waitForMessage()) {
   const foo = bar;
   foo.doSomething();
 
-  document.body.addEventLlistener('keydown', (event) => {
+  document.body.addEventListener('keydown', (event) => {
     // <- イベントを受信したら発火される Task
     if (event.key === 'PageDown') {
       location.href = "/#/36";
@@ -286,7 +286,7 @@ while (true) {
   // task はループにつき一個のみが処理される
 
   // すべての Microtask を処理するためのループ
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 }
@@ -316,7 +316,7 @@ taskLoop();
 
 クリックやテキスト選択も可能です。これば上述したとおり、レンダリングエンジンが `setTimeout()` のコールバックが送られるタスクキューとは別に、ユーザーインタラクション用のタスクキューに送られたタスクを優先して処理するようにタスクキューを選択するからです。
 
-JSConf.Asia での Jake Archibald 氏による講演動画『In The Loop』において、タスク、マイクロタスク、アニメーションタスク(`resquestAnimationFrame()` API のコールバック)で無限ループを作成した場合の比較を行っているので、詳しくはこちらを参考してください。
+JSConf.Asia での Jake Archibald 氏による講演動画『In The Loop』において、タスク、マイクロタスク、アニメーションタスク(`requestAnimationFrame()` API のコールバック)で無限ループを作成した場合の比較を行っているので、詳しくはこちらを参考してください。
 
 https://youtu.be/cCOL7MC4Pl0
 
@@ -344,7 +344,7 @@ https://developer.chrome.com/blog/renderingng-architecture/
 
 https://docs.google.com/presentation/d/1boPxbgNrTU0ddsc144rcXayGA_WF53k96imRH8Mp34Y/edit#slide=id.p
 
-JavaScript はシングルスレッド言語であり、ブラウザ環境でユーザーの JavaScript コードはメインスレッド(Main thread)で実行されます。上述した通り、ブラウザ環境ではレンダリングの作業があります。そしてレンダリングのための作業もメインスレッドで行われます。従ってその作業を行っている間はそのスレッドで JavaScirpt を実行できません。
+JavaScript はシングルスレッド言語であり、ブラウザ環境でユーザーの JavaScript コードはメインスレッド(Main thread)で実行されます。上述した通り、ブラウザ環境ではレンダリングの作業があります。そしてレンダリングのための作業もメインスレッドで行われます。従ってその作業を行っている間はそのスレッドで JavaScript を実行できません。
 
 レンダリング更新は 1/60 秒で四捨五入して 16.7 ミリ秒 (60fps) 平均で行われます。つまり上記のレンダリングパイプラインが 16.7 ミリ秒ごとに以下の図のようにメインスレッドで発生します。
 
@@ -369,12 +369,12 @@ while (true) {
   // task はループにつき一個のみが処理される
 
   // すべての Microtask を処理するためのループ
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 
   // 前の描画更新から 16.7 ミリ秒ほど経っていれば再描画
-  if(isReapintTime()) repaint();
+  if(isRepaintTime()) repaint();
 }
 ```
 
@@ -410,12 +410,12 @@ while (true) {
   // task はループにつき一個のみが処理される
 
   // すべての Microtask を処理するためのループ
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 
   // 前の描画更新から 16.7 ミリ秒ほど経っていれば再描画
-  if(isReapintTime()) {
+  if(isRepaintTime()) {
     animationTasks = animationQueue.copyTasks();
     // 現時点においてキューにあるものすべてを実行する
     for(task in animationTasks) {
@@ -471,19 +471,19 @@ while (true) {
   // Task は１つのみ実行する
 
   // Microtask queue が完全に空になるまで処理する
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 
   // 前の描画更新から 16.7 ミリ秒ほど経っていれば再描画
-  if(isReapintTime()) {
+  if(isRepaintTime()) {
     animationTasks = animationQueue.copyTasks();
     // 現時点においてキューにあるものすべてを実行する
     // Rendering pipeline 直前に確実に処理する
     for(task in animationTasks) {
       doAnimationTask(task);
       // Microtask queue が完全に空になるまで処理する
-      while (micortaskQueue.hasTasks()) {
+      while (microtaskQueue.hasTasks()) {
         doMicrotask();
       }
     }
@@ -503,15 +503,15 @@ while (true) {
   task = queue.pop();
   execute(task);
 
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 
-  if(isReapintTime()) {
+  if(isRepaintTime()) {
     animationTasks = animationQueue.copyTasks();
     for(task in animationTasks) {
       doAnimationTask(task);
-      while (micortaskQueue.hasTasks()) {
+      while (microtaskQueue.hasTasks()) {
         doMicrotask();
       }
     }
@@ -542,7 +542,7 @@ https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
 
 Web worker では post-message event の送受信を行い、ブラウザウィンドウのメインスレッドとコミュニケーションを取ります。マイクロタスクキューもあるので Promise が使えます。疑似コードは以下のようになります。
 
-```js:Web woker のイベントループ
+```js:Web worker のイベントループ
 // 無限ループ
 while (true) {
   queue = getNextQueue();
@@ -637,7 +637,7 @@ while (tasksAreWaiting()) {
     task = queue.pop();
     execute(task);
 
-    // １つの Task を処理したら、すべての Micotasks を処理する
+    // １つの Task を処理したら、すべての Microtasks を処理する
     while (microTaskQueue.hasTasks()) {
       doPromiseTask();
     }
@@ -662,7 +662,7 @@ console.log("[1] 🦖 MAINLINE: Start");
 
 (function main() {
   setTimeout(() => {
-    console.log("[7] ⏰ TIMRES: Task")
+    console.log("[7] ⏰ TIMERS: Task")
   });
   Promise.resolve().then(() => {
     console.log("[4] 👦 MICRO: [microTaskQueue] then");
@@ -695,7 +695,7 @@ console.log("[2] 🦖 MAINLINE: End");
 [4] 👦 MICRO: [microTaskQueue] then
 [5] 👦 MICRO: [microTaskQueue] queueMicrotask
 [6] 👦 MICRO: [microTaskQueue] queueMicrotask
-[7] ⏰ TIMRES: Task
+[7] ⏰ TIMERS: Task
 ```
 
 より短いコードで見てみると次のようになります。
@@ -736,7 +736,7 @@ while (tasksAreWaiting()) {
     task = queue.pop();
     execute(task);
 
-    // １つの Task を処理したら、すべての Micotasks を処理する
+    // １つの Task を処理したら、すべての Microtasks を処理する
     // Microtask queue は２つ存在するが
     // NextTick queue の方が promise のキューよりも先に処理される
     do {
@@ -752,7 +752,7 @@ while (tasksAreWaiting()) {
 }
 ```
 
-ちなみに以下の図にあるプロセス終了時 `process#exit` の地点においてはもはやイベントループに戻ることができないので、次のようなコードで `proecss.on('exit', callback)` があった際にコールバック内部で別のタスクを発行してもそれらは実行できません。マイクロタスクだけは実行できます。ただし、`socket.on("close", callback)` などのコールバックは Close callbasks phase で実行されるのでこれと勘違いしないようにしてください。
+ちなみに以下の図にあるプロセス終了時 `process#exit` の地点においてはもはやイベントループに戻ることができないので、次のようなコードで `process.on('exit', callback)` があった際にコールバック内部で別のタスクを発行してもそれらは実行できません。マイクロタスクだけは実行できます。ただし、`socket.on("close", callback)` などのコールバックは Close callbacks phase で実行されるのでこれと勘違いしないようにしてください。
 
 ![Node event loop](/images/js-async/img_node-event-loop-1.jpg)*[2016 Node Interactive.pdf](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)より引用*
 
@@ -929,7 +929,7 @@ while (tasksAreWaiting()) {
   task = taskQueue.pop();
   execute(task);
 
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 }
@@ -968,7 +968,7 @@ while (tasksAreWaiting()) {
   execute(task);
 
   // １つのマイクロタスクキューにあるすべてのマイクロタスクを処理する
-  while (micortaskQueue.hasTasks()) {
+  while (microtaskQueue.hasTasks()) {
     doMicrotask();
   }
 }
