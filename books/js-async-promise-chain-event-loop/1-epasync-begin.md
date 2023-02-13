@@ -241,6 +241,8 @@ https://www.jsv9000.app
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2023-02-13
+  - 『[コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)』のチャプターにおける解説の[間違いを修正](https://github.com/yo-goto/zenn-public-repo/commit/f3d94e0839f67e0d25e39bbd42649f6e3e8677dd)。
 - 2023-01-09
   - 『[第５章 - 仕様およびその他の番外編](sec-05-epasync)』のチャプターを追加
   - 『[Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)』のチャプターを追加
