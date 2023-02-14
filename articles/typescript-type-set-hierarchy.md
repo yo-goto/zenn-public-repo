@@ -63,7 +63,7 @@ https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
 
 リテラル型は集合型の具体的な subtype である旨が記載されていますね。
 
-ちなみに **subtype(部分型、派生型、下位型)** とは型の親子関係のようなもので、ある型の下位の型、つまり子の型として定義されたものを subtype と呼びます。suptype の派生元、つまり親の型となるものは **supertype(基本型、上位型)** と呼ばれます。オブジェクト指向における継承のようなものです。
+ちなみに **subtype(部分型、派生型、下位型)** とは型の親子関係のようなもので、ある型の下位の型、つまり子の型として定義されたものを subtype と呼びます。subtype の派生元、つまり親の型となるものは **supertype(基本型、上位型)** と呼ばれます。オブジェクト指向における継承のようなものです。
 
 ```mermaid
 graph LR
@@ -476,7 +476,7 @@ graph LR
   obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
-左が supertype で、右が suptype の方向となります。一番左に位置している `unknwon` 型がすべての型の supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の subtype であり Bottom type です(より正確に書こうとするとすべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています)。
+左が supertype で、右が subtype の方向となります。一番左に位置している `unknwon` 型がすべての型の supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の subtype であり Bottom type です(より正確に書こうとするとすべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています)。
 
 そして subtype の型の変数は supertype の型の変数へ代入可能です。
 
