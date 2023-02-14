@@ -18,9 +18,13 @@ aliases: 記事『Zenn の VSCode Web 拡張にプルリクエストしてみた
 
 :::message alert
 個人的な見解などが多分に含まれているので、公式のドキュメントとは別枠として、**コントリビューター視点の開発ブログ** として見ていただけるとよいかなと思います。
-
-また、2023-02-10 現在においてはまだリリースされていない機能が含まれるので注意してください。
 :::
+
+また、この記事で紹介するのは以下のリリースで追加された機能についての解説となります。
+
+https://github.com/zenn-dev/zenn-vscode-extension/releases/tag/0.0.9
+
+https://github.com/zenn-dev/zenn-vscode-extension/releases/tag/0.1.0s
 
 ## そもそも VSCode Web 拡張とは
 
@@ -478,7 +482,7 @@ https://github.com/zenn-dev/zenn-vscode-extension/blob/4e6daaabfd9d92fb5dc66100c
 
 というか、すでに一応コードはできているものが複数あるので順次投下していきたいと思っています (笑)
 
-また、応管理と記録用になると思ってプルリクエスト開発用のログをスクラップでつくってみました。
+また、管理と記録用になると思ってプルリクエスト開発用のログをスクラップでつくってみました。
 
 https://zenn.dev/estra/scraps/7eabaffc465449
 
