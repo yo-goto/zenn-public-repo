@@ -154,14 +154,14 @@ console.log("🦖 [2] MAINLINE: Sync process");
 console.log("[A] 🦖 MAINLINE: Start");
 
 setTimeout(() => {
-  console.log("[B] ⏰ TIMRES: setTimeout[0ms]");
+  console.log("[B] ⏰ TIMERS: setTimeout[0ms]");
 
   Promise.resolve("1st Promise")
     .then((value) => console.log("[C] 👦 MICRO: Resolved value:", value))
     .then(() => console.log("[D] 👦 MICRO: Next chain"));
 
   setTimeout(() => {
-    console.log("[E] ⏰ TIMRES: setTimeout[0ms]");
+    console.log("[E] ⏰ TIMERS: setTimeout[0ms]");
 
     Promise.resolve("2nd Promise")
       .then((value) => console.log("[F] 👦 MICRO: Resolved value:", value))
@@ -192,13 +192,13 @@ V8, Node, Deno ですべて同じ結果となります。
 [A-1] 🦖 MAINLINE: Start
 [M-2] 🦖 MAINLINE: End
 [L-3] 👦 MICRO: then
-[B-4] ⏰ TIMRES: setTimeout[0ms]
+[B-4] ⏰ TIMERS: setTimeout[0ms]
 [C-5] 👦 MICRO: Resolved value: 1st Promise
 [D-6] 👦 MICRO: Next chain
 [I-7] ⏰ TIMERS: setTimeout[0ms]
 [J-8] 👦 MICRO: Resolved value: 3rd Promise
 [K-9] 👦 MICRO: Next chain
-[E-10] ⏰ TIMRES: setTimeout[0ms]
+[E-10] ⏰ TIMERS: setTimeout[0ms]
 [F-11] 👦 MICRO: Resolved value: 2nd Promise
 [H-12] 👦 MICRO: Next chain
 ```

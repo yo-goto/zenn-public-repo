@@ -29,9 +29,9 @@ aliases: Promise本『コールスタックと実行コンテキスト』
 > **The execution context stack is used to track execution contexts**. **The running execution context is always the top element of this stack**. A new execution context is created whenever control is transferred from the executable code associated with the currently running execution context to executable code that is not associated with that execution context. **The newly created execution context is pushed onto the stack and becomes the running execution context**.
 > ([https://tc39.es/ecma262/#sec-execution-contexts](https://tc39.es/ecma262/#sec-execution-contexts) より引用、太字は筆者強調)
 
-引用で示されているように、実行コンテキスト (Execution context) はコードの実行時評価を追跡するために使用される機構であり、どの時点でも実際にコードを実行している実行コンテキストはエージェント (Agent) あたり最大で１つとなります。これはエージェントの実行中実行コンテキスト (**Agent's runninng execution context**) として知られています。
+引用で示されているように、実行コンテキスト (Execution context) はコードの実行時評価を追跡するために使用される機構であり、どの時点でも実際にコードを実行している実行コンテキストはエージェント (Agent) あたり最大で１つとなります。これはエージェントの実行中実行コンテキスト (**Agent's running execution context**) として知られています。
 
-実行コンテキストスタック (Execution context stack) は、実行コンテキスト (Execution context) を追跡するために使用され、実行中の実行コンテキスト (**Running execution context**) は常にこのスタックの最上位の要素です。新しく作成された実行コンテキスト (Execution context) はスタックにプッシュされて、実行中の実行コンテキスト (Runninng execution context) になります。
+実行コンテキストスタック (Execution context stack) は、実行コンテキスト (Execution context) を追跡するために使用され、実行中の実行コンテキスト (**Running execution context**) は常にこのスタックの最上位の要素です。新しく作成された実行コンテキスト (Execution context) はスタックにプッシュされて、実行中の実行コンテキスト (Running execution context) になります。
 
 :::message
 ちなみに ECMA の仕様で言われている実行コンテキストスタック (Execution context stack) はお馴染みのコールスタック (**Call stack**) のことを指しています。
@@ -143,13 +143,13 @@ Chrome などのブラウザ環境ではソースにブレークポイントを�
 
 ```js:simpleTask.js
 // simpleTask.js
-console.log("[1] 🦖 MAINELINE: Start [GEC]");
+console.log("[1] 🦖 MAINLINE: Start [GEC]");
 
 setTimeout(function taskFunc() {
   console.log("[3] ⏰ TIMERS: timeout 5000ms [EFC]");
 }, 5000); // 5000 ミリ秒後にタスクキューへタスクを発行
 
-console.log("[2] 🦖 MAINELINE: End [GEC]");
+console.log("[2] 🦖 MAINLINE: End [GEC]");
 ```
 
 :::message
@@ -159,8 +159,8 @@ console.log("[2] 🦖 MAINELINE: End [GEC]");
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINELINE: Start [GEC]
-[2] 🦖 MAINELINE: End [GEC]
+[1] 🦖 MAINLINE: Start [GEC]
+[2] 🦖 MAINLINE: End [GEC]
 [3] ⏰ TIMERS: timeout 5000ms [FEC (taskFunc)]
 ```
 
@@ -196,21 +196,21 @@ console.log("[2] 🦖 MAINELINE: End [GEC]");
 
 ```js:simpleMicroTask.js
 // simpleMicroTask.js
-console.log("[1] 🦖 MAINELINE: Start [GEC]");
+console.log("[1] 🦖 MAINLINE: Start [GEC]");
 
 Promise.resolve()
   .then(function microTaskFunc() {
     console.log("[3] 👦 MICRO: [FEC (microTaskFunc)]");
   }); // 直ちにマイクロタスクキューへマイクロタスクを発行する
 
-console.log("[2] 🦖 MAINELINE: End [GEC]");
+console.log("[2] 🦖 MAINLINE: End [GEC]");
 ```
 
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINELINE: Start [GEC]
-[2] 🦖 MAINELINE: End [GEC]
+[1] 🦖 MAINLINE: Start [GEC]
+[2] 🦖 MAINLINE: End [GEC]
 [3] 👦 MICRO: [FEC (microTaskFunc)]
 ```
 
@@ -232,7 +232,7 @@ console.log("[2] 🦖 MAINELINE: End [GEC]");
 // simpleTaskMicrotask.js
 // <- Task1
 setTimeout(function taskFunc2() {
-  console.log("[3] ⏰ TIMRES: [FEC]/[Task2]");
+  console.log("[3] ⏰ TIMERS: [FEC]/[Task2]");
   Promise.resolve().then(function microTaskFunc2() {
     console.log("[4] 👦 THEN: [FEC]/[Microtask2]");
   }).then(function microTaskFunc3() {
@@ -241,7 +241,7 @@ setTimeout(function taskFunc2() {
 });
 
 setTimeout(function taskFunc3() {
-  console.log("[6] ⏰ TIMRES: [FEC]/[Task3]");
+  console.log("[6] ⏰ TIMERS: [FEC]/[Task3]");
 });
 
 Promise.resolve().then(function mircoTask1() {
@@ -256,10 +256,10 @@ console.log("[1] 🦖 MAINLINE: End [GEC]/[Task1]");
 
 ```sh
 [1] 🦖 MAINLINE: End [GEC]/[Task1]
-[2] ⏰ TIMRES: [FEC]/[Task2]
+[2] ⏰ TIMERS: [FEC]/[Task2]
 [3] 👦 THEN: [FEC]/[Microtask1]
 [4] 👦 THEN: [FEC]/[Microtask2]
-[5] ⏰ TIMRES: [FEC]/[Task3]
+[5] ⏰ TIMERS: [FEC]/[Task3]
 ```
 
 コールスタックに積まれる実行コンテキストの様子は以下のようになります。`console.log()` のコンテキストまで追加していくと非常に冗長になるので省略していることに注意してください。また、わかりやすくするため細かいコンテキストは気にしていません。
@@ -280,7 +280,7 @@ console.log("[1] 🦖 MAINLINE: End [GEC]/[Task1]");
 
 というわけで、マイクロタスクキューに発行されていたマイクロタスクであるコールバック関数 `microTask1()` の関数実行コンテキストがコールスタックに積まれて実行されます。やることは、`console.log()` だけなのですぐに実行コンテキストはポップして破棄されます (`console.log()` のコンテキストは省略しています)。コールスタックが空になりました。マイクロタスクキューにあるすべてのマイクロタスクを処理しきったので、今度はタスクが実行されます。タスクキューの先頭にある `taskFunc2()` がコールスタックへと送られて実行コンテキストが積まれます。コールバック関数内の処理が順番に行われていきます。再び `Promise.resolve().then()` でマイクロタスクが同期的に発火されます。登録したコールバック関数 `microTaskFunc2()` は直ちにマイクロタスクキューへと送られます。とりあえずこの時点でコールバック関数内の同期的な処理はすべて終わったので `taskFunc2()` の実行コンテキストがポップして破棄されます。
 
-再びコールスタックが空の状態になりました。マイクロタスクのチェックポイントです。別の言い方だと単一タスクが実行されたので、すべてのマイクロタスクを処理します。マイクロタスクキューの先頭にあるマイクロタスク `microtaskFunc2()` の実行コンテキストがコールスタックに配置されてコールバック関数内の同期処理が実行されます。処理が完了したことで、`Promise.resolve().then()` から返ってくる Promise インスタンスの状態が Pending から Fulfilled になったため、チェーンにおける次の `then()` のコールバック関数 `microTaskFun3()` が直ちにマイクロタスクキューへマイクロタスクとして送られます。そして、`microtaskFunc2()` の処理がすべて終わったのでコールスタックからポップして破棄されます。コールスタックは空で、マイクロタスクキューには先程送られたマイクロタスク `microTaskFun3()` が存在していますので、これもキューが完全に空になるまで処理されます。ということで、同じ様にコールスタックに配置されて実行され、ポップし破棄が行われます。
+再びコールスタックが空の状態になりました。マイクロタスクのチェックポイントです。別の言い方だと単一タスクが実行されたので、すべてのマイクロタスクを処理します。マイクロタスクキューの先頭にあるマイクロタスク `microTaskFunc2()` の実行コンテキストがコールスタックに配置されてコールバック関数内の同期処理が実行されます。処理が完了したことで、`Promise.resolve().then()` から返ってくる Promise インスタンスの状態が Pending から Fulfilled になったため、チェーンにおける次の `then()` のコールバック関数 `microTaskFun3()` が直ちにマイクロタスクキューへマイクロタスクとして送られます。そして、`microTaskFunc2()` の処理がすべて終わったのでコールスタックからポップして破棄されます。コールスタックは空で、マイクロタスクキューには先程送られたマイクロタスク `microTaskFun3()` が存在していますので、これもキューが完全に空になるまで処理されます。ということで、同じ様にコールスタックに配置されて実行され、ポップし破棄が行われます。
 
 マイクロタスクキューにはマイクロタスクがもう残っていませんので、タスクキューの先頭にある単一タスクを今度は処理します。タスクキューの先頭には `setTimeout()` で発火しておいたタスク `taskFunc3()` がありますので、これをタスクキューからコールスタックへと実行コンテキストとして配置し実行します。コールバック関数内の処理がすべて終われば、その実行コンテキストをコールスタックからポップして破棄します。
 
