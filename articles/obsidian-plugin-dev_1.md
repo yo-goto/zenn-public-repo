@@ -399,4 +399,4 @@ code ./
 次の記事ではサンプルプラグインの構造について説明していきたいと思います。
 
 ↓次回
-https://zenn.dev/estra/articles/obsidian-dev-plugin_2
+https://zenn.dev/estra/articles/obsidian-pluigin-dev_2
