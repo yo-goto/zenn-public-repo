@@ -53,7 +53,7 @@ console.log('🦖 [3] MAINLINE: Sync');
 
 具体的には `returnPromise()` 関数は同期的に実行されて、内部の `Promise()` コンストラクタの引数であるコールバック関数もそのまま同期的に実行されます。
 
-複数の Promise インスタンスを作成して、複数の Promise chain を同時に走らることを考えます。`reutrnPromise()` 関数は何度も起動させたいので、`[2]` 番目に出力される行を書き換えて引数で指定できるようにします。テンプレートリテラルで表現します(まだ複数 Promise は作成しません)。
+複数の Promise インスタンスを作成して、複数の Promise chain を同時に走らせることを考えます。`reutrnPromise()` 関数は何度も起動させたいので、`[2]` 番目に出力される行を書き換えて引数で指定できるようにします。テンプレートリテラルで表現します(まだ複数 Promise は作成しません)。
 
 ```js:returnPromiseByFuncArg.js
 // returnPromiseByFuncArg.js

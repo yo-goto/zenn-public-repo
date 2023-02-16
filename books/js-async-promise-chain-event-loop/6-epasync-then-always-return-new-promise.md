@@ -115,7 +115,7 @@ Promise の状態(State)と運命(Fate)などの基本概念については、�
 
 `then(cb1)` で返ってくる Promise インスタンスが待機状態なので、`returnPromise("1st Promise", "B").then(cb1).then(cb2)` で登録したコールバック `cb2` はまだマイクロタスクキューへと送られません。このまま待機させておきます。
 
-そして、そのまま次の処理へと進みます。次の行は `returnPromise("2nd Promise", "E").then(cb1).then(cb2)` なので、まったく同じことが置きます。
+そして、そのまま次の処理へと進みます。次の行は `returnPromise("2nd Promise", "E").then(cb3).then(cb4)` なので、まったく同じことが置きます。
 
 ```js
 console.log("🦖 [A] Sync");
