@@ -21,12 +21,12 @@ Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript �
 また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "Promise-based API" のことを指しており、Promise 自体が API であるわけではないので注意してください。他の解説によっては、Promise の静的メソッドである `Promise.all()` などを指している場合もあります。
 
 :::message alert
-この本ではそうしませんが、他の解説では Promise API といっているときは JavaScript エンジンの文脈で話していることがあり、その場合に `Promise.all` や `Promsie.allSettled`、また `Promise(executor)` コンストラクタなどについて Promise API と言っている場合あるので注意してください。
+この本ではそうしませんが、他の解説では Promise API といっているときは JavaScript エンジンの文脈で話していることがあり、その場合に `Promise.all` や `Promise.allSettled`、また `Promise(executor)` コンストラクタなどについて Promise API と言っている場合あるので注意してください。
 :::
 
 # Promise コンストラクタ
 
-コード上で `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Prosmise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
+コード上で `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Promise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise
 
@@ -177,7 +177,7 @@ const promise2 = new Promise(res => res("Promise履行時の値"));
 `Promise.resolve()` と `resolve()` 関数(上の例では `res()`)が別モノであるということが実は async/await の挙動などで関わってくるので注意してください。特に `resolve()` 関数はかなり特殊で再帰性などの特徴が関わります。つまり、**完全に等価ではない**ので、「大体同じ」として扱っています。
 :::
 
-この `Promise.resolve()` は最も文字数が少なく書けるので、Promise オブジェクトの初期化やテストコードを書く際に活用できる便利なショートカットとして覚えてください。実際に Promise オブジェクトを作成する際には `new Promise(excutor)` が基本となります。
+この `Promise.resolve()` は最も文字数が少なく書けるので、Promise オブジェクトの初期化やテストコードを書く際に活用できる便利なショートカットとして覚えてください。実際に Promise オブジェクトを作成する際には `new Promise(executor)` が基本となります。
 
 さて、`executor` 関数の引数は２つありました。`resolve` (上の例では `res`) と `reject` です。`reject` 自体は第二引数であり、省略できたので上記のように短く書くために無視してきましたが、これでは不公平なので `reject` についても省略形で書けるようにします。次のコードでは、`executor` 関数の中で `reject()` 関数のみを書いて Promise インスタンスを拒否状態にしています。
 
