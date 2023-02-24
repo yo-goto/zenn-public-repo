@@ -100,7 +100,7 @@ const promise = new Promise((resolve, reject) => {
     return resolve("😁 true なので履行する");
     console.log("👍 関数は止まるよ");
   } else {
-    reject(new Erorr("😭 拒否する"));
+    reject(new Error("😭 拒否する"));
     console.log("👍 関数は止まるよ");
   }
 });
@@ -148,7 +148,7 @@ promise
 ```js
 // ignoredReturnedValue
 const returnPromise = () => {
-  return new Promise(() => {
+  return new Promise((resolve) => {
     resolve("😁 こっちが履行値");
     console.log("👻 resolveじゃ関数は止まらない");
     return "😭 これは履行値にならずに無視される";
@@ -240,7 +240,7 @@ promise2
 この挙動は仕様的には [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 抽象操作から作成される [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) に定義されています。`resolve` 関数の実体はこの関数です。詳細については『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しています。
 :::
 
-`resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "**Unwrapping**" と言います。この Unwrapping の能力は `Promise.resolve()` や Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Excutor 関数に渡す `reject()` 関数にはありません。
+`resolve(promise1)` でやったような Promise インスタンスの状態と履行値、拒否理由を解析して、自身の状態と値にするような能力を "**Unwrapping**" と言います。この Unwrapping の能力は `Promise.resolve()` や Executor 関数に渡す `resolve()` 関数にはありますが、`Promise.reject()` や Executor 関数に渡す `reject()` 関数にはありません。
 
 ```js
 // resolveWithPromise.js
