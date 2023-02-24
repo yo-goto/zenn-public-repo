@@ -14,7 +14,7 @@
     "lint:fix": "textlint --fix"
   },
   "dependencies": {
-    "zenn-cli": "^0.1.139"
+    "zenn-cli": "^0.1.140"
   },
   "devDependencies": {
     "@proofdict/textlint-rule-proofdict": "^3.1.2",
