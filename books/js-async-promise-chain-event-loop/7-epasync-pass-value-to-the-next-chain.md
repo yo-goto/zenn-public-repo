@@ -174,7 +174,7 @@ console.log("🦖 [3] MAINLINE(End): Sync");
 👦 [7] 🐵 1st Promise
 ```
 
-value1 → value2 → value3 → vlaue4 というように値 `"1st Promise"` が最後まで連鎖できていることに注目してください。
+value1 → value2 → value3 → value4 というように値 `"1st Promise"` が最後まで連鎖できていることに注目してください。
 
 `then()` メソッドのコールバック関数の引数に数値をつけたのは考えやすくするためで別に同じ `value` でもよいです。
 
