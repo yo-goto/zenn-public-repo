@@ -38,7 +38,7 @@ new Promise((resolve, reject) => {
 
 ## 常に新しい Promise インスタンスが返ってくる
 
-`then()` メソッドからは常に新しい Promise インスタンスが返ってきたように、`catch()` メソッドと `finall()` メソッドでも新しい Promise インスタンスが返ってきますので、チェーンできます。
+`then()` メソッドからは常に新しい Promise インスタンスが返ってきたように、`catch()` メソッドと `finally()` メソッドでも新しい Promise インスタンスが返ってきますので、チェーンできます。
 
 言ったように、`finally()` メソッドに値は繋げませんので、上のコードを実行すると `undefined` が出力されます。
 
@@ -99,7 +99,7 @@ Promise.resolve(42)
   .then(console.log); // => 33
 ```
 
-### 返される Promsie は chain 元の Promise の値で解決される
+### 返される Promise は chain 元の Promise の値で解決される
 
 以下のように `Promise.resolve(42)` の後に chain した `finally` メソッドから更に `then` を chain するとコールバック関数の入力値として `42` が渡ります。
 
@@ -198,7 +198,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 🦄 [F-10] <8-async> MICRO: finally callback
 ```
 
-もし、`then()` メソッドによってマイクロタスクが発行されていなれば、次のコードの `catch()` メソッドのコールバックの実行順番は上のコードとまったく同じになるはずですが、そうはなりません。
+もし、`then()` メソッドによってマイクロタスクが発行されていなければ、次のコードの `catch()` メソッドのコールバックの実行順番は上のコードとまったく同じになるはずですが、そうはなりません。
 
 ```js
 // catchMicrotask-2.js
@@ -323,7 +323,7 @@ identity 関数と thrower 関数の説明は仕様の外での解説でよく�
 >   - i. Return ? [Call](https://tc39.es/ecma262/#sec-call)(promiseCapability.\[\[Resolve\]\], undefined, « handlerResult.\[\[Value\]\] »).
 :::
 
-仕様について解説してもここでは何を言ってるのか分かりづらいと思うので、内部置換されるコールバック関数についてはそのまま `(x) => x` という identity 関数と `(x) => { throw x; }` という thower 関数であると考えておけばよいです。関数の実体が気になる場合には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) と [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 操作の仕様を確認するようにしてください。
+仕様について解説してもここでは何を言ってるのか分かりづらいと思うので、内部置換されるコールバック関数についてはそのまま `(x) => x` という identity 関数と `(x) => { throw x; }` という thrower 関数であると考えておけばよいです。関数の実体が気になる場合には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) と [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 操作の仕様を確認するようにしてください。
 
 それでは上記の identity 関数と thrower 関数で自動置換されるというのはどのようなことがイメージできるようにサンプルを使って確認します。
 
@@ -374,7 +374,7 @@ Promise.resolve(42)
 
 実はコールバック関数が呼び出し可能ではない場合にも `x => x` という identity 関数に置換されます。`55` という数値は関数として呼び出せないのでこの数値自体が無視されて `x => x` という関数に置換されます。したがって、元の Promise が持つ履行値 `42` という値が Promise で連鎖して、コンソール出力される数値は `42` となります。
 
-次に chain 元の Promsie を `Promise.reject` を使って始めから拒否状態として二番目のメソッドを `catch` としてみます。
+次に chain 元の Promise を `Promise.reject` を使って始めから拒否状態として二番目のメソッドを `catch` としてみます。
 
 ```js
 Promise.reject(42)
@@ -386,7 +386,7 @@ Promise.reject(42)
 
 chain 元の Promise インスタンスは拒否理由 `42` で拒否されているため、`.then()` では拒否用のコールバック関数として内部置換された `x => { throw x; }` の thrower 関数がマイクロタスクとして発行されます。値 `42` が例外として throw されますが、`.catch(x => console.log(x))` で補足されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
 
-次に一番目の `then` メソッドを `catch` にしてみます。`catch(onRejected)` は内部的に `then(undeinfed, onRjected)` を呼び出すので、`undefined` は置換されて結局 `then(x => x, x => {throw x; })` が呼び出されます。
+次に一番目の `then` メソッドを `catch` にしてみます。`catch(onRejected)` は内部的に `then(undefined, onRejected)` を呼び出すので、`undefined` は置換されて結局 `then(x => x, x => {throw x; })` が呼び出されます。
 
 ```js
 Promise.reject(42)

@@ -89,7 +89,7 @@ console.log("🦖 [H] Sync");
 ここ重要なのは「**`then()` メソッドは常に新しい Promise インスタンスを返す**」ということです。
 
 - `returnPromise("1st Promise", "B")` によって返ってくる Promise インスタンスを promise1 とします
-- `returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `proimse2` とします
+- `returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `promise2` とします
 
 この２つは**全く別の Promise インスタンス**となります。
 
@@ -205,7 +205,7 @@ console.log("[Fulfilled status]", Promise.resolve("Resolved"));
 
 console.log("[Pending status]", Promise.resolve("Resolved but").then(value => console.log(value)));
 
-console.log("[Rejcted status]", Promise.reject("Rejected"))
+console.log("[Rejected status]", Promise.reject("Rejected"))
 ```
 
 １つずつどうなるかを考えてみます。
@@ -257,7 +257,7 @@ const promise = new Promise(res => {
 
 つまり、グローバルコンテキストがコールスタックからポップして、コールスタックが空となった時にマイクロタスクのチェックポイントですから、その時点からマイクロタスクが処理されます。
 
-４番目では、`console.log("[Rejcted status]", Promise.reject("Rejected"))` が実行されます。`Promise.resject()` については、`Promise.resolve()` の時と同じです。「[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)」のチャプターで説明したように以下の２つはほとんど同じでした。
+４番目では、`console.log("[Rejected status]", Promise.reject("Rejected"))` が実行されます。`Promise.reject()` については、`Promise.resolve()` の時と同じです。「[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)」のチャプターで説明したように以下の２つはほとんど同じでした。
 
 ```js
 const promise = Promise.reject("Promise拒否時の理由");
@@ -274,7 +274,7 @@ const promise = new Promise((_, rej) => {
 [Fulfilled status] Promise { "Resolved" }
 [Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
-[Rejcted status] Promise { <rejected> "Rejected" }
+[Rejected status] Promise { <rejected> "Rejected" }
 # ...
 ```
 
@@ -293,21 +293,21 @@ const promise = new Promise((_, rej) => {
 [Fulfilled status] Promise { "Resolved" }
 [Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
-[Rejcted status] Promise { <rejected> "Rejected" }
+[Rejected status] Promise { <rejected> "Rejected" }
 Resolved but
 # ...
 ```
 
 この "Resolved but" という文字列は `Promise.resolve("Resolved but").then(value => console.log(value))` で履行状態の Promise の解決値が Promise chain で `value` として繋がれているので、このタイミングでその値が出力されています。
 
-最後に `Promise.reject()` を使って拒否状態にした Pormise インスタンスについてエラー補足などを行っていなかったので、未補足であるとして Deno の場合は最後に次のような出力が行われます。
+最後に `Promise.reject()` を使って拒否状態にした Promise インスタンスについてエラー補足などを行っていなかったので、未補足であるとして Deno の場合は最後に次のような出力が行われます。
 
 ```sh
 ❯ deno run consolePromise.js
 [Fulfilled status] Promise { "Resolved" }
 [Fulfilled status] Promise { "Resolved" }
 [Pending status] Promise { <pending> }
-[Rejcted status] Promise { <rejected> "Rejected" }
+[Rejected status] Promise { <rejected> "Rejected" }
 Resolved but
 error: Uncaught (in promise) Rejected
 ```
@@ -319,7 +319,7 @@ error: Uncaught (in promise) Rejected
 [Fulfilled status] Promise { 'Resolved' }
 [Fulfilled status] Promise { 'Resolved' }
 [Pending status] Promise { <pending> }
-[Rejcted status] Promise { <rejected> 'Rejected' }
+[Rejected status] Promise { <rejected> 'Rejected' }
 Resolved but
 node:internal/process/promises:288
             triggerUncaughtException(err, true /* fromPromise */);

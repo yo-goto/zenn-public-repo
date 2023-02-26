@@ -206,7 +206,7 @@ console.log("🦖 [G] Sync");
 
 Promise インスタンスを返す処理は常に `return` するべきですが、このコードではあえて `return` させていません。
 
-まずは次のコードを感がてみましょう。
+まずは次のコードを考えてみましょう。
 実際の実行順番とアルファベット `[A-H]` の出力順番はどうなるでしょうか？予測してみてください。
 
 ```js
@@ -259,7 +259,7 @@ console.log("🦖 [H] Sync");
 ```
 :::
 
-最後の出力である `Resovled value` のところが `undefined` になっているので、値 `"2nd Promise"` が繋げていないことがわかります。
+最後の出力である `Resolved value` のところが `undefined` になっているので、値 `"2nd Promise"` が繋げていないことがわかります。
 実行順番については、基本的に Promise インスタンスを返すような処理は `return` しないと順番を保証できないのですが、今回の場合は `returnPromise("2nd Promise", "[E]", "[F]");` が完了してから、次の `then()` メソッドのコールバックが実行されていますね。その理由としては、マイクロタスクを供給する Promise が少ないからたまたまそうなっているだけです。実際の動きを Visualizer で確認してみてください。
 
 - [promiseShouldBeReturnedNest.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LmpzCmNvbnNvbGUubG9nKCJbQS0xXSBTeW5jIHByb2Nlc3MiKTsKCmNvbnN0IHJldHVyblByb21pc2UgPSAocmVzb2x2ZWRWYWx1ZSwgb3JkZXIsIG5leHRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgY29uc29sZS5sb2coYCR7b3JkZXJ9IFRoaXMgbGluZSBpcyAoQSlTeW5jaHJvbm91c2x5IGV4ZWN1dGVkYCk7CiAgICByZXNvbHZlKHJlc29sdmVkVmFsdWUpOwogIH0pLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgJHtuZXh0T3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICByZXR1cm4gdmFsdWU7CiAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0QtNV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVybiByZXR1cm5Qcm9taXNlKCIybmQgUHJvbWlzZSIsICJbRS02XSIsICJbRi03XSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ctOF0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSC0zXSBTeW5jIHByb2Nlc3MiKTs%3D)
@@ -480,7 +480,7 @@ returnPromise("1st Promise", "[2]").then((value) => {
 console.log("🦖 [3] Sync");
 ```
 
-Promise chain を利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Proimse インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。
+Promise chain を利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Promise インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。
 
 ## 非同期処理を逐次的に行う
 
@@ -527,7 +527,7 @@ doAsyncTask()
 
 上のコードはあきらかに正しくないですね。コールバック関数の中は上から下へと順番に実行されますが、`doSthAsyncA()` は非同期の関数であり、時間がかかります。また内部で非同期 API を利用していることから、ブロッキングしないはずなので、そのまま処理完了をまたずに次の処理 `doSthAsyncB()` が実行されます。
 
-データ取得が完了していないので、`data` は `undefiend` で渡されてしまいます。そしてまた時間をかけて (undefined なので実際に時間はかかるかどうかはわかりませんが) とにかく、存在しないデータを加工して、次の処理へと移行し、再び存在しないデータを `doSthAsyncC()` で加工して出力してしまっています。
+データ取得が完了していないので、`data` は `undefined` で渡されてしまいます。そしてまた時間をかけて (undefined なので実際に時間はかかるかどうかはわかりませんが) とにかく、存在しないデータを加工して、次の処理へと移行し、再び存在しないデータを `doSthAsyncC()` で加工して出力してしまっています。
 
 結果として Promise インスタンスを返す非同期処理を順番に行うには、Promise chain を正しく構築しないといけません。Promise インスタンスを返す非同期処理を逐次的に (順番に) 実行させるには次のよう返ってくるはずの Promise インスタンスを `return` をさせます。
 
@@ -619,9 +619,9 @@ doAsyncTask()
 
 そして、重要なこととして、`console.log()` で出力した実際のログには `Promise { <pending> }` という値が表されます。非同期処理 A, B, C はそもそも Promise インスタンスを返す非同期処理でした。実際に値を取り出して経過を見たり、追加で何かしらの処理を行うにはどうすればよいでしょうか?
 
-## Proimse インスタンスから解決値を取り出して処理する
+## Promise インスタンスから解決値を取り出して処理する
 
-結論としては、`then()` メソッドのコールバック内で Promise インスタンスを `reutrn` して次の `then()` メソッドのコールバックへ値を繋いでから、処理や出力を行います。上のコードで `console.log()` の位置をずらすことで Promise の解決値をログに出力して確認できます。
+結論としては、`then()` メソッドのコールバック内で Promise インスタンスを `return` して次の `then()` メソッドのコールバックへ値を繋いでから、処理や出力を行います。上のコードで `console.log()` の位置をずらすことで Promise の解決値をログに出力して確認できます。
 
 ```js
 // 非同期処理 doAsyncTask() が完了したら何かする
@@ -645,7 +645,7 @@ doAsyncTask()
   });
 ```
 
-結論はもう言ってしまったのですが、Promise chain のもう 1 つの用途である「Proimse インスタンスから解決値を取り出して処理する」について解説します。この項目については「非同期処理を逐次的に行う」の項目とかぶる部分があります。
+結論はもう言ってしまったのですが、Promise chain のもう 1 つの用途である「Promise インスタンスから解決値を取り出して処理する」について解説します。この項目については「非同期処理を逐次的に行う」の項目とかぶる部分があります。
 
 非同期処理を逐次的に行う例として非同期 API `fetch()` メソッドを利用して例をあげます。
 
