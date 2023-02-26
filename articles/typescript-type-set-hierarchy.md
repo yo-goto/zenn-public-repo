@@ -5,7 +5,7 @@ emoji: "🕴"
 type: "tech"
 topics: ["typescript"]
 date: 2022-08-04
-modified: 2023-02-23
+modified: 2023-02-24
 url: "https://zenn.dev/estra/articles/typescript-type-set-hierarchy"
 tags: [" #type/zenn #TypeScript/inference "]
 aliases:
@@ -18,27 +18,35 @@ aliases:
   - assignability
 ---
 
-# はじめに
+## はじめに
 
 前回の記事では TypeScript における型の拡大 (Widening) について解説しました。
 
 https://zenn.dev/estra/articles/typescript-widening
 
-Narrowing の記事を書く前に (Widening を深く理解するためにも) 必要な知識や考え方がいくつかあると思ったので、今回は型の集合性と階層性について見ていきたいと思います (短いですが内容的に切り出しても興味深いので)。ただ、集合論や圏論、型理論については全然詳しくないので間違っているところがあるかもしれません (調べられた範囲で解説しています)。
+Narrowing の記事を書く前に (Widening を深く理解するためにも) 必要な知識や考え方がいくつかあると思ったので、今回は型の集合性と階層性について見ていきたいと思います (短いですが内容的に切り出しても興味深いので)。
 
-この記事の最後で「代入可能性 (別の型の変数同士で代入できるかどうか」について解説しますが、**集合と階層の概念で考えることで見通しが非常によくなり、型一般についてもスッキリと理解できることが多くなります**。また、`never` や `unknown` といったいまいち分かりづらい型についても、なぜ存在しているのか、どういった位置にあるのかが理解しやすくなります。
+:::message alert
+ただし、集合論や圏論、型理論については全然詳しくないので間違っているところがあるかもしれません。調べられた範囲で解説していますが、厳密性などについても目をつぶっていただけると助かります。
+:::
+
+この記事の最後で別の型の変数同士で代入できるかどうかを示す「assignability (代入可能性あるいは割当可能性)」について解説しますが、**集合と階層の概念で考えることで見通しが非常によくなり、型一般についてもスッキリと理解できることが多くなります**。また、`never` や `unknown` といったいまいち分かりづらい型についても、なぜ存在しているのか、どういった位置にあるのかが理解しやすくなります。
 
 :::details ChangeLog
 大きな変更のみトラッキングしています。
 
+- 2023-02-27
+  - 関数の型についての情報を記載
+- 2023-02-24
+  - いくつかの内容について修正
 - 2022-08-30
   - 見出し構成を変更
   - extends についての記述を追加
 :::
 
-# 型の集合性
+## 型の集合性
 
-## Collective type と Unit type
+### Collective type と Unit type
 
 前回記事で解説した "Literal Widening" は `"text"` や `42`、`true` などのリテラルから作られるリテラル型は、変数が mutable になる場所では `string` 型といった一般的な型に拡大されて型推論されるという話でした。
 
@@ -63,7 +71,7 @@ https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
 
 リテラル型は集合型の具体的な subtype である旨が記載されていますね。
 
-ちなみに **subtype(部分型、派生型、下位型)** とは型の親子関係のようなもので、ある型の下位の型、つまり子の型として定義されたものを subtype と呼びます。subtype の派生元、つまり親の型となるものは **supertype(基本型、上位型)** と呼ばれます。オブジェクト指向における継承のようなものです。
+ちなみに **subtype(部分型、派生型、下位型)** とは型の親子関係のようなもので、ある型の下位の型、つまり子の型として定義されたものを subtype と呼びます。subtype の派生元、つまり親の型となるものは **supertype(基本型、上位型)** と呼ばれます。オブジェクト指向での継承によって作成される子クラスと親クラスの関係のようなものです。
 
 ```mermaid
 graph LR
@@ -74,18 +82,44 @@ graph LR
 
 TypeScript で採用されているこういった型の仕組みは Subtyping と呼ばれるそうです。より具体的には [Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system) (property-based type system) です。
 
-https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)
+https://en.wikipedia.org/wiki/Subtyping
 
 :::message
-「オブジェクト指向における継承のようなもの」と言いましたが、実際 Subtyping は型理論そのものではなく、オブジェクト指向 (OOP) の継承やオーバーライドなどに由来しているそうです。
+Subtyping の概念自体は、1960 年代までさかのぼり、[Simula](https://en.wikipedia.org/wiki/Simula) というプログラミング言語によって初めて導入され、その概念が脚光を浴びたのはオブジェクト指向プログラミング(OOP: Object-Oriented Programming)でそれが主流になったためであるとのことです。
 
-> サブタイピング（英: subtyping）や部分型とは、型のポリモーフィズムの形態であり、**上位と定義された型を、その下位と定義された型で、型安全性に則って代替できる** というプログラミング言語理論の概念および実装を意味している。
-> (中略)
-> サブタイピングは、型理論ではなく、**オブジェクト指向言語の継承とメソッドオーバーライドによる動的ディスパッチのポリモーフィズムを由来にしている**。1994 年にバーバラ・リスコフが、オブジェクト指向の継承のサブタイピング用法を重視したリスコフの置換原則を提唱している。サブタイピングは **上位概念と下位概念（hypernymy・hyponymy）** に言及されることがあり、また **全体概念と部分概念（holonymy・meronymy）** にも言及されることがある。
-> ([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/サブタイピング_(計算機科学)) より引用、太字は筆者強調)
+> The notion of subtyping in programming languages dates back to the 1960s; it was introduced in Simula derivatives. The first formal treatments of subtyping were given by John C. Reynolds in 1980 who used category theory to formalize implicit conversions, and Luca Cardelli (1985).
+> ([Subtyping - Wikipedia](https://en.wikipedia.org/wiki/Subtyping) より引用)
+
+「オブジェクト指向での継承によって作成される子クラスと親クラスの関係のようなもの」と言いましたが、ややこしいことに OOP の文脈では、型 (interface) 同士の関係を指す Subtyping による継承と、既存のオブジェクトから新しいオブジェクトを作成するための言語機能から来る実装間の継承があります。Inheritance (継承) というときにはこの２つの異なる概念があることに注意してください。
+
+- Subtyping: Interface inheritance
+- Inheritance: Implementation inheritance
+
+実際にインターフェース型を継承させて subtype を作り出すことができます。
+
+```ts
+interface Animal {
+  name: string;
+  age: number;
+}
+
+interface Dog extends Animal {
+  bread: string;
+  bark(): void;
+}
+
+const myDog: Dog = {
+  name: "John",
+  age: 2,
+  bread: "Labrador Retriever",
+  bark: () => console.log("Woof"),
+}
+
+const myAnimal: Animal = myDog;
+```
 :::
 
-実際、型は値 (各リテラル) の集合 (より厳密に言えば値と利用できる操作の集合) であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の要素としてみなせます。
+実際、型は値の集合 (より厳密に言えば値と利用できる操作の集合) であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の部分集合としてみなせます(一つの具体的な値からそれに対応するリテラル型という単集合ができる)。
 
 > Type 型とは：型とは、値の集合であり、その集合に対して実行できることの集合である。
 > 少しわかりにくいと思うのでいくつか例を示しましょう。
@@ -119,19 +153,19 @@ https://en.wikipedia.org/wiki/Unit_type
 
 Unit type は単一のプリミティブ値を持つプリミティブ型の subtype であり、文字列リテラル型 `"foo"` は `string` 型の subtype である旨が記載されていますね。そして、mutable な場所で Widening が起きるときには subtype から派生元の supertype へと変換されるとも書いてあります。
 
-## Types as Sets
+### Types as Sets
 
-Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、公式ドキュメントの『TypeScript for Java/C# Programmers』のページの『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』の項目で明言されています。
+Unit type の集合が Collective type(具体的には `string` などのプリミティブ型) であったわけですが、型が具体的な値の集合であるということは、公式ドキュメントの『TypeScript for Java/C## Programmers』のページの『[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)』の項目で明言されています。
 
 > In TypeScript, it’s better to think of **a type as a set of values that share something in common**. **Because types are just sets**, a particular value can belong to many sets at the same time.
-> ([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
+> ([TypeScript: Documentation - TypeScript for Java/C## Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
 
 (可能な操作や演算などの体系などが) 共通している値の集合が型であり、それぞれの値は複数の集合 (型) に属すことができることが言及されていますね。
 
 TypeScript ではこのように型を集合として考えることで直感的に理解することができるとも記載されています。
 
 > **TypeScript provides a number of mechanisms to work with types in a set-theoretic way**, and you’ll find them more intuitive if you think of types as sets.
-> ([TypeScript: Documentation - TypeScript for Java/C# Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
+> ([TypeScript: Documentation - TypeScript for Java/C## Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets) より引用、太字は筆者強調)
 
 TypeScirpt 自体は型を集合論的に扱える仕組みを提供するようにデザインされているわけです。実際、ある値が特定の型の変数に代入可能であるかどうかは、その集合 (型の範疇) に属しているかで決まります。
 
@@ -162,11 +196,15 @@ https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
 
 ![集合型の和集合](/images/typescript-widen-narrow/img_typeSet_3.png)
 
-空集合 (値を持たない型) は `never` 型であり、各リテラル型の積集合や異なる集合型の積集合をインターセクション型で作ろうとすると `never` 型となります。そして型の全体集合は `unknown` 型となります (`unknown` 型がなぜ全体集合になるかは後述する階層性で見れば分かります)。
+空集合 (Empty set) となる値を持たない型は `never` 型であり、各リテラル型の積集合や異なる集合型の積集合をインターセクション型で作ろうとすると `never` 型となります。図にあるように `number & string` という異なるプリミティブ型同士のインターセクションによる積集合は共通部部分が存在しないため、型の合成結果として `never` 型が返ってきます。ちなみに空の交差が `never` 型になるというこの機能は以下の PR で実装されました。
+
+https://github.com/microsoft/TypeScript/pull/31838
+
+そして型の全体集合 (Universal set) は `unknown` 型となります (`unknown` 型がなぜ全体集合になるかは後述する階層性で見れば分かります)。
 
 ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
-和集合 (Union type) と積集合 (Intersection type) はオブジェクトの型で考えると分かりやすいです。`{ a: "st" }` という型と `{ b: 42 }` という型について考えたときのユニオン型とインターセクション型を図示すると以下のような分かりやすいベン図になります。
+和集合 (Union type) と積集合 (Intersection type) についてはオブジェクトの型で考えると分かりやすいです。`{ a: "st" }` という型と `{ b: 42 }` という型について考えたときのユニオン型とインターセクション型を図示すると以下のような分かりやすいベン図になります。
 
 ![オブジェクトの型](/images/typescript-widen-narrow/img_typeSet_5.png)
 
@@ -231,11 +269,13 @@ const b: B = ab; // B という型の範疇
 
 実際にこのような代入が可能なのは、TypeScript が [構造的部分型(Structural Type System)](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#structural-type-system) というシステムを採用しているからです。
 
+オブジェクト型のユニオンやインターセクションを見ればわかるように、合成などの型操作は集合の領域に対しての操作と同じことになります。オブジェクト型でなくても例えば `string | number` と `string | boolean` という２つのユニオン型を合成すれば、積集合(インターセクション)は `string` 型となり、和集合(ユニオン)は `string | number | boolean` 型となります。
+
 余剰プロパティチェックについては uhyo さんの以下の記事で非常に分かりやすく解説されていたので参考にしてください。ユニオン型が OR 演算によって生成されるということについても解説されています。
 
 https://qiita.com/uhyo/items/b1f806531895cb2e7d9a
 
-## extends での判別
+### extends での判別
 
 話は少し変わりますが、`extends` キーワードでの型の集合性について考えてみたいと思います。
 
@@ -394,9 +434,55 @@ graph RL
 
 図では `U` も型パラメータにしていますが、例えば `unknown[]` などをいれて `T extends unknown[]` というように配列型などの具体的な型で拘束して考えてみると良いでしょう。
 
-# 型の階層性
+### 関数の型
 
-## Top type と Bottom type
+型は具体的な値の集合であると述べましたが、型を集合として捉える時、具体的な関数も型の要素となります。そもそも関数はオブジェクトであり値ですから、関数の型も具体的な関数実装の集合であるわけです。
+
+TypeScript では以下のように関数の型を定義できます。
+
+```ts
+// 関数の型を定義
+type NumberOp = (num: number) => number;
+
+// 関数の型で注釈して具体的な関数を実装する
+const increment: NumberOp = (param) => {
+  //                         ^^^^^^ number 型の引数
+  return param + 1;
+  //     ^^^^^^^^^ number 型の返り値
+};
+
+console.log(increment(42)); // => 43
+```
+
+上記コードで定義した具体的な関数 `increment` は関数の型である `NumberOp` という集合内の一つの要素となります。`NumberOp` 型、つまり `(num: number) => number` という関数型の集合には他にも以下のような具体的な関数の要素が含まれています。
+
+```ts
+// (num: number) => number 型の関数値
+const double: NumberOp = (param) => {
+  return param * 2;
+};
+
+// (num: number) => number 型の関数値
+const sqrt: NumberOp = (param) => {
+  return Math.sqrt(param);
+};
+```
+
+このようにある関数の型定義を満たすような具体的な関数の実装がその関数型の集合についての要素となります。
+
+ただし、プリミティブ型やオブジェクト型の値(value) のように関数の型を集合として捉えて、型の合成やサブタイプ互換性について考えるにはいくつか難しいことがあるので、素朴な集合論よりも対象(object) と射(arrow, morphism)を扱う圏論の方が適しているようです。
+
+https://criceta.com/category-theory-with-scala/01_Category.html
+
+また、関数の型はシグネチャ(引数の数、引数の型、返り値の型)について考慮しなくてはなりません。このときにそれぞれの要素についてサブタイプ互換性の変性(variance)という概念も必要になります。特に関数の型は引数の型については双変(bivariant)あるいは反変(contravariant)になります。
+
+https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-parameter-bivariance
+
+自分もまだ理解しきれていないことが多いためここでは詳しく解説しません。
+
+## 型の階層性
+
+### Top type と Bottom type
 
 subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります (集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼ぶそうです。
 
@@ -410,7 +496,19 @@ https://en.wikipedia.org/wiki/Bottom_type
 
 ![unknown & never type](/images/typescript-widen-narrow/img_ts_handbook_toptype_bottomtype.jpg)*[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types) より引用*
 
-型の集合性で見たとおり、型は値の集合なので、TypeScirpt のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合です。全体集合を `unknown` 型としてみなすと以下のような図が書けました。
+Top type としての `unknown` 型自体の実装は以下の PR で行われました。
+
+https://github.com/microsoft/TypeScript/pull/24439
+
+Bottom type としての `never` 型自体の実装は以下の PR で行われました。
+
+https://github.com/microsoft/TypeScript/pull/8652
+
+:::message
+記事内で PR を提示しているのはハンドブックに記載されていない細かい情報を追うには PR の説明が一番詳しいからです。
+:::
+
+型の集合性で見たとおり、型は値の集合なので、TypeScirpt のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合(Empty set)です。全体集合(Universal set)を `unknown` 型としてみなすと以下のような図が書けました。
 
 ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
@@ -419,7 +517,7 @@ https://en.wikipedia.org/wiki/Bottom_type
 参考文献
 https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c5799ad/
 
-## Type hierarchy
+### Type hierarchy
 
 そして、subtype と supertype の関係を辿ると以下のような型の階層図 (Type hierarchy) もできあがります。
 
@@ -480,8 +578,8 @@ graph LR
 
 そして subtype の型の変数は supertype の型の変数へ代入可能です。
 
->スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `subtype <: supertype` と表記される。
->([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
+> スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `subtype <: supertype` と表記される。
+> ([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
 
 Widening(型の拡大) が起きる方向は子から親、つまり subtype → supertype の方向であり、代入可能となるのも subtype → supertype の方向で、その逆は型エラーとなります。
 
@@ -599,11 +697,13 @@ let u = undefined;
 //  ^: any 型として拡大されて型推論される
 ```
 
+### Compatibility
+
 さて、上記の階層図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると subtype → supertype で代入可能である一方で、supertype → subtype で代入できないというのが上の階層図と一致しているので納得できます (ただし、`any` 型は例外で、[strictNullChecks](https://www.typescriptlang.org/docs/handbook/2/basic-types.html#strictnullchecks) によって `null` 型と `undefined` 型の挙動も変動します)。
 
 ![型の互換性](/images/typescript-widen-narrow/img_ts_type_compatibility.png)*[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability) より引用*
 
-代入可能であることや subtype の関係性は型の互換性 (compatibility) として定められています。代入可能であることと subtype であることは近似していますが、微妙に異なるということが Handbook の以下の箇所に記載されています。
+代入可能であることや subtype の関係性は型の compatibility (互換性) として定められています。assignable (代入可能または割当可能)であることと subtype であることは近似していますが、微妙に異なるということが Handbook の以下の箇所に記載されています。
 
 > So far, we’ve used “compatible”, which is not a term defined in the language spec. In TypeScript, **there are two kinds of compatibility: subtype and assignment**. These differ only in that **assignment extends subtype compatibility with rules to allow assignment to and from any**, and to and from enum with corresponding numeric values.
 > ([TypeScript: Documentation - Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment) より引用、太字は筆者強調)
@@ -611,7 +711,7 @@ let u = undefined;
 subytype 互換性を拡張したものが代入 (assignment) 互換性であり、具体的には、`any` 型から様々な型に代入できることと `any` 型に様々な型を代入できるというルールが追加されていることが記載されていますね (`enum` についての言及は無視しています)。
 
 :::message
-他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます (any 型についてのルールが追加された subtype-supertype 関係性の部分的な言い換えにすぎないです)。
+他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます (これらのルールは any 型についてのルールが追加された subtype-supertype 関係性の部分的な言い換えにすぎないからです)。
 
 - すべての型は自身の型へ代入可能
 - `any` 型と `unknown` 型はそれら自身への代入可能な型は同じだが、`unknown` 型は `any` 型の除いて他の型へ代入することはできない
@@ -621,7 +721,13 @@ subytype 互換性を拡張したものが代入 (assignment) 互換性であり
 - `strictNullChecks` を有効化すると、`null` 型と `undefined` 型は `void` 型のように振る舞い、`any` 型や `unknown` 型、`never` 型そして `void` 型を除くすべての型が・に代入できない (`undefined` 型は常に `void` 型) へ代入できる。
 :::
 
-実際、`any` 型は型チェックを放棄するので、例外的にすべての型に代入可能であり、自身の subtype である型にも代入できます (上の代入可能であるかの図でもそうなっていますね)。ただし Bottom type である `never` 型には `never` 型以外は何も代入できないので `any` 型でも代入することはできません。
+ちなみに assignability についての基本的な仕組みについての説明はアーカイブされている古いハンドブックの方に記載されているので気になる方はこのドキュメントを見るとよいです。
+
+https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md
+
+#### any 型
+
+上で述べたように `any` 型は型チェック自体を放棄するので、例外的にすべての型に代入可能であり、自身の subtype である型にも代入できます (上の代入可能であるかの図でもそうなっていますね)。ただし Bottom type である `never` 型には `never` 型以外は何も代入できないので `any` 型でも代入することはできません。
 
 ```ts
 // any 型は型チェックしなくなるので assignable の概念もなくなってすべての型の変数に代入できてしまう
@@ -633,6 +739,8 @@ const str: string = numAsAny;
 const nev: never = numAsAny; // [Error]
 // Type 'any' is not assignable to type 'never'
 ```
+
+#### never 型
 
 `never` 型は本来は「値を持たない」ということを表現する型なので、`never` 型には `never` 型しか代入できないということを検証するには型アサーションで `never` 型としてあげることで可能です。また、`never` 型は最下層の subtype つまり Bottom type なので `never` 型からみればあらゆる型が supertype となり代入可能です (各リテラル型も supertype です)。
 
@@ -648,7 +756,9 @@ const an: any = nev;
 const nev2: never = nev; // never 型(自身)に代入可能
 ```
 
-ちなみに関数の返り値がないことを表現する `void` 型ですが、`return` 文を持たない関数の返り値の型は自動で `void` 型であると型推論されます。そういった関数から返り値を得ようとして返ってくるのは `undefined` という値です。この２つも supertype と subtype の関係です (階層図を参照)。`void` 型が supertype で、`undefined` 型が subtype なので、`void` 型に `undefined` 型は代入可能です (逆はできない)。
+#### void 型と undefined 型
+
+関数の返り値がないことを表現する `void` 型ですが、`return` 文を持たない関数の返り値の型は自動で `void` 型であると型推論されます。そういった関数から返り値を得ようとして返ってくるのは `undefined` という値です。この２つも supertype と subtype の関係です (階層図を参照)。`void` 型が supertype で、`undefined` 型が subtype なので、`void` 型に `undefined` 型は代入可能です (逆はできない)。
 
 ```ts
 const u: undefined = undefined;
@@ -661,9 +771,10 @@ https://github.com/microsoft/TypeScript-Website/pull/2470
 
 ちなみに、Subtyping 一般においては subtype であるかの評価や定義には包摂 ([subsumption](https://en.wikipedia.org/wiki/Subtyping#Subsumption)) という概念が利用されるそうです。
 
-# 参考
+## 参考
 
 型の集合性についての関連文献
+- [1章 圏とは · Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/01_Category.html)
 - [2章 型と関数の圏 · Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/02_Types_and_functions.html)
 - [集合としての型 · An Introduction to Elm](https://guide.elm-lang.jp/appendix/types_as_sets.html)
 
@@ -672,12 +783,23 @@ https://github.com/microsoft/TypeScript-Website/pull/2470
 - [TypeScriptの型メモ - Qiita](https://qiita.com/dico_leque/items/06ac5837b7a333c5c8da)
 - [Diagram of every possible TypeScript type](https://gist.github.com/laughinghan/31e02b3f3b79a4b1d58138beff1a2a89)
 
-:::message
+### 関連情報について
+
 TypeScript の型階層図はネットで探してそこまで見つからないので、代わりに別の言語を使って「[Scala type hierarchy](https://www.google.com/search?q=Scala+type+hierarchy&tbm=isch)」などでググると型の階層図の画像が多く見れます。集合についても他の言語で調べた方が詳しい情報が得られます。
 
 型理論等は専門用語や数学的な記法が多くてとっつきづらいのですが、触りだけでも有用な知識 (あるいは必要不可欠な知識) がいくつかあるみたいなので初心者向けに解説されているもの等あるといいなと思いますね🤔
 
 公式 Handbook も『Types as Sets』の項目では型を集合論的に考えることを推奨している感じがあるので、型理論とはいかずとも集合論をベースにした上でクラスじゃなくてプリミティブ型と普通のオブジェクト型を中心とした型システムの解説書などがあるといいなとも思います。
 
-未読ですが目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしています。
-:::
+目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしていたので購入してみたのですが、第二章の「Item 7: Think of Types as Sets of Values」に解説してきたような内容が記載されていました。
+
+https://www.amazon.co.jp/dp/1492053740
+
+結構分かりやすく解説されていましたが、図や踏み込んだ解説が多くはなかったので、これ以上調べるには Benjamin C. Pierce 氏による通称 TAPL と呼ばれる型システムについての専門書などを見た方がいいのかもしれません(購入を検討しています)。
+
+https://www.amazon.co.jp/dp/0262162091
+
+というか TypeScript について上記のような読み物が世の中に無いならいっそのこと自分で作ってやろうと思って本を作りました。まだ未完成ですが、関連使用の調査や自分の理解などを追記して完成させるつもりです。
+
+https://zenn.dev/estra/books/ts-the-minimum
+

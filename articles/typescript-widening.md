@@ -6,7 +6,7 @@ emoji: "🕺"
 type: "tech"
 topics: ["typescript", "deno"]
 date: 2022-07-29
-modified: 2022-11-26
+modified: 2023-02-26
 url: "https://zenn.dev/estra/articles/typescript-widening"
 tags: [" #type/zenn #TypeScript/inference "]
 aliases:
@@ -15,7 +15,7 @@ aliases:
   - 型の拡大
 ---
 
-# はじめに
+## はじめに
 
 前回の記事では Promise などの非同期処理から逆に TypeScript の型について理解してみるという試みをしてみました。
 
@@ -104,9 +104,9 @@ function fn(s = 5, t = true) {}
 
 実はこのあたりの話題についてもう少し掘り下げてみると **Widening(型の拡大)** という [Narrowing(型の絞り込み)](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) に相反する概念が出てきます。この Widening について知ることで TypeScript の型への理解が深まるのでアウトプットを兼ねて解説していきたいと思います。
 
-# let 宣言とリテラル型
+## let 宣言とリテラル型
 
-Wideing の前にリテラル型(Literal type)を知っておく必要があるので、解説しておきます。
+Wideing の前にリテラル型 (Literal type) を知っておく必要があるので、解説しておきます。
 
 JavaScript にはプリミティブ型の値や、配列やオブジェクトなどを表現するための様々なリテラルがあります。
 
@@ -127,7 +127,7 @@ let obj = { a: "text", b: 42 };
 //        ^^^^^^^^^^^^^^^^^^^^ オブジェクトリテラル
 ```
 
-`const` でなく `let` の宣言で変数を初期化しているのは意味がありますが、一旦それは置いておいて、これらを TypeScript で型注釈をすると次のようになりました(省略できる型注釈をわざわざ書いています)。
+`const` でなく `let` の宣言で変数を初期化しているのは意味がありますが、一旦それは置いておいて、これらを TypeScript で型注釈をすると次のようになりました (省略できる型注釈をわざわざ書いています)。
 
 ```ts:TypeScript
 let str: string = "text";
@@ -205,7 +205,7 @@ arr = [100, 99, 98, 97];
 obj = { a: "string val", b: 0 };
 ```
 
-`string` 型や `number` 型などの一般的なプリミティブ値の型がある一方で、それらよりも更に具体的な型としてリテラル型(Literal type)という型が存在しています。各リテラル値によってそのまま型注釈することでリテラル型として型注釈したことになります。
+`string` 型や `number` 型などの一般的なプリミティブ値の型がある一方で、それらよりも更に具体的な型としてリテラル型 (Literal type) という型が存在しています。各リテラル値によってそのまま型注釈することでリテラル型として型注釈したことになります。
 
 ```ts
 let str: "text" = "text";
@@ -263,7 +263,7 @@ obj = { a: "error", b: 100 }; // [Error]
 
 具体的なリテラル値を指定しているわけですから、`string` や `number` などの一般的な型よりも具体的な型を指定していることが分かったと思います。
 
-# const 宣言とリテラル型
+## const 宣言とリテラル型
 
 値の宣言は再代入しないなら `const` で宣言するのが通例だと思います。Deno 環境でも、"[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" というリンタールールが存在しており、`let` 宣言した変数で再代入していないものがあれば `const` を使って宣言するように注意されます。
 
@@ -296,7 +296,7 @@ const arr = [1, 2, 3];
 const obj = { a: "text", b: 42 };
 ```
 
-もちろん型推論が働きますが、`const` 宣言によってプリミティブ値で初期化した際には、その変数は `string` や `number` といった一般的な型で推論はされません。実は**変数の初期化に使ったリテラル値のリテラル型として型推論がされています**。
+もちろん型推論が働きますが、`const` 宣言によってプリミティブ値で初期化した際には、その変数は `string` や `number` といった一般的な型で推論はされません。実は **変数の初期化に使ったリテラル値のリテラル型として型推論がされています**。
 
 ```ts:リテラル型で型推論されている
 const str = "text";
@@ -307,7 +307,7 @@ const bool = true;
 //    ^^^^ true という真偽値リテラルのリテラル型として型推論される
 ```
 
-初期化の際に型注釈を省略していると次のようにリテラル型で型注釈しているのと近い状態で型推論がされることになります(**厳密にはそれらは同じでない**ことが重要になりますが、いまは置いておきます)。
+初期化の際に型注釈を省略していると次のようにリテラル型で型注釈しているのと近い状態で型推論がされることになります (**厳密にはそれらは同じでない** ことが重要になりますが、いまは置いておきます)。
 
 ```ts
 const str: "text" = "text";
@@ -372,9 +372,9 @@ console.log(Math.floor(num));
 
 ということで、基本的に問題はまったくありませんが、TypeScript でもなぜ大丈夫なのかを理解するには Widening という概念が必要になります。
 
-# Playground と Pull request
+## Playground と Pull request
 
-Widining の用語は実は Microsoft 公式のドキュメントである『[The TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)』の現時点(2022-07-29)最新のバージョンには記載されていません(どうやら昔のバージョンには記載されていたようです)。
+Widining の用語は実は Microsoft 公式のドキュメントである『[The TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)』の現時点 (2022-07-29) 最新のバージョンには記載されていません (どうやら昔のバージョンには記載されていたようです)。
 
 その代わり、TypeScript 公式サイトの [Playground](https://www.typescriptlang.org/play) にはサンプルコードともに説明がされています。Playground のサンプルコードは新しい TypeScript の機能やそういった概念的な話の説明もされています。
 
@@ -392,12 +392,12 @@ https://www.typescriptlang.org/play/?q=111#example/type-widening-and-narrowing
 
 バージョン毎に細分化されている『What's new』の内容は『[Overview](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)』という１つのページに網羅されているので、このページで用語や機能をページ内検索するのが早そうですね。また、最近のバージョンの説明では機能ごとにオリジナルのプルリクエストが紐付いているようなのでここからプルリクエスト内の説明へ移動できます。プルリクエストの説明が最も詳細なようです。
 
-Widening についても Overview の以下の場所に記載されていました(Widening で検索すると引っかかる箇所)。v2.0 と v2.1 で導入された古い機能なのでプルリクエストへの紐付けは無いようですが、[Github のリポジトリ](https://github.com/microsoft/TypeScript)で検索すればすぐに出てくるのでこの記事の中で後で参照します。
+Widening についても Overview の以下の場所に記載されていました (Widening で検索すると引っかかる箇所)。v2.0 と v2.1 で導入された古い機能なのでプルリクエストへの紐付けは無いようですが、[Github のリポジトリ](https://github.com/microsoft/TypeScript) で検索すればすぐに出てくるのでこの記事の中で後で参照します。
 
 - [Better inference for literal types](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#better-inference-for-literal-types)
 - [Type widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening)
 
-# Widening
+## Widening
 
 `let` 宣言での文字列などのプリミティブ値で初期化した際には一般的な `string` 型として変数の型が型推論された一方で、`const` 宣言の場合にはそのまま具体的なプリミティブ値のリテラル型として型推論されていました。
 
@@ -417,7 +417,7 @@ strConst = "再代入できない"; // NG
 
 `let` 宣言で型注釈を省略して文字列リテラルで初期化した場合に `string` 型として型推論されるのは、そもそも `let` 宣言された変数は再代入可能な変数であり、他の `string` 型の値を再代入できるように一般的な `string` 型にしておくためであり、逆に具体的すぎるリテラル型として型推論されるのは合理的ではありません。その一方で、`const` した変数はそもそも再代入できないので、一般的な `string` 型として型推論するよりも初期化に使ったリテラル値のリテラル型として型推論した方が合理的ですね。
 
-このように、`let` は `const` よりも広い(wide)型を受け入れるように型推論が働くというわけです。再度、`const` 宣言と `let` 宣言での型推論の違いをまとめておきます。それぞれの変数から `typeof` 型演算子で型を抽出すると `const` なら文字列リテラル型、`let` なら拡大された一般的な `string` 型などが得られます。
+このように、`let` は `const` よりも広い (wide) 型を受け入れるように型推論が働くというわけです。再度、`const` 宣言と `let` 宣言での型推論の違いをまとめておきます。それぞれの変数から `typeof` 型演算子で型を抽出すると `const` なら文字列リテラル型、`let` なら拡大された一般的な `string` 型などが得られます。
 
 ```ts
 const strConst = "text";
@@ -448,7 +448,7 @@ Widening(型の拡大) や Narrowing(型の絞り込み) は変数の型を拡�
 
 今まで見てきたようなリテラル型に関しての Widening はより具体的には **Literal Widening** と呼ばれており、`const` 宣言では初期値から具体的なリテラル型として型推論されたのに、`let` 宣言ではより一般的な型として拡大されて型推論されるのもこの Literal Widening の一部です。
 
-TypeScirpt におけるこの "Literal Widening" の機能はそこそこ大きなもので、次の Pull request でマージされた機能(あるいはコンセプト)であり、PR ではそのコンセプトの説明もなされています。
+TypeScirpt におけるこの "Literal Widening" の機能はそこそこ大きなもので、次の Pull request でマージされた機能 (あるいはコンセプト) であり、PR ではそのコンセプトの説明もなされています。
 
 https://github.com/Microsoft/TypeScript/pull/10676
 
@@ -494,7 +494,7 @@ class C2 = {
 参考文献
 https://stackoverflow.com/questions/51263813/type-inferred-from-readonly-class-property
 
-考えかとしては、変数が immutable な場所では常に最も具体的な型として型推論がなされ、逆に変数が mutable になる場所では、推論される型はより一般的なものとして拡大(Widen)されます。
+考えかとしては、変数が immutable な場所では常に最も具体的な型として型推論がなされ、逆に変数が mutable になる場所では、推論される型はより一般的なものとして拡大 (Widen) されます。
 
 >The intuitive way to think of these rules is that immutable locations always have the most specific type inferred for them, whereas mutable locations have a widened type inferred.
 >([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より引用)
@@ -550,7 +550,7 @@ const o2: { kind: 0 } = { kind: 0 };
 //    ^^: { kind: 0 } というリテラル型のプロパティの値を持つオブジェクトの型として明示的に型注釈する場合
 ```
 
-## Widening の抑制
+### Widening の抑制
 
 `let` 宣言時に型注釈を省略すると Widening が起きて型が拡大推論されますが、次のように省略せずに明示的に型注釈を施すことによって Widening をしないように抑制できます。
 
@@ -562,12 +562,12 @@ let arr: [1, 2, 3] = [1, 2, 3];
 let obj: { a: "text"; b: 42 } = { a: "text", b: 42 };
 ```
 
-ただし、Deno 環境でこのようなリテラル型の型注釈をしてしまうと "[prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const)" というリンタールールで以下のように注意されてしまいます("[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" とは別のリンタールールです)。
+ただし、Deno 環境でこのようなリテラル型の型注釈をしてしまうと "[prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const)" というリンタールールで以下のように注意されてしまいます ("[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" とは別のリンタールールです)。
 
 >Expected a `const` assertion instead of a literal type annotation
 >Remove a literal type annotation and add `as const`
 
-リテラル型として型注釈するのではなく、**型アサーション(Type assertion)** を使って、`as const` を付けろという注意です。
+リテラル型として型注釈するのではなく、**型アサーション (Type assertion)** を使って、`as const` を付けろという注意です。
 
 型アサーションについては公式ドキュメントの以下の項目に記載されています。
 
@@ -578,8 +578,8 @@ https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertio
 そして、Widening を抑制するために明示的にリテラル型として変数を宣言する場合には以下の３つの方法があると "prefer-as-const" のルールには記載されています。
 
 - (1) 明示的に型注釈
-- (2) 通常の型アサーション(`as "foo"` または `<"foo">`)
-- (3) const アサーション(`as const`)
+- (2) 通常の型アサーション (`as "foo"` または `<"foo">`)
+- (3) const アサーション (`as const`)
 
 ```ts:リテラル型として明示する方法
 // (1) 明示的に型注釈
@@ -616,7 +616,7 @@ const thisIs5AsConst = 5 as const;
 //    ^^^^^^^^^^^^^^: 5 数値リテラル型
 ```
 
-また、const アサーション(`as const`)では書き方を統一できて分かりやすいです。ということで、"prefer-as-const" のリンタールールでは以下のようなコードが有効となります。
+また、const アサーション (`as const`) では書き方を統一できて分かりやすいです。ということで、"prefer-as-const" のリンタールールでは以下のようなコードが有効となります。
 
 ```ts:有効となるコード
 let a = 2 as const;
@@ -724,9 +724,9 @@ readonly のタプル型については Handbook の以下の項目に記載さ�
 https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-tuple-types
 
 :::details Readonly 型と ReadonlyArray 型
-ユーティリティ型(Utility type)の１つに `Readonly<Type>` というジェネリクス型が存在しています。
+ユーティリティ型 (Utility type) の１つに `Readonly<Type>` というジェネリクス型が存在しています。
 
-この [Readonly 型](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)は配列やオブジェクトなどの型を型引数として渡すことでそれらを readonly とした型を生成できます。
+この [Readonly 型](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype) は配列やオブジェクトなどの型を型引数として渡すことでそれらを readonly とした型を生成できます。
 
 ```ts
 type ObjTest = {
@@ -762,7 +762,7 @@ type RAUnion = ReadonlyArray<number | string>;
 ```
 :::
 
-## Widining (Non-widening) literal type
+### Widining (Non-widening) literal type
 
 すこし話がそれたので Widening の話に戻すと、型注釈なしで `const` 宣言した変数にはその初期化に使った文字列リテラルや数値リテラルなどから具体的なリテラル型として型が推論されますが、その型の Widening を抑制することで `let` 宣言した変数にその値を代入した際にも継続的にその変数の型の Widening が抑制されることになります。
 
@@ -786,7 +786,7 @@ let strLet4 = strConst4;
 //  ^^^^^^^: "text" 文字列リテラル型として具体的に型推論される(Widening の抑制が継続する)
 ```
 
-これらの違いを認識するため、リテラル型には Widening literal type(拡大リテラル型) と Non-widening literal type(非拡大リテラル型) という異なる２つの型があると説明できます(翻訳は適当に当てているだけなのであまり気にしないでください)。また、そこまで厳密に区分けしなくてもというような気もしますが。
+これらの違いを認識するため、リテラル型には Widening literal type(拡大リテラル型) と Non-widening literal type(非拡大リテラル型) という異なる２つの型があると説明できます (翻訳は適当に当てているだけなのであまり気にしないでください)。また、そこまで厳密に区分けしなくてもというような気もしますが。
 
 今まで見てきたように Widening が抑制されていないリテラル型は Widening literal type は以下のように型が拡大されます。
 
@@ -794,7 +794,7 @@ let strLet4 = strConst4;
 - 数値リテラル型 → `number` 型
 - 真偽値リテラル型 → `boolean` 型
 
-これらのリテラル型の変数は mutable になる場所で自動的にその型を一般化した型(後述する Collective type)として Widening されます。
+これらのリテラル型の変数は mutable になる場所で自動的にその型を一般化した型 (後述する Collective type) として Widening されます。
 
 ```ts
 const str1 = "text";
@@ -866,7 +866,7 @@ for (let i = start; i <= end; i = i + 1) {
 }
 ```
 
-`i` に `start` の値を代入する際に Widening が起きないと、`1` という初期値のリテラル型しか再代入できないことになってインクリメント自体ができなくなってしまいます。次のように Widening を型アサーションで抑制して Non-widening type としてしまうと型エラーとなります(JavaScript としてはもちろん問題ありません)。
+`i` に `start` の値を代入する際に Widening が起きないと、`1` という初期値のリテラル型しか再代入できないことになってインクリメント自体ができなくなってしまいます。次のように Widening を型アサーションで抑制して Non-widening type としてしまうと型エラーとなります (JavaScript としてはもちろん問題ありません)。
 
 ```ts
 const start = 1 as const; // [Non-widening literal type]
@@ -891,7 +891,7 @@ https://sandersn.github.io/manual/Widening-and-Narrowing-in-Typescript.html
 
 https://mariusschulz.com/blog/literal-type-widening-in-typescript
 
-## subtype
+### subtype
 
 さて、Widening が分かってきたと思いますが、`const` 宣言で型注釈を省略して Widening を抑制しないと具体的なリテラル型として型推論されてしまい、一般的な `string` 型や `number` 型などに使えるプロトタイプメソッドや静的メソッドなどが使えるのという疑問がありました。
 
@@ -907,7 +907,7 @@ console.log(str.toUpperCase());
 console.log(Math.floor(num));
 ```
 
-この話は自分の推測では Widening に直接的にかなり関係あると思っていたのですが、調べてみたらそこまで関係なく、これは単純にそれぞれのリテラル型は Widening で一般化されて拡大されるような `string` や `number` といった型の部分集合の型(subtype)にあたるとのことでした。subtype であるゆえに、文字列リテラル型の変数の値は `string` 型の変数に代入できます(その逆はできません)。
+この話は自分の推測では Widening に直接的にかなり関係あると思っていたのですが、調べてみたらそこまで関係なく、これは単純にそれぞれのリテラル型は Widening で一般化されて拡大されるような `string` や `number` といった型の部分集合の型 (subtype) にあたるとのことでした。subtype であるゆえに、文字列リテラル型の変数の値は `string` 型の変数に代入できます (その逆はできません)。
 
 ```ts
 const strLiteral = "text" as const;
@@ -916,7 +916,7 @@ const str: string = strLiteral;
 // 文字列リテラル型は string 型の subtype なので string 型の変数に代入可能
 ```
 
-型には互換性(compatibility)などの概念があるため、この話題はこの話題で深堀りする必要性がありそうです。
+型には互換性 (compatibility) などの概念があるため、この話題はこの話題で深堀りする必要性がありそうです。
 
 https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment
 
@@ -927,7 +927,7 @@ https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-
 
 文字列リテラル型は `string` 型に代入可能であることから、`string` 型を受け入れる静的メソッドや、`string` 型の変数を引数にとる関数などでも文字列リテラル型を受け入れることができるというわけです。
 
-即時実行関数で考えてみると分かりやすいかもしれません。関数の引数に変数を渡す際には代入が行われることになりますが、その際に文字列リテラル型の変数から `string` 型の変数に代入することになります。この代入が可能なのは文字列リテラル型が `string` 型の subtype であり代入可能(assignable)だからです。
+即時実行関数で考えてみると分かりやすいかもしれません。関数の引数に変数を渡す際には代入が行われることになりますが、その際に文字列リテラル型の変数から `string` 型の変数に代入することになります。この代入が可能なのは文字列リテラル型が `string` 型の subtype であり代入可能 (assignable) だからです。
 
 ```ts
 const strLiteral = "text" as const;
@@ -971,7 +971,7 @@ const strLiteralUnion: "text" | "mytext" = str; // [Error]
 
 supertype とは subtype の逆で派生元となる型のことです。つまり、`stirng` 型は `"text"` という文字列リテラル型の supertype です。Literal widening で起きるのは subtype である文字列リテラル型からプリミティブ型の supertype である `string` 型への拡大です。
 
-supertype と subtype の話はリテラル型だけではなく、タプル型と通常の配列型などの関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能あるいは割当可能(assignable)です。
+supertype と subtype の話はリテラル型だけではなく、タプル型と通常の配列型などの関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能あるいは割当可能 (assignable) です。
 
 >A tuple type is assignable to a compatible array type.
 >([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
@@ -996,7 +996,7 @@ t2 = a2; // [Error]
 >Assignability is the function that determines whether one variable can be assigned to another. It happens when the compiler checks assignments and function calls, but also return statements.
 >([TypeScript-New-Handbook/Assignability.md at master · microsoft/TypeScript-New-Handbook](https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md) より引用)
 
-文字列リテラル型の話に戻りますが、同じ PR 内は、文字列リテラル型は `string` 型と同一のプロパティ(プロトタイプメソッドなど)を持ち、`+` などの演算子のとの互換性があることが明言されています。
+文字列リテラル型の話に戻りますが、同じ PR 内は、文字列リテラル型は `string` 型と同一のプロパティ (プロトタイプメソッドなど) を持ち、`+` などの演算子のとの互換性があることが明言されています。
 
 >String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
 >([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
@@ -1025,7 +1025,7 @@ const strJoin = strLiteral1 + strLiteral2;
 //    ^^^^^^^: string 型
 ```
 
-さすがに、`"text"` と `"TEXT"` が結合された文字列 `"textTEXT"` という文字列リテラル型として型推論されるようなことはありません。また、自分で明示的に "textTEXT" 文字列リテラル型として型注釈しても無駄です。なぜなら、演算の結果 `string` 型として返ってくる値を文字列リテラル型に代入できないからです(逆の `string` 型に文字列リテラル型を代入は可能)。
+さすがに、`"text"` と `"TEXT"` が結合された文字列 `"textTEXT"` という文字列リテラル型として型推論されるようなことはありません。また、自分で明示的に "textTEXT" 文字列リテラル型として型注釈しても無駄です。なぜなら、演算の結果 `string` 型として返ってくる値を文字列リテラル型に代入できないからです (逆の `string` 型に文字列リテラル型を代入は可能)。
 
 ```ts
 const strLiteral1 = "text";
@@ -1036,8 +1036,8 @@ const strJoin: "textTEXT" = strLiteral1 + strLiteral2;
 // Type 'string' is not assignable to type '"textTEXT"'.
 ```
 
-:::details テンプレートリテラル型(Template literal type)
-もしも、２つの文字列を結合した上でその文字列から文字列リテラル型を作り出したいというような場合には、[テンプレートリテラル型(Template literal type)](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html#uppercasestringtype)を使うことで実現できます。
+:::details テンプレートリテラル型 (Template literal type)
+もしも、２つの文字列を結合した上でその文字列から文字列リテラル型を作り出したいというような場合には、[テンプレートリテラル型(Template literal type)](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html#uppercasestringtype) を使うことで実現できます。
 
 ```ts
 const strLiteral1 = "text";
@@ -1064,7 +1064,7 @@ type SeussFish = `${Quantity | Color} fish`;
 参考文献
 https://mariusschulz.com/blog/string-literal-types-in-typescript#string-literal-types-vs-strings
 
-# 演算子のオペランドと演算結果の型
+## 演算子のオペランドと演算結果の型
 
 演算結果の値の型が拡大されて返るのは、オブジェクトや配列についても同じです。プロパティの値や配列要素の値を使って何かしらの演算がされた場合には Widening された結果が返ってきます。演算によって返却される値は `string` や `number` などの一般的な型となります。
 
@@ -1107,7 +1107,7 @@ const testOpResult2 = (1 as const) + (2 as const);
 //    ^^^^^^^^^^^^^: number 型
 ```
 
-明示的にそのリテラル型を返す関数などを定義しない限りは、演算の結果としてこのように型が拡大することになります。ただし、三項演算子(条件演算子)の場合はリテラル型からなるユニオン型として const アサーションで型推論させることが可能です。
+明示的にそのリテラル型を返す関数などを定義しない限りは、演算の結果としてこのように型が拡大することになります。ただし、三項演算子 (条件演算子) の場合はリテラル型からなるユニオン型として const アサーションで型推論させることが可能です。
 
 ```ts
 const unionConst = Math.random() < 0.5 ? "text" : 42;
@@ -1127,11 +1127,11 @@ type LiteralUnion = typeof literalUnion;
 
 https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#418-unary-operators
 
-例えば二項演算子としての `+` 演算子のオペランドの型は TypeScript v1.8 の時点では次のようになっていました(オペランドの対象として[BigInt](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#bigint)などが加わった以外は演算子の型なので現在でも大してかわっていないと推測しています、というか情報が最新のドキュメントにはどこにもない)。２つのオペランドの型の組み合わせから演算結果となる値の型が分かります(数値リテラル型などが導入される前)。
+例えば二項演算子としての `+` 演算子のオペランドの型は TypeScript v1.8 の時点では次のようになっていました (オペランドの対象として [BigInt](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#bigint) などが加わった以外は演算子の型なので現在でも大してかわっていないと推測しています、というか情報が最新のドキュメントにはどこにもない)。２つのオペランドの型の組み合わせから演算結果となる値の型が分かります (数値リテラル型などが導入される前)。
 
 ![プラス演算子の型](/images/typescript-widen-narrow/img_plusOperatorType.jpg)*[TypeScript/spec-ARCHIVED.md at main · microsoft/TypeScript](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#418-unary-operators) より引用*
 
-オペランドの一方が `string` 型なら演算結果は `string` 型となり、両方のオペランドの型が `number` 型のときに演算結果は `number` 型となります(まあ、これは JavaScript での演算がわかっていれば当たり前の内容ですね)。
+オペランドの一方が `string` 型なら演算結果は `string` 型となり、両方のオペランドの型が `number` 型のときに演算結果は `number` 型となります (まあ、これは JavaScript での演算がわかっていれば当たり前の内容ですね)。
 
 従って、値の初期化においても演算子を使って何かしらの式をつくって初期化すればその型は一般的な型となり、**その結果がリテラル型になるようなことはなさそうです**。例えば二項演算子としての `+` 演算子の演算結果は２つのオペランドが数値リテラルなら結果の型は `number` 型となります。
 
@@ -1154,9 +1154,9 @@ const more = num1 + num2; // 演算結果は number 型
 
 https://qiita.com/uhyo/items/6acb7f4ee73287d5dac0
 
-# 一般的な Widening
+## 一般的な Widening
 
-これまで見てきたのは文字列リテラル型や数値リテラル型とその型を一般化した `string` 型や `number` 型などの関係性、つまり "Literal widening" という機能についてでしたが、本来的な [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening) という機能そのものが指し示すのは `null` 型と `undefined` 型が `any` 型として拡大される機能のことです(この機能の方が Literal widening よりも古い)。
+これまで見てきたのは文字列リテラル型や数値リテラル型とその型を一般化した `string` 型や `number` 型などの関係性、つまり "Literal widening" という機能についてでしたが、本来的な [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening) という機能そのものが指し示すのは `null` 型と `undefined` 型が `any` 型として拡大される機能のことです (この機能の方が Literal widening よりも古い)。
 
 `--strictNullChecks` のオプションを有効にしないと以下のように `null` 型と `undefined` 型は変数が mutable な場所で `any` 型として拡大されます。
 
@@ -1184,14 +1184,14 @@ let u = undefined;
 参考文献
 https://sandersn.github.io/manual/Widening-and-Narrowing-in-Typescript.html
 
-# 型の集合と階層性
+## 型の集合と階層性
 
 こちらについては別の記事にしました。
 
 https://zenn.dev/estra/articles/typescript-type-set-hierarchy
 
-# 終わり
+## 終わり
 
-Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので(理解したら追記するかもしれません)。
+Widening についてはまだいくつかルールがありますが、今回は基本的な解説にとどめておきます。それらのルールについては自分も理解しきっていないところがあるので (理解したら追記するかもしれません)。
 
 Widening の対となる Narrowing については次回以降の記事で書こうと思います。
