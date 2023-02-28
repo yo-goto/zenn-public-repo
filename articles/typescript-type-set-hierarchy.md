@@ -1,11 +1,12 @@
 ---
 title: "TypeScript における型の集合性と階層性"
 published: true
+cssclass: zenn
 emoji: "🕴"
 type: "tech"
 topics: ["typescript"]
 date: 2022-08-04
-modified: 2023-02-24
+modified: 2023-02-28
 url: "https://zenn.dev/estra/articles/typescript-type-set-hierarchy"
 tags: [" #type/zenn #TypeScript/inference "]
 aliases:
@@ -85,7 +86,7 @@ TypeScript で採用されているこういった型の仕組みは Subtyping �
 https://en.wikipedia.org/wiki/Subtyping
 
 :::message
-Subtyping の概念自体は、1960 年代までさかのぼり、[Simula](https://en.wikipedia.org/wiki/Simula) というプログラミング言語によって初めて導入され、その概念が脚光を浴びたのはオブジェクト指向プログラミング(OOP: Object-Oriented Programming)でそれが主流になったためであるとのことです。
+Subtyping の概念自体は、1960 年代までさかのぼり、[Simula](https://en.wikipedia.org/wiki/Simula) というプログラミング言語によって初めて導入され、その概念が脚光を浴びたのはオブジェクト指向プログラミング (OOP: Object-Oriented Programming) でそれが主流になったためであるとのことです。
 
 > The notion of subtyping in programming languages dates back to the 1960s; it was introduced in Simula derivatives. The first formal treatments of subtyping were given by John C. Reynolds in 1980 who used category theory to formalize implicit conversions, and Luca Cardelli (1985).
 > ([Subtyping - Wikipedia](https://en.wikipedia.org/wiki/Subtyping) より引用)
@@ -119,7 +120,7 @@ const myAnimal: Animal = myDog;
 ```
 :::
 
-実際、型は値の集合 (より厳密に言えば値と利用できる操作の集合) であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の部分集合としてみなせます(一つの具体的な値からそれに対応するリテラル型という単集合ができる)。
+実際、型は値の集合 (より厳密に言えば値と利用できる操作の集合) であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の部分集合としてみなせます (一つの具体的な値からそれに対応するリテラル型という単集合ができる)。
 
 > Type 型とは：型とは、値の集合であり、その集合に対して実行できることの集合である。
 > 少しわかりにくいと思うのでいくつか例を示しましょう。
@@ -269,7 +270,7 @@ const b: B = ab; // B という型の範疇
 
 実際にこのような代入が可能なのは、TypeScript が [構造的部分型(Structural Type System)](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#structural-type-system) というシステムを採用しているからです。
 
-オブジェクト型のユニオンやインターセクションを見ればわかるように、合成などの型操作は集合の領域に対しての操作と同じことになります。オブジェクト型でなくても例えば `string | number` と `string | boolean` という２つのユニオン型を合成すれば、積集合(インターセクション)は `string` 型となり、和集合(ユニオン)は `string | number | boolean` 型となります。
+オブジェクト型のユニオンやインターセクションを見ればわかるように、合成などの型操作は集合の領域に対しての操作と同じことになります。オブジェクト型でなくても例えば `string | number` と `string | boolean` という２つのユニオン型を合成すれば、積集合 (インターセクション) は `string` 型となり、和集合 (ユニオン) は `string | number | boolean` 型となります。
 
 余剰プロパティチェックについては uhyo さんの以下の記事で非常に分かりやすく解説されていたので参考にしてください。ユニオン型が OR 演算によって生成されるということについても解説されています。
 
@@ -470,15 +471,15 @@ const sqrt: NumberOp = (param) => {
 
 このようにある関数の型定義を満たすような具体的な関数の実装がその関数型の集合についての要素となります。
 
-ただし、プリミティブ型やオブジェクト型の値(value) のように関数の型を集合として捉えて、型の合成やサブタイプ互換性について考えるにはいくつか難しいことがあるので、素朴な集合論よりも対象(object) と射(arrow, morphism)を扱う圏論の方が適しているようです。
+ただし、プリミティブ型やオブジェクト型の値 (value) のように関数の型を集合として捉えて、型の合成やサブタイプ互換性について考えるにはいくつか難しいことがあるので、素朴な集合論よりも対象 (object) と射 (arrow, morphism) を扱う圏論の方が適しているようです。
 
 https://criceta.com/category-theory-with-scala/01_Category.html
 
-また、関数の型はシグネチャ(引数の数、引数の型、返り値の型)について考慮しなくてはなりません。このときにそれぞれの要素についてサブタイプ互換性の変性(variance)という概念も必要になります。特に関数の型は引数の型については双変(bivariant)あるいは反変(contravariant)になります。
+また、関数の型はシグネチャ (引数の数、引数の型、返り値の型) について考慮しなくてはなりません。このときにそれぞれの要素についてサブタイプ互換性の変性 (variance) という概念も必要になります。特に関数の型は引数の型については双変 (bivariant) あるいは反変 (contravariant) になります。
 
 https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-parameter-bivariance
 
-自分もまだ理解しきれていないことが多いためここでは詳しく解説しません。
+長くなるのでここでは解説しません。
 
 ## 型の階層性
 
@@ -508,7 +509,7 @@ https://github.com/microsoft/TypeScript/pull/8652
 記事内で PR を提示しているのはハンドブックに記載されていない細かい情報を追うには PR の説明が一番詳しいからです。
 :::
 
-型の集合性で見たとおり、型は値の集合なので、TypeScirpt のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合(Empty set)です。全体集合(Universal set)を `unknown` 型としてみなすと以下のような図が書けました。
+型の集合性で見たとおり、型は値の集合なので、TypeScirpt のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合 (Empty set) です。全体集合 (Universal set) を `unknown` 型としてみなすと以下のような図が書けました。
 
 ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
@@ -531,6 +532,8 @@ graph LR
   V[void]
   O["Object, { }"]
   obj[object]
+  udt["User Defined Types (Class)"]
+  cons["Constructor Function Types"]
   U --> A
   A --> V --> undefined --> N
   A --> null --> N
@@ -570,7 +573,8 @@ graph LR
   bl --> N
   bil --> N
   us --> N
-  obj --> Function --> N
+  obj --> Function --> cons --> N
+  obj --> udt --> N
   obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
@@ -703,7 +707,7 @@ let u = undefined;
 
 ![型の互換性](/images/typescript-widen-narrow/img_ts_type_compatibility.png)*[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability) より引用*
 
-代入可能であることや subtype の関係性は型の compatibility (互換性) として定められています。assignable (代入可能または割当可能)であることと subtype であることは近似していますが、微妙に異なるということが Handbook の以下の箇所に記載されています。
+代入可能であることや subtype の関係性は型の compatibility (互換性) として定められています。assignable (代入可能または割当可能) であることと subtype であることは近似していますが、微妙に異なるということが Handbook の以下の箇所に記載されています。
 
 > So far, we’ve used “compatible”, which is not a term defined in the language spec. In TypeScript, **there are two kinds of compatibility: subtype and assignment**. These differ only in that **assignment extends subtype compatibility with rules to allow assignment to and from any**, and to and from enum with corresponding numeric values.
 > ([TypeScript: Documentation - Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment) より引用、太字は筆者強調)
@@ -777,11 +781,17 @@ https://github.com/microsoft/TypeScript-Website/pull/2470
 - [1章 圏とは · Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/01_Category.html)
 - [2章 型と関数の圏 · Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/02_Types_and_functions.html)
 - [集合としての型 · An Introduction to Elm](https://guide.elm-lang.jp/appendix/types_as_sets.html)
+- [TypeScript and Set Theory | Iván Ovejero](https://ivov.dev/notes/typescript-and-set-theory)
 
 型の階層性についての参考文献
 - [TypeScriptのコンパイルプロセス / 型の階層構造 - knmts.com](https://knmts.com/as-a-engineer-52/)
 - [TypeScriptの型メモ - Qiita](https://qiita.com/dico_leque/items/06ac5837b7a333c5c8da)
 - [Diagram of every possible TypeScript type](https://gist.github.com/laughinghan/31e02b3f3b79a4b1d58138beff1a2a89)
+
+書籍
+
+https://www.oreilly.com/library/view/programming-typescript/9781492037644/
+https://www.oreilly.com/library/view/effective-typescript/9781492053736/
 
 ### 関連情報について
 
@@ -791,15 +801,8 @@ TypeScript の型階層図はネットで探してそこまで見つからない
 
 公式 Handbook も『Types as Sets』の項目では型を集合論的に考えることを推奨している感じがあるので、型理論とはいかずとも集合論をベースにした上でクラスじゃなくてプリミティブ型と普通のオブジェクト型を中心とした型システムの解説書などがあるといいなとも思います。
 
-目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしていたので購入してみたのですが、第二章の「Item 7: Think of Types as Sets of Values」に解説してきたような内容が記載されていました。
-
-https://www.amazon.co.jp/dp/1492053740
-
-結構分かりやすく解説されていましたが、図や踏み込んだ解説が多くはなかったので、これ以上調べるには Benjamin C. Pierce 氏による通称 TAPL と呼ばれる型システムについての専門書などを見た方がいいのかもしれません(購入を検討しています)。
-
-https://www.amazon.co.jp/dp/0262162091
+目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしていたので購入してみたのですが、第二章の「Item 7: Think of Types as Sets of Values」に解説してきたような内容が記載されていました。結構分かりやすく解説されていましたが、図や踏み込んだ解説が多くはなかったので、これ以上調べるには Benjamin C. Pierce 氏による『[Types and Programming Languages](https://amzn.asia/d/gC1n3Jv)』通称 TAPL と呼ばれる型システムについての専門書などを見た方がいいのかもしれません (購入を検討しています)。
 
 というか TypeScript について上記のような読み物が世の中に無いならいっそのこと自分で作ってやろうと思って本を作りました。まだ未完成ですが、関連使用の調査や自分の理解などを追記して完成させるつもりです。
 
 https://zenn.dev/estra/books/ts-the-minimum
-
