@@ -313,7 +313,7 @@ const ani: Animal = duc;
 ユーティリティ型である `Exclude<UnionType, ExcludedMembers>` 型などを [自分で実装すると](https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.ja.md) 理解できるのですが、`extends` キーワードを使った条件型 (Conditional type) は型変数がユニオン型だと分配法則によって条件判定をユニオン型を構成する各要素に対してイテレーションします。
 
 ```ts
-type MyExclude<T, U> = T exntends U ? never : T;
+type MyExclude<T, U> = T extends U ? never : T;
 
 type Test = MyExclude<1 | 2 | 3, 2>;
 // = 1 | 3
