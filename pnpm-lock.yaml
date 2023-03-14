@@ -5,10 +5,10 @@ specifiers:
   textlint: ^12.2.3
   textlint-rule-preset-ja-spacing: ^2.2.0
   textlint-rule-preset-ja-technical-writing: ^7.0.0
-  zenn-cli: ^0.1.139
+  zenn-cli: ^0.1.141
 
 dependencies:
-  zenn-cli: 0.1.139
+  zenn-cli: 0.1.141
 
 devDependencies:
   '@proofdict/textlint-rule-proofdict': 3.1.2
@@ -2840,8 +2840,8 @@ packages:
     engines: {node: '>=0.4'}
     dev: true
 
-  /zenn-cli/0.1.139:
-    resolution: {integrity: sha512-bjiwnX4rqg2CgCjDDhTtoQyoD+VJBJhW+SqhxN/B6zP0W5yZdT6asEntRVcsm8u9eloV1sgCt1OazORsv1YtYg==}
+  /zenn-cli/0.1.141:
+    resolution: {integrity: sha512-33hYqqHZk9nYP24Za56jeFcqXsPkoYno9HDsIjdUjQxzl3/zmRaJEiHJ3qD4IId6qNduY3Vhgq3s6kJuCDVuVQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dev: false
