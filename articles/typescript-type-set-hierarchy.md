@@ -777,7 +777,7 @@ https://github.com/microsoft/TypeScript-Website/pull/2470
 
 ## 参考
 
-型の集合性についての関連文献
+型の集合性についての参考文献
 - [1章 圏とは · Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/01_Category.html)
 - [2章 型と関数の圏 · Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/02_Types_and_functions.html)
 - [集合としての型 · An Introduction to Elm](https://guide.elm-lang.jp/appendix/types_as_sets.html)
