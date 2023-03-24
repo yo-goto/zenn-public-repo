@@ -10,7 +10,7 @@ aliases: Promise本『タスクキューとマイクロタスクキュー』
 
 # このチャプターについて
 
-このチャプターでは、タスク(Task)とマイクロタスク(Microtask)、そしてそれらをイベントループで処理するために必要なタスクキュー(Task queue)とマイクロタスクキュー(Microtask queue)について解説してきます。
+このチャプターでは、タスク(Task)とマイクロタスク(Microtask)、そしてそれらをイベントループで処理するために必要なタスクキュー(Task queue)とマイクロタスクキュー(Microtask queue)について解説していきます。
 
 :::message
 各環境での具体的なイベントループについては別のチャプター『[それぞれのイベントループ](c-epasync-what-event-loop)』で詳しく解説していますので、そちらを参照してください。
@@ -145,11 +145,11 @@ WHATWG の仕様的には後述するマイクロタスク(Microtask)はタス�
 > Essentially, [task sources](https://html.spec.whatwg.org/multipage/webappapis.html#task-source) are used within standards to separate logically-different types of tasks, which a user agent might wish to distinguish between. [Task queues](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) are used by user agents to coalesce task sources within a given [event loop](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop).
 > ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-for-spec-authors) より引用)
 
-タスクキューで見てきた通り、タスクキューは１つ以上存在できるので、もちろんタスクキューにタスクを供給してくる供給源であるタスクソースも複数あります。上記に上げたタスクはそれぞれ異なるタスクソースで、異なるタスクキューにタスクを供給すると考えてよいでしょう。
+タスクキューで見てきた通り、タスクキューは１つ以上存在できるので、もちろんタスクキューにタスクを供給してくる供給源であるタスクソースも複数あります。上記に挙げたタスクはそれぞれ異なるタスクソースで、異なるタスクキューにタスクを供給すると考えてよいでしょう。
 
 タスクキューで重要なルールは以下のものとなります。
 
-- (1) 複数あるタスクキューはどの順番に処理されるか決められていない。
+- (1) 複数あるタスクキューはどの順番に処理されるか決められていない
 - (2) 同一のタスクキュー内に存在しているタスクは到着した順番に処理される
 - (3) 同一の供給源から来たタスクは同じタスクキューへと送られる
 
