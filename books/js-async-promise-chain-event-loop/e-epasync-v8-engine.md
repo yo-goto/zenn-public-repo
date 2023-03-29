@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『V8 エンジンについて』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 V8 エンジンは Chrome, Node, Deno のそれぞれの環境で利用されている JavaScript エンジンです。V8 について知っておくと理解できることがいくつかあります。
 
 このチャプターでは、V8 エンジンについての基礎知識や、V8 エンジンをローカルで使う方法などについて解説します。
 
-# V8エンジン
+## V8エンジン
 
 まず V8 とは何かを確認しておきます。
 
@@ -27,7 +27,7 @@ V8 は **Google が提供するオープンソースの JavaScript エンジン*
 
 重要なこととして、V8 エンジンは JavaScript の標準化された言語機能の仕様である **ECMAScript を実装しています**。他の環境や C++ アプリケーションではこの JavaScript エンジンを埋め込んだ上で API などを提供することでその環境において JavaScript を実行できるようにしています。Deno では [rusty_v8](https://github.com/denoland/rusty_v8) という Rust バインディングによって V8 エンジンの C++ API を Rust で操作できるようにしているようです。その他には、V8 は WebAssembly エンジンとしても利用できます(ECMASCript と同様に WebAssembly も実装しています)。
 
-## V8 の役割
+### V8 の役割
 
 JavaScript の実行環境において JavaScript エンジンである V8 エンジンが担当している役割は色々あります。
 
@@ -44,7 +44,7 @@ V8 は基本的にシングルスレッド実行エンジンであり、１つ�
 参考
 https://hackernoon.com/javascript-v8-engine-explained-3f940148d4ef
 
-## ヒープとコールスタック
+### ヒープとコールスタック
 
 非同期処理のイベントループで考えるべきものとして V8 で重要なのはヒープとコールスタックです。V8 エンジンにはこのヒープとコールスタックが存在しています。
 
@@ -59,11 +59,11 @@ https://qiita.com/megmogmog1965/items/e180d02be711cecdc038
 
 https://engineering.mercari.com/blog/entry/20220128-3a0922eaa4/
 
-# V8 エンジンを使ってみる
+## V8 エンジンを使ってみる
 
 V8 エンジンをスタンドアロンで利用できればほぼ素の ECMAScript の機能を利用できます。つまり、環境の提供する API に惑わされることなく ECMAScript のことだけを考える事ができます。
 
-## jsvu
+### jsvu
 
 そして、実際 V8 エンジンはスタンドアロンで利用できます。次の GoogleChromeLabs が提供している jsvu(JavaScript engine Version Updater) でローカルに簡単にインストールでき、ソースからコンパイルすることなく利用できます。
 
@@ -113,7 +113,7 @@ jsvu は V8 エンジンのみだけでなく、あらゆる JavaScript エン�
 
 V8 が Chrome (Google) から提供されているように、[SpiderMonkey](https://spidermonkey.dev) は Firefox (Mozilla) から、[JavaScriptCore](https://developer.apple.com/documentation/javascriptcore) なら safari (Apple) といったように JavaScript エンジンは通常は有名なブラウザベンダーから提供されます。
 
-## d8
+### d8
 
 https://v8.dev/docs/d8
 
@@ -156,7 +156,7 @@ function Promise() { [native code] }
 
 上記 REPL での実行結果から色々なことが分かります。
 
-## V8 エンジンの Web API もどき
+### V8 エンジンの Web API もどき
 
 JavaScript エンジンにはそれを埋め込む環境が提供する Web APIs などは通常含まれませんが、最低限の Web API もどきは提供されているようです。
 
@@ -294,7 +294,7 @@ console.log("🦖 [2] MAINLINE: End");
 👦 [15] MICRO: Next chain
 ```
 
-# V8のイベントループ
+## V8のイベントループ
 
 :::message alert
 この内容についてはまだ理解できなくても大丈夫です。チャプター『[それぞれのイベントループ](c-epasync-what-event-loop)』で詳しく解説しています。

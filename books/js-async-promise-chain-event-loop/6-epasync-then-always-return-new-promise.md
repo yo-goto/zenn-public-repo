@@ -8,11 +8,11 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『then メソッドは常に新しい Promise を返す』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、Promise chain での注意点である `then()` メソッドの特長について解説しておきます。
 
-# then メソッドから返ってくる Promise インスタンス
+## then メソッドから返ってくる Promise インスタンス
 
 前のチャプターから続いて、`then()` メソッドをそれぞれもう 1 つずつ増やしてみます。
 
@@ -95,7 +95,7 @@ console.log("🦖 [H] Sync");
 
 Promise chain において、各 `then()` メソッドにおいて返ってくる Promise インスタンスは**それぞれ別のモノ**であるということを意識してください。
 
-# Promise インスタンスの状態
+## Promise インスタンスの状態
 
 ここで話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
 
@@ -191,7 +191,7 @@ console.log("🦖 [H] Sync");
 - [returnPromiseByFuncArg2AddChain.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcmV0dXJuUHJvbWlzZUJ5RnVuY0FyZzJBZGRDaGFpbi5qcwpjb25zb2xlLmxvZygiW0FdIFN5bmMgcHJvY2VzcyIpOwpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyKSA9PiB7CiAgcmV0dXJuIG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICBjb25zb2xlLmxvZyhgWyR7b3JkZXJ9XSBUaGlzIGxpbmUgaXMgU3luY2hyb25vdXNseSBleGVjdXRlZGApOwogICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICB9KTsKfTsKCnJldHVyblByb21pc2UoIjFzdCBQcm9taXNlIiwgIkIiKQogIC50aGVuKCh2YWx1ZSkgPT4gewogICAgY29uc29sZS5sb2coIltDXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICAgIGNvbnNvbGUubG9nKCJSZXNvbHZlZCB2YWx1ZTogIiwgdmFsdWUpOwogIH0pCiAgLnRoZW4oKCkgPT4gewogICAgY29uc29sZS5sb2coIltEXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICB9KTsKcmV0dXJuUHJvbWlzZSgiMm5kIFByb21pc2UiLCAiRSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ZdIFRoaXMgbGluZSBpcyBBc3luY2hyb25vdXNseSBleGVjdXRlZCIpOwogICAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7CiAgfSkKICAudGhlbigoKSA9PiB7CiAgY29uc29sZS5sb2coIltHXSBUaGlzIGxpbmUgaXMgQXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbSF0gU3luYyBwcm9jZXNzIik7CgovLyBFbmQ%3D)
 - ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 
-# Promise の状態を確かめる
+## Promise の状態を確かめる
 
 実際に Promise インスタンスを `console.log()` でそのまま出力してみて状態がどのようになっているかを確認してみます。
 

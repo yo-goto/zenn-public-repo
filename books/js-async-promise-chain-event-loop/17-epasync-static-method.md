@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise の静的メソッドと並列化』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 「いつ await すべきか分からない」というのが一般的に async/await での難しいポイントになりますが、すでに Promise インスタンスを評価して値を取り出すという await 式の特徴については学んでいるため、「なぜ await するべきか」についてはそこまで難しくは感じないでしょう。難しさを感じるとしたら、await の配置(タイミング)による効率化やループなどに関わる部分だと思います。
 
 このチャプターでは await 式の配置による制御の話題へ入る前に、テーマの１つとして Promise の静的メソッド(Static method)による複数の Promise-based API の処理の並列化を考えます。すでに非同期 API については色々と見てきましたが、すでにお馴染み Promise-based API である `fetch()` メソッドを使用してもう一度 await 式について考えを巡らせておきます。
 
-# 非同期 API による並列化
+## 非同期 API による並列化
 
 『[同期 API とブロッキング](f-epasync-synchronus-apis)』のチャプターで解説したとおり、Promise chain や async/await は非同期 API を起点にした一連の作業の「実行と完了」の順番を担保するものです。そして、非同期 API のおかげで同時に複数のことができますが、競合するような複数の非同期 API 処理は同時に行ってはならなず、順番を決めて行うようにすべきであるということを解説しました。
 
@@ -256,7 +256,7 @@ Deno.writeTextFileSync(path3, inputData);
 
 処理の流れは分かりやすいですが、１つずつ完了を待って処理するのであきらかに効率が悪いです。非同期 API のように並列化できないことよりも、**同期 API を使っている間はメインスレッドで別の JavaScript コードを実行できない**ということがデメリットとしては大きそうです。
 
-# Promise Combinator による「合成」
+## Promise Combinator による「合成」
 
 並列化や順序付けにまつわる話を見てきましたが、ここで Promise の静的メソッドについての基本的な話に戻ります。
 
@@ -369,7 +369,7 @@ const [text, json] = await Promise.all([
 ]);
 ```
 
-# Promise Combinator の種類
+## Promise Combinator の種類
 
 Promise combinator は ES2022 の時点ですでに４つの種類が存在しています。４つは便宜的に対応関係にあると考えることができるので次のように分けられます。
 
@@ -384,7 +384,7 @@ Promise combinator は `Promise.resolve()` や `Promise.reject()` と同じく�
 
 引数となる複数の Promise 処理に対して何をしたいのかという目的によってこれらのメソッドを使い分けます。この４つの静的メソッドはすべて複数の Promise 処理をまとめあげて並列し、**返り値として Promise インスタンスが返ってきます**。ただし、引数として渡す配列内の Promise の状態によって返り値の Promise インスタンスの状態がどうなるか変わります。
 
-## Promise.allSettled vs Promise.all
+### Promise.allSettled vs Promise.all
 
 複数の Promise 処理すべてに興味があり、Promise 処理同士に依存関係があり１つも失敗したくないという場合には、`Promise.all()` を使用します。`fetch()` で考えるとすべてのリソースフェッチに成功する必要があるなら、この `Promise.all()` を利用します。複数の Promise 処理の成功や失敗に興味がなく、とりあえずすべての処理を行ってからなにかしたいという場合には `Promise.allSettled()` を使用します。複数の Promise 処理がすべて Settled になったら返り値の Promise インスタンスが履行状態になります。
 
@@ -506,7 +506,7 @@ Promise.all([
 - `Promise.allSettled()` を使用するのは、複数の非同期処理の絡む作業が互いに依存せずに正常に完了する場合や各プロミスの結果を常に知りたい場合に使用。
 - `Promise.all()` を使用するのは、複数の非同期処理の絡む作業が互いに依存している場合やタスクのいずれかが拒否されたときにすぐに拒否したい場合。
 
-## Promise.race vs Promise.any
+### Promise.race vs Promise.any
 
 複数の Promise 処理すべてには興味がなく、対象となるものの内のどれか１つの Promise インスタンスが Settled になるかどうかに興味があり、履行か拒否には興味がない場合には `Promise.race()` を使用します。
 

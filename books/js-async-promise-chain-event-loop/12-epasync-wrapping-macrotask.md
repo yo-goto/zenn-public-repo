@@ -11,7 +11,7 @@ aliases:
   - Promisification
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 ここまで Promise chain でのマイクロタスク発行による非同期処理を見てきました。「単一タスクを実行したら、すべてのマイクロタスクを処理する」というのがイベントループの重大ルールです。
 
@@ -21,7 +21,7 @@ aliases:
 『[タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)』のチャプターでタスクとマイクロタスクの関係については詳しく解説したので、タスクの詳細についてはそちらのチャプターを参照してください。
 :::
 
-# タスク発行
+## タスク発行
 
 『[非同期 API と環境](f-epasync-asynchronous-apis)』のチャプターで説明したとおり、`setTimeout()` は非同期の Web API です。
 
@@ -63,13 +63,13 @@ Visualizer で可視化してみたので次のリンクから確認してくだ
 
 タスクキューへと追加されるのが分かると思います。
 
-# タスクベースの非同期 API について
+## タスクベースの非同期 API について
 
 MDN のドキュメントでは、非同期 API の理想はコールバックのスタイルでタスクを発行するよりも、[Promise を返してマイクロタスクを発行するものであることが望ましいという旨](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) が読み取れます。
 
 そして、タスクを発行するタイプの Callback-based API を Promise でラップすることでエラーハンドリングなどが行いやすくなります。
 
-# Promisification
+## Promisification
 
 上で述べたように Promise インスタンスによってタスクベースの非同期処理 (つまり古いタイプの非同期 API) をラップする手法は "Promisifying" または "Promisification" と呼ばれます。
 

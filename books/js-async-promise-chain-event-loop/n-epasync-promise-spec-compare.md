@@ -9,13 +9,13 @@ aliases:
   - "Promise本『Promise chain と async/await の仕様比較』"
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、async/await と Promise chain の仕様や挙動の比較を行い、今後の Promise の ECMAScrip 仕様の発展などについて解説していきます。
 
-# 仕様最適化の遺構
+## 仕様最適化の遺構
 
-## async/await の最適化
+### async/await の最適化
 
 async/await と Promise chain でマイクロタスクの発生数が異なるという事象が起きますが、`resolution` として使われる Thenable の話が関与しています。
 
@@ -47,7 +47,7 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 
 結局、仕様の最適化は async 関数の await 式の評価で Promise を Thenable 全体から引き離して、無駄な処理を削減するようにしたことが大きいです。
 
-## Promise.prototype.then の未最適化部分
+### Promise.prototype.then の未最適化部分
 
 しかし、その一方で `Promise.prototype.then` の仕様ではコールバックから返される値が Promise の場合を特別扱いしていません。
 
@@ -55,7 +55,7 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 
 つまり、`Promise.prototype.then` の方の仕様は async/await であったような最適化がされていないので、コールバック関数で Promise を返している場合には async/await で発生するマイクロタスクよりも多くのマイクロタスクが発生してしまうことになります。
 
-## async/await と Promise chain の比較
+### async/await と Promise chain の比較
 
 『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで「`Promise.resolve` と `executor` 関数の `resolve` 関数は同じようなものであるが、完全に等価ではない」と述べました。`resolve` は引数 `resolution` に Promise を取るとマイクロタスクが追加発生する一方で、`Promise.resolve` は引数が Promise だとそのまま返します。この違いによって２つを競争させたときには `Promise.resolve` を使った方がマイクロタスクの発生が少ないため先に終了できます。
 
@@ -187,7 +187,7 @@ console.log("🦖 [2] G: sync");
 
 やってることの意味合いは同じですが、発生するマイクロタスクの数が異なることからも Promise chain と async/await は厳密にはシンタックスシュガーではないということが分かります。
 
-## 根本的な仕様最適化のプロポーザル
+### 根本的な仕様最適化のプロポーザル
 
 現在 Promise 関連で追加発生する余計なマイクロタスクは Thenable のための [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 操作に集約されるといっても過言ではありません。
 

@@ -8,11 +8,11 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise コンストラクタと Executor 関数』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターでは抽象的な概念についてしか触れていなかったので、ここからはコード上での Promise について、インスタンスの作成方法などを通じて触れていきます。
 
-# Promise オブジェクト
+## Promise オブジェクト
 
 まず、Promise とは「**非同期処理の結果を表現するビルトインオブジェクト**」であり、モダンな非同期処理ではこの Promise オブジェクトを介して非同期処理を行うのがベターです。
 
@@ -24,7 +24,7 @@ Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript �
 この本ではそうしませんが、他の解説では Promise API といっているときは JavaScript エンジンの文脈で話していることがあり、その場合に `Promise.all` や `Promise.allSettled`、また `Promise(executor)` コンストラクタなどについて Promise API と言っている場合あるので注意してください。
 :::
 
-# Promise コンストラクタ
+## Promise コンストラクタ
 
 コード上で `Promise()` はコンストラクタ関数であり、`new` 演算子と併用して使用することで Promise オブジェクト(Promise インスタンス)を生成できます。Promise オブジェクトを作成する際には、`Promise()` コンストラクタには **Executor関数** と呼ばれるコールバックを引数として渡します。
 
@@ -244,7 +244,7 @@ Promise status: Promise { <pending> }
 `resolve` や `reject` を呼び出さないので、Promise インスタンスは永遠に待機(Pending)状態であり、`then()` メソッドで登録しておいたコールバック関数は実行されませんし、エラーも補足されません。
 :::
 
-# 関数式とアロー関数の補足
+## 関数式とアロー関数の補足
 
 アロー関数について触れましたが、少し補足します。
 

@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『catch メソッドと finally メソッド』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは今まで解説していなかった `catch()` メソッド、`finally()` メソッドについて、そしてそれらメソッドが発行するマイクロタスクについて解説していきたいと思います。
 
-# Promise のプロトタイプメソッド
+## Promise のプロトタイプメソッド
 
-## then-catch-finally
+### then-catch-finally
 
 `then()` 以外の Promise のプロトタイプメソッドとして `catch()` と `finally()` メソッドが挙げられます。これは try/catch/finally に対応しており、同様の考え方で使うことができます。
 
@@ -36,7 +36,7 @@ new Promise((resolve, reject) => {
 
 一方、`finally()` メソッドは Promise インスタンスが Fulfilled 状態でも Rejected 状態でも関係なく、登録しているコールバックが実行されます。
 
-## 常に新しい Promise インスタンスが返ってくる
+### 常に新しい Promise インスタンスが返ってくる
 
 `then()` メソッドからは常に新しい Promise インスタンスが返ってきたように、`catch()` メソッドと `finally()` メソッドでも新しい Promise インスタンスが返ってきますので、チェーンできます。
 
@@ -57,11 +57,11 @@ new Promise((resolve, reject) => {
 
 `catch()` メソッドによって返ってくる Promise インスタンスは履行状態で返ってきますので、次の `then()` メソッドのコールバックを実行できます。
 
-## finally メソッド
+### finally メソッド
 
 `finally` メソッドは少しクセがあるのでいくつか注意点を解説しておきます。
 
-### コールバックは入力値を取れない
+#### コールバックは入力値を取れない
 
 `finally()` メソッドの **コールバック関数は一切引数をとらない** ということが特徴的です。`finally` の前に chain していた値を `finally` のコールバック関数で利用することはできません。
 
@@ -86,7 +86,7 @@ new Promise((resolve, reject) => {
   });
 ```
 
-### 値をつなぐことはできる
+#### 値をつなぐことはできる
 
 前のメソッドからの入力値は取れませんが、`finally` のコールバックから値を返すと次の chain へつなぐことができます。
 
@@ -99,7 +99,7 @@ Promise.resolve(42)
   .then(console.log); // => 33
 ```
 
-### 返される Promise は chain 元の Promise の値で解決される
+#### 返される Promise は chain 元の Promise の値で解決される
 
 以下のように `Promise.resolve(42)` の後に chain した `finally` メソッドから更に `then` を chain するとコールバック関数の入力値として `42` が渡ります。
 
@@ -153,9 +153,9 @@ Promise.reject(42)
   });
 ```
 
-# コールバックは実行されなくてもマイクロタスクは発生する
+## コールバックは実行されなくてもマイクロタスクは発生する
 
-## 発生するマイクロタスク
+### 発生するマイクロタスク
 
 重要なこととして、`catch()` メソッドや `then()` メソッドは登録してあるコールバックが実行されないときでも実はマイクロタスクが発行されます。この原理については後で解説しますが、その現象そのものについて確認しておきましょう。
 
@@ -270,7 +270,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 🦄 [F-10] <8-async> MICRO: finally callback
 ```
 
-## catch と finally は then メソッドを利用する
+### catch と finally は then メソッドを利用する
 
 上記のような登録してあるコールバック関数が実行されなくても、マイクロタスクが必ず実行される理由は、`catch` メソッドと `finally` メソッドが内部的に `then` メソッドを利用していることと更にもう一つ理由があります。
 
@@ -291,7 +291,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 
 逆に `onFinally` が呼び出し可能なメソッドではない文字列や `undefined` のときには内部的に作成される関数で自動的に置換されます。`finally` と `then` ではこのような自動的な関数の置換が発生しており、これが登録していないコールバックとなってマイクロタスクとして処理されています。`catch` も内部的に `then` を使っているのでこの置換が発生しています。
 
-## identity 関数と thrower 関数
+### identity 関数と thrower 関数
 
 `then(undefined, undefined)` のようにコールバック関数を未定義で呼び出すと上記で説明したような関数の置換が自動的に発生します。
 

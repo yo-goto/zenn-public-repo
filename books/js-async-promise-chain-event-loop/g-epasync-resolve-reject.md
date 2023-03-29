@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『resolve 関数と reject 関数の使い方』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターでも少し触れましたが、`resolve()` メソッドは `reject()` メソッドよりも複雑なので使い方に気をつける必要があります。
 
 このチャプターでは、`new Promise(executor)` で使用する Executor 関数の引数である `resolve()` 関数と `reject()` 関数の注意点について解説していきます。
 
-# resolve や reject ではコールバック関数の実行は止まらない
+## resolve や reject ではコールバック関数の実行は止まらない
 
 次のコードの様に `Promise()` コンストラクタに渡すコールバックである executor 関数内において、`resolve()` や `reject()` を呼び出しただけでは関数の実行は終わらないことに注意してください。
 
@@ -113,7 +113,7 @@ promise
 
 また、Promise chain において、`then()` メソッドに登録したコールバック関数も従っている Promise インスタンスの状態が変化した場合にたった一度だけ呼び出されます。それゆえ、一番最初に呼び出される `resolve()` や `reject()` 以外はまったく何も起きませんし、効果もありません。
 
-# Promise コンストラクタにおける例外発生
+## Promise コンストラクタにおける例外発生
 
 ただし、`throw new Error()` をコールバックの中で行った場合にも、それ以降のコードが実行されないことに注意してください。
 
@@ -141,7 +141,7 @@ promise
 👿 最後に実行される
 ```
 
-# Promise コンストラクタ関数内の返り値は無視される
+## Promise コンストラクタ関数内の返り値は無視される
 
 重要なこととして、`new Promise(executor)` のコールバック executor 関数では、`return` による**返り値そのものは無視されます**。従って、次のような Promise を返す関数から返ってくるのはあくまで `resolve()` された値を持つ Promise インスタンスであり、`return` された値は持っていません。
 
@@ -197,7 +197,7 @@ returnPromise()
 👻 これは永遠に Pending 状態の Promise インスタンス
 ```
 
-# Promise インスタンスで resolve する
+## Promise インスタンスで resolve する
 
 ある Promise インスタンスで、別の Promise インスタンスを resolve してみたいと思います。
 

@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『タスクキューとマイクロタスクキュー』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、タスク(Task)とマイクロタスク(Microtask)、そしてそれらをイベントループで処理するために必要なタスクキュー(Task queue)とマイクロタスクキュー(Microtask queue)について解説していきます。
 
@@ -24,7 +24,7 @@ https://zenn.dev/qnighy/articles/345aa9cae02d9d
 
 https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 
-# イベントループとはそもそも何？
+## イベントループとはそもそも何？
 
 『What the heck is the event loop anyway?』の動画で、イベントループの概略自体はつかめていると思いますが、その定義から考えていきます。
 
@@ -35,7 +35,7 @@ https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3
 
 イベントループは以下で解説するタスクキューとマイクロタスクキューを所有しています。
 
-# タスクキュー
+## タスクキュー
 
 :::message alert
 この項目には筆者の勘違いがあったので、修正致しました。
@@ -67,7 +67,7 @@ Node 環境では、フェーズ(Phase)という概念があり、６つある�
 ブラウザ環境では、レンダリングエンジンである Blink がタスクキューの選択を行っており、それぞれのタスクキューの優先度を振り分けています。
 :::
 
-## タスクキューとは Set である
+### タスクキューとは Set である
 
 タスクキューは名前上はタスクのキュー(Queue)となっていますが、実際にはタスクの Set である、ということが仕様では述べられています。
 
@@ -106,7 +106,7 @@ Set は List でもあるので順序がありますが、その中で実行可�
 
 ちなみに後で解説するマイクロタスクキュー(Microtask queue)は厳密に Queue なので注意してください。
 
-## タスク
+### タスク
 
 タスク(Task)は、タスクキュー(Task queue)にプッシュされるものですが、タスクそれ自体がなにかを仕様から見ていきます。
 
@@ -138,7 +138,7 @@ Set は List でもあるので順序がありますが、その中で実行可�
 WHATWG の仕様的には後述するマイクロタスク(Microtask)はタスク(Task)の一種なので注意してください。
 :::
 
-### タスクソース
+#### タスクソース
 
 タスクの説明にあったように、タスクには供給されるタスクソース(Task source)というものがあり、似た種類のタスクは同一のタスクキューへとプッシュされます。
 
@@ -162,7 +162,7 @@ WHATWG の仕様的には後述するマイクロタスク(Microtask)はタス�
 - `setTimeout()` API
 - `setInterval()` API
 
-### setTimeout API
+#### setTimeout API
 
 タスクベースの非同期 API である、`setTimeout()` は、`setTimeout(cb, delay)` というように指定した遅延時間が経過した後に、引数のコールバック関数をタスクとしてタスクキューに発行します。
 
@@ -193,7 +193,7 @@ function setTimeout(
 
 https://doc.deno.land/deno/stable/~/setTimeout
 
-### setInterval API
+#### setInterval API
 
 タスクベースの非同期 API である、`setInterval()` は、`setInverval(cb, interval)` というように指定したインターバル時間が経過するたびに、引数のコールバック関数をタスクとしてタスクキューに発行します。
 
@@ -219,7 +219,7 @@ function setInterval(
 
 https://doc.deno.land/deno/stable/~/setInterval
 
-# イベントループの所有物
+## イベントループの所有物
 
 続いて仕様にはイベントループが所有するものについてもいくつか定義されています。理解する上で重要な部分について触れていきます。
 
@@ -241,7 +241,7 @@ https://doc.deno.land/deno/stable/~/setInterval
 
 イベントループの開始時にタスクをイベントループの Currently running task として扱いますが、この場合マイクロタスクであってもよいと書かれているので、現在実行中のタスクとマイクロタスクも Currently running task として考慮できます。従って、本質的にはタスクとマイクロタスクも同じ扱いで、コールスタック上にプッシュされた実行コンテキストであると理解できます。
 
-# マイクロタスクキュー
+## マイクロタスクキュー
 
 次に、マイクロタスクキューについて深堀りしましょう。まずマイクロタスクキュー(Microtask queue)はタスクキューではありません。
 
@@ -260,7 +260,7 @@ Deno 環境では、基本的にはマイクロタスクキューが１つです
 
 マイクロタスクキューはタスクキューよりも優先的に処理されます。単一タスクが終わったら、すべてのマイクロタスクを処理するというのはそういうことです。node の `nextTickQueue` にあるのもマイクロタスクですが、単一タスクが終わったら必ずマイクロタスクキューにあるすべてのマイクロタスクが処理されます。マイクロタスクキューで重要なことはこれだけです。
 
-## マイクロタスク
+### マイクロタスク
 
 マイクロタスクキューに送られるマイクロタスクについて考えてみます。WHATWG 仕様では以下のように述べられています。
 
@@ -283,7 +283,7 @@ Deno 環境では、基本的にはマイクロタスクキューが１つです
 - `queueMicrotask()` API
 - `MutationObserver()` API
 
-### queueMicrotask API
+#### queueMicrotask API
 
 `queueMicrotask(cb)` は引数のコールバック関数をマイクロタスクとしてマイクロタスクキューに発行しますが、**戻り値は何もない**ことに注意してください。つまり、`Promise.then()` のように、Promise インスタンスを返しません。イベントループにおけるマイクロタスクの挙動などをテストしたり、その他のコールバックが処理される前のクリーンアップなどに役に立ちます。
 
@@ -331,7 +331,7 @@ function queueMicrotask(func: VoidFunction): void;
 
 https://doc.deno.land/deno/stable/~/queueMicrotask
 
-### MutationObserver API
+#### MutationObserver API
 
 `MutationObserver()` コンストラクタ関数は MutationObserver API という大きなインタフェースの一部として提供されています。DOM 内の要素を監視して、何かの変更があった際にコールバックをマイクロタスクとして発火する Web API です。この API が発行するマイクロタスクは Promise とは関係なく、`MutationObserver()` 自体からも Promise ではなくオブザーバインスタンスが返ってくるので注意してください。
 
@@ -358,7 +358,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver/MutationObserv
 
 https://ja.javascript.info/mutation-observer
 
-# 最初のタスク
+## 最初のタスク
 
 タスクについて説明しましたが、仕様だけでは理解しづらい部分がやはり多々あるので MDN のドキュメントも見てみましょう。特に最初のタスクが何になるかは誤解しやすいので非同期処理の予測で重要です。
 
@@ -532,7 +532,7 @@ console.log("🦖 [3] Sync process end");
 筆者はこれが理解できるまでにかなり時間がかかりました。JS Visualizer ではグローバルコンテキストが積まれることが認識できませんし、最初のタスクがプログラムの開始実行(すべての同期処理)になることも理解しづらいので、情報を補う必要があったわけです。
 :::
 
-# 非同期処理の本質
+## 非同期処理の本質
 
 この本の結論をもう言ってしまいますが、非同期処理の本質的な仕組みは「**イベントループにおけるタスクとマイクロタスクの処理**」です。
 

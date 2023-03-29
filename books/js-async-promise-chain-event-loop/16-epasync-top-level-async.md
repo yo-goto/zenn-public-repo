@@ -8,13 +8,13 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Top-level await』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、async/await の学習においてトラップとなる Top-level await について簡単に解説しておきます。
 
 Top-level await は新しい機能(ES2022 で導入)であり、await 式が async 関数の外側で使えるようになります。ただし、初学者がこの機能について学んでしまうことで、**「同期」と「非同期」の概念が分からなくなってしまいます**(個人的な経験です)。したがって、async 関数について理解できてから学習するようにしてください。
 
-# Top-level await とは
+## Top-level await とは
 
 通常、await 式は async 関数内でのみしか利用できません(かつてはそうでした)。Top-level await の導入によってその制限は一部緩和されました。
 
@@ -69,7 +69,7 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules
 Deno では最初から単一ファイルで Top-level await が使用できますが、Node ではバージョン v18.1.0 の時点では単一ファイルで使用すると `SyntaxError: await is only valid in async functions and the top level bodies of modules
 ` というエラーを吐き出します。ファイル拡張子を `.mjs` にしたり、`package.json` に `type: module` を追加することで利用できます。
 
-# Top-level await の実行順序
+## Top-level await の実行順序
 
 Deno ランタイム環境において、上記２つのコードの実行順序を考えてみましょう。まず、async 関数の場合の `simpleAsyncAwait.js` は今までの知識で予測がつきます。`fetch()` でネットワーク接続をするので、Deno で実行するには `--allow-net` のフラグが必要になります。
 
@@ -141,7 +141,7 @@ try {
 
 ファイル全体が大きな１つの async 関数のように振る舞うことを認識できれば同じように考えることができるのですが、これに気づかないと訳がわからなくなってしまいます。
 
-# モジュールの実行順序への影響
+## モジュールの実行順序への影響
 
 ここで解説したように単一ファイル内での実行順序が変わるだけでなく、モジュールの処理順序が非常に複雑になりますので注意してください。Top-level await は思った以上に複雑な機能です。モジュールの実行順序へ与える影響については次の記事を参考にしてください。Top-level await が使えるメリットについても解説されています。
 

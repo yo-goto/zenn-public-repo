@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『TypeScript における Promise の型注釈』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、TypeScript での Promise の型注釈について考えてみます。
 
@@ -30,7 +30,7 @@ https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop
 また、このチャプターは『[TypeScript の基礎から Promise の型注釈まで駆け登る](https://zenn.dev/estra/articles/ts-with-promise-type-annotation)』の記事と同じ内容になるので、すでに読まれた方はスキップしてもらって構いません。
 :::
 
-# TypeScript について
+## TypeScript について
 
 TypeScript は JavaScript に[型システム](https://www.wikiwand.com/ja/%E5%9E%8B%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0)を導入した言語です。
 
@@ -98,11 +98,11 @@ https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno
 
 型チェックでエラーがでても JavaScript エンジンでランタイムエラーがでないで JavaScript として正しく動く場合もあります。JavaScript として正しく動いたとしても、型チェックで意図的に警告を出させることで、実際に動かす前によりよいコードを書くように書き直す機会を得ることができます。
 
-# 型注釈の基本
+## 型注釈の基本
 
 TypeScript では既存の JavaScript コードに型の情報を付与していくことから学習が始まります。
 
-## 変数への型注釈
+### 変数への型注釈
 
 例えば、文字列リテラルの値で初期化した変数に明示的に `string` 型であると型の情報を付与することが型注釈(type annotation)と呼ばれる行為です。
 
@@ -290,7 +290,7 @@ const mystr: MyString = "文字列";
 
 型エイリアスは「型情報の定義」や「型情報の参照」の機能として認識しておくと良いでしょう。
 
-## 関数への型注釈
+### 関数への型注釈
 
 変数への型注釈の基本がわかったところで関数への型注釈の基本を解説しておきます。
 
@@ -598,7 +598,7 @@ restGeneric<string>("A", "B", "C"); // => ["A", "B", "C"]
 ```
 :::
 
-# ジェネリクス
+## ジェネリクス
 
 **ジェネリクス(generics)** は関数のように型が引数(あるいは変数)を扱えるようにすることでより一般的な処理を記述できるようにする TypeScript の機能(あるいはその概念)です。
 
@@ -702,7 +702,7 @@ const numProp: GeneralProp<number> = {
 
 型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
 
-# ジェネリック関数
+## ジェネリック関数
 
 ジェネリック関数(generic function)はこのジェネリクスの概念を利用した関数になります。
 
@@ -1040,7 +1040,7 @@ const parsedN = mymap<string, number>(["1", "2"], (item) => parseInt(item));
 
 引数にコールバックが来る場合には `func: (arg: Input) => Output` というアロー関数のような形の型注釈を行います。`type` で別に作成して参照するのもありです。
 
-# Promise の型注釈
+## Promise の型注釈
 
 さて、Promise の型注釈をするには今まで見てきたジェネリクスの概念と型引数・型変数が必要です。まずは簡単な変数宣言から型注釈を始めてみます。次のように文字列を履行値として直ちに履行する Promise インスタンスを作成して変数に代入します。
 
@@ -1130,7 +1130,7 @@ const pn = fetch("https://api.github.com/zen").then(response => response.text())
 
 結局のところ JavaScript が正しく書かれていれば TypeScript で動きます。ただし、正しい型注釈をしようと思ったらそれなりに TypeScript のことを知らないと難しいです。実際、現実的にはエラーハンドリングをしますから、エラーオブジェクトなどの型注釈も必要となります。
 
-# Promise を返す関数の型注釈
+## Promise を返す関数の型注釈
 
 Promise インスタンスを返す関数は次のように返り値の型注釈を書きます。履行値の値の型を `Promise<Type>` の型引数として指定することで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
 
@@ -1329,7 +1329,7 @@ pTimer(1000).then(val => console.log("履行値は", val));
 // => 履行値は 1000
 ```
 
-# async 関数の型注釈
+## async 関数の型注釈
 
 それでは、async 関数での型注釈を考えてみますが、ここまでくれば基本は余裕ですね。
 
@@ -1627,7 +1627,7 @@ async function fetcher(
 
 こちらのコードの方が型についてはスッキリしていますね。
 
-# 型表現の多様さ
+## 型表現の多様さ
 
 実際、型の表現をいかにするかということが TypeScript の難しいところでもあり、醍醐味だとも思います。関数の返り値などは意図に応じて様々な型の表現がありえます。例えば次のような２つの数値の大きさを比較する関数を考えてみましょう。
 
@@ -1703,7 +1703,7 @@ const obj1: Partial<Props> = {
 ユーティリティ型は一見難しそうに見えますが、ジェネリクスの概念と型の基礎がわかっていれば全然難しくありません。
 :::
 
-# 型チャレンジ
+## 型チャレンジ
 
 TypeScript の非同期処理は JavaScript の非同期処理に過ぎません。ジェネリクスや型変数・型引数を理解できればある程度の型注釈はできるようになります。
 

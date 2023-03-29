@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise の基本概念』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは Promise の基本的な概念と用語を紹介しておきます。Promise の知識自体は他の解説やドキュメントなどで目にしていると思うので、簡単な説明自体は省いて本質的な部分のみにフォーカスして解説します。
 
@@ -18,7 +18,7 @@ Promise のコードについての具体的な解説は『[Promise コンスト
 このチャプターでの解説では `then()` メソッドを持つ Promise ライクなオブジェクト "Thenable" については混乱をさけるために意図的に省いているので注意して下さい。Thenable については『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで ECMAScript 仕様と共に解説しています。
 :::
 
-# State と Fate
+## State と Fate
 
 紹介する用語はこちらのドキュメントを参考にしています。以下で解説する用語は筆者の解釈が混じっていますが、このドキュメント自体は MDN のお墨付きなので信用してください (というか ES6 仕様のドラフトなので、正統な Promise についての根本的なコンセプトが記述されています)。
 
@@ -30,7 +30,7 @@ https://github.com/domenic/promises-unwrapping#promise-resolve-functions
 
 プロポーザルのドラフトという形式であり、ECMAScript 全体から切り離されて Promise のみにフォーカスされているため、Promise 仕様にまつわる操作がどのようなものであるのかが簡単に俯瞰できます。ただし、ES6 時代の古いものではあるという認識は必要なので注意してください。
 
-## State
+### State
 
 Promise インスタンスには次の３つの状態 (**State**) があり、それぞれに排他的となっています (同時に１つの状態しか取りえないようになっています)。
 
@@ -48,7 +48,7 @@ Promise インスタンスには次の３つの状態 (**State**) があり、�
 Promise の State 概念は ECMAScript 仕様上では [Promise インスタンスが持つ内部スロット](https://tc39.es/ecma262/#table-internal-slots-of-promise-instances) の一つである `[[PromiseState]]` で管理されています。
 :::
 
-## Fate
+### Fate
 
 Promise インスタンスには２つの運命 (**Fate**) があり、それぞれに排他的になっています (同時に１つの運命しか取りえないようになっています)。
 
@@ -73,7 +73,7 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 Resolved であるかどうかということを示す Promise の Fate 概念は ECMAScript 仕様上では [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 抽象操作によって作成される `resolve` 関数と `reject` 関数が持つ `[[AlreadyResolved]]` という内部スロットに真偽値で追跡されています。この値が `true` なら Fate は Resolved であり、`false` なら Fate は Unresolved ということになります。
 :::
 
-## 注意
+### 注意
 
 翻訳した日本語で考えてしまうと用語がややこしくなるので、なるべくオリジナルの英単語を使って理解した方が良いです。特に日本語の " 解決する " などの単語には注意を払った方が良いでしょう。
 

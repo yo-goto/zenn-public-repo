@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: EPAsync 第２章
 ---
 
-# この章について
+## この章について
 
 第２章では Promise インスタンスと Promise chain について見ていきます。Promise chain は非同期処理の処理予測を行うためのメンタルモデルを構築する上で基礎となる非常に重要な概念です。Promise chain の具体的なコード実行を通じて非同期処理の実行順序を予測できるようにこの章で訓練していきます。
 
@@ -18,13 +18,13 @@ aliases: EPAsync 第２章
 この本の執筆経緯的にも Promise chain についての解説である第２章をはじめに執筆しており難易度としては簡単なので、[第１章](sec-01-epasync)の内容が難しい場合には第２章から読み始めるのも一つの手です。
 :::
 
-# 間違いについて
+## 間違いについて
 
 この章にかつてあった間違った解説については別個で新しいチャプター『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』を用意して解説しています。
 
 影響を受けていたチャプターについても修正を施したため、上記のチャプターは番外編というポジションに位置づけました(ECMAScript 仕様そのもの解説を含むため)。
 
-# チャプター
+## チャプター
 
 - [Promise の基本概念](a-epasync-promise-basic-concept)
 - [Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)

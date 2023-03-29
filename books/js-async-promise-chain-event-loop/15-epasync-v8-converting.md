@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『V8 エンジンによる async/await の内部変換』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、V8 エンジンによる async/await の内部変換コードから async/await の舞台裏を探索し、その挙動について理解するための解説を行います。
 
@@ -20,7 +20,7 @@ aliases: Promise本『V8 エンジンによる async/await の内部変換』
 
 さて、『[V8 エンジンについて](e-epasync-v8-engine)』のチャプターで V8 エンジンについての予備知識はいれておきましたね。このチャプターでは、V8 公式のブログ記事とプレゼン動画を元に解説していきます。
 
-# V8 エンジンによる内部変換コード
+## V8 エンジンによる内部変換コード
 
 それでは、V8 開発チームの Maya Lekova 氏と Benedikt Meurer 氏によるプレゼン動画『Holding on to your Performance Promises』と、それに基づく V8 エンジン公式サイトのブログ記事『Faster async functions and promises』を元にして async/await の V8 エンジンでの内部変換コードを見ていきます。
 
@@ -38,7 +38,7 @@ https://github.com/tc39/ecma262/pull/1250
 このチャプターではそれらを全部すっ飛ばして結論としての変換コードから見ていきますので、注意してください。細かい部分については元々の動画とブログを参考にしてください。
 :::
 
-## 内部変換後のコード
+### 内部変換後のコード
 
 では結論として、V8 エンジンでは次のような async/await を内部的に変換しています。
 
@@ -260,7 +260,7 @@ async/await では最初の await 式でのみ暗黙的に async 関数から返
 ジェネレータ関数や `yield` については第４章の「[イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)」で解説します。
 :::
 
-## await 式は確実にマイクロタスクを１つ発行する
+### await 式は確実にマイクロタスクを１つ発行する
 
 `performPromiseThen()` の箇所に注目してほしいのですが、これは `Promise.prototype.then()` が舞台裏でやっていることと本質的に同じことです。
 
@@ -283,7 +283,7 @@ performPromiseThen(
 
 この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で async 関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。つまり、`then()` メソッドのようにマイクロタスクが発行されるので、Promise chain で考えれば理解できるはずです。
 
-## await 式が２個ある場合
+### await 式が２個ある場合
 
 それでは、今までの内容を踏まえて、今度は await 式が２個ある場合を考えてみます。
 
@@ -337,7 +337,7 @@ await 式が何個あっても同じことです。各 await 式で async 関数
 
 マイクロタスクはイベントループで処理される実行コンテキストでしたから、結局は上のような分割が起きていると解釈ができます。
 
-# 色々なパターン
+## 色々なパターン
 
 さて、基本的な変換が分かったので、もう少し深く潜ってみたいと思います。この変換を基本系に色々な async/await を考えてみます。
 
@@ -345,7 +345,7 @@ await 式が何個あっても同じことです。各 await 式で async 関数
 
 https://zenn.dev/uhyo/articles/return-await-promise
 
-## 通常の関数で Promise を返す場合
+### 通常の関数で Promise を返す場合
 
 まずは、比較対象として Promise インスタンスを返す通常の関数を考えてみましょう。
 
@@ -395,7 +395,7 @@ V8 エンジンでは Web API である `queueMicrotask()` は提供されない
 通常 `Promise.resolve().then()` は `queueMicrotask()` よりもオーバーヘッドがあるので、マイクロタスクを発行するだけなら、`queueMicrotask()` を使用します。
 :::
 
-## await も return も無い場合
+### await も return も無い場合
 
 それでは次に、`await` 式も `return` も無い async 関数を考えてみましょう。次のようなシンプルに何もしない async 関数の変換はどうなるでしょうか?
 
@@ -464,7 +464,7 @@ console.log("🦖 [2] MAINLINE: End");
 👦 [6] <4-Async> MICRO: then
 ```
 
-## await 42 の場合
+### await 42 の場合
 
 次は、async 関数内で `await 42` だけをする場合を考えてみます。
 
@@ -555,7 +555,7 @@ console.log("🦖 [2] MAINLINE: End");
 👦 [6] <5-Async> MICRO: then
 ```
 
-## await Promise.resolve(42) の場合
+### await Promise.resolve(42) の場合
 
 今度は、すでに履行状態の Promise インスタンスを await してみましょう。
 
@@ -653,7 +653,7 @@ console.log("🦖 [3] MAINLINE: End");
 👦 [10] <7> MICRO: then cb after async func
 ```
 
-## await promise chain の場合
+### await promise chain の場合
 
 次は、既に履行状態の Promise インスタンスではなく、履行するまで１つマイクロタスクが必要な Promise chain を await してみましょう。
 
@@ -742,7 +742,7 @@ async 関数から返される Promise インスタンスが履行状態にな�
 
 というわけで、Promise chain を await するとチェーンの数だけマイクロタスクが必要となります。
 
-## return 42 の場合
+### return 42 の場合
 
 今度は、async 関数の中で何も await せずに単なる数値 `42` を返す async 関数を考えてみます。
 
@@ -795,7 +795,7 @@ console.log("🦖 [2] MAINLINE: End");
 👦 [6] <4-Async> MICRO: then
 ```
 
-## return await Promise.resolve(42) の場合
+### return await Promise.resolve(42) の場合
 
 さて、そろそろ問題のケースに突入します。実際に問題となるのは、`return Promise.resolve(42)` の場合なのですが、その前に簡単な `return await Promise.resolve(42)` を考えてみます。
 
@@ -886,7 +886,7 @@ console.log("🦖 [2] MAINLINE: End");
 👦 [6] <5-Async> MICRO: then
 ```
 
-## return Promise.resolve(42) の場合
+### return Promise.resolve(42) の場合
 
 さて、実はこれが一番やっかいなパターンです。結論から言うと、`return await Promise.resolve(42)` の場合はマイクロタスクが１つで済んだのに、`return Promise.resolve(42)` の場合にはマイクロタスクが２つ発生します。
 
@@ -1123,7 +1123,7 @@ function promiseResolve(v) {
 
 Promise インスタンス以外で resolve を試みるとマイクロタスクは発生せずに Promise インスタンスの状態が直ちに遷移します。ということで、途中までは `foo3` の方が余計なマイクロタスクを生成していないように思えましたが、最終的に async 関数の返り値となる `implicit_promise` を解決する際に余計なマイクロタスクが２つ生成されていまったので、`foo4` の方がマイクロタスクが少なく済みます。
 
-### Promise インスタンスで resolve するということ
+#### Promise インスタンスで resolve するということ
 
 ある Promise インスタンスのコンストラクタで `resolve()` 関数や `Promise.resolve()` の引数として、Promise インスタンスを渡すと **Unwrapping** という現象がおき、引数として渡した Promise インスタンスの状態や履行値、拒否理由などを自身の状態と値として同化できます。
 
@@ -1226,7 +1226,7 @@ Promise.resolve(Promise.resolve("U"))
 
 `Promise()` コンストラクタに渡す Executor 関数の引数である `resolve()` 関数が特殊ですので注意してください。
 
-### どっちを使うべき?
+#### どっちを使うべき?
 
 スタックトレースの比較では `return await Promise.resolve(42)` (つまり `foo4`) の方が詳細に情報が表示されます。
 
@@ -1242,7 +1242,7 @@ https://zenn.dev/qnighy/articles/3a999fdecc3e81#%E9%9D%9E%E5%90%8C%E6%9C%9F%E3%8
 
 他にも、Deno のビルトインリンターでは async 関数内部に await 式が無いことで怒られてしまう上に、そもそも async 関数と await 式の両者があることで非同期の振る舞いを記述することが基本です。そして、どちらを使うべきか分からないようなことになるくらいなら、Promise は await 式で常に評価するというようにすべて同じように扱った方が迷わずに済みます。
 
-## await async function の場合
+### await async function の場合
 
 基本形はすべてわかったので、少し応用を考えてみたいと思います。今度は await 式で async function (の返り値) を評価してみます。
 
@@ -1375,7 +1375,7 @@ console.log("🦖 [3] MAINLINE: End");
 👻 [8] <5-Async> MICRO: then after async function: 43
 ```
 
-## await Promise.reject(new Error("reason")) の場合
+### await Promise.reject(new Error("reason")) の場合
 
 await 式で Rejected 状態の Promise インスタンスを評価すると、例外が throw されます。
 
@@ -1559,7 +1559,7 @@ console.log("🦖 [2] MAINLINE: End");
 👍 [10] <8-Async> MICRO: 最後に実行 [Finally]
 ```
 
-# async/await の最適化
+## async/await の最適化
 
 以上、async/await の挙動について、V8 エンジンの内部変換コードから解説を試みてみました。
 
@@ -1593,7 +1593,7 @@ V8 のブログ記事を見て node の version 8 から version 10 に更新す
 この async/await の仕様最適化によって起こる Promise chain との発生するマイクロタスク数の違いについては『[Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)』のチャプターで解説しています。
 :::
 
-# async/await のまとめ
+## async/await のまとめ
 
 V8 の舞台裏を見ることで async/await の挙動が理解できたと思います。
 

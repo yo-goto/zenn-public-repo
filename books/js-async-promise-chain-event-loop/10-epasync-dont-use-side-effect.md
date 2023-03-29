@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターは、別のチャプター『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』の続きとしての内容となります。
 
@@ -18,7 +18,7 @@ aliases: Promise本『コールバックで副作用となる非同期処理』
 このチャプターの解説は『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
 :::
 
-# 副作用とは
+## 副作用とは
 
 このチャプターの本題へ入る前に「**副作用 (Side Effect)**」とは何かを簡単に説明しておきます。
 
@@ -62,7 +62,7 @@ function noPureOp(input) {
 
 https://www.youtube.com/watch?v=e-5obm1G_FY&list=TLGGz_fwguCfqL8yMDA3MjAyMg
 
-# return の代わりに副作用を使用しない
+## return の代わりに副作用を使用しない
 
 さて、今まで `then()` メソッドのコールバック関数内にて返すものとしては次のパターンでした。
 
@@ -198,7 +198,7 @@ console.log("🦖 [G] Sync");
 
 そして、`then()` メソッドのコールバック関数内にて返すものとして Promise インスタンスを選択した場合には、それが解決してから (実行が完了してから) 次の `then()` メソッドのコールバック関数が実行されるという話でした。
 
-# return しないと非同期処理の完了を待てない
+## return しないと非同期処理の完了を待てない
 
 もう少し複雑化してみましょう。あとで代わりに Promise-based な非同期 API である `fetch()` 関数を使用した説明も行います。
 
@@ -420,7 +420,7 @@ returnPromise("1st Promise", "[2]", "[4]")
 console.log("[3] Sync process");
 ```
 
-# Promise chain の目的
+## Promise chain の目的
 
 もうすこし一般化して考えてみます。Promise chain では正しく処理を連鎖させることで逐次的に一連の処理を行うことができます。
 
@@ -482,7 +482,7 @@ console.log("🦖 [3] Sync");
 
 Promise chain を利用する用途は基本的には、「非同期処理を逐次的に行う」ような場合や「Promise インスタンスから解決値を取り出して処理する」ような場合や「非同期処理のエラーハンドリング」を行うためとなります。
 
-## 非同期処理を逐次的に行う
+### 非同期処理を逐次的に行う
 
 >Promise chain では正しく処理を連鎖させることで逐次的 (順番に) に一連の処理を行うことができます。
 
@@ -619,7 +619,7 @@ doAsyncTask()
 
 そして、重要なこととして、`console.log()` で出力した実際のログには `Promise { <pending> }` という値が表されます。非同期処理 A, B, C はそもそも Promise インスタンスを返す非同期処理でした。実際に値を取り出して経過を見たり、追加で何かしらの処理を行うにはどうすればよいでしょうか?
 
-## Promise インスタンスから解決値を取り出して処理する
+### Promise インスタンスから解決値を取り出して処理する
 
 結論としては、`then()` メソッドのコールバック内で Promise インスタンスを `return` して次の `then()` メソッドのコールバックへ値を繋いでから、処理や出力を行います。上のコードで `console.log()` の位置をずらすことで Promise の解決値をログに出力して確認できます。
 

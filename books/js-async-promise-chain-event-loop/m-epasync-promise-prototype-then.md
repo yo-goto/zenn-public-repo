@@ -10,7 +10,7 @@ aliases:
   - thenメソッドの勘違いの修正
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、`Promise.prototype.then` メソッドについて欠落していた情報を解説します。
 
@@ -26,7 +26,7 @@ aliases:
 他の波及チャプターを修正したため、このチャプターは仕様の解説を含む番外編という位置づけになりました。このチャプターにおける解説の結論を含む簡易バージョンは『[then メソッドのコールバックで Promise インスタンスを返す](8-epasync-return-promise-in-then-callback)』のチャプターに設けており、さらに結果をまとめた表を『[解決値の違いによる挙動のまとめ](#解決値の違いによる挙動のまとめ)』の項目に設けているので、現時点で難しすぎる場合にはその箇所だけ見て飛ばしてもらっても構いません。
 :::
 
-## 参考文献
+### 参考文献
 
 こちらのチャプターの解説で使用する ECMASciript の仕様のコードは [ESLint](https://eslint.org) の開発者である Nicholas C. Zakas 氏のブログ記事シリーズから参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
 
@@ -46,7 +46,7 @@ https://github.com/humanwhocodes/pledge
 
 それでは、さっそく、この本の解説で間違っていた点について例を出して解説していきます。
 
-# then メソッドのコールバックから返る値の違いによる挙動
+## then メソッドのコールバックから返る値の違いによる挙動
 
 結論から言うと、`Promise.prototype.then()` メソッドにわたす **コールバック関数から返る値の種類によって発生するマイクロタスクの数が異なる** ことが仕様から判明しました。
 
@@ -232,7 +232,7 @@ console.log("🦖 [G]");
 ただし、概要だけでもかなり長くなるので結果をまとめた表を [解決値の違いによる挙動のまとめ](#解決値の違いによる挙動のまとめ) の見出しにまとめたので、そちらから見てもらっても構いません。
 :::
 
-# Thenable とは
+## Thenable とは
 
 まず始めに、Thenable について解説しておきます。
 
@@ -260,11 +260,11 @@ const thenable = {
 
 さて、実はそういったオブジェクトそのものを使いたいからこの概念の説明をしたわけではありません。問題である `Promise.prototype.then` の挙動について説明するのに必要なのでこの概念の解説をしています。
 
-# 仕様の基礎
+## 仕様の基礎
 
 ここからは JavaScript の仕様である ECMAScript の基礎について解説していきます。最終的なぜそのような動作になるかを自分で確認できるように仕様の URL をワードに貼り付けておきます。
 
-## 抽象操作とアルゴリズムステップ
+### 抽象操作とアルゴリズムステップ
 
 まず ECMAScript の仕様には「**抽象操作 (Abstract Operation)**」というものが記述されています。
 
@@ -290,7 +290,7 @@ ECMAScript 仕様のプロトタイプメソッドや静的メソッド、抽象
 
 例えば `Promise.prototype.catch` や `Promise.prototype.finally` といったプロトタイプメソッドは、実は大半の作業を `Promise.prototype.then` にまかせており、さらに `Promise.prototype.then` は PerformPromiseThen という操作に多くの作業をまかせています。また、`Promise.prototype.then` や `Promise.resolve` や Await などの多くの操作から NewPromiseCapability 抽象操作が呼び出されて Promise オブジェクトの作成が行われています。
 
-## ECMAScript の V8 実装
+### ECMAScript の V8 実装
 
 ちなみに、ECMAScript 仕様を直接見て各操作感の関係を辿るのが億劫なら、V8 エンジン側での実装を直接見て理解するのも一つの手です。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで言ったとおり、ECMAScript の V8 実装は [V8 Torque](https://v8.dev/docs/torque) (TypeScript ライクな V8 エンジンの開発専用の言語) や C++ で GitHub リポジトリの [builtins](https://github.com/v8/v8/tree/main/src/builtins) の場所に記載されています。
 
@@ -304,7 +304,7 @@ https://github.com/v8/v8/blob/a760f03a6e99bf4863d8d21c5f7896a74a0a39ea/src/built
 
 https://source.chromium.org/chromium/chromium/src/+/main:v8/src/builtins/promise-abstract-operations.tq
 
-## Job とマイクロタスク
+### Job とマイクロタスク
 
 図一番下の [HostEnqueuPromiseJob](https://tc39.es/ecma262/#sec-hostenqueuepromisejob) という操作が最終的にマイクロタスクをマイクロタスクキューへとエンキューする操作です。
 
@@ -359,7 +359,7 @@ Promise 関連の Job (マイクロタスク) を作る直接の抽象操作は�
 
 まずは Promise Resolve Functions を作成する CreateResolvingFunctions 抽象操作から見ていきましょう。
 
-# CreateResolvingFunctions
+## CreateResolvingFunctions
 
 それでは、ここから本格的に問題となる仕様の部分について実際に触れていきます。
 
@@ -386,7 +386,7 @@ Promise コンストラクタを使ってプロミスインスタンスを作成
 
 `Promise.prototype.then` でも **この `resolve` 関数が実は使われており** (呼び出し図に注目)、コールバックから返される値が引数の `resolution` (解決値) として使われます。従って、`resolve` 関数の処理の場合分けを考える必要があるという話になります。
 
-# then から resolve 関数が呼び出される仕組み
+## then から resolve 関数が呼び出される仕組み
 
 `Promise.prototype.then` から `resolve` 関数が呼び出されるというのは仕様を見てもかなり分かりづらいので補足しておきます。
 
@@ -437,7 +437,7 @@ NewPromiseReactiobJob は上で説明したように Job (マイクロタスク)
 [Call](https://tc39.es/ecma262/#sec-call) のような抽象操作の引数で `aurgumentList` と定義されていれば、呼び出し側ではこのギュメ記号を使った List 型リテラルで引数を表現していることが多いです。
 :::
 
-# Promise Resolve Functions
+## Promise Resolve Functions
 
 さて、いよいよ本題に入ります。CreateResolvingFunctions 抽象操作で作成される [Promise Resolve Function](https://tc39.es/ecma262/#sec-promise-resolve-functions) が `resolve` 関数の正体であり、冒頭の問題が発生する仕様箇所です。
 
@@ -656,7 +656,7 @@ const resolve = (resoltion) => {
 
 `resolution` の値が Thenable の場合には NewPromiseThenableJob 操作によって作成される Job がマイクロタスクとして発行されることになります。
 
-## 発生するマイクロタスクを考える
+### 発生するマイクロタスクを考える
 
 さて、`resolve` 関数の実装をだいたい把握したところで、以下のような実際のコードで発生するマイクロタスクについて考えましょう。
 
@@ -682,7 +682,7 @@ resolve(Promise.resolve(43));
 
 これによって今まで実装してきたような `resolve` 関数が呼び出されます。場合分けで見たように `resolution` の値は Thenable (Promise オブジェクトは `then` メソッドを持っている) なので、アルゴリズムステップの step.13 から step.16 が実行されます。これによって NewPromiseResolveThenableJob 操作で作成される Job がマイクロタスクとしてエンキューされます。これが二個目に発生するマイクロタスクとなります。
 
-## NewPromiseResolveThenableJob
+### NewPromiseResolveThenableJob
 
 このマイクロタスクはコールスタック上にプッシュされて実行コンテキストとして処理されるわけですが、一体どのような処理になるか知りたいですね。そのためにはそのマイクロタスクを作成する [NewPromiseResolveThenableJob](https://tc39.es/ecma262/#sec-newpromiseresolvethenablejob) 操作で起きることを知る必要があります。
 
@@ -907,7 +907,7 @@ Promise.resolve(42)
 */
 ```
 
-# 解決値の違いによる挙動のまとめ
+## 解決値の違いによる挙動のまとめ
 
 `resolve` 関数の引数である `reslution` (解決値) の違いによって `resolve` 関数の処理は場合分けされます。そして、それによって発生するマイクロタスクの数が異なることになりました。結果をまとめておきます。
 
@@ -940,7 +940,7 @@ Promise.resolve(42)
 
 具体的には `Promise.resolve(x + 1).then(resolve, reject)` の呼び出し自体を行う関数が２個目のマイクロタスクとして発行されてイベントループで処理されると、その `resolve` 関数が３個目のマイクロタスクとして発行されます。それが実行されると、`then` 自体から返る Promise オブジェクト自体 (元の未解決 Promise オブジェクト) が解決し、chain してある `then` のコールバック `x => console.log(x)` が４個目のマイクロタスクとして発行されます。
 
-# 解決値が Promise chain の場合
+## 解決値が Promise chain の場合
 
 解決値が Promise chain であった場合にはどうなるでしょうか。`then()` メソッドからは常に新しい Promise オブジェクトが返るので、もちろんこれは解決値が Promise オブジェクトである場合に相当します。ただし、発生するマイクロタスクの発生順番については混乱しやすいので注意してください。
 
@@ -1135,7 +1135,7 @@ console.log("🦖 [2]");
 
 ![マイクロタスクの順番](/images/js-async/img_microtask-enqueu-sec.png)
 
-# Promise chain のネストをフラット化する弊害
+## Promise chain のネストをフラット化する弊害
 
 『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』のチャプターで Promise chain はなるべくネストさせずにフラットにするようにと解説しましたが、上記の `then` のコールバックから返される値の種類によって発生するマイクロタスク数が異なることに影響を受けて Promise chain のネストをフラット化するとコンソール出力が行われるマイクロタスクが遅延します。
 

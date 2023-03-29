@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『Promise chain はネストさせない』
 ---
 
-# このチャプターについて
+## このチャプターについて
 
 このチャプターでは、Promise chain におけるネストについて、アンチパターンとしての話と、原理的な話を行います。
 
@@ -16,7 +16,7 @@ aliases: Promise本『Promise chain はネストさせない』
 このチャプターの解説は『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説した「内容の間違い」の影響を以前まで受けていましたが、現在は内容を修正・補足しました。
 :::
 
-# Promise chain をネストしてみる
+## Promise chain をネストしてみる
 
 前のチャプターでは、`then()` メソッドのコールバックにおいて、Promise インスタンスを `return` した場合「Promise インスタンスの `resolve` に使われた値は次の `then()` メソッドのコールバック関数の引数として渡される」という話でした。
 
@@ -377,7 +377,7 @@ console.log('🦖 [4] Sync');
 - ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク実行のタイミングについて誤解しないように注意してください
 :::
 
-# Promise chain のネストはアンチパターン
+## Promise chain のネストはアンチパターン
 
 このように `then()` メソッドをネストさせるようなやり方は特に意味がある場合を除いて、流れがわかりづらくなってしまうので通常は避けるべきアンチパターンとなります。このネストはフラットにでき、Promise chain はなるべくネストが浅くなるようにフラットにするのが推奨されます。
 
