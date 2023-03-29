@@ -55,6 +55,7 @@ aliases:
 - [k-epasync-iterator-generator](k-epasync-iterator-generator)
 - [m-epasync-promise-prototype-then](m-epasync-promise-prototype-then)
 - [n-epasync-promise-spec-compare](n-epasync-promise-spec-compare)
+- [o-epasync-async-await-pattern-history](o-epasync-async-await-pattern-history)
 - [x-epasync-epilogue](x-epasync-epilogue)
 - [y-epasync-conclusion](y-epasync-conclusion)
 - [z-epasync-reference](z-epasync-reference)
@@ -129,6 +130,7 @@ aliases:
   - sec-05-epasync # 『第５章 - 仕様およびその他の番外編』
   - m-epasync-promise-prototype-then # 『Promise.prototype.then の仕様挙動』
   - n-epasync-promise-spec-compare # 『Promise chain と async/await の仕様比較』
+  - o-epasync-async-await-pattern-history # 『async/await Pattern の歴史的発展』
   - y-epasync-conclusion # 『総括 - 非同期処理のまとめ』
   - x-epasync-epilogue # 『あとがき』
   - z-epasync-reference # 『参考文献』

@@ -2,7 +2,7 @@
 title: "第５章 - 仕様およびその他の番外編"
 cssclass: zenn
 date: 2023-01-09
-modified: 2023-01-09
+modified: 2023-03-29
 AutoNoteMover: disable
 tags: [" #type/zenn/book #JavaScript/async "]
 alieases: [EPAsync 第５章]
@@ -18,4 +18,4 @@ alieases: [EPAsync 第５章]
 
 - [Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
 - [Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)
-
+- [async/await Pattern の歴史的発展](o-epasync-async-await-pattern-history)

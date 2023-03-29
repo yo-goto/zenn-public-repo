@@ -290,6 +290,10 @@ MDN
 - [Normative: Reduce the number of ticks in async/await by MayaLekova · Pull Request #1250 · tc39/ecma262](https://github.com/tc39/ecma262/pull/1250/files)
 - [tc39/proposal-faster-promise-adoption: Reduce the number of microtask ticks required to adopt the state of a promise](https://github.com/tc39/proposal-faster-promise-adoption)
 
+## [async/await Pattern の歴史的発展](o-epasync-async-await-pattern-history)
+
+- [Async/await - Wikipedia](https://en.wikipedia.org/wiki/Async/await)
+- [【歴史解説】 これが一番使いやすいと思います！非同期処理の救世主 async / await - YouTube](https://youtu.be/3Od9rhxlS-E)
 
 ## その他
 
