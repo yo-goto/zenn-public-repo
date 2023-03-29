@@ -3,7 +3,7 @@ title: "async/await Pattern の歴史的発展"
 cssclass: zenn
 date: 2023-03-29
 modified: 2023-03-29
-url: "https://zenn.dev/estra/articles/m-epasync"
+url: "https://zenn.dev/estra/articles/o-epasync-async-await-pattern-history"
 AutoNoteMover: disable
 tags: [" #type/zenn/book #JavaScript/async  "]
 aliases: Promise本『async/await Pattern の歴史的発展』
@@ -11,7 +11,7 @@ aliases: Promise本『async/await Pattern の歴史的発展』
 
 ## async/await Pattern
 
-これまで JavaScript や TypeScript における async/await のシンタックスとイベントループなどの非同期処理の背景となる機構を見てきましたが、実は async/await というシンタックスは JavaScript 特有のものではりません。
+これまで JavaScript や TypeScript における async/await のシンタックスとイベントループなどの非同期処理の背景となる機構を見てきましたが、実は async/await というシンタックスは JavaScript 特有のものではありません。
 
 他のプログラミング言語でもこの構文は存在しており、一般には「async/await Pattern」と呼ばれます。このパターンは JavaScript だけではなく、C#、C++、Python、Kotlin、Rust、Swift、Zig などの多くの言語で非同期の振る舞いを記述するための機能として提供されています。
 
