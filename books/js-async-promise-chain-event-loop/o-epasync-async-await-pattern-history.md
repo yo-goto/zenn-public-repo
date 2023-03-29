@@ -17,9 +17,9 @@ aliases: Promise本『async/await Pattern の歴史的発展』
 
 https://en.wikipedia.org/wiki/Async/await
 
-## 歴史的な発展の経緯
+## 歴史的な発展
 
-async/await のパターンが一般化するまで、C# をはじめとする多くの言語で非同期処理を記述する方法が試行錯誤された歴史が存在しています。実際この async/await パターン (シンタックス) は JavaScript (ECMAScript) に導入されるはるか前に、C# 言語で生まれました。また、C# と TypeScript はいずれも Microsoft から提供されており、言語開発者は同じ [Anders Hejlsberg](https://en.wikipedia.org/wiki/Anders_Hejlsberg) 氏であり、async/await のシンタックスも ECMAScript の仕様に導入される前に TypeScript で先に実装されたという経緯もあるので、これらの言語の間には深い関係があります。
+async/await のパターンが一般化するまで、C# をはじめとする多くの言語で非同期処理を記述する方法が試行錯誤された歴史が存在しています。実際この async/await パターン (シンタックス) は JavaScript (ECMAScript) に導入される前に、C# 言語で生まれました。また、C# と TypeScript はいずれも Microsoft から提供されており、言語開発者は同じ [Anders Hejlsberg](https://en.wikipedia.org/wiki/Anders_Hejlsberg) 氏であり、async/await のシンタックスも ECMAScript の仕様に導入される前に TypeScript で先に実装されたという経緯もあるので、これらの言語の間には深い関係があります。
 
 やくもけ ([@yakumokech](https://twitter.com/yakumokech?s=20)) さんの以下の動画でその歴史について分かりやすく解説されていたので、ぜひ参考にしてみてください。
 
