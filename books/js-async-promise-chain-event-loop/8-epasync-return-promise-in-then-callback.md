@@ -37,16 +37,16 @@ const returnPromise = (resolvedValue, order) => {
 
 returnPromise("🐵 1st Promise", "[2]")
   .then((value) => {
-    console.log("👦 [3] async:", value);
-    return returnPromise("🐵 2nd Promise", "[4]");
+    console.log("👦 [4] async:", value);
+    return returnPromise("🐵 2nd Promise", "[5]");
     // resolve される値は "2nd Promise" で
     // これが次の then() のコールバック関数の入力として渡される
   })
   .then((value) => {
-    console.log("👦 [5] async:", value);
+    console.log("👦 [6] async:", value);
   });
 
-console.log("🦖 [4] MAINLINE(End): Sync");
+console.log("🦖 [3] MAINLINE(End): Sync");
 ```
 
 今まで必ず同期処理として呼ばれていた `returnPromise()` 関数ですが、今回は `then()` メソッドのコールバックで呼び出しているものもあるのでそれらは非同期的に実行されます。従って出力されるテキストを一部変更しました。
