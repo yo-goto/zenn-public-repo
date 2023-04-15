@@ -576,7 +576,7 @@ console.log("[1] 🦖 MAINLINE: Start");
 (async () => {
   const data = await fetchData(githubApi);
   console.log("[4] 👦 MICRO: 取得データ", data);
-})
+})()
 
 console.log("[2] 🦖 MAINLINE: End");
 ```
