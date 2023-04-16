@@ -2,7 +2,7 @@
 title: "then メソッドは常に新しい Promise を返す"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-11-02
+modified: 2023-03-31
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『then メソッドは常に新しい Promise を返す』
@@ -82,7 +82,7 @@ console.log("🦖 [H] Sync");
 前のコードと考え方は同じです。まずはイベントループにおいて最初のタスクである「スクリプトの評価」で「すべての同期処理の実行」が行われます。コールスタックの一番下にグローバルコンテキストが積まれた状態で同期処理がどんどん行われていきます。
 
 - (1) `console.log("🦖 [A] Sync")` が同期処理される
-- (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行(Fulfilled)状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちにマイクロタスクキューへと送られます。
+- (2) `returnPromise("1st Promise", "B")` が同期処理されて返される Promise インスタンスが直ちに履行 (Fulfilled) 状態になるので、`returnPromise("1st Promise", "B").then(cb)` のコードバック関数 `cb` が直ちにマイクロタスクキューへと送られます。
 
 さて、ここまでは前のコードと同じですね。
 
@@ -91,23 +91,23 @@ console.log("🦖 [H] Sync");
 - `returnPromise("1st Promise", "B")` によって返ってくる Promise インスタンスを promise1 とします
 - `returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `promise2` とします
 
-この２つは**全く別の Promise インスタンス**となります。
+この２つは **全く別の Promise インスタンス** となります。
 
-Promise chain において、各 `then()` メソッドにおいて返ってくる Promise インスタンスは**それぞれ別のモノ**であるということを意識してください。
+Promise chain において、各 `then()` メソッドにおいて返ってくる Promise インスタンスは **それぞれ別のモノ** であるということを意識してください。
 
 ## Promise インスタンスの状態
 
-ここで話は代わりますが、Promise インスタンスというものはそれぞれ「状態(State)」を持ってましたね。
+ここで話は代わりますが、Promise インスタンスというものはそれぞれ「状態 (State)」を持ってましたね。
 
 - Pending(待機状態)
 - Fulfilled(履行状態)
 - Rejected(拒否状態)
 
 :::message
-Promise の状態(State)と運命(Fate)などの基本概念については、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターを参照してください。
+Promise の状態 (State) と運命 (Fate) などの基本概念については、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターを参照してください。
 :::
 
-`Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機(pending)状態から始まります。Promise chain では `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
+`Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機 (pending) 状態から始まります。Promise chain では `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
 
 そして、`then(cb)` で返ってくる Promise インスタンスが履行状態へと移行するのは登録されているコールバック `cb` が実行が完了した時点です。
 
@@ -125,7 +125,7 @@ returnPromise("2nd Promise", "E").then(cb3).then(cb4);
 console.log("🦖 [H] Sync");
 ```
 
-1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行(Fulfilled)状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちにマイクロタスクキューへと送られます
+1. `returnPromise("2nd Promise", "E")` が同期的に実行されて直ちに履行 (Fulfilled) 状態となった Promise インスタンスが返ってくるので、`then(cb3)` で登録されているコールバック関数 `cb3` が直ちにマイクロタスクキューへと送られます
 2. `then(cb3)` で返ってくる別の Promise インスタンスはまだ待機状態なので `then(cb4)` のコールバック関数 `cb4` はまだキューへ送られずにそのまま待機となります
 3. 次の処理に進み、`console.log("[H] Sync")` が実行されます
 
@@ -147,7 +147,7 @@ console.log("🦖 [H] Sync");
 
 いつもどおり、すべての同期処理が終わったため、グローバルコンテキストがポップして、コールスタックが空になったので「マイクロタスクのチェックポイント」となります。別の言い方では「**単一タスクが完了したら、すべてのマイクロタスクを処理する**」です。というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
-先にキューへと送られた `cb1` が実行されます。`then(cb1)` で登録したコールバック `cb1` の実行が完了したので `then(cb1)` で返ってくる Promise インスタンスが履行状態へと移行します。Promise インスタンスの状態が履行状態へと移行したことで、さらに `then(cb1).then(cb2)` に登録していたコールバック関数  `cb2` が直ちにマイクロタスクキューへと送られます。
+先にキューへと送られた `cb1` が実行されます。`then(cb1)` で登録したコールバック `cb1` の実行が完了したので `then(cb1)` で返ってくる Promise インスタンスが履行状態へと移行します。Promise インスタンスの状態が履行状態へと移行したことで、さらに `then(cb1).then(cb2)` に登録していたコールバック関数 `cb2` が直ちにマイクロタスクキューへと送られます。
 
 続いて次にマイクロタスクキュー内にあるマイクロタスクが実行されます。`cb1` の後には `cb3` が順番としてキューに送られていたので `cb3` が直ちに実行されます。`cb1` のときと同じように `then(cb3)` で返ってくる Promise インスタンスの状態が待機状態から履行状態へと移行します。`then(cb3)` で返ってくる Promise インスタンスの状態が履行状態へと変わったことで、後続の `then(cb4)` で登録していたコールバック関数 `cb4` が直ちにマイクロタスクキューへと送られます。
 
@@ -210,7 +210,7 @@ console.log("[Rejected status]", Promise.reject("Rejected"))
 
 １つずつどうなるかを考えてみます。
 
-`new Promise(executor)` では、`executor` 関数自体は「同期的」に実行されるという話でしが。この場合は内部で直ちに `resolve()` 関数が呼ばれるので、作成した Promise インスタンスは履行(Fulfilled)状態となります。従って、コンソールに出力される Promise インスタンスは履行状態のものとなります。というわけで次の出力をまずは得ます。
+`new Promise(executor)` では、`executor` 関数自体は「同期的」に実行されるという話でしが。この場合は内部で直ちに `resolve()` 関数が呼ばれるので、作成した Promise インスタンスは履行 (Fulfilled) 状態となります。従って、コンソールに出力される Promise インスタンスは履行状態のものとなります。というわけで次の出力をまずは得ます。
 
 ```sh
 ❯ deno run consolePromise.js
@@ -221,9 +221,9 @@ console.log("[Rejected status]", Promise.reject("Rejected"))
 では、次の `Promise.resolve()` ですが、これは以下のように `new Promise()` で作成するのと大体は同じものでした。
 
 ```js
-const promise = Promise.resolve("Promise履行時の値");
+const promise1 = Promise.resolve("Promise履行時の値");
 // この２つは大体同じ
-const promise = new Promise(res => {
+const promise2 = new Promise(res => {
   res("Promise履行時の値");
 });
 ```
@@ -251,7 +251,7 @@ const promise = new Promise(res => {
 # ...
 ```
 
-待機(Pending)状態の Promise インスタンスを出力すると、このように `Promise { <pending> }` が表示されます。履行(Fulfilled)状態の Promise インスタンスは `Promise { 解決された値 }` というように出力されていますね。
+待機 (Pending) 状態の Promise インスタンスを出力すると、このように `Promise { <pending> }` が表示されます。履行 (Fulfilled) 状態の Promise インスタンスは `Promise { 解決された値 }` というように出力されていますね。
 
 `Promise.resolve().then(callback)` の `callback` ですが、現時点ではイベントループのステップは「スクリプトの評価」で、同期処理をすべて完了していません。コールバックの中身は `value => console.log(value)` というものなので、コンソールへ出力がなされますが、マイクロタスクキューへと送られるこのコールバックはイベントループの「スクリプトの評価」のステップが完了した後に実行されます。
 
@@ -267,7 +267,7 @@ const promise = new Promise((_, rej) => {
 });
 ```
 
-`Promise.resolve()` と同じように作成する Promise インスタンスは直ちに拒否(Rejected)状態になります。従って、４番目の出力は以下のようになります。
+`Promise.resolve()` と同じように作成する Promise インスタンスは直ちに拒否 (Rejected) 状態になります。従って、４番目の出力は以下のようになります。
 
 ```sh
 ❯ deno run consolePromise.js
@@ -278,7 +278,7 @@ const promise = new Promise((_, rej) => {
 # ...
 ```
 
-拒否(Rejected)状態の Promise インスタンスを出力すると `Promise { <rejected> 拒否された理由 }` が表示されます。今回の場合は、理由(reason)として "Rejected" という文字列を `Promise.reject()` の引数として渡しているのでこのような出力が得られました。
+拒否 (Rejected) 状態の Promise インスタンスを出力すると `Promise { <rejected> 拒否された理由 }` が表示されます。今回の場合は、理由 (reason) として "Rejected" という文字列を `Promise.reject()` の引数として渡しているのでこのような出力が得られました。
 
 これで、イベントループの最初のステップ「スクリプトの評価」が終わりました。いつもどおり、すべての同期処理が終わったため、グローバルコンテキストがポップして、コールスタックが空になったので「マイクロタスクのチェックポイント」となります。別の言い方では「**単一タスクが完了したら、すべてのマイクロタスクを処理する**」です。というわけで、マイクロタスクキューにあるすべてのマイクロタスクを空にするまで処理します。
 
