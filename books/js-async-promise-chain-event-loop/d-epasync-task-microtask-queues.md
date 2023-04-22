@@ -267,7 +267,7 @@ Deno 環境では、基本的にはマイクロタスクキューが１つです
 > A microtask is a colloquial way of referring to a [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) that was created via the [queue a microtask](https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask) algorithm.
 > ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#microtask) より引用、太字は筆者強調)
 
-「[queue a microtask](https://momdo.github.io/html/webappapis.html#queue-a-microtask)」と呼ばれるアルゴリズムによって作成されるタスクのことを指す俗称ということです。仕様的には**マイクロソフトタスクはタスクの一種**ということですね。
+「[queue a microtask](https://momdo.github.io/html/webappapis.html#queue-a-microtask)」と呼ばれるアルゴリズムによって作成されるタスクのことを指す俗称ということです。仕様的には**マイクロタスクはタスクの一種**ということですね。
 
 仕様だとかなり分かりづらいので、MDN のドキュメントを見ると、こう書かれています。
 
