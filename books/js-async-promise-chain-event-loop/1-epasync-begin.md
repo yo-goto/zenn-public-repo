@@ -100,7 +100,7 @@ https://developer.mozilla.org/ja/
 
 動画では基本的に JSConf[^JSConfについて] にアップロードされているものがオススメです。実はドキュメントよりも動画を使って視覚的に理解した方がいい場合もよくあるので、ぜひ活用してください。JSConf の動画は本質情報を得られる場合が多いです。この本の中ではも JSConf で行われた『[What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ)』などのいくつかの動画を参照しています。
 
-https://www.youtube.com/c/JSConfEU/videos?view=0&sort=p&shelf_id=0
+https://www.youtube.com/@jsconf_/videos
 
   [^JSConfについて]: Conf 系(NodeConf, ReactConf など)はオーソリティ性が確保されているのである程度安心してみることができます。基本的には最新のものが良いですが、JSConfEU の動画ではよく視聴されているものを見ておくと良いです。動画は英語ですが、平易な英語なので字幕などを活用して視聴してください。
 
