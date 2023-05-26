@@ -19,7 +19,14 @@ aliases:
   - assignability
 ---
 
+
 ## はじめに
+
+https://www.youtube.com/@jsconf_/videos
+
+https://youtube.com/playlist?list=PLX8Rsrpnn3IW0REXnTWQp79mxCvHkIrad
+
+https://youtube.com/playlist?list=PL37ZVnwpeshHwJPVBqEnZild7QHWhdufu
 
 前回の記事では TypeScript における型の拡大 (Widening) について解説しました。
 
@@ -772,6 +779,10 @@ const v: void = u;
 このような代入関係から明らかに `void` 型が supertype であり、`undefined` 型が subtype なのですが、Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目では `void` 型の説明が "a subtype of `undefined` intended for use as a return type." となっています。ただし、[アーカイブされた古い仕様](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#325-the-void-type) を見ると `void` 型は `undefined` 型の supertype として明記してあるのでこれは現在の公式ドキュメントのミスだと思われます。おそらくミスだろうということでプルリクエストを作成しました (バージョン更新によって supertype と subtype が入れ替わってしまうような仕様変更は流石にないと思います)。
 
 https://github.com/microsoft/TypeScript-Website/pull/2470
+
+どうやら別のPRで subtype の記述自体が削除されたようです。
+
+https://github.com/microsoft/TypeScript-Website/pull/2760
 
 ちなみに、Subtyping 一般においては subtype であるかの評価や定義には包摂 ([subsumption](https://en.wikipedia.org/wiki/Subtyping#Subsumption)) という概念が利用されるそうです。
 
