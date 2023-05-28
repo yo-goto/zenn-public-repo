@@ -22,12 +22,6 @@ aliases:
 
 ## はじめに
 
-https://www.youtube.com/@jsconf_/videos
-
-https://youtube.com/playlist?list=PLX8Rsrpnn3IW0REXnTWQp79mxCvHkIrad
-
-https://youtube.com/playlist?list=PL37ZVnwpeshHwJPVBqEnZild7QHWhdufu
-
 前回の記事では TypeScript における型の拡大 (Widening) について解説しました。
 
 https://zenn.dev/estra/articles/typescript-widening
