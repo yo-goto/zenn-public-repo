@@ -1,26 +1,35 @@
 ---
 title: "fish shellからgoogle検索するコマンドを作ってみた"
+published: true
+cssclass: zenn
 emoji: "🐟"
 type: "tech"
 topics: [fish, shell, macOS, 初心者]
-published: true
 date: 2022-01-16
+modified: 2023-05-28
 url: "https://zenn.dev/estra/articles/google-search-from-fish-shell"
-aliases: [記事_fish shellからgoogle検索する関数の作成]
-tags: " #shell/fish #google  "
+tags: [" #shell/fish #google "]
+aliases:
+  - 記事_fish shellからgoogle検索する関数の作成
+  - ggl.fish
 ---
+
+:::details Changelog
+- 2023-05-28
+    - フォーマット
+:::
 
 ## モチベーション
 
-シェルを触っている最中に検索したい事柄がよくでてくることがあります。コマンドラインからそのまま流れるように検索したい&&シェルスクリプトを勉強してみたい、ということで fish shell で CLI から google 検索できるようにする関数(コマンド)を作ってみました。
+シェルを触っている最中に検索したい事柄がよくでてくることがあります。コマンドラインからそのまま流れるように検索したい&&シェルスクリプトを勉強してみたい、ということで fish shell で CLI から google 検索できるようにする関数 (コマンド) を作ってみました。
 
-環境は macOS/iterm2 で、fish 言語(fish language)を使って作りました。
+環境は macOS/iterm2 で、fish 言語 (fish language) を使って作りました。
 
 fish でのこういったスクリプトについての情報はあまり多くなかったので bash での実装を参考にしてつくりました。
 
 https://s10i.me/whitenote/post/40
 
-ただ検索できるようにするだけだとそのままになってしまうので、google 検索で使える**英語検索**と**画像検索**、**完全一致検索**、**個人最適化検索無効化**などのコマンドオプションを追加しました。この記事を読めば**fish関数でのオプション処理の基本**が関数の実装を通して分かるように解説しています。
+ただ検索できるようにするだけだとそのままになってしまうので、google 検索で使える**英語検索**と**画像検索**、**完全一致検索**、**個人最適化検索無効化**などのコマンドオプションを追加しました。この記事を読めば**fish 関数でのオプション処理の基本**が関数の実装を通して分かるように解説しています。
 
 ## スクリプト
 
@@ -43,6 +52,7 @@ $ fisher install yo-goto/ggl.fish
 :::
 
 ## 参考資料
+
 先に使用する fish の文法と機能とコマンドについての参考資料をあげておきます。
 
 fish の文法と機能
@@ -67,10 +77,9 @@ bash でのパラメータ展開の代わりに fish での文字列操作
 google 検索パラメータ  
 - [Google検索のパラメータ（URLパラメータ）一覧 - fragment.database.](http://www13.plala.or.jp/bigdata/google.html)
 
-
 ## 解説
 
-fish では、[Autoloading Function](https://fishshell.com/docs/current/language.html#autoloading-functions)という機能があり、コマンドにエンカウントすると、`~/.config/fish/functions/` ディレクトリ内のコマンド名と同一名のファイルを探して、自動ロードします。この機能を使って、`ggl` という名前で「引数をブラウザで google 検索する」コマンドを作成します。
+fish では、[Autoloading Function](https://fishshell.com/docs/current/language.html#autoloading-functions) という機能があり、コマンドにエンカウントすると、`~/.config/fish/functions/` ディレクトリ内のコマンド名と同一名のファイルを探して、自動ロードします。この機能を使って、`ggl` という名前で「引数をブラウザで google 検索する」コマンドを作成します。
 
 ```shell
 cd ~/.config/fish/functions/
@@ -79,7 +88,7 @@ touch ggl.fish
 code ggl.fish 
 ```
 
-fish 言語での関数作成は、`function 関数名; 処理内容; end` で作成できます。この場合ファイル名と同じ `ggl` という名前の関数を作成します。ちなみに、fish ではセミコロン `;` を使うことで、複数のコマンドを一行で書くことできます(これは他のシェルも同じだそうです)。
+fish 言語での関数作成は、`function 関数名; 処理内容; end` で作成できます。この場合ファイル名と同じ `ggl` という名前の関数を作成します。ちなみに、fish ではセミコロン `;` を使うことで、複数のコマンドを一行で書くことできます (これは他のシェルも同じだそうです)。
 
 例えば、`function` コマンドで関数を定義する際にも簡単な内容であれば `function ll; ls -l $argv; end` というようにワンラインで書くことができます。
 
@@ -112,7 +121,7 @@ fish の関数は単一コマンドにように呼ぶことができるコマン
 
 Fish がインストールされていれば、macOS に元々入っている BSD 系のコマンド以外にビルトインと呼ばれるコマンドが使えるようになります。`builtin -n` ですべてのビルトインコマンドを確認できます。`function` コマンドのそのビルトインの 1 つです。これらのコマンドを集合させて fish 関数を作成します。
 
-fish では、関数を使った自作コマンドの引数は `$argv` という変数へ格納されます。引数は複数個入力でき、その際に `$argv` にすべて格納されますが、この `$argv` はリスト変数(list variable)であり、関数へ渡されたすべての引数を含みます。要素へのアクセスには `$argv[1]` などインデックスを指定することでできます(ただし、インデックスは 1 から始まります)。
+fish では、関数を使った自作コマンドの引数は `$argv` という変数へ格納されます。引数は複数個入力でき、その際に `$argv` にすべて格納されますが、この `$argv` はリスト変数 (list variable) であり、関数へ渡されたすべての引数を含みます。要素へのアクセスには `$argv[1]` などインデックスを指定することでできます (ただし、インデックスは 1 から始まります)。
 
 ```shell
 $ function myfunc
@@ -124,7 +133,7 @@ $ myfunc 一個目 二個目 三個目
 三個目
 ```
 
-自作した関数では、[argparseコマンド](https://fishshell.com/docs/current/cmds/argparse.html#cmd-argparse)を使うことで、コマンドに渡されれるオプションの解析を行うことができます。これで自分の関数に好きなオプションを設定できます。
+自作した関数では、[argparseコマンド](https://fishshell.com/docs/current/cmds/argparse.html#cmd-argparse) を使うことで、コマンドに渡されれるオプションの解析を行うことができます。これで自分の関数に好きなオプションを設定できます。
 
 ```fish
 function mybetterfunc
@@ -147,7 +156,7 @@ function mybetterfunc
 end
 ```
 
-オプション引数が `ggl -h` のように渡された場合には、ローカル変数として `_flag_help` という変数が生成されます。これで関数内でこの変数を使ってオプションの処理を行うことができます。オプション処理は、`if` や `set -q` などを使って処理します(この方法は fish のドキュメントに記載されていますが、他に、もっとよい方法があれば教えて下さい)。
+オプション引数が `ggl -h` のように渡された場合には、ローカル変数として `_flag_help` という変数が生成されます。これで関数内でこの変数を使ってオプションの処理を行うことができます。オプション処理は、`if` や `set -q` などを使って処理します (この方法は fish のドキュメントに記載されていますが、他に、もっとよい方法があれば教えて下さい)。
 
 `argparse` の使い方は、例えば、ヘルプオプションのみを設定したいとして、`argparse 'h/help' -- $argv` とします。`h/help` は `-h` と `--help` という short バージョンと long バージョンの 2 つのオプションを設定することを意味します。そのあとの `-- $argv` はお約束として書きます。これによって関数内で `$argv` を使うときに渡されたオプションの文字列が取り除かれた状態のリストとして使うことができます。さらに、`or return` は引数のパースに失敗した場合のために `argprse` のつぎの行につけておきます。これが基本的な使い方です。
 
@@ -188,7 +197,7 @@ function ggl
 end
 ```
 
-fish では、[一行のコマンドを複数行にできるように改行する手段](https://fishshell.com/docs/current/interactive.html#multiline-editing)があり、`\` で改行できます。これを使ってオプションをわかりやすくグループ化しておきます。
+fish では、[一行のコマンドを複数行にできるように改行する手段](https://fishshell.com/docs/current/interactive.html#multiline-editing) があり、`\` で改行できます。これを使ってオプションをわかりやすくグループ化しておきます。
 
 それでは `ggl` 関数の基本的な機能である検索機能を実装していきます。検索機能といっても、引数に渡したキーワードをブラウザ上で検索するといった簡単な処理です。googler のようにターミナル内で表示してブラウジングするような高度なものではないです。
 
@@ -211,7 +220,7 @@ end
 $ ggl keyword
 ```
 
-そこで URL として使えるように％エンコーディングします。％エンコーディングには fish の[string escape](https://fishshell.com/docs/current/cmds/string-escape.html)コマンドを使用します。`--style=url` オプションで URL エンコーディングが可能です。
+そこで URL として使えるように％エンコーディングします。％エンコーディングには fish の [string escape](https://fishshell.com/docs/current/cmds/string-escape.html) コマンドを使用します。`--style=url` オプションで URL エンコーディングが可能です。
 
 ```shell
 $ string escape --style=url あいうえお
@@ -219,7 +228,7 @@ $ string escape --style=url あいうえお
 # あいうえお という文字列をURL用の%エンコーディングしたもの
 ```
 
-このエンコーディングした文字列を `https://www.google.com/search?q=` のあとに結合して日本語でも検索できるようにします。また、複数の引数を渡せるように各引数をホワイトスペース(空文字)で連結します。最終的には連結した状態の文字列を string escape でエンコーディングします。
+このエンコーディングした文字列を `https://www.google.com/search?q=` のあとに結合して日本語でも検索できるようにします。また、複数の引数を渡せるように各引数をホワイトスペース (空文字) で連結します。最終的には連結した状態の文字列を string escape でエンコーディングします。
 
 ```fish
 set -l baseURL "https://www.google.com/search?q="
@@ -230,7 +239,7 @@ set -l searchURL (string join "&" (string join "" $baseURL $encoding))
 
 URL 生成の処理はだいたい上のようなコードになります。それでは、ひとつずつ説明していきます。
 
-fish では、ローカル変数、グローバル変数、ユニバーサル変数というように[シェル変数に種類が3つ](https://fishshell.com/docs/current/language.html#shell-variables)ありますが、今回は関数内のみで使うの変数を設定するのでローカル変数を変数設定用の[set](https://fishshell.com/docs/current/cmds/set.html)コマンドにローカルオプション `-l` を付けて変数の設定を行います。
+fish では、ローカル変数、グローバル変数、ユニバーサル変数というように [シェル変数に種類が3つ](https://fishshell.com/docs/current/language.html#shell-variables) ありますが、今回は関数内のみで使うの変数を設定するのでローカル変数を変数設定用の [set](https://fishshell.com/docs/current/cmds/set.html) コマンドにローカルオプション `-l` を付けて変数の設定を行います。
 
 ```shell
 # set -l 変数名 値
@@ -241,16 +250,16 @@ echo $foo # huga という文字列が出力される
 
 fish では、変数の値を参照したい場合には `$foo` のように変数名の頭に `$` をつけます。
 
-また、参考記事の「[ターミナルからでもGoogle検索がしたい！](https://s10i.me/whitenote/post/40)」にある bash スクリプトでは、`${prev_dir%/*}` のようなブレースによるパラメーター展開を行っていますが、fish ではそのような bash のブレース展開はサポートしていないので、`string` コマンド系の文字列操作によって代用します(公式ドキュメントでも明示されています)。
+また、参考記事の「[ターミナルからでもGoogle検索がしたい！](https://s10i.me/whitenote/post/40)」にある bash スクリプトでは、`${prev_dir%/*}` のようなブレースによるパラメーター展開を行っていますが、fish ではそのような bash のブレース展開はサポートしていないので、`string` コマンド系の文字列操作によって代用します (公式ドキュメントでも明示されています)。
 
-さらに、fish の[コマンド置換](https://fishshell.com/docs/current/language.html#command-substitution)(command substitution)という、`()` で囲むことによってコマンドの一部に他のコマンドを埋め込むことができる機能を使うと、文字列の操作によって行をいくつか圧縮して書くことができます。以下のように関数の引数である `$argv` を空文字で連結した文字列をローカル変数として設定する際にコマンド置換を使用しています。
+さらに、fish の [コマンド置換](https://fishshell.com/docs/current/language.html#command-substitution)(command substitution) という、`()` で囲むことによってコマンドの一部に他のコマンドを埋め込むことができる機能を使うと、文字列の操作によって行をいくつか圧縮して書くことができます。以下のように関数の引数である `$argv` を空文字で連結した文字列をローカル変数として設定する際にコマンド置換を使用しています。
 
 ```fish
 set -l keyword (string join " " $argv)
 # ()内のコマンドで返ってくる文字列をローカル変数 keyword にセットします
 ```
 
-[string join](https://fishshell.com/docs/current/cmds/string-join.html)コマンドは、第一引数によって第二引数以降の引数の文字列を連結できます。ホワイトスペースを指定するなら `" "` をセパレーターとして第一引数に、そのまま連結したい場合には `""` をセパレーターとして第一引数に渡します。
+[string join](https://fishshell.com/docs/current/cmds/string-join.html) コマンドは、第一引数によって第二引数以降の引数の文字列を連結できます。ホワイトスペースを指定するなら `" "` をセパレーターとして第一引数に、そのまま連結したい場合には `""` をセパレーターとして第一引数に渡します。
 
 今回のケースでは、例えば、日本語で「fish shell 使い方」というように検索したいので、`ggl fish shell 使い方` というように `ggl` コマンドに文字列が 3 つ渡されるような使い方になるはずです。この使い方だと、コマンドの引数は `$argv` にリストの形でセットされます。
 
@@ -293,7 +302,7 @@ function ggl
 end
 ```
 
-fish では、`if 条件; 処理内容; end` で if 節を書くことができるので、検索する単語の引数があった場合にのみブラウザを開くようにします。[test](https://fishshell.com/docs/current/cmds/test.html)コマンドで `encoding` 変数に値があるかどうか調べて、あった場合にのみブラウザを開かせます。`test -n` の `-n` オプションで引数の文字列の長さが 0 でない場合にのみ true を返します。`"$encoding"` で変数の値を文字列にしてテストします。
+fish では、`if 条件; 処理内容; end` で if 節を書くことができるので、検索する単語の引数があった場合にのみブラウザを開くようにします。[test](https://fishshell.com/docs/current/cmds/test.html) コマンドで `encoding` 変数に値があるかどうか調べて、あった場合にのみブラウザを開かせます。`test -n` の `-n` オプションで引数の文字列の長さが 0 でない場合にのみ true を返します。`"$encoding"` で変数の値を文字列にしてテストします。
 
 これで引数が無い場合には次のようなコメントが出力されるようになります。
 
@@ -409,7 +418,7 @@ URL encoding: how%20to%20use%20fish%20shell
 Search URL  : https://www.google.com/search?q=how%20to%20use%20fish%20shell&lr=lang_en&tbm=isch
 ```
 
-これで、基本的なオプション処理は完了しました。いくつかのオプションを排他的にして、例えば、ヘルプオプション(`-h`)とテストオプション(`-t`)が両方一緒に使えないようにします。これに `argparse` コマンドの `-x` オプションで実現できます。
+これで、基本的なオプション処理は完了しました。いくつかのオプションを排他的にして、例えば、ヘルプオプション (`-h`) とテストオプション (`-t`) が両方一緒に使えないようにします。これに `argparse` コマンドの `-x` オプションで実現できます。
 
 具体的には、ブラウザオプションについてそれぞれ排他的になるように `-x 'v,c,s,f'` というように設定します。テストとヘルプのユーティリティオプションが排他的になるように `-x 't,h'` というように設定します。
 
@@ -431,7 +440,7 @@ $ ggl -th
 ggl: Mutually exclusive flags 'h/help' and `t/test` seen
 ```
 
-あとは、追加で完全一致検索のオプション(`p/perfect`)と個人最適化検索無効のオプション(`n/nonperson`)もつけておきます。google での完全一致(exact match)は引用符(`""`)で単語を囲んで検索することで実現します。Personalized サーチを無効にするにはパラメータ `pws=0` をクエリに連結します。
+あとは、追加で完全一致検索のオプション (`p/perfect`) と個人最適化検索無効のオプション (`n/nonperson`) もつけておきます。google での完全一致 (exact match) は引用符 (`""`) で単語を囲んで検索することで実現します。Personalized サーチを無効にするにはパラメータ `pws=0` をクエリに連結します。
 
 ```fish
 set -q _flag_english; and set _flag_english "lr=lang_en"
@@ -456,11 +465,10 @@ set -l searchURL (string join "&" (string join "" $baseURL $encoding) $_flag_eng
 
 ## 追記
 
-gist から更に改造したコードを Github のリポジトリでプロジェクトとして公開しました。[fisher](https://github.com/jorgebucaran/fisher)を使ってインストールできますので、使ってみてください。
+gist から更に改造したコードを Github のリポジトリでプロジェクトとして公開しました。[fisher](https://github.com/jorgebucaran/fisher) を使ってインストールできますので、使ってみてください。
 
 https://github.com/yo-goto/ggl.fish
 
 ```shell
 fisher install yo-goto/ggl.fish
 ```
-
