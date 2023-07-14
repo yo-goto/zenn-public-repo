@@ -48,7 +48,7 @@ https://hackernoon.com/javascript-v8-engine-explained-3f940148d4ef
 
 非同期処理のイベントループで考えるべきものとして V8 で重要なのはヒープとコールスタックです。V8 エンジンにはこのヒープとコールスタックが存在しています。
 
-MDN のドキュメントのイベントループの項目で示されているように、イベントループでコールスタックとヒープは大きな役割と占めています。
+MDN のドキュメントのイベントループの項目で示されているように、イベントループでコールスタックとヒープは大きな役割を占めています。
 
 ![Stack heap](/images/js-async/the_javascript_runtime_environment_example.jpg)*[並行モデルとイベントループ - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/EventLoop)より引用*
 
