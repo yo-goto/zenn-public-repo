@@ -85,11 +85,11 @@ promise
 
 `resolve()` や `reject()` でコールバック関数内の処理は止まりません。ですが、『[Promise の基本概念](a-epasync-promise-basic-concept)』のチャプターで言ったとおり、Promise インスタンスが一度 Settled (Fulfilled または Rejected 状態) になったらもう二度とそのインスタンスの状態は変わりません。従って、一度状態が変化したら、いくら `resolve()` や `reject()` を呼び出しても何も効果を得ることはできません。解決値が変わったり、例外が発生することもありません。
 
-`resolve()` や `reject()` は Promise インスタンスの状態を変えるの試みるだけです。
+`resolve()` や `reject()` は Promise インスタンスの状態を変えるのを試みるだけです。
 
 ということで、`resolve()` と `reject()` 関数の先に呼び出されたもののみがその Promise インスタンスの状態へ影響を与えます。ということで、上記コードで最初に呼び出された `resolve("😁 履行する [1]");` のみが効果があります。それゆえ、`then()` メソッドのコールバックで出力される履行値が、`😁 履行する [1]` となっています。
 
-`resolve()` や `reject()` で確実に止めたいなら、`return` するか `new Error()` で例外発生させます。
+`resolve()` や `reject()` で確実に止めたいなら、`return` するか `new Error()` で例外を発生させます。
 
 `reject()` 関数では引数に `new Error()` を取ることで例外を発生させると確実に止めることができます。
 
