@@ -149,7 +149,7 @@ console.log("🦖 [2]");
 🔥 [4] 2
 ```
 
-されこれを踏まえて練習用にコールバックから Promise を返すタイプ Promise chain を２つ競争させるコードを用意しました。この実行順序を予測してみてください。
+されこれを踏まえて練習用にコールバックから Promise を返すタイプの Promise chain を２つ競争させるコードを用意しました。この実行順序を予測してみてください。
 
 ```js
 // returnPromiseFromThenCallback.js
