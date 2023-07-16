@@ -30,9 +30,9 @@ new Promise((resolve, reject) => {
   .finally(() => console.log("最後に実行される"));
 ```
 
-上のように `reject()` 関数によって Promise インスタンスが Rejected 状態になった場合、チェインしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックが実行されて例外を捕捉します。
+上のように `reject()` 関数によって Promise インスタンスが Rejected 状態になった場合、チェーンしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックが実行されて例外を捕捉します。
 
-逆に、`resolve()` 関数によって Promise インスタンスが Fulfilled 状態に場合には、`catch()` メソッドのコールバックは実行されません。
+逆に、`resolve()` 関数によって Promise インスタンスが Fulfilled 状態になった場合には、`catch()` メソッドのコールバックは実行されません。
 
 一方、`finally()` メソッドは Promise インスタンスが Fulfilled 状態でも Rejected 状態でも関係なく、登録しているコールバックが実行されます。
 
@@ -325,7 +325,7 @@ identity 関数と thrower 関数の説明は仕様の外での解説でよく�
 
 仕様について解説してもここでは何を言ってるのか分かりづらいと思うので、内部置換されるコールバック関数についてはそのまま `(x) => x` という identity 関数と `(x) => { throw x; }` という thrower 関数であると考えておけばよいです。関数の実体が気になる場合には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) と [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 操作の仕様を確認するようにしてください。
 
-それでは上記の identity 関数と thrower 関数で自動置換されるというのはどのようなことがイメージできるようにサンプルを使って確認します。
+それでは上記の identity 関数と thrower 関数で自動置換されるというのはどのようなことかイメージできるようにサンプルを使って確認します。
 
 まず `then` メソッドの場合ですが、`then(onFulfilled, onRejected)` の呼び出しで引数となるコールバック関数が両方とも省略されて、`undefined` になっている場合には `onFulfilled` は identity 関数に置換され、`onRejected` は thrower 関数に置換されます。
 
