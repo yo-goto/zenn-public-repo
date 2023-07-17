@@ -300,7 +300,7 @@ Resolved but
 
 この "Resolved but" という文字列は `Promise.resolve("Resolved but").then(value => console.log(value))` で履行状態の Promise の解決値が Promise chain で `value` として繋がれているので、このタイミングでその値が出力されています。
 
-最後に `Promise.reject()` を使って拒否状態にした Promise インスタンスについてエラー補足などを行っていなかったので、未補足であるとして Deno の場合は最後に次のような出力が行われます。
+最後に `Promise.reject()` を使って拒否状態にした Promise インスタンスについてエラー捕捉などを行っていなかったので、未捕捉であるとして Deno の場合は最後に次のような出力が行われます。
 
 ```sh
 ❯ deno run consolePromise.js

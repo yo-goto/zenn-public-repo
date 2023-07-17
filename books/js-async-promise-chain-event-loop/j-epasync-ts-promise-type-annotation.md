@@ -1378,7 +1378,7 @@ async function dTimer(msg, time, option = {}) {
 }
 ```
 
-今までは返り値の型がシンプルなものしか見てきませんでしたが、この場合には例外補足の際に分岐するので、それぞれの節で返される値の型を合成する必要がでてきます。
+今までは返り値の型がシンプルなものしか見てきませんでしたが、この場合には例外捕捉の際に分岐するので、それぞれの節で返される値の型を合成する必要がでてきます。
 
 ```ts:TypeScript
 import {
@@ -1507,7 +1507,7 @@ const tuple: [number, string, boolean] = [42, "文字列", true];
 // 値の並びも number, string, boolean の順番に決まっている
 ```
 
-タプル型の値を返すことで、async 関数利用時の try-catch を大量に書くのを防ぎます。基本は async 関数に例外補足を閉じ込めて標準化してデータフェッチの成功時には `[data, null]` を返し、失敗時には `[null, error]` を返すようにするというパターンです。
+タプル型の値を返すことで、async 関数利用時の try-catch を大量に書くのを防ぎます。基本は async 関数に例外捕捉を閉じ込めて標準化してデータフェッチの成功時には `[data, null]` を返し、失敗時には `[null, error]` を返すようにするというパターンです。
 
 ```js:JavaScript
 async function fetcher(url) {
