@@ -446,7 +446,7 @@ console.log("🦖 [2] MAINLINE: End");
 
 それではマイクロタスクについて考えてみましょう。
 
-まずは、`Promise.resolve().then()` で同期的にマイクロタスクが発行されて、その次の肝心の async function の即時実行でも、上の変換で見たように関数から返えされる Promise インスタンス自体は直ちに履行状態となるので、`then()` メソッドのコールバックがマイクロタスクとしてマイクロタスクキューに送られます。次の `Promise.resolve.then()` メソッドのコールバックも同期的にマイクロタスクを発行してキューへ送られます。
+まずは、`Promise.resolve().then()` で同期的にマイクロタスクが発行されて、その次の肝心の async function の即時実行でも、上の変換で見たように関数から返される Promise インスタンス自体は直ちに履行状態となるので、`then()` メソッドのコールバックがマイクロタスクとしてマイクロタスクキューに送られます。次の `Promise.resolve.then()` メソッドのコールバックも同期的にマイクロタスクを発行してキューへ送られます。
 
 スクリプト評価による同期処理がすべて終わり、コールスタックからグローバルコンテキストがポップして破棄されることで、コールスタックが空になるので、マイクロタスクのチェックポイントとなります。マイクロタスクキューの先頭にあるものから順番にすべて処理されていきます。
 
@@ -1249,7 +1249,7 @@ https://zenn.dev/qnighy/articles/3a999fdecc3e81#%E9%9D%9E%E5%90%8C%E6%9C%9F%E3%8
 ```js:fooW
 async function fooPrevious() {
   console.log("👍 MAINLINE: Sync process in async function!!");
-  return await Promise.reslve(42);
+  return await Promise.resolve(42);
 }
 
 async function fooNext() {
@@ -1306,7 +1306,7 @@ function promiseResolve(v) {
 ```js:fooW
 async function fooPrevious() {
   console.log("👍 MAINLINE: Sync process in async function!!");
-  return await Promise.reslve(42);
+  return await Promise.resolve(42);
   // await 式ごとに確実にマイクロタスクが１つ発生するが、
   // 評価対象の Promise インスタンスにチェーンはないので１つですむ
   // microtask = 1
