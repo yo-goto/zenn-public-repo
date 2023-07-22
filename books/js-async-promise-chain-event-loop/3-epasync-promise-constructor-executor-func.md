@@ -241,7 +241,7 @@ hello zenn
 Promise status: Promise { <pending> }
 ```
 
-`resolve` や `reject` を呼び出さないので、Promise インスタンスは永遠に待機(Pending)状態であり、`then()` メソッドで登録しておいたコールバック関数は実行されませんし、エラーも補足されません。
+`resolve` や `reject` を呼び出さないので、Promise インスタンスは永遠に待機(Pending)状態であり、`then()` メソッドで登録しておいたコールバック関数は実行されませんし、エラーも捕捉されません。
 :::
 
 ## 関数式とアロー関数の補足
@@ -253,7 +253,7 @@ Promise status: Promise { <pending> }
 ```js
 function myFunc() {
   console.log("arg1:", arg1);
-  console.log("arg2:", arg1);
+  console.log("arg2:", arg2);
 }
 
 myFunc("hello", "zenn");
@@ -425,7 +425,7 @@ function Home() {
 ```
 :::
 
-あとはコールバック関数にアロー関数を渡す際になどでたまに見かける書き方として、引数をあえて「使用しないアンダースコア１つ」にして `()` を書かずに文字数を少なくするというものがあります。
+あとはコールバック関数にアロー関数を渡す際などでたまに見かける書き方として、引数をあえて「使用しないアンダースコア１つ」にして `()` を書かずに文字数を少なくするというものがあります。
 
 ```js
 const zeroParamFn = _ => {

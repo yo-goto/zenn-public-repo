@@ -70,7 +70,7 @@ JS Visualizer を使い始めた当初は理解できていませんでしたが
 以下はブラウザ環境における疑似コードでのイベントループのループの仕組みです。
 
 :::message alert
-『[それぞれのイベントループ](c-epasync-what-event-loop)』でより詳しく様々な環境のイベントループについて新しい疑似コードで解説しました。新しく解説するブラウザ環境の疑似コードは一部代わりますが、本質は以下のものと変わらないので大丈夫です。もとの疑似コードも残しておきます。
+『[それぞれのイベントループ](c-epasync-what-event-loop)』でより詳しく様々な環境のイベントループについて新しい疑似コードで解説しました。新しく解説するブラウザ環境の疑似コードは一部変わりますが、本質は以下のものと変わらないので大丈夫です。もとの疑似コードも残しておきます。
 :::
 
 ```js:ブラウザ環境のイベントループ
@@ -79,7 +79,7 @@ while (eventLoop.waitForTask()) {
   const taskQueue = eventLoop.selectTaskQueue();
   // このループ一周を tick と呼ぶ
   if (taskQueue.hasNextTask()) {
-    // タスクキューある単一のタスクを処理する
+    // タスクキューにある単一のタスクを処理する
     taskQueue.processNextTask();
   }
 
@@ -87,7 +87,7 @@ while (eventLoop.waitForTask()) {
   const microtaskQueue = eventLoop.microTaskQueue;
   // このループ一周を microtick と呼ぶ
   while (microtaskQueue.hasNextMicrotask()) {
-    // マイクロタスクキューにあるすべてのマイクロを処理する
+    // マイクロタスクキューにあるすべてのマイクロタスクを処理する
     microtaskQueue.processNextMicrotask();
   }
 

@@ -446,7 +446,7 @@ console.log("🦖 [2] MAINLINE: End");
 
 それではマイクロタスクについて考えてみましょう。
 
-まずは、`Promise.resolve().then()` で同期的にマイクロタスクが発行されて、その次の肝心の async function の即時実行でも、上の変換で見たように関数から返えされる Promise インスタンス自体は直ちに履行状態となるので、`then()` メソッドのコールバックがマイクロタスクとしてマイクロタスクキューに送られます。次の `Promise.resolve.then()` メソッドのコールバックも同期的にマイクロタスクを発行してキューへ送られます。
+まずは、`Promise.resolve().then()` で同期的にマイクロタスクが発行されて、その次の肝心の async function の即時実行でも、上の変換で見たように関数から返される Promise インスタンス自体は直ちに履行状態となるので、`then()` メソッドのコールバックがマイクロタスクとしてマイクロタスクキューに送られます。次の `Promise.resolve.then()` メソッドのコールバックも同期的にマイクロタスクを発行してキューへ送られます。
 
 スクリプト評価による同期処理がすべて終わり、コールスタックからグローバルコンテキストがポップして破棄されることで、コールスタックが空になるので、マイクロタスクのチェックポイントとなります。マイクロタスクキューの先頭にあるものから順番にすべて処理されていきます。
 
@@ -1249,7 +1249,7 @@ https://zenn.dev/qnighy/articles/3a999fdecc3e81#%E9%9D%9E%E5%90%8C%E6%9C%9F%E3%8
 ```js:fooW
 async function fooPrevious() {
   console.log("👍 MAINLINE: Sync process in async function!!");
-  return await Promise.reslve(42);
+  return await Promise.resolve(42);
 }
 
 async function fooNext() {
@@ -1306,7 +1306,7 @@ function promiseResolve(v) {
 ```js:fooW
 async function fooPrevious() {
   console.log("👍 MAINLINE: Sync process in async function!!");
-  return await Promise.reslve(42);
+  return await Promise.resolve(42);
   // await 式ごとに確実にマイクロタスクが１つ発生するが、
   // 評価対象の Promise インスタンスにチェーンはないので１つですむ
   // microtask = 1
@@ -1379,7 +1379,7 @@ console.log("🦖 [3] MAINLINE: End");
 
 await 式で Rejected 状態の Promise インスタンスを評価すると、例外が throw されます。
 
-try/catch で補足しない場合は async 関数内の処理がそこで終わり、以降の処理は実行されません。さらに、async 関数自体から返ってくる Promise インスタンスも Rejected 状態となるので、次のように chaining した場合は、`catch()` で例外が補足されます。
+try/catch で捕捉しない場合は async 関数内の処理がそこで終わり、以降の処理は実行されません。さらに、async 関数自体から返ってくる Promise インスタンスも Rejected 状態となるので、次のように chaining した場合は、`catch()` で例外が捕捉されます。
 
 ```js
 (async function fooR() {
@@ -1471,7 +1471,7 @@ async 関数では、try/catch/finally の構文が使用できるので、async
   .finally(() => console.log("これは実行される"));
 ```
 
-上のようなコードの場合、try/catch で例外は補足されており、async 関数自体から返ってくる Promise インスタンスは履行状態となるため、チェーンした `then()` メソッドのコールバックは実行されて、`catch()` メソッドのコールバックは実行されないことに注意してください。
+上のようなコードの場合、try/catch で例外は捕捉されており、async 関数自体から返ってくる Promise インスタンスは履行状態となるため、チェーンした `then()` メソッドのコールバックは実行されて、`catch()` メソッドのコールバックは実行されないことに注意してください。
 
 V8 の内部変換で考えてみるとこんな感じでしょうか。
 
@@ -1498,14 +1498,14 @@ V8 の内部変換で考えてみるとこんな感じでしょうか。
     suspend(«fooRX», implicit_promise);
 
   } catch (err) {
-    // throw された例外を補足するところから再開
+    // throw された例外を捕捉するところから再開
     console.log("例外発生", err.stack);
   } finally {
      cosnole.log("最後に実行できる");
   }
 ```
 
-基本はすべて同じです。resume(再開) ではなく throw を告げるマイクロタスクが発行されることで、処理再開となるポイントでは throw された例外が補足されるところからとなります。
+基本はすべて同じです。resume(再開) ではなく throw を告げるマイクロタスクが発行されることで、処理再開となるポイントでは throw された例外が捕捉されるところからとなります。
 
 では実際のコードで実行順番を考えてみます。
 
@@ -1539,7 +1539,7 @@ Promise.resolve()
 console.log("🦖 [2] MAINLINE: End");
 ```
 
-今回は、async 関数内の try/catch によって例外補足されているため、async 関数から返ってくる Promise インスタンス自体は Fulfilled であり、チェーンされた `then()` メソッドのコールバックも実行されます。`catch()` メソッドのコールバックは実行されませんが、マイクロタスクは発行されるので注意してください。
+今回は、async 関数内の try/catch によって例外捕捉されているため、async 関数から返ってくる Promise インスタンス自体は Fulfilled であり、チェーンされた `then()` メソッドのコールバックも実行されます。`catch()` メソッドのコールバックは実行されませんが、マイクロタスクは発行されるので注意してください。
 
 実際に実行すると次の出力を得ます。
 

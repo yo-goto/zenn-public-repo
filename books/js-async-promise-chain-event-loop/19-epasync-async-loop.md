@@ -513,7 +513,7 @@ urls.forEach(async (url) => {
     .then((res) => res.json())
     .then((json) => console.log(json))
     .catch((err) => console.error(err));
-  // このコールバックの実行から返される Promise インスタンスが補足できない
+  // このコールバックの実行から返される Promise インスタンスが捕捉できない
 });
 ```
 
@@ -575,7 +575,7 @@ const urls = [
 
 async callback は `forEach()` ではなく、`map()` メソッドでならちゃんと使うことができます。
 
-`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスの配列をしっかりと作成できます。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで見たとおり、async 関数のボディで何も `return` していなくても `undefined` で履行する Promise インスタンスが返されるので、`map()` メソッドはコールバック関数の返り値としてその Promise インスタンスを補足します。
+`map()` メソッドは渡したコールバック関数の返り値で新しい配列を作成しますが、async callback の返り値は Promise インスタンスですから、Promise インスタンスの配列をしっかりと作成できます。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで見たとおり、async 関数のボディで何も `return` していなくても `undefined` で履行する Promise インスタンスが返されるので、`map()` メソッドはコールバック関数の返り値としてその Promise インスタンスを捕捉します。
 
 ```js
 // Promise インスタンスの配列を作成する

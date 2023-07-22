@@ -673,7 +673,7 @@ Promise.resolve(42)
 
 `Promise.resolve(42)` は履行した promise インスタンスなので、chain されている `then()` メソッドのコールバック関数は直ちにマイクロタスクとして発行されます。このときのマイクロタスクの実体である Job は NewPromiseReactoinJob 抽象操作で作成されています。これが一個目のマイクロタスクです。
 
-イベントループでコールバックがマイクロタスクが処理されるとき、`then` メソッドの実行であらかじめ CreateResolutionFunctions で作成された `resolve` 関数が Thenable な値である `Promise.reslve(42 + 1)` を引数 `resolution` として使って呼び出されます。
+イベントループでコールバックがマイクロタスクが処理されるとき、`then` メソッドの実行であらかじめ CreateResolutionFunctions で作成された `resolve` 関数が Thenable な値である `Promise.resolve(42 + 1)` を引数 `resolution` として使って呼び出されます。
 
 ```js
 // このような関数の実行が起きる

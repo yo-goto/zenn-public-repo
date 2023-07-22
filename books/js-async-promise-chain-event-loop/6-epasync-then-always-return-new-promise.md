@@ -86,7 +86,7 @@ console.log("🦖 [H] Sync");
 
 さて、ここまでは前のコードと同じですね。
 
-ここ重要なのは「**`then()` メソッドは常に新しい Promise インスタンスを返す**」ということです。
+ここで重要なのは「**`then()` メソッドは常に新しい Promise インスタンスを返す**」ということです。
 
 - `returnPromise("1st Promise", "B")` によって返ってくる Promise インスタンスを promise1 とします
 - `returnPromise("1st Promise", "B").then(cb1)` 、つまり `promise1.then(cb1)` によって返ってくる Promise インスタンスを `promise2` とします
@@ -109,7 +109,7 @@ Promise の状態 (State) と運命 (Fate) などの基本概念については�
 
 `Promise.resolve()` や `Promise.reject()` などの静的メソッドで状態を決めて初期化しない限り、Promise インスタンスは基本的に待機 (pending) 状態から始まります。Promise chain では `then()` メソッドで返ってくる Promise インスタンスの状態が待機状態から履行状態へと変わった時点で次の `then()` メソッドで登録したコールバックがマイクロタスクキューへと送られます。
 
-そして、`then(cb)` で返ってくる Promise インスタンスが履行状態へと移行するのは登録されているコールバック `cb` が実行が完了した時点です。
+そして、`then(cb)` で返ってくる Promise インスタンスが履行状態へと移行するのは登録されているコールバック `cb` の実行が完了した時点です。
 
 従って、`returnPromise("1st Promise", "B").then(cb1)` で返ってくる Promise インスタンスはイベントループのこの時点で登録しているコールバック `cb1` がマイクロタスクキューへと送られただけで処理は完了していませんので、まだ待機状態となります。
 
@@ -210,7 +210,7 @@ console.log("[Rejected status]", Promise.reject("Rejected"))
 
 １つずつどうなるかを考えてみます。
 
-`new Promise(executor)` では、`executor` 関数自体は「同期的」に実行されるという話でしが。この場合は内部で直ちに `resolve()` 関数が呼ばれるので、作成した Promise インスタンスは履行 (Fulfilled) 状態となります。従って、コンソールに出力される Promise インスタンスは履行状態のものとなります。というわけで次の出力をまずは得ます。
+`new Promise(executor)` では、`executor` 関数自体は「同期的」に実行されるという話でした。この場合は内部で直ちに `resolve()` 関数が呼ばれるので、作成した Promise インスタンスは履行 (Fulfilled) 状態となります。従って、コンソールに出力される Promise インスタンスは履行状態のものとなります。というわけで次の出力をまずは得ます。
 
 ```sh
 ❯ deno run consolePromise.js
@@ -300,7 +300,7 @@ Resolved but
 
 この "Resolved but" という文字列は `Promise.resolve("Resolved but").then(value => console.log(value))` で履行状態の Promise の解決値が Promise chain で `value` として繋がれているので、このタイミングでその値が出力されています。
 
-最後に `Promise.reject()` を使って拒否状態にした Promise インスタンスについてエラー補足などを行っていなかったので、未補足であるとして Deno の場合は最後に次のような出力が行われます。
+最後に `Promise.reject()` を使って拒否状態にした Promise インスタンスについてエラー捕捉などを行っていなかったので、未捕捉であるとして Deno の場合は最後に次のような出力が行われます。
 
 ```sh
 ❯ deno run consolePromise.js

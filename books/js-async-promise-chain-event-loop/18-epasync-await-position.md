@@ -767,7 +767,7 @@ setTimeout(() => {
 }, 500);
 ```
 
-500 ミリ秒経過後に `fetch()` によるデータフェッチが完了していなければ、`fetch()` の第二引数に渡した `signal` を介して停止命令が受信されて処理がキャンセルされるます。その際には非同期例外として DOMException が throw されるので、chain の `catch()` メソッドで補足できます。
+500 ミリ秒経過後に `fetch()` によるデータフェッチが完了していなければ、`fetch()` の第二引数に渡した `signal` を介して停止命令が受信されて処理がキャンセルされるます。その際には非同期例外として DOMException が throw されるので、chain の `catch()` メソッドで捕捉できます。
 
 これを実行すると筆者の通信環境ではある程度の確率で停止できます。
 
@@ -850,7 +850,7 @@ raceの結果: 100[ms]のタイマー
 
 当たり前ですが一番短い 100 ミリ秒のタイマーが最初に完了するため、このタイマーが完了次第コンソールに完了の結果が出力されます。そして、`const winner = await Promise.race(promises);` の直後に `controller.abort();` ですべてのタイマーをキャンセルするように指示しているので他のタイマーも含めてすべてのタイマーが `abort` のイベントを受け取り内部的に `clearTimeout()` が呼ばれてタイマー処理がキャンセルされます。
 
-`reject(new DOMException("Delay was aborted.", "AbortError"))` によって `delay()` から返る Promise インスタンスは拒否状態となります。`dTimer` 内部で例外の補足などを行っていないため次のように try-catch で async 関数内で例外補足できます。
+`reject(new DOMException("Delay was aborted.", "AbortError"))` によって `delay()` から返る Promise インスタンスは拒否状態となります。`dTimer` 内部で例外の捕捉などを行っていないため次のように try-catch で async 関数内で例外捕捉できます。
 
 ```js
 async function dTimer(msg, time, option = {}) {

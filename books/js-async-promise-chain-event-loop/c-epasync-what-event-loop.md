@@ -137,7 +137,7 @@ https://docs.google.com/document/d/11N2WTV3M0IkZ-kQlKWlBcwkOkKTCuLXGVNylK5E2zvc/
 - [Blink Scheduler](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/scheduler/README.md)
 - [Scheduling docs](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/platform/scheduler/links.md)
 
-Chrome ブラウザ環境では、環境実装のルールとしてどのようにタスクキューを優先するかを Blink scheduler によって選択させているようです。内部的にどのような順位になっているからを知りたい場合は上記ドキュメントを参照してください。
+Chrome ブラウザ環境では、環境実装のルールとしてどのようにタスクキューを優先するかを Blink scheduler によって選択させているようです。内部的にどのような順位になっているかを知りたい場合は上記ドキュメントを参照してください。
 
 https://docs.google.com/a/google.com/document/d/1SWpjgtwIaL_hIcbm6uGJKZ8o8R9xYre-yG0VDOjFBxU/edit
 
@@ -719,7 +719,7 @@ console.log("[1]"); // 同期処理
 [6]
 ```
 
-さらに注意点として、１つのフェーズでは特定数の Task が実行されて、次のフェーズに行きます。すべてではなく特定数(最大制限)があるのは、１つのフェーズのタスク(Task)多すぎると次のフェーズにいつまでも移行できなくなるからです。では実行されずに残されたタスクはどうなるかというと一旦保留にして、次のイベントループにおいて実行されます。ただし、タスクだけは常に完全にキューが空になるまで実行されます。
+さらに注意点として、１つのフェーズでは特定数の Task が実行されて、次のフェーズに行きます。すべてではなく特定数(最大制限)があるのは、１つのフェーズのタスク(Task)が多すぎると次のフェーズにいつまでも移行できなくなるからです。では実行されずに残されたタスクはどうなるかというと一旦保留にして、次のイベントループにおいて実行されます。ただし、タスクだけは常に完全にキューが空になるまで実行されます。
 
 従って、Node 環境のイベントループの疑似コードは最終的に次のようになります。
 

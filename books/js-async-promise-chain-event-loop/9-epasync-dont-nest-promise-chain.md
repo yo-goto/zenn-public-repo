@@ -20,7 +20,7 @@ aliases: Promise本『Promise chain はネストさせない』
 
 前のチャプターでは、`then()` メソッドのコールバックにおいて、Promise インスタンスを `return` した場合「Promise インスタンスの `resolve` に使われた値は次の `then()` メソッドのコールバック関数の引数として渡される」という話でした。
 
-一方、次のように場合はどうなるでしょうか？
+一方、次のような場合はどうなるでしょうか？
 `return` しているものが `returnPromise().then(cb)` となっています。
 
 ```js
@@ -71,7 +71,7 @@ returnPromise('3rd Promise', '3')
 console.log('🦖 [4] Sync');
 ```
 
-基本的には今までの流れと代りません。また圧縮して書いてみます。
+基本的には今までの流れと変りません。また圧縮して書いてみます。
 
 ```js
 console.log("🦖 [1] Sync");
@@ -440,7 +440,7 @@ returnPromise("3rd Promise", "[3]")
 console.log("🦖 [4] Sync");
 ```
 
-結果はこのようになり、ネストした状態のものよりも圧倒的に見やすく、流れが分かりなりました。
+結果はこのようになり、ネストした状態のものよりも圧倒的に見やすく、流れが分かりやすくなりました。
 
 ```js
 // promiseNestShallow.js

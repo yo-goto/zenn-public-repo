@@ -266,7 +266,7 @@ console.log("🦖 [H] Sync");
 - ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
 - ⚠️ 注意: JS Visualizer では可視化されていないマイクロタスクが存在しています
 
-Promise インスタンスを返すような処理を `return` しない場合に事項順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise chain を伸ばしています。実行順番を予想してみてください。
+Promise インスタンスを返すような処理を `return` しない場合に実行順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise chain を伸ばしています。実行順番を予想してみてください。
 
 ```js
 // promiseShouldBeReturnedNest-3rd.js

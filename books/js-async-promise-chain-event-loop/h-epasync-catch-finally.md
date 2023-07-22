@@ -30,9 +30,9 @@ new Promise((resolve, reject) => {
   .finally(() => console.log("最後に実行される"));
 ```
 
-上のように `reject()` 関数によって Promise インスタンスが Rejected 状態になった場合、チェインしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックが実行されて例外を捕捉します。
+上のように `reject()` 関数によって Promise インスタンスが Rejected 状態になった場合、チェーンしている `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックが実行されて例外を捕捉します。
 
-逆に、`resolve()` 関数によって Promise インスタンスが Fulfilled 状態に場合には、`catch()` メソッドのコールバックは実行されません。
+逆に、`resolve()` 関数によって Promise インスタンスが Fulfilled 状態になった場合には、`catch()` メソッドのコールバックは実行されません。
 
 一方、`finally()` メソッドは Promise インスタンスが Fulfilled 状態でも Rejected 状態でも関係なく、登録しているコールバックが実行されます。
 
@@ -131,7 +131,7 @@ Promise.reject(42)
 
 `finally()` から返された promise は元の promise と同じ理由で拒否されます。
 
-このように `finally()` で Promise の拒否理由を受け渡すことができるということは、`finally()` のハンドラを追加してもプロミスの拒否を処理したことにはならない、ということになるので注意してください。つまり、`catch` で補足していない場合には未処理の拒否が残ることになります。
+このように `finally()` で Promise の拒否理由を受け渡すことができるということは、`finally()` のハンドラを追加してもプロミスの拒否を処理したことにはならない、ということになるので注意してください。つまり、`catch` で捕捉していない場合には未処理の拒否が残ることになります。
 
 :::message alert
 拒否されたプロミスが `finally()` ハンドラしか持たない場合、JavaScript ランタイムは依然として未処理のプロミス拒否に関するメッセージを出力します。そのメッセージを回避するためには、`then()` や `catch()` で拒否ハンドラを追加する必要があります。
@@ -182,7 +182,7 @@ Promise.resolve()
 console.log("🦖 [J-2] MAINLINE: End");
 ```
 
-既に拒否状態の Promise インスタンスに対しては `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックによって例外補足されます。ただし、マイクロタスクは発行されます。
+既に拒否状態の Promise インスタンスに対しては `then()` メソッドのコールバックは実行されずに、`catch()` メソッドのコールバックによって例外捕捉されます。ただし、マイクロタスクは発行されます。
 
 実行順番は次のようになります。
 
@@ -325,7 +325,7 @@ identity 関数と thrower 関数の説明は仕様の外での解説でよく�
 
 仕様について解説してもここでは何を言ってるのか分かりづらいと思うので、内部置換されるコールバック関数についてはそのまま `(x) => x` という identity 関数と `(x) => { throw x; }` という thrower 関数であると考えておけばよいです。関数の実体が気になる場合には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) と [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 操作の仕様を確認するようにしてください。
 
-それでは上記の identity 関数と thrower 関数で自動置換されるというのはどのようなことがイメージできるようにサンプルを使って確認します。
+それでは上記の identity 関数と thrower 関数で自動置換されるというのはどのようなことかイメージできるようにサンプルを使って確認します。
 
 まず `then` メソッドの場合ですが、`then(onFulfilled, onRejected)` の呼び出しで引数となるコールバック関数が両方とも省略されて、`undefined` になっている場合には `onFulfilled` は identity 関数に置換され、`onRejected` は thrower 関数に置換されます。
 
@@ -384,7 +384,7 @@ Promise.reject(42)
 
 先程の例と同じ用に `then` のコールバックは両者ともに省略されて `undefined` なので、関数の置換が起きて `then(x => x, x => { throw x; })` として呼び出されます。
 
-chain 元の Promise インスタンスは拒否理由 `42` で拒否されているため、`.then()` では拒否用のコールバック関数として内部置換された `x => { throw x; }` の thrower 関数がマイクロタスクとして発行されます。値 `42` が例外として throw されますが、`.catch(x => console.log(x))` で補足されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
+chain 元の Promise インスタンスは拒否理由 `42` で拒否されているため、`.then()` では拒否用のコールバック関数として内部置換された `x => { throw x; }` の thrower 関数がマイクロタスクとして発行されます。値 `42` が例外として throw されますが、`.catch(x => console.log(x))` で捕捉されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
 
 次に一番目の `then` メソッドを `catch` にしてみます。`catch(onRejected)` は内部的に `then(undefined, onRejected)` を呼び出すので、`undefined` は置換されて結局 `then(x => x, x => {throw x; })` が呼び出されます。
 
@@ -394,6 +394,6 @@ Promise.reject(42)
   .catch(x => console.log(x)); // => 42
 ```
 
-chain 元の Promise インスタンスは拒否理由 `42` で拒否されているため、`.catch()` では拒否用のコールバック関数として内部置換された `x => { throw x; }` の thrower 関数がマイクロタスクとして発行されます。値 `42` が例外として throw されますが、`.catch(x => console.log(x))` で補足されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
+chain 元の Promise インスタンスは拒否理由 `42` で拒否されているため、`.catch()` では拒否用のコールバック関数として内部置換された `x => { throw x; }` の thrower 関数がマイクロタスクとして発行されます。値 `42` が例外として throw されますが、`.catch(x => console.log(x))` で捕捉されて次のマイクロタスクとなる `x => console.log(x)` でコンソールに例外値 `42` が出力されます。
 
 コールバック関数が実行されていないように見えたとしても、Promise chain において履行値や拒否理由の伝達が可能となっているのは、このように内部置換された identity 関数や thrower 関数がマイクロタスクとして発行されてイベントループで処理されているからです。
