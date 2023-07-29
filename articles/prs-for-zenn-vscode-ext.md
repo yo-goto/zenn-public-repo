@@ -130,7 +130,7 @@ https://github.com/zenn-dev/zenn-vscode-extension/pull/50
 
 この PR は本のプレビュー画面におけるバグの問題の修正についてでした (いきなり新規機能を提案するのは厳しいかもしれないと思い、バグから取り組むことにしました)。
 
-この問題自体は気づきずらい問題ではあるのですが、本の設定を行う `config.yaml` ファイルにおいてサマリー項目が複数行で改行等がある場合に VSCode Web 拡張の方で zenn-cli や web 上での表示と異なるという問題がありました。
+この問題自体は気づきづらい問題ではあるのですが、本の設定を行う `config.yaml` ファイルにおいてサマリー項目が複数行で改行等がある場合に VSCode Web 拡張の方で zenn-cli や web 上での表示と異なるという問題がありました。
 
 ![改行問題1](/images/zenn-vscode-ext/img_zenn-cli-vs-vscode-ext-1.jpg)
 
@@ -493,4 +493,4 @@ https://zenn-dev.github.io/zenn-docs-for-developers/basics/overview
 
 自分自身は Zenn で育った (育ち中) ので、その成果をこういった形で還元していけるといいなと思ってます👍
 
-それでは!!
+それでは！!

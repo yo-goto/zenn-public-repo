@@ -25,29 +25,29 @@ Zenn や Hugo を Obsidian で利用して運用するためのアイデアと�
 また、ここで紹介するやり方は Obsidian の公式で紹介されてないような応用的な使い方になるので潜在的な問題があるかもしれません。自己責任の元で適宜各ディレクトリのバックアップを行いながら環境構築をしてください。(~~自分の環境では現在のところ特に問題は発生していません~~)
 
 :::message alert
-次の記事で出てくる Obsidian_to_Anki との併用で一部問題が発生しました。詳しくは｢現時点での課題｣を参照してください。Obsidian_to_Anki のプラグインを利用しない場合には問題ありません。
+次の記事で出てくる Obsidian_to_Anki との併用で一部問題が発生しました。詳しくは「現時点での課題」を参照してください。Obsidian_to_Anki のプラグインを利用しない場合には問題ありません。
 :::
 
 :::details ChangeLog
 - 2020-12-11:
-	- 目次｢はじめに｣追加
-	- ｢得られるメリット｣の内容を revise
+	- 目次「はじめに」追加
+	- 「得られるメリット」の内容を revise
 - 2020-12-20:
-	- ｢注意点｣の項目を追加
-	- ｢利用上の注意点｣の内容を追加
-	- ｢PDF 出力｣の項目を追加
-	- ｢git による複数リポジトリでの管理｣の項目を追加
+	- 「注意点」の項目を追加
+	- 「利用上の注意点」の内容を追加
+	- 「PDF 出力」の項目を追加
+	- 「git による複数リポジトリでの管理」の項目を追加
 - 2020-12-23:
 	- 冒頭文追加
 	- wikilink の修正
 	- タイポの修正
 	- フロントマターとエイリアスについて追加
 - 2020-12-26:
-	- ｢ノートの転送｣の項目を追加
+	- 「ノートの転送」の項目を追加
 	- 画像の差し替え
 - 2021-01-03
-	- ｢思考収束の盲点｣の項目を追加
-	- ｢課題 3: フォルダ除外｣の項目を追加
+	- 「思考収束の盲点」の項目を追加
+	- 「課題 3: フォルダ除外」の項目を追加
 :::
 
 https://obsidian.md
@@ -97,11 +97,11 @@ https://note.com/takibayashi/n/n4e5e7c505e16
 
 # PKM とは
 
-そもそも PKM とは何か?
+そもそも PKM とは何か？
 
 **Personal Knowledge Management** (個人知識管理) の略。PKM のツールとして PKB(Perosnal Knowledge Base) がある。
 
-PKB として [Evernote](https://evernote.com/intl/jp) や [Notion](https://www.notion.so/) などの電子メモツールなどが相当するが、[Scrapbox](https://scrapbox.io/product) や [Roam Research](https://roamresearch.com/)、Obsidian といった [networked thought](https://nesslabs.com/networked-thinking)(ネットワーク化された思考) を補助し｢[第二の脳をつくる](https://www.buildingasecondbrain.com/)｣ためのアプリケーションツールが最近注目されている。wikipedia のようなリンクをつかったハイパーテキストによる wiki を個人で作り上げることができる。
+PKB として [Evernote](https://evernote.com/intl/jp) や [Notion](https://www.notion.so/) などの電子メモツールなどが相当するが、[Scrapbox](https://scrapbox.io/product) や [Roam Research](https://roamresearch.com/)、Obsidian といった [networked thought](https://nesslabs.com/networked-thinking)(ネットワーク化された思考) を補助し「[第二の脳をつくる](https://www.buildingasecondbrain.com/)」ためのアプリケーションツールが最近注目されている。wikipedia のようなリンクをつかったハイパーテキストによる wiki を個人で作り上げることができる。
 
 >Networked thinking is an explorative approach to problem-solving, whose aim is to consider the complex interactions between nodes and connections in a given problem space. Instead of considering a particular problem in isolation to discover a pre-existing solution, **networked thinking encourages non-linear, second-order reflection in order to let a new idea emerge**.
 \- [Networked thinking: a quiet cognitive revolution](https://nesslabs.com/networked-thinking) より引用
@@ -189,7 +189,7 @@ Wordpress や note などで記事をつくったことがある人はわかる�
 
 @[tweet](https://twitter.com/ankiyorihajimey/status/1324387918484402177)
 
-また｢検索結果をコピー｣する機能を利用すれば、リンクリストを高速で作成できる。
+また「検索結果をコピー」する機能を利用すれば、リンクリストを高速で作成できる。
 
 ### エイリアスによる超高速アクセス
 
@@ -223,7 +223,7 @@ alias: [pkm map, Obsidian PKM Map]
 
 ## 3. 情報や知識の再利用による循環
 
-Obsidian の参照機能には三段階ある (ページレベル･見出しレベル･ブロックレベル)。あらゆる自分のアウトプットとしての記事やブログのポストから参照することができる。
+Obsidian の参照機能には三段階ある (ページレベル・見出しレベル・ブロックレベル)。あらゆる自分のアウトプットとしての記事やブログのポストから参照することができる。
 
 ![トランスクルージョンによる埋め込み](https://storage.googleapis.com/zenn-user-upload/i9jec242qecsevy1rzd1dycgm495)
 *↑見出しレベルの埋め込み*
@@ -232,7 +232,7 @@ Obsidian の参照機能には三段階ある (ページレベル･見出しレ
 
 ## 4. アウトプットの高速化と頻度向上
 
-今まで述べてきた 1~3 のメリットからあらゆる知識や情報が格納されたナレッジベースかつアウトプットコンテンツの生成環境の両方を兼ねることができるが、これのおかげで [Evergreen Note](https://publish.obsidian.md/andymatuschak/Evergreen+notes) を **高いクオリティで実現** できる。すべての公開されている記事がローカル環境において最新であり、インターネット上で切り分けられているあらゆるコンテンツがローカルではネットワークの構成要素として機能する。
+今まで述べてきた 1〜3 のメリットからあらゆる知識や情報が格納されたナレッジベースかつアウトプットコンテンツの生成環境の両方を兼ねることができるが、これのおかげで [Evergreen Note](https://publish.obsidian.md/andymatuschak/Evergreen+notes) を **高いクオリティで実現** できる。すべての公開されている記事がローカル環境において最新であり、インターネット上で切り分けられているあらゆるコンテンツがローカルではネットワークの構成要素として機能する。
 
 何か記事を更新しようと思えば、ローカル環境で Obsidian を開けば、そのまますぐに書ける。
 
@@ -252,7 +252,7 @@ Obsidian の参照機能には三段階ある (ページレベル･見出しレ
 
 Evergreen Notes とは、Andy Matuschak 氏が考案したノートテーキングの概念であり方法論。
 
-一過性のノートによる知識やアイデアの損失を防ぐために、あらゆるノートを蓄積し、さらにそのノートに再訪して情報を追加･修正し、時間経過と共にそのアイデアや知識を成長させ、さらに有機的に別のアイデアや知識に接続させようというような考え。[いくつかの原則](https://publish.obsidian.md/andymatuschak/Evergreen+notes) がある。
+一過性のノートによる知識やアイデアの損失を防ぐために、あらゆるノートを蓄積し、さらにそのノートに再訪して情報を追加・修正し、時間経過と共にそのアイデアや知識を成長させ、さらに有機的に別のアイデアや知識に接続させようというような考え。[いくつかの原則](https://publish.obsidian.md/andymatuschak/Evergreen+notes) がある。
 
 上で述べてきたようにナレッジベースからアウトプットへのパスを Obsidian 内の環境において整備することによってアイデアとノートの成長を促し Evergreen にすることができる。実際にやっている感覚としては『記事』を更新するのではなく、自分の『ナレッジベース内の 1 つのノート』を常に更新している感じだ。
 
@@ -277,7 +277,7 @@ https://jmatsuzaki.com/archives/27167
 
 **ナレッジベースとしてのデジタルライブラリとメディアとしてのポストを融合させ、Obsidian の保管庫内部から様々なレイヤーにアウトプットとしての記事をパブリッシュできるようにする**。
 
-｢Obsidian 内のナレッジベース (個人の知識のメモ)→Hugo を利用したブログやサイトのアウトプット→Zenn での知見や本としてのアウトプット｣というような具体的なツールを利用したコンテンツのフローを暫定的に｢**OHZ フロー(オーズフロー)**｣と名付ける。
+「Obsidian 内のナレッジベース (個人の知識のメモ)→Hugo を利用したブログやサイトのアウトプット→Zenn での知見や本としてのアウトプット」というような具体的なツールを利用したコンテンツのフローを暫定的に「**OHZ フロー(オーズフロー)**」と名付ける。
 
 ## フローのイメージ
 
@@ -319,7 +319,7 @@ ContentsFlow の中の Publish/Hugo/Zenn はどれかなくともよいし、別
 
 ここまで切り分けると面倒なのではというツッコミはあるかもしれない笑
 
-最終的なコンテンツが｢Zenn の本｣というような扱いになるかもしれない。
+最終的なコンテンツが「Zenn の本」というような扱いになるかもしれない。
 
 @[tweet](https://twitter.com/Mappletons/status/1279798483218767877)
 
@@ -519,7 +519,7 @@ Zenn や Hugo を保管庫にいれると node modules などいらないもの�
 
 ![zennimage](https://storage.googleapis.com/zenn-user-upload/2hfx7cr6ki221sv129f3ejrme5he)
 
-これを解決する一番簡単な方法は画像のようにグラフビューで除外用のコードを入れてあげることだ。また、フォルダが多くなるため｢ノートの転送｣で紹介した `Move file to another folder`(ファイルを別のフォルダに移動) コマンドでもフォルダ名を打つと若干遅くなる
+これを解決する一番簡単な方法は画像のようにグラフビューで除外用のコードを入れてあげることだ。また、フォルダが多くなるため「ノートの転送」で紹介した `Move file to another folder`(ファイルを別のフォルダに移動) コマンドでもフォルダ名を打つと若干遅くなる
 
 公式のフォルダ除外機能の開発が待たれる。
 
@@ -529,13 +529,13 @@ Zenn や Hugo を保管庫にいれると node modules などいらないもの�
 
 # 思考収束の盲点
 
-ここまで Obsidian の凄さや OHZ フローなどアウトプットの効率化の方法を紹介してきた。水をさすようで悪いが、気をつけてほしいことは Obsidian や Roam などのツールを使っても｢**アウトプットの難しさそのものが変わるわけではない**｣ということだ。｢思考収束の難しさ｣に関しては滝林さんの記事で語られている。
+ここまで Obsidian の凄さや OHZ フローなどアウトプットの効率化の方法を紹介してきた。水をさすようで悪いが、気をつけてほしいことは Obsidian や Roam などのツールを使っても「**アウトプットの難しさそのものが変わるわけではない**」ということだ。「思考収束の難しさ」に関しては滝林さんの記事で語られている。
 
 https://note.com/takibayashi/n/n3d1b8948aeea?magazine_key=m38cd2861c756
 
 ツールはツール。思考を収束したりアウトプットを作成するのは結局個人の問題に帰属する。しかし、ナレッジベースから直接記事をアウトプットするという姿勢や方法 (ナレッジベースからアウトプットへのルートが確実に整備された状態) は (アウトプットそのものの質を向上させるわけではないが)、アウトプットするための壁を低くしたり、より高い頻度で更新することでアウトプットの質が **結果として向上** する。こういうカラクリだと個人的には思う。
 
-偉そうに言っているが、私も実際にこのフローをやってみてアウトプットには苦労している。結局 note だろうが zenn だろうが、hugo だろうがどのプラットフォームでアウトプットしようが｢アウトプットは容易ではない｣ということが理解できた。ただ一言加えるなら、Wordpress でブログを書いていたときよりも断然｢**楽しい**｣。Obsidian は使っていて楽しい (Zenn も楽しい)。これにつきる。そういった楽しさもアウトプットの頻度や質を結果としてたかめてくれるはずだ。
+偉そうに言っているが、私も実際にこのフローをやってみてアウトプットには苦労している。結局 note だろうが zenn だろうが、hugo だろうがどのプラットフォームでアウトプットしようが「アウトプットは容易ではない」ということが理解できた。ただ一言加えるなら、Wordpress でブログを書いていたときよりも断然「**楽しい**」。Obsidian は使っていて楽しい (Zenn も楽しい)。これにつきる。そういった楽しさもアウトプットの頻度や質を結果としてたかめてくれるはずだ。
 
 # その他の運用
 

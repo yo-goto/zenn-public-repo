@@ -160,8 +160,8 @@ node_modules/wrap-ansi/node_modules/ansi-regex
 
 ![img_npmdependencies_4](/images/npm-dependencies/img_npmdependencies_4.jpg)
 
-同じ名前のパッケージが２つインストールされてしまっているとは一体どういうことだろうか?  
-なぜ同じパッケージが複数個必要なのか?  
+同じ名前のパッケージが２つインストールされてしまっているとは一体どういうことだろうか？  
+なぜ同じパッケージが複数個必要なのか？  
 
 🤔 🤔 🤔
 
@@ -169,8 +169,8 @@ node_modules/wrap-ansi/node_modules/ansi-regex
 
 つまり、`ansi-regex` のバージョン `3.0.0` が `node_modules/wrap-ansi/node_modules/ansi-regex` というネストされた node_modules フォルダに配置されているわけだ。
 
-なぜ `node_modules` フォルダがネストされるのか?  
-なぜ別のバージョンがインストールされているのだろうか?  
+なぜ `node_modules` フォルダがネストされるのか？  
+なぜ別のバージョンがインストールされているのだろうか？  
 
 🤔 🤔 🤔
 

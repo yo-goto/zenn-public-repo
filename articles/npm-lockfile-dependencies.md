@@ -373,7 +373,7 @@ https://zenn.dev/luvmini511/articles/56bf98f0d398a5
 	- チルダやキャレットによるバージョン範囲の記法があるため紛らわしい。
 	- [The semver parser for node](https://github.com/npm/node-semver#versions) に範囲の記述方法のすべてが記載されている。
 - `devDependencies`
-	- そのパッケージを開発･ビルドするための外部ツールやフレームワークなど、ただプログラムを実行して使いたいユーザーには必要ないパッケージ。
+	- そのパッケージを開発・ビルドするための外部ツールやフレームワークなど、ただプログラムを実行して使いたいユーザーには必要ないパッケージ。
 	- この項目にリストされているパッケージはこれが記載されている `pakcage.json` ファイルがルートにある状態で `npm install` まはた `npm link` コマンドを実行したとき。
 
 https://docs.npmjs.com/cli/v7/configuring-npm/package-json#main
