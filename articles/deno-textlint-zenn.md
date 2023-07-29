@@ -29,7 +29,7 @@ https://zenn.dev/kn1cht/articles/deno-textlint
 
 - Deno: v1.35.3
 - textlint: v13.3.3
-  :::
+:::
 
 ## 利用上の問題点
 
