@@ -2,10 +2,10 @@
 title: "同期 API とブロッキング"
 cssclass: zenn
 date: 2022-06-15
-modified: 2022-12-19
-AutoNoteMover: disable
+modified: 2023-07-02
 url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/f-epasync-synchronus-apis"
-tags: [" #type/zenn/book  #JavaScript/async "]
+AutoNoteMover: disable
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『同期 API とブロッキング』
 ---
 
@@ -15,7 +15,7 @@ aliases: Promise本『同期 API とブロッキング』
 
 ## 同期 API は意図的にブロッキングする
 
-非同期 API と環境について前のチャプターで解説しました。非同期 API のおかげで環境がバックグラウンドで API 処理をしてくれている間も、同時に JavaScript コードを実行できるのは、実際のところ非同期 API がメインスレッドを (専有しないように) ブロッキングしないよう **デザインされている** からです。
+非同期 API と環境について前のチャプターで解説しました。非同期 API のおかげで環境がバックグラウンドで API 処理をしてくれている間も、同時に JavaScript コードを実行できるのは、実際のところ非同期 API がメインスレッドを (専有しないように) ブロッキングしないよう**デザインされている**からです。
 
 https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/
 

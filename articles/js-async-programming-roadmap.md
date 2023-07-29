@@ -6,9 +6,9 @@ emoji: "🦄"
 type: "idea"
 topics: [javascript, 非同期処理, ロードマップ, node, deno]
 date: 2022-04-08
-modified: 2022-11-16
+modified: 2023-06-24
 url: "https://zenn.dev/estra/articles/js-async-programming-roadmap"
-tags: [" #type/zenn #JavaScript/async  "]
+tags: type/zenn, JavaScript/async
 aliases:
   - 記事『JSの非同期処理を理解するために必要だった知識と学習ロードマップ』
   - 非同期処理学習のロードマップ
@@ -20,16 +20,14 @@ JavaScript の非同期処理を学習してみて「ある程度自信を持っ
 
 あるいは、自分が実際に学習してきた道筋に基づいているのでショートカットとして参考にしてもらったり、使えるリソースなどの情報が共有できると思います。もしくは「**JavaScript 初心者が非同期処理を理解できるようになるまでの道筋**」というストーリーで１つのサンプルとして見ていただけるといいかもしれません。
 
-この記事自体に間違いや修正、更新があれば適宜修正していきます。~~また、リアルタイムで学習を進めている部分もあるので結構頻繁に更新しています~~。
-
 :::details ChangeLog
 大きな変更のみをトラッキングしています。
-- 2022/11/16
+- 2022-11-16
   - 本の内容を反映させた追記・修正を追加
-- 2022/05/21
+- 2022-05-21
   - 構成を修正
   - 「V8 エンジンから考える」の項目を追加
-- 2022/04/30
+- 2022-04-30
   - 「イベントループの共通性質」の項目を追加
   - 「ロードマップのまとめ」の項目を追加
 - 2022-04-28
@@ -50,9 +48,9 @@ JavaScript の非同期処理を学習してみて「ある程度自信を持っ
   - await 式の補足を追加
 :::
 
-# (注意) 本の方でより分かりやすく説明しています
+# ⚠️ 本の方でより分かりやすく説明しています
 
-非同期処理の学習ロードマップなどと銘打って記事を書いたからには、自分も具体的な非同期処理についての解説やアウトプットをすべきだと考えたので、主に Promise チェーンについての解説をするために Zenn の Book として「**イベントループとプロミスチェーンで学ぶJavaScriptの非同期処理**」を公開しました。
+非同期処理の学習ロードマップなどと銘打って記事を書いたからには、自分も具体的な非同期処理についての解説やアウトプットをすべきだと考えたので、主に Promise チェーンについての解説をするために Zenn の Book として「**イベントループとプロミスチェーンで学ぶ JavaScript の非同期処理**」を公開しました。
 
 :::message alert
 本を書く過程で勘違いしていたり、理解しきれていなかった部分がいくつもあったことが発覚しました。この記事でも間違っている箇所を修正しましたが、本ではロードマップ的なプロセス自体を重要度によって再構成して、より分かりやすく解説しているので、そちらを参照してもらえると良いと思います。
@@ -80,9 +78,9 @@ https://zenn.dev/estra/articles/zenn-book-making-impression
 
 ## 非同期処理の感想
 
-まず非同期処理について学んでみて、「かなり難しく、学習に時間がかかる」という印象を受けました。イメージとしては**学習前予想時の4倍**くらい難しいです。理解するために必要な情報の量が学習想定を遥かに超える上に、学習におけるトラップが非常に多いため、勘違いしたり、いつまでも謎が解明されないという現象が長く起きます。
+まず非同期処理について学んでみて、「かなり難しく、学習に時間がかかる」という印象を受けました。イメージとしては**学習前予想時の 4 倍**くらい難しいです。理解するために必要な情報の量が学習想定を遥かに超える上に、学習におけるトラップが非常に多いため、勘違いしたり、いつまでも謎が解明されないという現象が長く起きます。
 
-非同期処理そのものについては"制御の流れ"が掴みづらく、バックグラウンドで何が起こっているかを把握しないと自分で書こうとしたときにまったく予測ができません。非同期処理の流れ自体が掴みづらいので、同期処理と非同期処理が混じっているときは更に予測しずらくなります。加えて、非同期処理には種類があり、**その種類ごとに実行のタイミングが実は異なる**ので、それらが入り交じることで更に予測が難しくなっています。
+非同期処理そのものについては「制御の流れ」が掴みづらく、バックグラウンドで何が起こっているかを把握しないと自分で書こうとしたときにまったく予測ができません。非同期処理の流れ自体が掴みづらいので、同期処理と非同期処理が混じっているときは更に予測しずらくなります。加えて、非同期処理には種類があり、**その種類ごとに実行のタイミングが実は異なる**ので、それらが入り交じることで更に予測が難しくなっています。
 
 そもそも、「同期」と「非同期」という言葉に騙されそうになります。
 
@@ -96,7 +94,7 @@ https://zenn.dev/estra/articles/zenn-book-making-impression
 
 ## 難しさの原因 (追記)
 
-これは**初学者の視点からの話**ですが、多くの非同期処理の解説では「**真実ではあるが、現実のすべてを語っているわけではない**」というパターンが多く、それゆえに非同期処理について勘違いしてしまったり、いつまでも理解できないという現象がおきがちだと感じました(これについては初学者向けの情報としての側面があるからという理由もあるかもしれません)。
+これは**初学者の視点からの話**ですが、多くの非同期処理の解説では「**真実ではあるが、現実のすべてを語っているわけではない**」というパターンが多く、それゆえに非同期処理について勘違いしてしまったり、いつまでも理解できないという現象がおきがちだと感じました (これについては初学者向けの情報としての側面があるからという理由もあるかもしれません)。
 
 :::message
 もちろん、現実に起こるすべてのことを語れば良いのかという話もありますが、それはそれで問題で、いきなり仕様や実装の話をされて理解することは非常に困難です。あるレベルまでいかないと仕様や実装のことは理解できません。なので、適切なレベルでの抽象化とちょうどよい塩梅の情報の取捨選択で一本の道筋が分かるようなものがあると良いなと感じました。
@@ -120,10 +118,10 @@ JavaScript の非同期処理についてはその難しさの性質と必要な
 
 ## ECMAScript の基本を学習
 
-非同期処理というカテゴリについては(そもそも JavaScript は)、多くの有用なリソースがインターネット上で公開されているので最大限それらを活用して学習をすすめていきます。
+非同期処理というカテゴリについては (そもそも JavaScript は)、多くの有用なリソースがインターネット上で公開されているので最大限それらを活用して学習をすすめていきます。
 
 まずは非同期処理の前に外すことのできない必要な知識として以下の事柄を知っているか確認します。
-- 式(Expression)
+- 式 (Expression)
 - 関数式
 - コールバック関数
 - 無名関数
@@ -138,7 +136,7 @@ https://jsprimer.net/basic/async/
 
 ## 制御予測のための基礎知識を学ぶ
 
-非同期処理の基礎的な知識を大体網羅して「完全に理解した」と思ってコードを実際に書こうとしても(非同期処理の制御が予測できず)かけないことに気づくので次に非同期処理のバックグラウンドでの動きを学習します。
+非同期処理の基礎的な知識を大体網羅して「完全に理解した」と思ってコードを実際に書こうとしても (非同期処理の制御が予測できず) かけないことに気づくので次に非同期処理のバックグラウンドでの動きを学習します。
 
 まずは非同期処理の流れを理解するのに必要な用語知識を確認しておきます。
 
@@ -149,7 +147,7 @@ https://jsprimer.net/basic/async/
 - single-thread/multi-thread
 - Node.js や V8 engine についての基礎知識
 
-上記の単語については、基礎的な学習を終えていればある程度の解像度で理解できているはずですが、解像度を上げることが必要になってきます。おそらく "synchronous" に振り回されるので、"sequential" と "blocking" を意識できるように注視しておくと良いと思います(自分は途中で「同期的」という概念が分からなくなり非常に混乱しました)。
+上記の単語については、基礎的な学習を終えていればある程度の解像度で理解できているはずですが、解像度を上げることが必要になってきます。おそらく "synchronous" に振り回されるので、"sequential" と "blocking" を意識できるように注視しておくと良いと思います (自分は途中で「同期的」という概念が分からなくなり非常に混乱しました)。
 
 blocking/non-blocking については Node.js 公式サイトの次のページを一読しておくと理解が進みます。
 
@@ -166,13 +164,13 @@ blocking の例として Node.js の同期 API (Synchronous API) についても
 - Task(タスク) と Task Queue(タスクキュー)
 - Microtask(マイクロタスク) と Microtask Queue(マイクロタスクキュー)
 
-これらの用語は非同期処理の種類を認識して、バックグラウンドでの流れをある程度の解像度で理解するのに必要になってきます。非同期処理の流れ(実行順番)を把握・予測するためには必ず理解したほうがよいです。これらのアイテム無しでは進むことができません(Event loop なしで非同期処理の制御予測をするのは**不可能**です)。
+これらの用語は非同期処理の種類を認識して、バックグラウンドでの流れをある程度の解像度で理解するのに必要になってきます。非同期処理の流れ (実行順番) を把握・予測するためには必ず理解したほうがよいです。これらのアイテム無しでは進むことができません (Event loop なしで非同期処理の制御予測をするのは**不可能**です)。
 
 まず、Call Stack と Event Loop を理解するために JSConf EU での Philip Roberts 氏の講演動画「What the heck is the event loop anyway?」を見ることを強くオススメします。
 
 @[youtube](8aGhZQkoFbQ)
 
-この動画は多くの人がオススメしたり、様々な記事で引用されています。非常に分かりやすく説明されており、非同期処理の片方(Task)を理解するのに役立ちます。2014 年の動画ですが、JSConf の動画は他にもいくつか見ましたが、~~この動画以上に分かりやすく説明しているものはありません~~。
+この動画は多くの人がオススメしたり、様々な記事で引用されています。非常に分かりやすく説明されており、非同期処理の片方 (Task) を理解するのに役立ちます。2014 年の動画ですが、JSConf の動画は他にもいくつか見ましたが、~~この動画以上に分かりやすく説明しているものはありません~~。
 
 追記:「What the heck is the event loop anyway?」は Event loop と非同期処理を理解するための**入り口となる動画**として非常に素晴らしいのですが、JSConf での他の関連する動画もこの動画と同じかそれ以上に視聴する価値があることに気づきました。この点については追記の項目で記載します。
 
@@ -183,9 +181,9 @@ Chrome などのブラウザ環境と Node.js や Deno の環境では JavaScrip
 - [Libuv](https://libuv.org) (Node.js) : a multi-platform support library with a focus on asynchronous I/O
 - [Tokio](https://tokio.rs) (Deno) : an asynchronous Rust runtime
 
-V8 エンジンが主に担当しているのは、Heap と Call Stack です。V8 のソースコードには setTimeout や DOM、HTTP request といった Web APIs は含まれていません(実は `setTimeout()` はタイマー機能のついていない Web API もどきが提供されています)。
+V8 エンジンが主に担当しているのは、Heap と Call Stack です。V8 のソースコードには setTimeout や DOM、HTTP request といった Web APIs は含まれていません (実は `setTimeout()` はタイマー機能のついていない Web API もどきが提供されています)。
 
-上記の動画で解説されているのは、ブラウザ環境での Event Loop です。Promise チェーンや async/await といった言語としての非同期処理を理解するレベルでの抽象化なら、Node.js でも Deno でも同じように考えて大丈夫です(もちろん開発レベルで必要なら I/O とかタイマーの振る舞いは違う可能性があるので具体的に知る必要はあると思いますが)。ただし、Web APIs の部分はブラウザ特有のものなので、Node.js や Deno ではそれに対応するものとして Runtime APIs で置き換えて考えます。
+上記の動画で解説されているのは、ブラウザ環境での Event Loop です。Promise チェーンや async/await といった言語としての非同期処理を理解するレベルでの抽象化なら、Node.js でも Deno でも同じように考えて大丈夫です (もちろん開発レベルで必要なら I/O とかタイマーの振る舞いは違う可能性があるので具体的に知る必要はあると思いますが)。ただし、Web APIs の部分はブラウザ特有のものなので、Node.js や Deno ではそれに対応するものとして Runtime APIs で置き換えて考えます。
 :::
 
 動画で概要を理解したら同氏が開発した JavaScript の可視化ツールである "Loupe" で実際に `setTimeout()` 関数のコールバック関数やクリックイベントなどがどのように動くか実験してみてください。
@@ -194,7 +192,7 @@ http://latentflip.com/loupe/
 
 ![js loupe image](/images/js-async/img_loupe-js-async.jpg)
 
-Loupe では２種類ある非同期処理の種類の内の１つ(Task: タスク)しかサポートされていないので、次に Github 社のエンジニアである Andrew Dillon 氏が開発した "JavaScript Visualizer 9000" を使用して Promise 関連の非同期処理(Microtask: マイクロタスク)を理解するために使用します。
+Loupe では２種類ある非同期処理の種類の内の１つ (Task: タスク) しかサポートされていないので、次に Github 社のエンジニアである Andrew Dillon 氏が開発した "JavaScript Visualizer 9000" を使用して Promise 関連の非同期処理 (Microtask: マイクロタスク) を理解するために使用します。
 
 https://www.jsv9000.app
 
@@ -209,9 +207,9 @@ JavaScript Visualizer 9000 を使って、Task と Micortask の組み合わせ�
 > [Task queues](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) are [sets](https://infra.spec.whatwg.org/#ordered-set), not [queues](https://infra.spec.whatwg.org/#queue), because the [event loop processing model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) grabs the first [_runnable_](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task-runnable) [task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) from the chosen queue, instead of [dequeuing](https://infra.spec.whatwg.org/#queue-dequeue) the first task.
 > ([HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#definitions-3) より引用)
 
-追記: これは、「~~Task queues(という集合)はただのキューの集合ではなく、セットである~~」ということを意味していて、~~単一の "Task queue" は名前の通りキューであると考えられます。実はこれ非常に重要な事柄でした~~。
+追記: これは、「~~Task queues(という集合) はただのキューの集合ではなく、セットである~~」ということを意味していて、~~単一の "Task queue" は名前の通りキューであると考えられます。実はこれ非常に重要な事柄でした~~。
 
-追記 2022-11-16: 上の追記で訂正した内容はかなり間違っていたことが発覚しました。タスクキューは Queue というデータ構造ではなく Set というデータ構造です。これは HTML Standard ではなく、それらの仕様が基づく用語や概念を定義している [Infra Standard](https://infra.spec.whatwg.org/) というページに記載されています。Queue と Set は List というデータ構造のサブセットであり、Set は順序集合([ordered set](https://ja.wikipedia.org/wiki/%E9%A0%86%E5%BA%8F%E9%9B%86%E5%90%88#%E5%89%8D%E9%A0%86%E5%BA%8F%E3%83%BB%E5%8D%8A%E9%A0%86%E5%BA%8F%E3%83%BB%E5%85%A8%E9%A0%86%E5%BA%8F))と呼ばれるものです。Set は List の一部であり、順序がついているのでほとんどは Queue と同じ動作になるのですが、細かい部分は異なります。
+追記 2022-11-16: 上の追記で訂正した内容はかなり間違っていたことが発覚しました。タスクキューは Queue というデータ構造ではなく Set というデータ構造です。これは HTML Standard ではなく、それらの仕様が基づく用語や概念を定義している [Infra Standard](https://infra.spec.whatwg.org/) というページに記載されています。Queue と Set は List というデータ構造のサブセットであり、Set は順序集合 ([ordered set](https://ja.wikipedia.org/wiki/%E9%A0%86%E5%BA%8F%E9%9B%86%E5%90%88#%E5%89%8D%E9%A0%86%E5%BA%8F%E3%83%BB%E5%8D%8A%E9%A0%86%E5%BA%8F%E3%83%BB%E5%85%A8%E9%A0%86%E5%BA%8F)) と呼ばれるものです。Set は List の一部であり、順序がついているのでほとんどは Queue と同じ動作になるのですが、細かい部分は異なります。
 
 とにかく、JavaScript Visualizer 9000 は非同期処理を理解するまで長い付き合いになったので非常にオススメです。これが無かったら非同期処理を理解できなかったかもしれません。
 
@@ -249,7 +247,7 @@ Visualizer 9000 では簡単にコードが共有できるので実際に以下�
 
 ここで async 関数と `await` のことも考えてしまうとかなり混乱するので Promise チェーンのことに注力した方がいいかもしれません。
 
-この段階では azu 氏の "JavaScript Promise の本" のコラムなどが非常に有用で、大変お世話になりました。
+この段階では azu 氏の "JavaScript Promise の本 " のコラムなどが非常に有用で、大変お世話になりました。
 
 https://azu.github.io/promises-book/#promise-is-always-async
 
@@ -284,16 +282,16 @@ https://okapies.hateblo.jp/entry/2020/12/13/154311
 
 更にこれによって async/await が Promise を代替するのではなく、Promise ベースの非同期処理の利便性を一部向上させる Promise というシステム自体に基づいた拡張的な機能であり、**Promise と一緒に使っていくもの**であるということが認識できると思います。
 
-そもそも、`await` 式は「右辺の Promise インスタンスが Settled 状態(Fulfilled または Rejected 状態)になるまで非同期処理の完了を待ち、Promise インスタンスの状態が変化したらその Promise インスタンスの**評価結果を値として返す**」ものなので、Promise を扱っていると認識してしないとやっすん氏の動画で紹介されたミス(タスクを作成する `setTimeout` 関数を Promise でラップすることなくそのまま `await` してしまうなど)を犯してしまいます。
+そもそも、`await` 式は「右辺の Promise インスタンスが Settled 状態 (Fulfilled または Rejected 状態) になるまで非同期処理の完了を待ち、Promise インスタンスの状態が変化したらその Promise インスタンスの**評価結果を値として返す**」ものなので、Promise を扱っていると認識してしないとやっすん氏の動画で紹介されたミス (タスクを作成する `setTimeout` 関数を Promise でラップすることなくそのまま `await` してしまうなど) を犯してしまいます。
 
 :::message
-`await` 式では async 関数の内部で非同期処理の完了を待ちますが、その"待っている"というのは実際にすべての処理が止まっているわけではなく、async 関数の呼び出し元に一旦制御が戻って別の処理を再開し、`await` で待っていた Promise インスタンスが解決した後に再び async 関数に戻って `await` 式の後にある次の処理を再開するということを意味しています。
+`await` 式では async 関数の内部で非同期処理の完了を待ちますが、その " 待っている " というのは実際にすべての処理が止まっているわけではなく、async 関数の呼び出し元に一旦制御が戻って別の処理を再開し、`await` で待っていた Promise インスタンスが解決した後に再び async 関数に戻って `await` 式の後にある次の処理を再開するということを意味しています。
 
-async 関数の中の処理は 1 つ 1 つ処理が終わってから順番に処理が進むので、「逐次的(順次的)な処理」がおこなわれていますが、`await` 式に出会うたびに、一度制御を呼び出し元に戻して別の同期処理などを実行しつつ、`await` で待っていた Promise が解決されたらコールスタックの状況を見て再び制御が async 関数に戻るので、実際に制御の流れは「同期的」ではありません。これは Promise チェーンでも同じ状況となります。`then()` のコールバック関数はマイクロタスクキューへと一旦送られ、制御は呼び出し元に戻ります。乱暴な言い方ですが、async/await は本質的には Promise チェーンの書き方を変えているだけです。
+async 関数の中の処理は 1 つ 1 つ処理が終わってから順番に処理が進むので、「逐次的 (順次的) な処理」がおこなわれていますが、`await` 式に出会うたびに、一度制御を呼び出し元に戻して別の同期処理などを実行しつつ、`await` で待っていた Promise が解決されたらコールスタックの状況を見て再び制御が async 関数に戻るので、実際に制御の流れは「同期的」ではありません。これは Promise チェーンでも同じ状況となります。`then()` のコールバック関数はマイクロタスクキューへと一旦送られ、制御は呼び出し元に戻ります。乱暴な言い方ですが、async/await は本質的には Promise チェーンの書き方を変えているだけです。
 
 もし「同期的」に処理が進んでいるなら、async 関数の内部で `await` 式によってメインスレッドが専有されることで「ブロッキング」が発生し、その間は一切の処理が進まないことになります。もちろん、そんなことは起きていません。そんなことが起きるなら、そもそも「非同期処理」を行うメリットなんてないですよね。
 
-Prmoise チェーンや `await` 式を利用している async 関数の制御が「同期的」であると混同してしまうのは、 Promise チェーンや async 関数内の処理のみについて考えれば確かにステップごとに「逐次的(順次的)」に処理が進んでいるからです。しかし、**そのステップの間では別の処理が進んでいます**。
+Prmoise チェーンや `await` 式を利用している async 関数の制御が「同期的」であると混同してしまうのは、 Promise チェーンや async 関数内の処理のみについて考えれば確かにステップごとに「逐次的 (順次的)」に処理が進んでいるからです。しかし、**そのステップの間では別の処理が進んでいます**。
 
 「同期」や「非同期」という言葉に振り回されることによって、これを理解できるようになるためにかなり時間がかかりました。"blocking(ブロッキング)" と "sequential(逐次的)" という言葉に注視しておくと良いと言ったのはこのためです。
 
@@ -305,7 +303,7 @@ async/await では無いですが２つの Promise チェーンを同時に実�
 
 "JavaScript Primer" に戻ってくると、「Promise と async/await は一緒に使っていくものである」ということを再発見できます。
 
-> このようにAsync Functionやawait式は既存のPromise APIと組み合わせて利用できます。 Async Functionも内部的にPromiseの仕組みを利用しているため、両者は対立関係ではなく共存関係になります。
+> このように Async Function や await 式は既存の Promise API と組み合わせて利用できます。 Async Function も内部的に Promise の仕組みを利用しているため、両者は対立関係ではなく共存関係になります。
 > (https://jsprimer.net/basic/async/#relationship-promise-async-function より引用)
 
 Promise の静的メソッドと `await` 式を組み合わせる例として、複数のリソース非同期的に取得する際に async 関数内で `await promise1; await promise2; await promise3;` のように１つずつ取得が完了するのを待つのではなく、`await Promise.allSettled([promise1, promise2, promise3]);` として複数の非同期処理を並行して走らせることでリソースの取得時間を削減できるなどが挙げられます。
@@ -317,13 +315,13 @@ Promise の静的メソッドと `await` 式を組み合わせる例として、
 > All async actions in Deno return a promise. Thus Deno provides different APIs than Node.
 > ([Introduction - Deno Manual](https://deno.land/manual#comparison-to-nodejs) より引用)
 
-"Async/await-based" や "Async/await-first" ではなく、"Promise-based "や "Promise-first" などの言葉を聞いたことがあると思います。その理由は "Promise" が常に非同期処理の主役だからです。
+"Async/await-based" や "Async/await-first" ではなく、"Promise-based " や "Promise-first" などの言葉を聞いたことがあると思います。その理由は "Promise" が常に非同期処理の主役だからです。
 
 それが理解できたら、今度こそ async/await の強みを理解できる段階となります。
 
 https://developers.google.com/web/fundamentals/primers/async-functions#%E4%BE%8B_%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E3%81%AE%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%9F%E3%83%B3%E3%82%B0
 
-非同期処理のループなどを構築する際に、Promise チェーンでは複雑になってしまうコード("スマート"な書き方のコード)を、async 関数内では `while` ループや `for` ループといった"シンプルで読みやすい平凡な書き方"へと持ち込めるようになります。
+非同期処理のループなどを構築する際に、Promise チェーンでは複雑になってしまうコード (" スマート " な書き方のコード) を、async 関数内では `while` ループや `for` ループといった " シンプルで読みやすい平凡な書き方 " へと持ち込めるようになります。
 
 逆に、コールバック関数に async 関数を使う時は注意する必要があったり、どのタイミングでどれを await させるかなどの難しさも分かってきますが。
 
@@ -331,7 +329,7 @@ https://developers.google.com/web/fundamentals/primers/async-functions#%E4%BE%8B
 
 https://qiita.com/uhyo/items/0e2e9eaa30ec2ff05260
 
-さて、ここまでくれば、「非同期処理の基礎が身についた」といえる状態になったのではないでしょうか。もちろん、非同期処理のすべてを学びきった訳ではないので、今後も学習は続きます(非同期イテレータ `for await...of` やジェネレータなどはまだ自分もわかりません)。
+さて、ここまでくれば、「非同期処理の基礎が身についた」といえる状態になったのではないでしょうか。もちろん、非同期処理のすべてを学びきった訳ではないので、今後も学習は続きます (非同期イテレータ `for await...of` やジェネレータなどはまだ自分もわかりません)。
 
 ~~以上が自分なりに「ある程度、非同期処理が理解できた言える状態」まで到達するのに辿ってきたロードマップです。~~
 追記に色々記載しましたが、これでもまだ理解しきれていない部分が多くあったので、まだ話は続きます。
@@ -344,7 +342,7 @@ https://qiita.com/uhyo/items/0e2e9eaa30ec2ff05260
 追記 2022-11-16: この話が非同期処理の理解の上でもっと重要であり、トラップとなる話題であると気づきました。
 :::
 
-JavaScript とうのは常に「実行する環境」があり、その**環境によって利用できる機能が異なる**ので、ECMAScript(JavaScript の言語仕様)における非同期処理の機能を考えるよりも、「環境と結びついたものとしての JavaScript の非同期処理」、ひいては「環境そのもの」のことを考えないと非同期処理を理解できません。
+JavaScript とうのは常に「実行する環境」があり、その**環境によって利用できる機能が異なる**ので、ECMAScript(JavaScript の言語仕様) における非同期処理の機能を考えるよりも、「環境と結びついたものとしての JavaScript の非同期処理」、ひいては「環境そのもの」のことを考えないと非同期処理を理解できません。
 
 というのも、`setTimeout()` API のタイマー処理や `fetch()` API のデータフェッチという「根本的な処理」を実際に「並列的に」行ってくれているのは次のような環境そのものだからです。
 
@@ -356,11 +354,11 @@ https://www.freecodecamp.org/news/async-await-javascript-tutorial/
 > It turns out that it is **the environment** that takes on the work, and the way to get the environment to do that work, is to use functionality that belongs to the environment. For example fetch or setTimeout in the browser environment.
 > (上記ページより引用、太字は筆者強調)
 
-従って、ECMAScript の言語としての「Promise や async/await キーワード」や「シングルスレッドと並行(concurrent)処理」を考えていても現実に起こる「非同期処理の仕組み」についての謎が永遠に解けません。
+従って、ECMAScript の言語としての「Promise や async/await キーワード」や「シングルスレッドと並行 (concurrent) 処理」を考えていても現実に起こる「非同期処理の仕組み」についての謎が永遠に解けません。
 
 例えば、`fetch()` メソッドは ECMAScript の範疇ではなく、Web API(Web Platform API) であり、実際にその機能を提供するのはブラウザ環境やランタイム環境です。
 
-Chrome といったモダンなブラウザ環境を代表として考えると、ブラウザはそもそも様々なタスクを行っているので、"シングルスレッド"などではなく、"マルチプロセスアーキテクチャ"であり、様々なタスクの責務を持つ分離したプロセスの中に複数のスレッドを持つ形になっています。
+Chrome といったモダンなブラウザ環境を代表として考えると、ブラウザはそもそも様々なタスクを行っているので、" シングルスレッド " などではなく、" マルチプロセスアーキテクチャ " であり、様々なタスクの責務を持つ分離したプロセスの中に複数のスレッドを持つ形になっています。
 
 https://developer.chrome.com/blog/inside-browser-part2/
 
@@ -377,18 +375,18 @@ Chrome では以下のような複数のプロセスが作成されます。
 
 `setTimeout()` メソッドはブラウザ環境やランタイム環境が提供する API であり、その「コールバックをキューに追加するまでの時間を図る」という処理自体は環境の別のところで行われいるはずです。
 
-コールバック関数自体はメインスレッドで処理されるが、コールバックをキューに追加するまでのタイマーによる時間計測作業は別の場所で行われています。「非同期処理=非同期的なタイミングで実行される処理=コールバック」と考えるなら、コールバック関数の処理という非同期処理そのものは並行(concurrent)に処理されていますが、非同期処理を行うまでのタイミングを図っているタイマーの処理は環境が「並列的」に行っていることになります。
+コールバック関数自体はメインスレッドで処理されるが、コールバックをキューに追加するまでのタイマーによる時間計測作業は別の場所で行われています。「非同期処理=非同期的なタイミングで実行される処理=コールバック」と考えるなら、コールバック関数の処理という非同期処理そのものは並行 (concurrent) に処理されていますが、非同期処理を行うまでのタイミングを図っているタイマーの処理は環境が「並列的」に行っていることになります。
 
-また、`fetch(url)` もネットワークの接続をしてデータを取得しているのに**メインスレッドをブロッキングしないでバックグラウンドで行うことができる**のは、「現実のデータ取得処理」がメインスレッドで行われていないからです。`fetch(url)` そのものの処理が環境の別スレッドで並列(parallel)に行われてる一方で、`fetch(url).then(cb)` の `cb` コールバックについて「非同期処理=非同期的なタイミングで実行される処理=コールバック」として考えるなら、たしかにコールバック関数の処理という非同期処理そのものは並行(concurrent)に処理されています。
+また、`fetch(url)` もネットワークの接続をしてデータを取得しているのに**メインスレッドをブロッキングしないでバックグラウンドで行うことができる**のは、「現実のデータ取得処理」がメインスレッドで行われていないからです。`fetch(url)` そのものの処理が環境の別スレッドで並列 (parallel) に行われてる一方で、`fetch(url).then(cb)` の `cb` コールバックについて「非同期処理=非同期的なタイミングで実行される処理=コールバック」として考えるなら、たしかにコールバック関数の処理という非同期処理そのものは並行 (concurrent) に処理されています。
 
-実際、JavaScript の非同期処理でよく語られるシングルスレッドは現実のブラウザ環境(Chrome)では「Renderer Process の Main thread」のことであり、`fetch()` メソッドのネットワーク接続やリクエストなどの処理を行っているのは「Browser process の Network thread」です。
+実際、JavaScript の非同期処理でよく語られるシングルスレッドは現実のブラウザ環境 (Chrome) では「Renderer Process の Main thread」のことであり、`fetch()` メソッドのネットワーク接続やリクエストなどの処理を行っているのは「Browser process の Network thread」です。
 
-`await` 式の前後や Promise チェーンのコールバック自体は確かに「非同期処理=非同期的なタイミングで実行される処理」であり、シングルスレッドで並行(concurrent)に処理されていますが、環境が提供する機能である API の処理自体はメインスレッドとは別のところで並列的に行われています。
+`await` 式の前後や Promise チェーンのコールバック自体は確かに「非同期処理=非同期的なタイミングで実行される処理」であり、シングルスレッドで並行 (concurrent) に処理されていますが、環境が提供する機能である API の処理自体はメインスレッドとは別のところで並列的に行われています。
 
 「並列と並行が同時に起きている」、「シングルスレッドであり、マルチスレッドである」という文字にすると頭が混乱するような話ですが、**対立する概念が同居して「非同期処理」の仕組みを実現している**と考えないとつじつまが合わないので、こうなります。
 
 :::message alert
-すべての非同期 API 処理が別厳密な並列(parallel)処理だとは限りません。ここでいう「並列的」や「並列」という言葉は「メインスレッド外で同時に別のことが起きている」という程度にとらえてください。
+すべての非同期 API 処理が別厳密な並列 (parallel) 処理だとは限りません。ここでいう「並列的」や「並列」という言葉は「メインスレッド外で同時に別のことが起きている」という程度にとらえてください。
 :::
 
 この結論に至った経緯として、次の文献がメインとして参考になりました。
@@ -403,7 +401,7 @@ https://www.telerik.com/blogs/angular-basics-introduction-processes-threads-web-
 https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html
 
 :::message
-補足: Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エンジンである V8 のことを言っています。Deno や Node は V8 を含んだ"環境"であり、色々な API を提供するので、ここではブラウザと等価なものとして考えてください。
+補足: Philip Roberts 氏が言う "Runtime" とは Chrome ブラウザ環境の JS エンジンである V8 のことを言っています。Deno や Node は V8 を含んだ " 環境 " であり、色々な API を提供するので、ここではブラウザと等価なものとして考えてください。
 
 それぞれ公式サイトでの文言。
 - [Deno is a simple, modern and secure runtime for JavaScript and TypeScript that uses V8 and is built in Rust.](https://deno.land)
@@ -415,11 +413,11 @@ https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-a
 ↓ 書き起こしが実際の言葉と若干違っているので動画で確認すると 11:48 ~ のところです。
 [イベントループとは一体何ですか？ | Philip Roberts | JSConf EU](https://youtu.be/8aGhZQkoFbQ?t=708)
 
-もう一度流れをまとめると、ブラウザ環境において `setTimeout()` と `fetch()` は **Web API** です(ランタイム環境では Runtime API)。ECMAScript 言語の一部ではありません。両方とも自分で定義した関数を実行しているのではなく API の呼び出し(API call)を行っています。API を介して「時間を図る」、「リソースを取得する」といったタスクが「環境」へ委任(Delegate)され、そのタスクを「環境そのもの」がバックグラウンドで並列的に行います。「環境に委任されたタスクが完了したら何かをメインスレッドで行う」という**コールバック関数の形**で登録しておいた別のタスク(=非同期処理)は、委任されたタスクを終わらせた時点で環境から Task queue や Microtask queue へと送られ、Event Loop によって Call stack へと運ばれた時点で JavaScript のコードとして実行されます。これが JavaScript における非同期処理の仕組みです。
+もう一度流れをまとめると、ブラウザ環境において `setTimeout()` と `fetch()` は **Web API** です (ランタイム環境では Runtime API)。ECMAScript 言語の一部ではありません。両方とも自分で定義した関数を実行しているのではなく API の呼び出し (API call) を行っています。API を介して「時間を図る」、「リソースを取得する」といったタスクが「環境」へ委任 (Delegate) され、そのタスクを「環境そのもの」がバックグラウンドで並列的に行います。「環境に委任されたタスクが完了したら何かをメインスレッドで行う」という**コールバック関数の形**で登録しておいた別のタスク (=非同期処理) は、委任されたタスクを終わらせた時点で環境から Task queue や Microtask queue へと送られ、Event Loop によって Call stack へと運ばれた時点で JavaScript のコードとして実行されます。これが JavaScript における非同期処理の仕組みです。
 
 結局の所、非同期処理の仕組みを理解するには「Promise や async/await といった言語機能の概念とその使い方」だけでなく「**API を提供する環境**」のことを知ることが必要だった、という訳です。
 
-本来時間のかかるインターネットを介したデータ取得(`fetch()`)や I/O (`Deno.readFile()` や `fsPromise.readFile()`)などの処理は基本的に環境が API として用意してくれています。もちろんすべての API が時間のかかる処理ではなく、例えば、`URL()` なども Web API なので環境の提供する機能ですが、通信や I/O に比べてすぐに処理が終了するので、非同期ではなく同期的なものとなっています。
+本来時間のかかるインターネットを介したデータ取得 (`fetch()`) や I/O (`Deno.readFile()` や `fsPromise.readFile()`) などの処理は基本的に環境が API として用意してくれています。もちろんすべての API が時間のかかる処理ではなく、例えば、`URL()` なども Web API なので環境の提供する機能ですが、通信や I/O に比べてすぐに処理が終了するので、非同期ではなく同期的なものとなっています。
 
 :::message
 "blocking" の用語のところで紹介しましたが、Node や Deno の環境では時間のかかる処理の完了を待って、あえてメインスレッドの Event Loop をブロッキングする同期 API (Synchronous APIs) を提供しています。Node なら `fs.readFileSync()`、Deno なら `Deno.readFileSync()` などが該当します。用途としては、「スニペット程度のコードだからわざわざ非同期処理にするまでもない」というときや、他の何らかの理由であえて非同期処理にしたくない状況などで使用したりします。
@@ -428,7 +426,7 @@ https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-a
 > ([File system | Node.js v17.9.0 Documentation](https://nodejs.org/api/fs.html#synchronous-api) より引用、太字は筆者強調)
 :::
 
-API を介して時間のかかる処理は環境へ委任されますが、もし環境が API として用意していないような時間がかかるタスク(メインスレッドを長時間専有してしまうような処理)を**自分で定義した同期関数**などで行う場合は、Web Workers でメインスレッドから分離した別スレッドを作成して、そのスレッドで真に並列(parallel)な処理として走らせることで**メインスレッドの Event Loop をブロッキングせずに済ませる**ことができます。いわゆる「オフロード」というやつです。もちろん Web Workers も Web API です。
+API を介して時間のかかる処理は環境へ委任されますが、もし環境が API として用意していないような時間がかかるタスク (メインスレッドを長時間専有してしまうような処理) を**自分で定義した同期関数**などで行う場合は、Web Workers でメインスレッドから分離した別スレッドを作成して、そのスレッドで真に並列 (parallel) な処理として走らせることで**メインスレッドの Event Loop をブロッキングせずに済ませる**ことができます。いわゆる「オフロード」というやつです。もちろん Web Workers も Web API です。
 
 https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers
 
@@ -478,10 +476,10 @@ Event loop と Call stack を理解するための動画としてはじめの方
 この動画では Event loop への解像度を飛躍的に上げてくれます。この動画のおかげで Event loop について今まで理解しきれなかった点について理解できました。
 
 - Task queue が複数存在し、どのキューを選ぶかはブラウザが行うこと
-- Event loop 内にネストされたループ(マイクロタスクを完全に処理するループ)があること
-- 最初の Task がスクリプトの評価(Script Evaluation)になること
+- Event loop 内にネストされたループ (マイクロタスクを完全に処理するループ) があること
+- 最初の Task がスクリプトの評価 (Script Evaluation) になること
 
-次のような擬似コードによるイベントループをスモールステップで理解できました(実際には Chrome ブラウザは C++ で書かれているため、理論的な疑似コードとなります)。JS Visualizer を使っているだけでは理解しづらかった部分が非常にクリアになりました。
+次のような擬似コードによるイベントループをスモールステップで理解できました (実際には Chrome ブラウザは C++ で書かれているため、理論的な疑似コードとなります)。JS Visualizer を使っているだけでは理解しづらかった部分が非常にクリアになりました。
 
 ```js:最も単純なイベントループ
 // event loop v1
@@ -525,7 +523,7 @@ while (true) {
 Rendering pipeline については以下のページを参考にしてください。
 https://developer.chrome.com/blog/renderingng-architecture/
 
-ただ、このコードでは実は情報が不足しており、Web API `requestAnimationFrame(cb)` (通称 "rAF")から発行されるコールバックの中で `queueMicrotask()` や `promise.then()` などでマイクロタスクが生成されてしまった場合には１つのアニメーションタスクの後にそれらも完全に処理されるというルールがあります。
+ただ、このコードでは実は情報が不足しており、Web API `requestAnimationFrame(cb)` (通称 "rAF") から発行されるコールバックの中で `queueMicrotask()` や `promise.then()` などでマイクロタスクが生成されてしまった場合には１つのアニメーションタスクの後にそれらも完全に処理されるというルールがあります。
 
 例えば、rAF のコールバックでマイクロタスクが生成されるような次のコードを考えます。
 
@@ -608,11 +606,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In
 ブラウザのイベントループについては次の記事も理解に役立ちます。
 https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-beyond-settimeout/
 
-JSConf.Asia 2018 での Jake Archibald 氏の講演動画である『In The Loop』ではレンダリングの話とアニメーションの話がより詳細に語られています。他の動画とは違った Event loop のイメージ(メンタルモデル)を使うので難易度が高いです。『Further Adventures of the Event Loop』を視聴してメンタルモデルがずらされないようにしてから見るのをおすすめします。
+JSConf.Asia 2018 での Jake Archibald 氏の講演動画である『In The Loop』ではレンダリングの話とアニメーションの話がより詳細に語られています。他の動画とは違った Event loop のイメージ (メンタルモデル) を使うので難易度が高いです。『Further Adventures of the Event Loop』を視聴してメンタルモデルがずらされないようにしてから見るのをおすすめします。
 
 @[youtube](cCOL7MC4Pl0)
 
-平均 16.7 ミリ秒(60 fps) の間に 1 回起きるレンダリング更新を考慮した上でタスクやアニメーション用のタスクをどうやって制御するか、Task(`setTimeout()`), Microtask(`queueMicrotask()`), animationTask(`requestAnimationFrame()`) でそれぞれ無限ループを作成したときになにがおこるかなどが理解できます。
+平均 16.7 ミリ秒 (60 fps) の間に 1 回起きるレンダリング更新を考慮した上でタスクやアニメーション用のタスクをどうやって制御するか、Task(`setTimeout()`), Microtask(`queueMicrotask()`), animationTask(`requestAnimationFrame()`) でそれぞれ無限ループを作成したときになにがおこるかなどが理解できます。
 
 ブラウザ環境については分かりましたが、Node 環境ではどうなるでしょうか?
 
@@ -651,11 +649,11 @@ while (tasksAreWaiting()) {
 
 https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw
 
-Node にはフェーズが存在しているため Event loop の全体はこうなっています(上記ページより引用)。
+Node にはフェーズが存在しているため Event loop の全体はこうなっています (上記ページより引用)。
 
 ![event loop 1](/images/js-async/img_node-event-loop-1.jpg)*各フェーズを含むイベントループ全体 (上記ページより引用)*
 
-上図での黄色い小さい箱が、Call stack で実行される JavaScript コードです。その黄色いボックス内部について拡大して見ているのが下図で、その内部はコールバック(つまり Task) を実行した後にマイクロタスクをキューが完全に空にするまで処理するためのループとなっています。
+上図での黄色い小さい箱が、Call stack で実行される JavaScript コードです。その黄色いボックス内部について拡大して見ているのが下図で、その内部はコールバック (つまり Task) を実行した後にマイクロタスクをキューが完全に空にするまで処理するためのループとなっています。
 
 ![event loop 2](/images/js-async/img_node-event-loop-2.jpg)*各フェーズで単一タスクが実行された後のマイクロタスクの処理 (上記ページより引用)*
 
@@ -665,7 +663,7 @@ https://github.com/nodejs/node/pull/22842
 
 https://github.com/nodejs/help/issues/3512
 
-v11 未満では、phase のキューにあるすべてタスクを処理してから、マイクロタスクを空にするようになっていましたが、v11 以上では単一タスクを処理したらすべてマイクロタスクを処理するように変更されています(つまりブラウザのイベントループの仕様に近づきました)。
+v11 未満では、phase のキューにあるすべてタスクを処理してから、マイクロタスクを空にするようになっていましたが、v11 以上では単一タスクを処理したらすべてマイクロタスクを処理するように変更されています (つまりブラウザのイベントループの仕様に近づきました)。
 
 実際、次のように v11 以上か未満で実行順番が異なってきます。
 
@@ -686,7 +684,7 @@ setTimeout(() => {
 // version v11 以上の出力順番 [1 2 3 4]
 ```
 
-次の IBM のコースの動画では Node の Event loop について今まで見たこと無いレベルの解像度で解説してくれています(限定公開されているため URL を知らないと Youtube から直接検索してもたどり着くことができません)。
+次の IBM のコースの動画では Node の Event loop について今まで見たこと無いレベルの解像度で解説してくれています (限定公開されているため URL を知らないと Youtube から直接検索してもたどり着くことができません)。
 
 @[youtube](X9zVB9WafdE)
 
@@ -696,7 +694,7 @@ https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#event-loop-exp
 
 https://developer.ibm.com/tutorials/learn-nodejs-the-event-loop/#why-you-need-to-understand-the-event-loop
 
-Node 環境では、Phase というものが存在しており、各フェーズに対応するタスクキュー(または準ずるもの)があり、一連の Phase をすべて経過することで Event loop の一周となることを理解します。
+Node 環境では、Phase というものが存在しており、各フェーズに対応するタスクキュー(または準ずるもの) があり、一連の Phase をすべて経過することで Event loop の一周となることを理解します。
 
 こちらも合わせて読むと Node のイベントループへの理解が深まります。
 https://blog.hiroppy.me/entry/nodejs-event-loop
@@ -830,7 +828,7 @@ https://github.com/nodejs/node/blob/c61870c376e2f5b0dbaa939972c46745e21cdbdd/dep
 
 Node については以上になります。
 
-一方、Deno 環境のイベントループについてはほとんど情報がなく公式ドキュメントが更新されるのを待っています(変更が多いので、かなり時間がかかりそう)。Rust の Future という Promise と似た機能で Tokio ランタイムを使ってイベントループを実現しているらしいですが、現時点ではあまり情報がありません。どうやら polyfill として Node の nextTickQueue も使えるため、node との互換性は可能な限り確保されているそうです。
+一方、Deno 環境のイベントループについてはほとんど情報がなく公式ドキュメントが更新されるのを待っています (変更が多いので、かなり時間がかかりそう)。Rust の Future という Promise と似た機能で Tokio ランタイムを使ってイベントループを実現しているらしいですが、現時点ではあまり情報がありません。どうやら polyfill として Node の nextTickQueue も使えるため、node との互換性は可能な限り確保されているそうです。
 
 Rust で書かれたイベントループの最初の tick はリポジトリ上では次の場所にあります。
 
@@ -852,7 +850,7 @@ Dynamic import やら、色々新しい処理が含まれており、なかな�
 この記事では公開した後から大きな追記を追加してきましたが、これ以上の本質的な部分はおそらくでてこないと思うので、修正以外の更新を終わりたいと思います。これ以上は、本質というよりも、単純に利用時の応用や注意点になると思いますし、細かい部分については Book の方などで書いていきたいと思います。
 :::
 
-ここまで、それぞれの環境でのイベントループの解像度を高めましたが、非同期処理を予測する上でのイベントループの本質的部分(**タスクとマイクロタスクの関係性**)は同じものであると想定します(実装がそうすると期待します)。
+ここまで、それぞれの環境でのイベントループの解像度を高めましたが、非同期処理を予測する上でのイベントループの本質的部分 (**タスクとマイクロタスクの関係性**) は同じものであると想定します (実装がそうすると期待します)。
 
 というのも Node や Deno の環境ではブラウザの実行モデルに可能な限り近づこうとしていることが issue などでよみとれます。そして、重要なこととして Chromium, Node, Deno はどれも JavaScript の V8 エンジンを搭載しています。
 
@@ -864,9 +862,9 @@ https://v8docs.nodesource.com/node-16.13/db/d08/classv8_1_1_microtask_queue.html
 V8 エンジンはイベントループを実装しないと以前に書いていましたが、正確には違いましたので修正いたします。詳細については追記の「V8 エンジンから考える」を見てください。
 :::
 
-Node や Deno はイベントループをそれぞれ異なるライブラリ(Libuv, Tokio)を使って実装していますが、**マイクロタスクのチェックポイント**(マイクロタスクをいつ実行するか)については V8 を埋め込む側(Node や Deno)が決めることができます。それゆえに Node では `nextTickQueue` にあるマイクロタスクを完全に処理してから `microTaskQueue` にあるマイクロタスクを処理するように調整しており、v10 と v11 でマイクロタスクのチェックポイントを変更してブラウザにより近いイベントループ(whatwg の仕様)に変更できています。
+Node や Deno はイベントループをそれぞれ異なるライブラリ (Libuv, Tokio) を使って実装していますが、**マイクロタスクのチェックポイント**(マイクロタスクをいつ実行するか) については V8 を埋め込む側 (Node や Deno) が決めることができます。それゆえに Node では `nextTickQueue` にあるマイクロタスクを完全に処理してから `microTaskQueue` にあるマイクロタスクを処理するように調整しており、v10 と v11 でマイクロタスクのチェックポイントを変更してブラウザにより近いイベントループ (whatwg の仕様) に変更できています。
 
-マイクロタスクのチェックポイントは「**Call stack (Execution context stack) が空になったら**」ということが HTML Standard の「Spin the event loop」の項目で書かれているので、ランタイム環境もこれに従うように実装する、と想定します(Event loop は HTML 仕様しか存在せず、ブラウザで動く JavaScript の再利用性を可能な限り高めるため)。
+マイクロタスクのチェックポイントは「**Call stack (Execution context stack) が空になったら**」ということが HTML Standard の「Spin the event loop」の項目で書かれているので、ランタイム環境もこれに従うように実装する、と想定します (Event loop は HTML 仕様しか存在せず、ブラウザで動く JavaScript の再利用性を可能な限り高めるため)。
 
 https://html.spec.whatwg.org/multipage/webappapis.html#spin-the-event-loop
 
@@ -882,25 +880,25 @@ MDN でも明確に「**タスクが終了して実行コンテキストが空�
 > Each time a task exits, and the execution context stack is empty, each microtask in the microtask queue is executed, one after another.
 > ([In depth: Microtasks and the JavaScript runtime environment - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth) より引用)
 
-HMTL 仕様にブラウザ環境とランタイム環境は従うはずですから、タスクとマイクロタスクの関係性は V8 を埋め込んでいるこれらの環境では同じです(同じモデルになるように実装するはずと想定します、バグなど以外は**実際そうなっています**)。
+HMTL 仕様にブラウザ環境とランタイム環境は従うはずですから、タスクとマイクロタスクの関係性は V8 を埋め込んでいるこれらの環境では同じです (同じモデルになるように実装するはずと想定します、バグなど以外は**実際そうなっています**)。
 
 V8 のドキュメントでもマイクロタスクは各タスクの終了時に実行され、マイクロタスクキューはイベントループに戻る前に常に空にされると記載されていました。
 
 > On a high level there are tasks and microtasks in JavaScript. Tasks handle events like I/O and timers, and execute one at a time. Microtasks implement deferred execution for async/await and promises, and **execute at the end of each task**. **The microtask queue is always emptied before execution returns to the event loop**.
 > ([Faster async functions and promises · V8](https://v8.dev/blog/fast-async#tasks-vs.-microtasks) より引用、太字は筆者強調)
 
-そして、次の図が非同期処理の学習において、イベントループで理解すべき本質的な事象の図となっています(理解の上で非常に重要であり、非同期処理を予測するためのメンタルモデルの核心になります)。
+そして、次の図が非同期処理の学習において、イベントループで理解すべき本質的な事象の図となっています (理解の上で非常に重要であり、非同期処理を予測するためのメンタルモデルの核心になります)。
 
 ![microtasks vs tasks](/images/js-async/img_microtasks-vs-tasks.png)*イベントループの共通部分とみなせる (上記ページより引用)*
 
-`setTimeout()` や  `setImmediate()` は環境の提供する非同期 API であり、それらはタスクを発行し、Promise や await の処理はマイクロタスクを発行し、**単一タスクが実行された後にすべてのマイクロタスクを処理します**。これを別の言い方で言うと「**コールスタックが空になったらマイクロタスクを処理する**」となります。ブラウザ環境とランタイム環境の大きな違いは**レンダリングの作業があるかないか**です。
+`setTimeout()` や `setImmediate()` は環境の提供する非同期 API であり、それらはタスクを発行し、Promise や await の処理はマイクロタスクを発行し、**単一タスクが実行された後にすべてのマイクロタスクを処理します**。これを別の言い方で言うと「**コールスタックが空になったらマイクロタスクを処理する**」となります。ブラウザ環境とランタイム環境の大きな違いは**レンダリングの作業があるかないか**です。
 
 :::message
-Node 環境では Promise が入る前にタスクを発行するコールバックベース(イベントベース)の API を基本として開発したこともあって、それらから発行されるタスクを仕分ける複数のタスクキューにプライオリティを設けるために Phase 概念を導入したと考えられます(個人的な推測です)。
+Node 環境では Promise が入る前にタスクを発行するコールバックベース (イベントベース) の API を基本として開発したこともあって、それらから発行されるタスクを仕分ける複数のタスクキューにプライオリティを設けるために Phase 概念を導入したと考えられます (個人的な推測です)。
 
-Deno 環境ではタイマー以外は Promise based な API を基本としたために Node の Phase に相当するものは実質 Timers のみとなっています(これについては Discord のヘルプでコミッターに聞きました)。
+Deno 環境ではタイマー以外は Promise based な API を基本としたために Node の Phase に相当するものは実質 Timers のみとなっています (これについては Discord のヘルプでコミッターに聞きました)。
 
-ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ)は古いタイプの API であるということが示唆されています。
+ブラウザ環境でも Web API で Promise を返さない非同期 API (コールバックを渡してタスクのみを発行するタイプ) は古いタイプの API であるということが示唆されています。
 
 > **理想的には、すべての async 関数はプロミスを返すはずですが、残念ながら API の中にはいまだに古いやり方で成功/失敗用のコールバックを渡しているものがあります**。顕著な例としては `setTimeout()` 関数があります。
 > ([プロミスの使用 - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises#%E5%8F%A4%E3%81%84%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF_api_%E3%82%92%E3%83%A9%E3%83%83%E3%83%97%E3%81%99%E3%82%8B_promise_%E3%81%AE%E4%BD%9C%E6%88%90) より引用)
@@ -913,7 +911,7 @@ https://developer.mozilla.org/ja/docs/Web/API/Blob/text
 
 https://nodejs.org/api/timers.html#timers-promises-api
 
-マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる(というか、もうなってる?)ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
+マイクロタスクを発行する Promise の仕組みが非同期処理の要になってくる (というか、もうなってる?) ことは間違い無さそうです。ただし、それはタスクがなくなるということを意味しているわけではありません。`<script>` タグなどの評価はタスクですし、ユーザーインタラクションによるイベントもなくなりません。
 :::
 
 ## V8 エンジンから考える (追記)
@@ -1016,7 +1014,7 @@ https://zenn.dev/estra/articles/asyncawait-v8-converting
 「環境が提供する機能である API を介して時間のかかる処理を環境に委任し、それが完了したら JavaScript のメインスレッドにその処理結果となるデータと共に通知させてその作業に関連する何か別の作業をコールバックの形で行う」というのが非同期処理の全体的な仕組みであり、「環境が並列的にバックグラウンドで作業している間もメインスレッドで別の作業を続けられるようにすること」が非同期処理の大きな目的となります。
 
 (C) そして非同期処理を予測するための概念と処理のモデルを手に入れることが重要です。
-**イベントループの中でタスクとマイクロタスクを処理するためのモデルが頭の中で完成すること**が非常に重要です。イベントループの解像度をあげるためには色々必要な情報が多いですが、本質的な部分は非常にシンプルであり、あらゆる環境で共通であると期待できます(これが分かるために色々な情報が必要だったわけですが)。
+**イベントループの中でタスクとマイクロタスクを処理するためのモデルが頭の中で完成すること**が非常に重要です。イベントループの解像度をあげるためには色々必要な情報が多いですが、本質的な部分は非常にシンプルであり、あらゆる環境で共通であると期待できます (これが分かるために色々な情報が必要だったわけですが)。
 
 非同期処理の学習をする際にはこれらの点に気をつけるとショートカットできると思うので、参考にしてみてください。あと「学習前予想時の４倍は難しい」ということがあながち嘘でもないことが分かったかもしれません。なるべく、ショートカットしてください😅
 
@@ -1025,7 +1023,7 @@ https://zenn.dev/estra/articles/asyncawait-v8-converting
 非同期処理を理解するのに必要不可欠な道具
 - [Loupe](http://latentflip.com/loupe/)
 - [JS Visualizer 9000](https://www.jsv9000.app)
-- すぐに JS を実行できるランタイム環境(Deno or Node)
+- すぐに JS を実行できるランタイム環境 (Deno or Node)
 
 非同期処理の基礎理解
 - [JavaScript Primer - 迷わないための入門書](https://jsprimer.net/)
@@ -1036,7 +1034,7 @@ https://zenn.dev/estra/articles/asyncawait-v8-converting
 - [JavaScriptのasync/await 理解してますか？ 説明できますか？ クイズに答えてもらって良いですか？ - YouTube](https://www.youtube.com/watch?v=T-_0Pc5P12U&t=36s)
 
 ある程度自信を持って理解したと言えるようになる
-- [JavaScript Promiseの本](https://azu.github.io/promises-book/)のコラム
+- [JavaScript Promiseの本](https://azu.github.io/promises-book/) のコラム
 - [We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 - [MDN](https://developer.mozilla.org/ja/docs/Learn/JavaScript/Asynchronous)
 

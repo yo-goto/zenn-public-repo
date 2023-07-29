@@ -6,9 +6,9 @@ emoji: "🕴"
 type: "tech"
 topics: ["typescript"]
 date: 2022-08-04
-modified: 2023-02-28
+modified: 2023-06-11
 url: "https://zenn.dev/estra/articles/typescript-type-set-hierarchy"
-tags: [" #type/zenn #TypeScript/inference "]
+tags: type/zenn, TypeScript/inference
 aliases:
   - 記事_TypeScript における型の集合性と階層性
   - 型の集合性
@@ -18,7 +18,6 @@ aliases:
   - 代入可能性
   - assignability
 ---
-
 
 ## はじめに
 
@@ -121,7 +120,7 @@ const myAnimal: Animal = myDog;
 ```
 :::
 
-実際、型は値の集合 (より厳密に言えば値と利用できる操作の集合) であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の部分集合としてみなせます (一つの具体的な値からそれに対応するリテラル型という単集合ができる)。
+実際、型は値の集合 (より厳密に言えば値と利用できる操作の集合) であり、具体的な文字列の値はすべての文字列を集めた `string` 型の要素として考えることができます。逆に、具体的な文字列リテラルによってつくられる１つの文字列リテラル型は `string` 型という集合の部分集合としてみなせます (1 つの具体的な値からそれに対応するリテラル型という単集合ができる)。
 
 > Type 型とは：型とは、値の集合であり、その集合に対して実行できることの集合である。
 > 少しわかりにくいと思うのでいくつか例を示しましょう。
@@ -456,7 +455,7 @@ const increment: NumberOp = (param) => {
 console.log(increment(42)); // => 43
 ```
 
-上記コードで定義した具体的な関数 `increment` は関数の型である `NumberOp` という集合内の一つの要素となります。`NumberOp` 型、つまり `(num: number) => number` という関数型の集合には他にも以下のような具体的な関数の要素が含まれています。
+上記コードで定義した具体的な関数 `increment` は関数の型である `NumberOp` という集合内の 1 つの要素となります。`NumberOp` 型、つまり `(num: number) => number` という関数型の集合には他にも以下のような具体的な関数の要素が含まれています。
 
 ```ts
 // (num: number) => number 型の関数値
@@ -648,17 +647,17 @@ https://stackoverflow.com/questions/49464634/difference-between-object-and-objec
 具体的にそれぞれがどんか型かを説明すると、`Object` 型は `null` と `undefined` 以外のすべての値 (プリミティブ型とオブジェクト型に含まれるあらゆる型) が代入可能な型です。`unknown` 型と `any` 型の subtype であり、それら以外のすべての型の supertype です。この型で型注釈するとエディタで Deno のリンターによって次のように注意されます。
 
 > This type may be different from what you expect it to be
-If you want a type meaning "any object", use `Record<string, unknown>` instead. Or if you want a type meaning "any value", you probably want `unknown` instead.
+If you want a type meaning "any object", use `Record<string, unknown> ` instead. Or if you want a type meaning "any value", you probably want `unknown` instead.
 
 `{}` は空オブジェクト型 (empty object type) で、そのまま空のオブジェクトの型です。"ban-types" のリンタールールで注意される文には `null` と `undefined` 以外を表現するための型であると記載されています。
 
 > `{}` doesn't mean an empty object, **but means any types other than `null` and `undefined`**
-> If you want a type that means "empty object", use `Record<never, never>` instead.
+> If you want a type that means "empty object", use `Record<never, never> ` instead.
 
 `object` 型 (小文字から始まる方) は [TypeScript v2.2 から導入された型](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#object-type) で、"**non-primitve type**" (プリミティブ型ではない型) ということを表現するための型であり、`number | string | boolean | symbol | null | undefined` の否定を満たす型です。この型も Deno 環境で明示的に型注釈しようとすると、可能な限り使わないようにと "ban-types" のリンタールール以下のように注意されます。
 
 > This type is tricky to use so should be avoided if possible
-Use `Record<string, unknown>` instead.
+Use `Record<string, unknown> ` instead.
 
 空ではないオブジェクトリテラル型 (一般的なオブジェクトの型) はこの `object` 型の傘下の subtype であり、`interface` を使ったユーザー定義の型などもすべて `object` 型傘下の subtype となります。
 
@@ -747,7 +746,7 @@ const nev: never = numAsAny; // [Error]
 
 #### never 型
 
-`never` 型は本来は「値を持たない」ということを表現する型なので、`never` 型には `never` 型しか代入できないということを検証するには型アサーションで `never` 型としてあげることで可能です。また、`never` 型は最下層の subtype つまり Bottom type なので `never` 型からみればあらゆる型が supertype となり代入可能です (各リテラル型も supertype です)。
+`never` 型は本来的には「値を持たない」ということを表現する型なので、`never` 型には `never` 型しか代入できないということを検証するには型アサーションで `never` 型としてあげることで可能です。また、`never` 型は最下層の subtype つまり Bottom type なので `never` 型からみればあらゆる型が supertype となり代入可能です (各リテラル型も supertype です)。
 
 ```ts
 // 通常 never 型は値を持たないはずだが、型アサーションで never 型にできて、never 型に代入できる
@@ -774,7 +773,7 @@ const v: void = u;
 
 https://github.com/microsoft/TypeScript-Website/pull/2470
 
-どうやら別のPRで subtype の記述自体が削除されたようです。
+どうやら別の PR で subtype の記述自体が削除されたようです。
 
 https://github.com/microsoft/TypeScript-Website/pull/2760
 
@@ -800,13 +799,13 @@ https://www.oreilly.com/library/view/effective-typescript/9781492053736/
 
 ### 関連情報について
 
-TypeScript の型階層図はネットで探してそこまで見つからないので、代わりに別の言語を使って「[Scala type hierarchy](https://www.google.com/search?q=Scala+type+hierarchy&tbm=isch)」などでググると型の階層図の画像が多く見れます。集合についても他の言語で調べた方が詳しい情報が得られます。
+TypeScript の型階層図はネットで探してそこまで見つからないので、代わりに別の言語を使って「[Scala type hierarchy](https://www.google.com/search?q=Scala+type+hierarchy&tbm=isch)」などでググると型の階層図の画像が多く見られます。集合についても他の言語で調べた方が詳しい情報を得られます。
 
 型理論等は専門用語や数学的な記法が多くてとっつきづらいのですが、触りだけでも有用な知識 (あるいは必要不可欠な知識) がいくつかあるみたいなので初心者向けに解説されているもの等あるといいなと思いますね🤔
 
 公式 Handbook も『Types as Sets』の項目では型を集合論的に考えることを推奨している感じがあるので、型理論とはいかずとも集合論をベースにした上でクラスじゃなくてプリミティブ型と普通のオブジェクト型を中心とした型システムの解説書などがあるといいなとも思います。
 
-目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしていたので購入してみたのですが、第二章の「Item 7: Think of Types as Sets of Values」に解説してきたような内容が記載されていました。結構分かりやすく解説されていましたが、図や踏み込んだ解説が多くはなかったので、これ以上調べるには Benjamin C. Pierce 氏による『[Types and Programming Languages](https://amzn.asia/d/gC1n3Jv)』通称 TAPL と呼ばれる型システムについての専門書などを見た方がいいのかもしれません (購入を検討しています)。
+目次を見る限り [Effective TypeScript](https://effectivetypescript.com) がその辺良さそうな感じな気がしていたので購入してみたのですが、第 2 章の「Item 7: Think of Types as Sets of Values」に解説してきたような内容が記載されていました。結構分かりやすく解説されていましたが、図や踏み込んだ解説が多くはなかったので、これ以上調べるには Benjamin C. Pierce 氏による『[Types and Programming Languages](https://amzn.asia/d/gC1n3Jv)』通称 TAPL と呼ばれる型システムについての専門書などを見た方がいいのかもしれません (~~購入を検討しています~~ 購入しました)。
 
 というか TypeScript について上記のような読み物が世の中に無いならいっそのこと自分で作ってやろうと思って本を作りました。まだ未完成ですが、関連使用の調査や自分の理解などを追記して完成させるつもりです。
 
