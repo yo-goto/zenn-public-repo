@@ -1,7 +1,7 @@
 {
-  "textlint.autoFixOnSave": true,
+  "textlint.autoFixOnSave": false,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "taichi.vscode-textlint",
+  "editor.defaultFormatter": "denoland.vscode-deno",
   "highlight.decorations": { "rangeBehavior": 3 },
   "highlight.regexFlags": "gi",
   "highlight.regexes": {
@@ -96,4 +96,5 @@
       ]
     }
   },
+  "deno.enable": true,
 }
