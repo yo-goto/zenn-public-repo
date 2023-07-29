@@ -12,6 +12,8 @@ aliases:
 ---
 url: https://zenn.dev/estra/books/obsidian-dot-zenn
 
+<!-- textlint-disable -->
+
 ## MOC
 
 メイン
@@ -84,3 +86,5 @@ chapters:
   - 5-oz-make-article-book # [[5-oz-make-article-book|OZ本『記事や本を作成しよう』]]
   - 6-oz-reuse-memo # [[6-oz-reuse-memo|OZ本『情報を再利用しよう』]]
   - b-oz-css-snippets # [[b-oz-css-snippets|OZ本『カスタム CSS スニペットでデザインしよう』]]
+
+<!-- textlint-enable -->
