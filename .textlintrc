@@ -1,21 +1,5 @@
 {
-  "plugin": {
-    "@textlint/markdown": {
-      "extensions": [".md"]
-    }
-  },
   "rules": {
-    "preset-ja-technical-writing": {
-      "ja-no-redundant-expression": false,
-      "no-exclamation-question-mark": false,
-      "no-doubled-joshi": {
-        "strict": false,
-        "allow": ["か"]
-      },
-      "ja-no-weak-phrase": false,
-      "ja-no-mixed-period": false,
-      "max-kanji-continuous-len": false
-    },
     "preset-ja-spacing": {
       "ja-space-between-half-and-full-width": {
         "space": "always",
@@ -26,10 +10,34 @@
         "after": true
       }
     },
-    "ja-technical-writing/ja-no-mixed-period": {
-      "allowPeriodMarks": [":"]
+    "preset-jtf-style": {
+      "1.1.3.箇条書き": false,
+      "1.2.1.句点(。)と読点(、)": true,
+      "1.2.2.ピリオド(.)とカンマ(,)": true,
+      "2.2.2.算用数字と漢数字の使い分け": false,
+      "2.2.3.一部の助数詞の表記": false,
+      "3.1.1.全角文字と半角文字の間": false,
+      "3.2.カタカナ語間のスペースの有無": false,
+      "4.2.7.コロン(：)": false,
+      "4.3.1.丸かっこ（）": false,
+      "4.3.2.大かっこ［］": false,
+      "4.3.3.かぎかっこ「」": false,
+      "4.3.4.二重かぎかっこ『』": false
     },
-    "ja-technical-writing/sentence-length": false,
+    "preset-ja-technical-writing": {
+      "ja-no-redundant-expression": false,
+      "no-exclamation-question-mark": false,
+      "no-doubled-joshi": {
+        "strict": false,
+        "allow": ["か"]
+      },
+      "ja-no-weak-phrase": false,
+      "ja-no-mixed-period": false,
+      "max-kanji-continuous-len": false,
+      "allowPeriodMarks": [":"],
+      "sentence-length": false,
+      "no-hankaku-kana": true
+    },
     "@proofdict/proofdict": {
       "dictURL": "https://yo-goto.github.io/proof-dictionary/"
     }
