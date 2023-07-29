@@ -6,7 +6,7 @@ published: true
 cssclasses: zenn
 emoji: "✍️"
 type: tech
-topics: [deno, textlint, 執筆]
+topics: [deno, textlint, 執筆, zenn]
 url: https://zenn.dev/estra/articles/deno-textlint-zenn
 tags:
   - type/zenn
