@@ -112,7 +112,7 @@ returnPromise('2nd Promise', 'D').then((value) => {
 console.log('🦖 [F] MAINLINE: Sync');
 ```
 
-実行順番がどうなるか分かりましたか?
+実行順番がどうなるか分かりましたか？
 
 :::details 答え
 答えは、「A → B → D → F → C → E」となります。

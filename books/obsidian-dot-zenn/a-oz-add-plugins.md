@@ -345,7 +345,7 @@ https://github.com/tadashi-aikawa/obsidian-old-note-admonitor
 
 # AutoNoteMover
 
-AutoNoteMover プラグインは正規表現で指定したファイル名規則に合致するフィアルを自動的に指定しておいたフォルダに移動してくれるコミュニティプラグインです。
+AutoNoteMover プラグインは正規表現で指定したファイル名規則に合致するファイルを自動的に指定しておいたフォルダに移動してくれるコミュニティプラグインです。
 
 https://github.com/farux/obsidian-auto-note-mover
 

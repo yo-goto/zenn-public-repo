@@ -174,7 +174,7 @@ returnPromise("1st Promise", "[B]")
 console.log("🦖 [G] Sync");
 ```
 
-「then メソッドのコールバックで Promise インスタンスを返す」や「[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)」のチャプターでネストは経験したので正解できましたか?
+「then メソッドのコールバックで Promise インスタンスを返す」や「[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)」のチャプターでネストは経験したので正解できましたか？
 
 :::details 答え
 答えは、「A → B → G → C → D → E → F」となります。
@@ -617,7 +617,7 @@ doAsyncTask()
   });
 ```
 
-そして、重要なこととして、`console.log()` で出力した実際のログには `Promise { <pending> }` という値が表されます。非同期処理 A, B, C はそもそも Promise インスタンスを返す非同期処理でした。実際に値を取り出して経過を見たり、追加で何かしらの処理を行うにはどうすればよいでしょうか?
+そして、重要なこととして、`console.log()` で出力した実際のログには `Promise { <pending> }` という値が表されます。非同期処理 A, B, C はそもそも Promise インスタンスを返す非同期処理でした。実際に値を取り出して経過を見たり、追加で何かしらの処理を行うにはどうすればよいでしょうか？
 
 ### Promise インスタンスから解決値を取り出して処理する
 

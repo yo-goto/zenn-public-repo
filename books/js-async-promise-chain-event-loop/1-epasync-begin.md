@@ -243,7 +243,7 @@ https://www.jsv9000.app
 :::details ChangeLog
 - 2023-03-29
   - 『[async/await Pattern の歴史的発展](o-epasync-async-await-pattern-history)』のチャプターを追加
-  - 見出しをh2レベルを基準に変更
+  - 見出しを h2 レベルを基準に変更
 - 2023-02-13
   - 『[コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)』のチャプターにおける解説の[間違いを修正](https://github.com/yo-goto/zenn-public-repo/commit/f3d94e0839f67e0d25e39bbd42649f6e3e8677dd)。
 - 2023-01-09
@@ -313,7 +313,7 @@ https://www.jsv9000.app
     - それに伴い Event loop のステップについて各所を修正
   - 新チャプター追加
     - 『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』で関数式とアロー関数の補足を追加
-  - 『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)』で「コールバック関数はいつ実行される?」の項目を追加
+  - 『[コールバック関数の同期実行と非同期実行](4-epasync-callback-is-sync-or-async)』で「コールバック関数はいつ実行される？」の項目を追加
   - 『[then メソッドは常に新しい Promise を返す](6-epasync-then-always-return-new-promise)』で「Promise の状態を確かめる」の項目を追加
   - 『[Promise chain で値を繋ぐ](7-epasync-pass-value-to-the-next-chain)』で「チェーンの最後まで値を繋ぐ」の項目を追加
   - 『[Promise chain はネストさせない](9-epasync-dont-nest-promise-chain)』で「fetch の例」の項目を追加

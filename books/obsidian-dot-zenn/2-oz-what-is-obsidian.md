@@ -47,8 +47,8 @@ Catalyst ライセンスは開発サポートのためのライセンスであ�
 
 また、有料アドオンサービスとして次の２つの機能が別途提供されています。
 
-- [Obsidian Sync](https://obsidian.md/sync) (10＄/月 または 96＄/年)
-- [Obsidian Publish](https://obsidian.md/publish) (１サイトにつき 20＄/月 または 192＄/年)
+- [Obsidian Sync](https://obsidian.md/sync) (10＄/月または 96＄/年)
+- [Obsidian Publish](https://obsidian.md/publish) (１サイトにつき 20＄/月または 192＄/年)
 
 Publish は自分のノートをインターネット上に公開できるサービスであり、個人で公開するだけでなく他ユーザーが共同編集できるコラボレーション機能やパスワードによって閲覧者を制限できる機能が提供されています。
 
@@ -64,7 +64,7 @@ Obsidian は「マークダウン」のフォーマットによってドキュ�
 
 ![エディタ画像](/images/oz/img_oz-official-page-start.jpg)*https://obsidian.md より*
 
-これまで PKM ツールとして使えるものは [Evernote](https://evernote.com/intl/jp) といったデジタルメモツールでしたが、昨今は [Scrapbox](https://scrapbox.io/product) や [Roam Research](https://roamresearch.com/)、[Logseq](https://logseq.com/)、Obsidian といった [Networked Thought](https://nesslabs.com/networked-thinking)(ネットワーク化された思考) を補助し｢[第二の脳をつくる](https://www.buildingasecondbrain.com/)｣ためのツールが注目されています。
+これまで PKM ツールとして使えるものは [Evernote](https://evernote.com/intl/jp) といったデジタルメモツールでしたが、昨今は [Scrapbox](https://scrapbox.io/product) や [Roam Research](https://roamresearch.com/)、[Logseq](https://logseq.com/)、Obsidian といった [Networked Thought](https://nesslabs.com/networked-thinking)(ネットワーク化された思考) を補助し「[第二の脳をつくる](https://www.buildingasecondbrain.com/)」ためのツールが注目されています。
 
 これらのツールでは wikipedia のようにリンクをつかったハイパーテキストによる wiki を個人で作り上げることができるの特徴です。
 
@@ -160,7 +160,7 @@ Obsidian のユーザーインターフェースはノートのタブスペー�
 
 ![サイドバー](/images/oz/img_oz-sidebars.jpg)
 
-サイドバーにはそれぞれ「アウトライン (見出し)」 や「ファイルエクスプローラ (フォルダツリー) 」などのマークダウンエディタに必要な一通りの機能が備え付けられており、それぞれの機能はコアプラグインとして提供されているので個別に有効化・無効化できます。
+サイドバーにはそれぞれ「アウトライン (見出し)」や「ファイルエクスプローラ (フォルダツリー)」などのマークダウンエディタに必要な一通りの機能が備え付けられており、それぞれの機能はコアプラグインとして提供されているので個別に有効化・無効化できます。
 
 PKM ツールにとって重要な機能としてサイドバーから利用できる「**バックリンク**」と「**アウトゴーイングリンク**」という機能があります。
 

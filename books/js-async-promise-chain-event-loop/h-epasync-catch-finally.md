@@ -161,7 +161,7 @@ Promise.reject(42)
 
 例えば、`Promise.reject()` で拒否状態の Promise インスタンスに `then()` と `catch()` メソッドをチェーンしてみます。
 
-実行順番はどうなるでしょうか?
+実行順番はどうなるでしょうか？
 
 ```js
 // catchMicrotask-1.js
@@ -274,7 +274,7 @@ console.log("🦖 [J-2] MAINLINE: End");
 
 上記のような登録してあるコールバック関数が実行されなくても、マイクロタスクが必ず実行される理由は、`catch` メソッドと `finally` メソッドが内部的に `then` メソッドを利用していることと更にもう一つ理由があります。
 
-まずは `catch` と `finally` が `then` (`Promise.prototype.then`) を利用していることを確認しておきましょう。これについて詳しくは 『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しますが、ECMAScript 仕様を見てます。
+まずは `catch` と `finally` が `then` (`Promise.prototype.then`) を利用していることを確認しておきましょう。これについて詳しくは『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説しますが、ECMAScript 仕様を見てます。
 
 [Promise.prototype.catch(onRejected)](https://tc39.es/ecma262/#sec-promise.prototype.then) のアルゴリズムステップは引数 `onRejected` (コールバック) を取って以下のように実行されます。
 

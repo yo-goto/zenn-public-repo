@@ -397,7 +397,7 @@ V8 エンジンでは Web API である `queueMicrotask()` は提供されない
 
 ### await も return も無い場合
 
-それでは次に、`await` 式も `return` も無い async 関数を考えてみましょう。次のようなシンプルに何もしない async 関数の変換はどうなるでしょうか?
+それでは次に、`await` 式も `return` も無い async 関数を考えてみましょう。次のようなシンプルに何もしない async 関数の変換はどうなるでしょうか？
 
 ```js:何もしない async 関数
 async function empty() {}
@@ -1189,7 +1189,7 @@ new Promise(resolve => {
 
 そういう訳で、この Promise インスタンスが履行状態となるまでにマイクロタスクが２個必要となり、出力順番は a → c → b となるわけです。
 
-それでは、次の場合はどうなるでしょうか?
+それでは、次の場合はどうなるでしょうか？
 
 ```js
 // resolveWithPromise2.js
