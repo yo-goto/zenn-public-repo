@@ -86,50 +86,78 @@ new Promise((resolve, reject) => {
   });
 ```
 
-#### 値をつなぐことはできる
+#### 元の履行値と拒否理由を透過させる
 
-前のメソッドからの入力値は取れませんが、`finally` のコールバックから値を返すと次の chain へつなぐことができます。
+:::message alert
+2023-07-30 追記
+以前の解説では `finally` メソッドのコールバック関数で値をつなぐことができると記載していましたが、それは誤りでした。誤った情報を記載してしまいすみませんでした。
+:::
+
+`finally` メソッドのコールバック関数は chain 元の Promise オブジェクトからの入力値は取れません。更に `finally` のコールバックから値を返しても次に chain している `then` や `catch` メソッドのコールバック関数へその値をつなぐことはできず、chain 元の Promise オブジェクトが持つ履行値や拒否理由を継続して持つような新しい Promise オブジェクトを返します。
+
+```js
+Promise.resolve(42)
+  .then(x => x + 1) // 43で履行
+  .finally(x => {
+    console.log(x); // => undefined (入力値は取れない)
+    return 33; // この値は無視される
+  }) // 43で履行
+  .then(x => {
+    console.log(x); // => 43 (元のPromiseの履行値)
+    return x + 1;
+  })  // 44で履行
+  .finally(x => {
+    console.log(x); // => undefined (入力値は取れない)
+    return Promise.resolve(34); // この値は無視される
+  }) // 44で履行
+  .then(x => {
+    console.log(x); // => 44 (元のPromiseの履行値)
+    throw x + 1;
+  }) // 45で拒否
+  .catch(x => x + 1) // 46で履行
+  .finally(x => {
+    console.log(x); // => undefined (入力値は取れない)
+  }) // 46で履行
+  .then(console.log); // => 46 (元のPromiseの履行値)
+
+/* RESULT
+❯ deno run finallyChain.js
+undefined
+43
+undefined
+44
+undefined
+46
+*/
+```
+
+一方、`finally` メソッドのコールバック関数内で throw したり、拒否状態の Promise を返した場合にはその拒否理由で拒否状態となった Promise オブジェクトが返ってくるので注意が必要です。
 
 ```js
 Promise.resolve(42)
   .finally(x => {
     console.log(x); // => undefined
-    return 33;
-  })
-  .then(console.log); // => 33
-```
-
-#### 返される Promise は chain 元の Promise の値で解決される
-
-以下のように `Promise.resolve(42)` の後に chain した `finally` メソッドから更に `then` を chain するとコールバック関数の入力値として `42` が渡ります。
-
-```js
-Promise.resolve(42)
-  .finally(() => {
-    console.log("FINALLY");
-  }) // この promise は 42 で解決される
-  .then(x => {
-    console.log("THEN:", x);
-    // => THEN: 42
-  });
-```
-
-これはつまり、`42` で解決された promise で `finally()` を呼び出すと、同じく `42` で解決される promise になることを示しています。これらは２つの異なる promise ですが、同じ値に解決されます。
-
-同じ様に、`Promise.reject` で値 `42` を理由にしても次の `catch` につなぐことができます。
-
-```js
-Promise.reject(42)
-  .finally(() => {
-    console.log("FINALLY");
-  }) // この promise は 42 で拒否される
+    throw 33;
+  }) // 33で拒否
   .catch(x => {
-    console.log("CATCH:", x);
-    // => CATCH: 42
+    console.log(x); // => 33
+  }) // 33で履行
+  .finally(x => {
+    console.log(x); // => undefined
+    return Promise.reject(99);
+  }) // 99で拒否
+  .catch(x => {
+    console.log(x); // => 99
   });
-```
 
-`finally()` から返された promise は元の promise と同じ理由で拒否されます。
+/* RESULT
+❯ deno run finallyThrow.js
+undefined
+33
+undefined
+99
+*/
+```
 
 このように `finally()` で Promise の拒否理由を受け渡すことができるということは、`finally()` のハンドラを追加してもプロミスの拒否を処理したことにはならない、ということになるので注意してください。つまり、`catch` で捕捉していない場合には未処理の拒否が残ることになります。
 
@@ -137,13 +165,17 @@ Promise.reject(42)
 拒否されたプロミスが `finally()` ハンドラしか持たない場合、JavaScript ランタイムは依然として未処理のプロミス拒否に関するメッセージを出力します。そのメッセージを回避するためには、`then()` や `catch()` で拒否ハンドラを追加する必要があります。
 :::
 
-また、上のコードの中間に `then` を挿入しても、`then()` のコールバックは実行されません (実際には後述する `x => { throw x; }` のような thrower 関数がマイクロタスクとして発行されてイベントループで処理されています)。
+また、`finally` メソッドは chain 元の Promise オブジェクトの履行値や拒否理由を継続使用して新しい Promise オブジェクトを作成して返します。したがって、`finally` メソッドが拒否状態の Promise に chain しているときには、`finally` メソッドから返る Promise オブジェクトに chain している `then` メソッドのコールバック関数は実行されないことになります。
+
+:::message alert
+実際には `then` メソッドでは、後述する `x => { throw x; }` のような thrower 関数がコールバック関数となってマイクロタスクとしてイベントループで処理されています。これが値を次に chain している Promise オブジェクトに渡すことができる利用です。
+:::
 
 ```js
 Promise.reject(42)
   .finally(() => {
     console.log("FINALLY"); // => FINALLY
-  })
+  }) // 42で拒否されたPromiseが返る
   .then(x => { // 無視される
     console.log("THEN", x);
     return 2;

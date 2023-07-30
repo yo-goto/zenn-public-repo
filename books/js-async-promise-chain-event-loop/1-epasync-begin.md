@@ -243,6 +243,7 @@ https://www.jsv9000.app
 :::details ChangeLog
 - 2023-07-30
   - 「章」を「部」に修正
+  - 『[catch メソッドと finally メソッド](h-epasync-catch-finally)』の「finally メソッドの値を繋げる」の箇所に誤りがあったため修正
 - 2023-03-29
   - 『[async/await Pattern の歴史的発展](o-epasync-async-await-pattern-history)』のチャプターを追加
   - 見出しを h2 レベルを基準に変更
