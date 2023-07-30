@@ -93,7 +93,7 @@ zenn-cli と textlint のプリセットとしてとりあえず以下の 3 つ�
 
 今回は `deno.jsonc` ファイルを作成し、そこに textlint を使って実行したいチェックや修正などのタスクを定義しておきます。textlint のプリセットルールなどを利用する上で重要なこととして、プリセットのモジュールがストアにキャッシュされていることが必要です。したがって、textlint を実行する前にまずはモジュールのキャッシュを行いましょう。モジュールのキャッシュは `deps.ts` ファイルに対して `deno cache` コマンドを実行することで可能となります。これを task として定義しておきます。
 
-```jsonc:deno.jsonc
+```json:deno.jsonc
 {
   "tasks": {
     "cache": "deno cache deps.ts",
@@ -111,7 +111,7 @@ deno task cache
 
 Deno は v1.28 から [npm specifier](https://deno.land/manual@v1.35.3/node/npm_specifiers) という機能が使えるようになりました。これによって npm のモジュールを Deno から利用できます。`deno run -A npm:zenn-cli --init` のように `deno run` コマンドを使うことで `npx` のようにコマンドを実行できます。このようなコマンド実行をいちいち CLI からやるのは面倒なので zenn-cli でのプレビューなどを実行するための task も定義しておきましょう。
 
-```diff jsonc:deno.jsonc
+```diff json:deno.jsonc
 {
   "tasks": {
     "cache": "deno cache deps.ts",
@@ -135,7 +135,7 @@ deno task zenn:preview
 
 さて、当該の textlint も同様に実行したい CLI からのコマンドを task として定義してあげます。
 
-```diff jsonc:deno.jsonc
+```diff json:deno.jsonc
   "tasks": {
     "cache": "deno cache deps.ts",
     "zenn": "deno run -A npm:zenn-cli",
@@ -150,7 +150,7 @@ deno task zenn:preview
 
 ついでの Deno のビルトインフォーマッターの設定も追加しておきます。
 
-```jsonc:deno.jsonc
+```json:deno.jsonc
 {
   "tasks": {
     "cache": "deno cache deps.ts",
