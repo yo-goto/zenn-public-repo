@@ -20,7 +20,7 @@ aliases:
 
 お久しぶりです。今回の記事では二番煎じですが Deno 環境で textlint を動かす方法、および Zenn のリポジトリを Deno 運用する方法について語ろうと思います。
 
-自分の環境では極力 `node_modules` ディレクトリを作りたくないので、その方法として Zenn のリポジトリでは Deno を使うことにしました。Deno で textlint を動かす方法についての基本は以下の記事を参考にしていますが、もっと簡単に利用できるための方法を見つけたので紹介したいと思います。
+自分の環境では極力 `node_modules` ディレクトリを作りたくないので、元々は pnpm を利用して、`node_modules` 内の容量を軽減していました。それでも結局はディレクトリ自体が作成されてしまっていました。これを回避する方法として Zenn のリポジトリでは Deno を使うことにしました。Deno で textlint を動かす方法についての基本は以下の記事を参考にしていますが、もっと簡単に利用できるための方法を見つけたので紹介したいと思います。
 
 https://zenn.dev/kn1cht/articles/deno-textlint
 
@@ -71,7 +71,7 @@ deno = "1.35.1"
 
 実際に利用する依存モジュールの管理を行うファイルを作成します。Deno では基本的に `package.json` を使わず、慣習的に `deps.ts` ファイルにリモート依存として URL を配置しておきます。※ Node との互換性のために [`package.json` も利用可能](https://deno.land/manual@v1.35.3/node/package_json)です。
 
-使い方は、以下のように npm specifier を使って以下のように副作用 import を記載しておきます。[import_map](https://deno.land/manual@v1.35.3/basics/import_maps) を使ってもよいですが import_map では直接 cache することができず `dep.ts` ファイルを介して利用することになるので、最初から `deps.ts` を使って依存を import するようにした方がはやいです。
+使い方は、以下のように npm specifier を使って副作用 import を記載しておきます。[import_map](https://deno.land/manual@v1.35.3/basics/import_maps) を使ってもよいですが import_map では直接 cache することができず `dep.ts` ファイルを介して利用することになるので、最初から `deps.ts` を使って依存を import するようにした方がはやいです。
 
 ```ts:deps.ts
 import "npm:zenn-cli@^0.1.144";
@@ -234,4 +234,4 @@ deno task lint:fix .
 
 ## まとめ
 
-Deno を使って Zenn のリポジトリを運用し、textlint を実行する方法を紹介しました。僕の執筆環境では node_modules を絶対はやしたくないのでこのような構成としました。Deno を使うことでディレクトリが非常にスッキリしました。実際に Zenn の公開リポジトリは上記の方法を使っているので、興味があればリポジトリを見てみるといいかもしれません。
+Deno を使って Zenn のリポジトリを運用し、textlint を実行する方法を紹介しました。自分の執筆環境では node_modules を可能な限りはやしたくないのでこのような構成としました。Deno を使うことでディレクトリが非常にスッキリしました。実際に Zenn の公開リポジトリは上記の方法を使っているので、興味があればリポジトリを見てみるといいかもしれません。
