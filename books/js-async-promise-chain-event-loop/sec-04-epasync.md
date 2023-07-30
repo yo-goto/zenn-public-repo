@@ -1,16 +1,16 @@
 ---
-title: "第４章 - 制御と型注釈"
+title: "第４部 - 制御と型注釈"
 cssclass: zenn
 date: 2022-07-13
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-alieases: [EPAsync 第４章]
+alieases: [EPAsync 第４部]
 ---
 
-## この章について
+## この部について
 
-第４章では Promise の静的メソッドと await 式の配置によって複数処理の制御や反復処理などの非同期処理の応用的な内容について解説していきます。
+第４部では Promise の静的メソッドと await 式の配置によって複数処理の制御や反復処理などの非同期処理の応用的な内容について解説していきます。
 
 また、Promise の型注釈を行う方法についても解説します。TypeScript で非同期処理をするために必要な情報を一通り解説していますので TypeScript の基礎自体を学びつつ型注釈を行えるようになっています。
 

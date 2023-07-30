@@ -868,7 +868,7 @@ async function* asyncGenFn(url) {
 
 ## 型注釈と型定義
 
-第４章の最終チャプター『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
+第４部の最終チャプター『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
 
 ### イテレータとイテラブルの型注釈
 

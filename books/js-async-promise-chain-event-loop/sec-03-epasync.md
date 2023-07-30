@@ -1,16 +1,16 @@
 ---
-title: "第３章 - async 関数と await 式の挙動"
+title: "第３部 - async 関数と await 式の挙動"
 cssclass: zenn
 date: 2022-06-16
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-alieases: [EPAsync 第３章]
+alieases: [EPAsync 第３部]
 ---
 
-## この章について
+## この部について
 
-第３章ではいよいよ async/await へと突入します。Promise chain とイベントループの知識を使って async/await を理解します。第３章は Promise の知識が必須なのでなるべく[第２章](sec-02-epasync)を終えてから読むようにしてください。
+第３部ではいよいよ async/await へと突入します。Promise chain とイベントループの知識を使って async/await を理解します。第３部は Promise の知識が必須なのでなるべく[第２部](sec-02-epasync)を終えてから読むようにしてください。
 
 ## チャプター
 

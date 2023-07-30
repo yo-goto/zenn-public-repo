@@ -94,7 +94,7 @@ aliases:
 
 ```yaml
   - 1-epasync-begin # 『はじめに』
-  - sec-01-epasync # 『第１章 - API を提供する環境と実行メカニズム』
+  - sec-01-epasync # 『第１部 - API を提供する環境と実行メカニズム』
   - f-epasync-asynchronous-apis # 『非同期 API と環境』
   - f-epasync-synchronus-apis # 『同期 API とブロッキング』
   - 2-epasync-event-loop # 『イベントループの概要と注意点』
@@ -102,7 +102,7 @@ aliases:
   - e-epasync-v8-engine # 『V8エンジン』
   - b-epasync-callstack-execution-context # 『コールスタックと実行コンテキスト』
   - c-epasync-what-event-loop # 『それぞれのイベントループ』
-  - sec-02-epasync # 『第２章 - Promise インスタンスと連鎖』
+  - sec-02-epasync # 『第２部 - Promise インスタンスと連鎖』
   - a-epasync-promise-basic-concept # 『Promise の基本概念』
   - 3-epasync-promise-constructor-executor-func # 『Promise コンストラクタ』と Executor 関数』
   - 4-epasync-callback-is-sync-or-async # 『コールバック関数の同期実行と非同期実行』
@@ -117,17 +117,17 @@ aliases:
   - h-epasync-catch-finally # 『catch メソッドと finally メソッド』
   - 12-epasync-wrapping-macrotask # 『古い非同期APIをPromiseでラップする』
   - 13-epasync-loop-is-nested # 『イベントループは内部にネストしたループがある』
-  - sec-03-epasync # 『第３章 - async 関数と await 式の挙動』
+  - sec-03-epasync # 『第３部 - async 関数と await 式の挙動』
   - 14-epasync-chain-to-async-await # 『Promise chain から async 関数へ』
   - 15-epasync-v8-converting # 『V8 エンジンによる async/await の内部変換』
   - 16-epasync-top-level-async # 『Top-level await』
-  - sec-04-epasync # 『第４章 - 制御と型注釈』
+  - sec-04-epasync # 『第４部 - 制御と型注釈』
   - 17-epasync-static-method # 『Promise の静的メソッドと並列化』
   - 18-epasync-await-position # 『await 式の配置による制御』
   - 19-epasync-async-loop # 『反復処理の制御』
   - k-epasync-iterator-generator # 『イテレータとイテラブルとジェネレータ関数』
   - j-epasync-ts-promise-type-annotation # 『TypeScript における Promise の型注釈』
-  - sec-05-epasync # 『第５章 - 仕様およびその他の番外編』
+  - sec-05-epasync # 『第５部 - 仕様およびその他の番外編』
   - m-epasync-promise-prototype-then # 『Promise.prototype.then の仕様挙動』
   - n-epasync-promise-spec-compare # 『Promise chain と async/await の仕様比較』
   - o-epasync-async-await-pattern-history # 『async/await Pattern の歴史的発展』

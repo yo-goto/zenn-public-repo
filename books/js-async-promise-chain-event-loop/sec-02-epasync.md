@@ -1,26 +1,26 @@
 ---
-title: "第２章 - Promise インスタンスと連鎖"
+title: "第２部 - Promise インスタンスと連鎖"
 cssclass: zenn
 date: 2022-06-16
 modified: 2022-11-02
 AutoNoteMover: disable
 tags: [" #type/zenn/book  #JavaScript/async "]
-aliases: EPAsync 第２章
+aliases: EPAsync 第２部
 ---
 
-## この章について
+## この部について
 
-第２章では Promise インスタンスと Promise chain について見ていきます。Promise chain は非同期処理の処理予測を行うためのメンタルモデルを構築する上で基礎となる非常に重要な概念です。Promise chain の具体的なコード実行を通じて非同期処理の実行順序を予測できるようにこの章で訓練していきます。
+第２部では Promise インスタンスと Promise chain について見ていきます。Promise chain は非同期処理の処理予測を行うためのメンタルモデルを構築する上で基礎となる非常に重要な概念です。Promise chain の具体的なコード実行を通じて非同期処理の実行順序を予測できるようにこの部で訓練していきます。
 
-この章の内容をしっかり学ぶことで、[第３章](sec-03-epasync)の async/await を理解できるようになります。
+この部の内容をしっかり学ぶことで、[第３部](sec-03-epasync)の async/await を理解できるようになります。
 
 :::message
-この本の執筆経緯的にも Promise chain についての解説である第２章をはじめに執筆しており難易度としては簡単なので、[第１章](sec-01-epasync)の内容が難しい場合には第２章から読み始めるのも一つの手です。
+この本の執筆経緯的にも Promise chain についての解説である第２部をはじめに執筆しており難易度としては簡単なので、[第１部](sec-01-epasync)の内容が難しい場合には第２部から読み始めるのも一つの手です。
 :::
 
 ## 間違いについて
 
-この章にかつてあった間違った解説については別個で新しいチャプター『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』を用意して解説しています。
+この部にかつてあった間違った解説については別個で新しいチャプター『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』を用意して解説しています。
 
 影響を受けていたチャプターについても修正を施したため、上記のチャプターは番外編というポジションに位置づけました(ECMAScript 仕様そのもの解説を含むため)。
 
