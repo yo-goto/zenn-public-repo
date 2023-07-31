@@ -1,10 +1,10 @@
 ---
 date: 2023-07-29
-modified: 2023-07-29
+modified: 2023-07-31
 title: "Denoでtextlintを使ってZennリポジトリを運用する"
 published: true
 cssclasses: zenn
-emoji: "✍️"
+emoji: "🖋️"
 type: tech
 topics: [deno, textlint, 執筆, zenn]
 url: https://zenn.dev/estra/articles/deno-textlint-zenn
@@ -13,14 +13,14 @@ tags:
   - deno/way
   - linter/textlint
 aliases:
-  - 記事『Denoでtextlintを使ってみた』
+  - 記事『Denoでtextlintを使ってZennリポジトリを運用する』
 ---
 
 ## はじめに
 
 お久しぶりです。今回の記事では二番煎じですが Deno 環境で textlint を動かす方法、および Zenn のリポジトリを Deno 運用する方法について語ろうと思います。
 
-自分の環境では極力 `node_modules` ディレクトリを作りたくないので、元々は pnpm を利用して、`node_modules` 内の容量を軽減していました。それでも結局はディレクトリ自体が作成されてしまっていました。これを回避する方法として Zenn のリポジトリでは Deno を使うことにしました。Deno で textlint を動かす方法についての基本は以下の記事を参考にしていますが、もっと簡単に利用できるための方法を見つけたので紹介したいと思います。
+自分の環境では極力 `node_modules` ディレクトリをなるべく作りたくないので、元々は pnpm を利用して、`node_modules` 内の容量を軽減していました。それでも結局はディレクトリ自体が作成されてしまっていました。これを回避する方法として Zenn のリポジトリでは Deno を使うことにしました。Deno で textlint を動かす方法についての基本は以下の記事を参考にしていますが、もっと簡単に利用できるための方法を見つけたので紹介したいと思います。
 
 https://zenn.dev/kn1cht/articles/deno-textlint
 
@@ -34,6 +34,8 @@ https://zenn.dev/kn1cht/articles/deno-textlint
 ## 利用上の問題点
 
 Deno で textlint を動かすこと自体はそれほど難しくないのですが、textlint のプレセットルールなどを一緒に動かすのが厄介です。素直にやるだけだとプレセットルールが動かないので事前にキャッシュなどをしておく必要がでてきます。今回はそういった回避方法を使ってより簡単に textlint をコマンドラインから使えるようにする方法を紹介します。
+
+なお、この方法は Zenn のリポジトリの運用に限った話ではなく、何らかのドキュメントの執筆を行う時に汎用的に利用できます。
 
 ## 環境構築
 
@@ -150,7 +152,7 @@ deno task zenn:preview
 
 ついでの Deno のビルトインフォーマッターの設定も追加しておきます。
 
-```json:deno.jsonc
+```diff json:deno.jsonc
 {
   "tasks": {
     "cache": "deno cache deps.ts",
@@ -162,14 +164,14 @@ deno task zenn:preview
     "lint:fix": "deno task lint --fix",
     "lint:dry": "deno task lint --dry-run"
   },
-  "fmt": {
-    "useTabs": false,
-    "indentWidth": 2,
-    "semiColons": true,
-    "singleQuote": false,
-    "proseWrap": "preserve",
-    "include": ["/articles", "/books"]
-  }
++ "fmt": {
++   "useTabs": false,
++   "indentWidth": 2,
++   "semiColons": true,
++   "singleQuote": false,
++   "proseWrap": "preserve",
++   "include": ["/articles", "/books"]
++ }
 }
 ```
 
@@ -234,4 +236,6 @@ deno task lint:fix .
 
 ## まとめ
 
-Deno を使って Zenn のリポジトリを運用し、textlint を実行する方法を紹介しました。自分の執筆環境では node_modules を可能な限りはやしたくないのでこのような構成としました。Deno を使うことでディレクトリが非常にスッキリしました。実際に Zenn の公開リポジトリは上記の方法を使っているので、興味があればリポジトリを見てみるといいかもしれません。
+Deno を使って Zenn のリポジトリを運用し、textlint を実行する方法を紹介しました。自分の執筆環境では `node_modules` を可能な限り生やしたくないのでこのような構成としました。Deno を使うことでディレクトリが非常にスッキリしました。
+
+実際に Zenn の公開リポジトリは上記の方法を使っているので、興味があればリポジトリを見てみるといいかもしれません。
