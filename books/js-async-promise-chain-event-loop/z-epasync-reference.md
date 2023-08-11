@@ -8,7 +8,7 @@ tags: [" #type/zenn/book  #JavaScript/async "]
 aliases: Promise本『参考文献』
 ---
 
-## [第１部 - API を提供する環境と実行メカニズム](sec-01-epasync)
+## [第１部 - API を提供する環境と実行メカニズム](part-01-epasync)
 
 ### [非同期 API と環境](f-epasync-asynchronous-apis)
 
@@ -113,7 +113,7 @@ MDN
 - [Overview of the RenderingNG architecture - Chrome Developers](https://developer.chrome.com/articles/renderingng-architecture/)
 - [Web Worker の使用 - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_Workers_API/Using_web_workers)
 
-## [第２部 - Promise インスタンスと連鎖](sec-02-epasync)
+## [第２部 - Promise インスタンスと連鎖](part-02-epasync)
 
 ### [Promise の基本概念](a-epasync-promise-basic-concept)
 
@@ -195,7 +195,7 @@ MDN
 - [JavaScriptの非同期処理をじっくり理解する (1) 実行モデルとタスクキュー](https://zenn.dev/qnighy/articles/345aa9cae02d9d)
 - [Further Adventures of the Event Loop - Erin Zimmer - JSConf EU 2018 - YouTube](https://www.youtube.com/watch?v=u1kqx6AenYw)
 
-## [第３部 - async 関数と await 式の挙動](sec-03-epasync)
+## [第３部 - async 関数と await 式の挙動](part-03-epasync)
 
 ### [Promise chain から async 関数へ](14-epasync-chain-to-async-await)
 
@@ -221,7 +221,7 @@ MDN
 MDN
 - [JavaScript モジュール - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules)
 
-## [第４部 - 制御と型注釈](sec-04-epasync)
+## [第４部 - 制御と型注釈](part-04-epasync)
 
 ### [Promise の静的メソッドと並列化](17-epasync-static-method)
 
@@ -273,7 +273,7 @@ MDN
 - [deno lint rule no-explicit-any](https://lint.deno.land/?q=any#no-explicit-any)
 - [Async Await try-catch hell - YouTube](https://www.youtube.com/watch?v=ITogH7lJTyE)
 
-## [第５部 - 仕様およびその他の番外編](sec-05-epasync)
+## [第５部 - 仕様およびその他の番外編](part-05-epasync)
 
 ### [Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)
 

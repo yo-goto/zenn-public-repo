@@ -15,7 +15,7 @@ aliases: Promise本『はじめに』
 ## 解説の間違いについての注意
 
 :::message alert
-『[第２部 - Promise インスタンスと連鎖](sec-02-epasync)』の部にあるチャプターで解説に間違いと思われる部分がありました。間違った内容を公開してしまい申し訳ございません。詳細については新しく訂正・解説用に作成した『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターを参照してください。
+『[第２部 - Promise インスタンスと連鎖](part-02-epasync)』の部にあるチャプターで解説に間違いと思われる部分がありました。間違った内容を公開してしまい申し訳ございません。詳細については新しく訂正・解説用に作成した『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターを参照してください。
 :::
 
 ## この本について
@@ -58,11 +58,11 @@ Promise について詳しくなることで非同期処理を柔軟に書ける
 
 この本は大きく分けて５つの部から構成されています。上の「非同期処理のメカニズムを理解するために必要な知識」の図にある内容を学習において重要な順番に並べて解説しています。上図は必要な知識について俯瞰的に確認するためのものなのでそれぞれの部と完全一致していないことに注意して下さい。
 
-- [第１部 - API を提供する環境と実行メカニズム](sec-01-epasync)
-- [第２部 - Promise インスタンスと連鎖](sec-02-epasync)
-- [第３部 - async 関数と await 式の挙動](sec-03-epasync)
-- [第４部 - 制御と型注釈](sec-04-epasync)
-- [第５部 - 仕様およびその他の番外編](sec-05-epasync)
+- [第１部 - API を提供する環境と実行メカニズム](part-01-epasync)
+- [第２部 - Promise インスタンスと連鎖](part-02-epasync)
+- [第３部 - async 関数と await 式の挙動](part-03-epasync)
+- [第４部 - 制御と型注釈](part-04-epasync)
+- [第５部 - 仕様およびその他の番外編](part-05-epasync)
 
 第１部の内容はメタ的な視点での解説を含んでいるため、部分的に第２部や第３部の内容である Promise や async/await についての知識を利用している場合があります。難しい場合には、ざっと目を通して具体的な Promise の解説である第２部の内容を読み進めるのも良いかもしれません。
 
@@ -250,7 +250,7 @@ https://www.jsv9000.app
 - 2023-02-13
   - 『[コールスタックと実行コンテキスト](b-epasync-callstack-execution-context)』のチャプターにおける解説の[間違いを修正](https://github.com/yo-goto/zenn-public-repo/commit/f3d94e0839f67e0d25e39bbd42649f6e3e8677dd)。
 - 2023-01-09
-  - 『[第５部 - 仕様およびその他の番外編](sec-05-epasync)』のチャプターを追加
+  - 『[第５部 - 仕様およびその他の番外編](part-05-epasync)』のチャプターを追加
   - 『[Promise chain と async/await の仕様比較](n-epasync-promise-spec-compare)』のチャプターを追加
 - 2022-12-19
   - 『[catch メソッドと finally メソッド](f-epasync-asynchronous-apis)』のチャプターで then/catch/finally についての情報を詳細に更新
@@ -259,7 +259,7 @@ https://www.jsv9000.app
 - 2022-12-14
   - 『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』の訂正・解説用チャプターを追加
 - 2022-11-23
-  - 『[第２部 - Promise インスタンスと連鎖](sec-02-epasync)』の部で間違いが見つかっため、その内容についての注意を記載
+  - 『[第２部 - Promise インスタンスと連鎖](part-02-epasync)』の部で間違いが見つかっため、その内容についての注意を記載
 - 2022-11-05
   - 『[タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)』のタスクキューについての解説に間違いがあったため修正
 - 2022-08-15
