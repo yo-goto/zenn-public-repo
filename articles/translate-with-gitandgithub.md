@@ -131,7 +131,24 @@ local | 自分のローカルマシンに clone したローカルリポジト�
 8. Github にてプルリクエストを作成し、承認を待つ
 9. プルリクエストに修正があれば修正後 origin に再び push する
 
-![1-プルリクの流れ1](https://storage.googleapis.com/zenn-user-upload/aq1b7im42nlm4376fudurn36k92x)
+```mermaid
+graph TD
+	A[master] -->|1. Githubにて<br>fork|B[master]
+	subgraph upstream
+	A
+	end
+	subgraph origin
+	B
+	E[作業ブランチ]
+	end
+	subgraph local
+	C[master]
+	D[作業ブランチ:<br>5.翻訳作業後<br>add/commit]
+	C -->|4. ブランチ作成<br>チェックアウト|D
+	end
+	B -->|2. clone|C
+	D -->|7. push|E
+```
 
 ### 実際のやり方
 
@@ -241,7 +258,25 @@ git push origin translation
 15. Github にてプルリクエストを作成し、承認を待つ
 16. プルリクエストに修正があれば修正後 origin に再び push する
 
-![プルリクエストの流れ3](https://storage.googleapis.com/zenn-user-upload/wwv11qft5vaoe7ff5rig8xkfz6i5)
+```mermaid
+graph TD
+	E -->|"8.(15.) Githubにて<br>pull request作成"|A
+	subgraph upstream
+	A[master]
+	end
+	subgraph origin
+	B[master]
+	E[作業ブランチ]
+	end
+	subgraph local
+	C[master]
+	D[作業ブランチ:<br>13.翻訳作業後<br>add/commit]
+	C -->|"12. (a)merge<br>(b)作業ブランチ作成<br>のどちらかを行い<br>チェックアウト"|D
+	end
+	C -->|11. push|B
+	D -->|14. push|E
+	A -->|10. fetch + merge|C
+```
 
 ### 実際のやり方
 
@@ -356,7 +391,37 @@ push を終えたら同じように Github で作業ブランチ translation か
 
 シーケンス図でのまとめです。
 
-![シーケンス図](https://storage.googleapis.com/zenn-user-upload/0smd4210ozbpr3a8osgszx14g4h9)
+```mermaid
+sequenceDiagram
+	participant A as upstream(master)
+	participant B as origin(master)
+	participant C as origin(working)
+	participant D as local(master)
+	participant E as local(working)
+	rect rgba(0, 255, 0, .1)
+		Note over A,B: 1回目のプルリク
+		A->>B: fork
+		B->>D: clone
+		D->>E: checkout
+		activate E
+		Note left of E: 翻訳作業
+		E->>C: push
+		deactivate E
+		C->>A: pull request
+	end
+	rect rgba(120, 120, 240, .1)
+		Note over A,B: 2回目以降のプルリク
+		A->>D: fetch & merge
+		D-->>B: push
+		D->>E: merge
+		activate E
+		Note left of E: 翻訳作業
+		E->>C: push
+		deactivate E
+		C->>A: pull request
+	end
+```
+
 
 ## (3) 慣れたらやってみること
 
