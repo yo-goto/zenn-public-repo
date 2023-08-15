@@ -160,6 +160,30 @@ https://github.com/mdn/translated-content
 
 このモデルでのやり方を覚えれば上記のような翻訳やオープンソースの開発プロジェクトなどに参加できるようになりますのでぜひとも覚えておくことを推奨します。
 
+なお、簡単なパッチ修正などは実は GitHub や github.dev だけで済ませることが可能です。この際のワークフローではローカルリポジトリを介さない以下のようなモデルとなります。筆者は MDN の翻訳なども最近行っていますが、日本語などの間違いなどを見つけた場合には実際に以下のワークフローで修正して PR を作成します。
+
+```mermaid
+---
+title: GitHubで完結するパッチ修正のモデル
+---
+graph TD
+  subgraph GitHub
+    direction LR
+    subgraph Upstream
+      A[master]
+    end
+    subgraph Origin
+      B[master]
+      E[topic]
+    end
+  end
+  Upstream -->|fork| Origin
+  E -->|Pull Request| A
+  A -->|sync| B
+  B -->|checkout| E
+  style GitHub fill:#eee, stroke:#000
+```
+
 ### 必要な３つのリポジトリ
 
 Fork & pull model において、プルリクエストを作成してマージ (変更の統合) を行うまでの流れには、**合計３つのリポジトリを使用します**。この３つというのがなぜ必要なのかが最初分かりづらかったので注意してください。
