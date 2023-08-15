@@ -1,7 +1,59 @@
 {
-  "textlint.autoFixOnSave": false,
+  // エディタの基本設定
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
+
+  // deno
+  "deno.enable": true,
+
+  // "Git commit message" 設定
+  "vscodeGitCommit.template": [
+    "{prefix}({scope}): {message}"
+  ],
+  "vscodeGitCommit.variables": {
+    "scope": [
+      {
+        "label": "setting",
+        "detail": "リポジトリや設定などの変更",
+      },
+      {
+        "label": "deps",
+        "detail": "依存パッケージの更新などの変更"
+      },
+      {
+        "label": "article",
+        "detail": "記事関連の変更",
+      },
+      {
+        "label": "book",
+        "detail": "チャプター単体ではなく本全体の変更",
+      },
+      {
+        "label": "chapter",
+        "detail": "チャプター関連の変更",
+      },
+    ],
+    "prefix": [
+      {
+        "label": "✨ add",
+        "detail": "新しい記事やチャプターの追加"
+      },
+      {
+        "label": "💡 update",
+        "detail": "既存記事やチャプターに新しい内容を追加"
+      },
+      {
+        "label": "🐛 fix",
+        "detail": "既存記事やチャプターの間違いなどの修正"
+      },
+      {
+        "label": "🔵 chore",
+        "detail": "その他の修正や変更"
+      },
+    ]
+  },
+
+  // エディタのハイライト設定 (Highlight)
   "highlight.decorations": { "rangeBehavior": 3 },
   "highlight.regexFlags": "gi",
   "highlight.regexes": {
@@ -95,6 +147,5 @@
         }
       ]
     }
-  },
-  "deno.enable": true,
+  }
 }
