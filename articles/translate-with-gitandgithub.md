@@ -111,6 +111,7 @@ graph RL
   C -->|push| B
   E -->|Pull Request| A
   D -->|push| E
+  style GitHub fill:#eee, stroke:#000
 ```
 
 2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能(**Sync fork**)を使うともう少し分かりやすいフローになります。
@@ -142,6 +143,7 @@ graph RL
   E -->|Pull Request| A
   D -->|push| E
   B -->|pull| C
+  style GitHub fill:#eee, stroke:#000
 ```
 
 :::message alert
@@ -193,6 +195,7 @@ graph RL
   C -->|push| B
   E -->|Pull Request| A
   D -->|push| E
+  style GitHub fill:#eee, stroke:#000
 ```
 
 なお、upstream は自分が管理するリポジトリではなく、他者が管理するオリジナルのリポジトリです。origin は upstream から複製された自分が管理するリポジトリなので自由に編集できます。しかし、実際に触るのは origin ではなく「**ローカル上のリポジトリである local**」です。このあたりが紛らわしいのですが、オンライン上で作業するよりもローカルで作業するほうが軽く、常にネット接続している必要もありません。ゆえにリポジトリ local で編集作業を行い、その変更をもとのリポジトリ upstream に統合することによって共同で翻訳作業を行っていくわけです。ですが local からいきなり upstream に対して変更を申請することはできません。local から自分の管理するリモートリポジトリ origin に一度変更を反映させる必要があります。その後、origin から upstream に対して変更の統合を申請するというのがプルリクエストの流れになります。
