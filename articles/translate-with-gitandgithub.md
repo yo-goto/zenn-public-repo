@@ -1,5 +1,5 @@
 ---
-title: "プルリクエストによる翻訳作業のやり方"
+title: "プルリクエストによる翻訳作業のやり方 - Fork & pull model"
 published: true
 cssClasses: zenn
 emoji: "👾"
@@ -16,93 +16,200 @@ aliases:
 
 ## はじめに
 
-[Obsidian](https://obsidian.md) というソフトウェアの UI とヘルプドキュメントの翻訳と保守を有志で行っています。翻訳作業を通してプルリクエストのやり方を学び、いい機会だと思ったので Git と GitHub の使い方からプルリクエストによって共同で翻訳作業をしていく方法を紹介していこうと思います。初学者の観点から git の概念やつまずいたところやコマンドの使い方、プルリクエストまでの流れなどをまとめています。次のような記事もあるので、翻訳作業を通して git の使い方をマスタするのは結構おすすめだと思います。
+[Obsidian](https://obsidian.md) というソフトウェアの UI とヘルプドキュメントの翻訳と保守を有志で行っています。翻訳作業を通してプルリクエストのやり方を学び、いい機会だと思ったので Git と GitHub の使い方からプルリクエストによって共同で翻訳作業をしていく方法(いわゆる **Fork & pull model** を使った翻訳フロー)を紹介していこうと思います。
 
-[翻訳から始めるオープンソースコントリビューション](https://qiita.com/yhay81/items/3773ab2e001a9e39ccc8)
+初学者の観点から git の概念やつまずいたところやコマンドの使い方、プルリクエストまでの流れなどをまとめています。次のような記事もあるので、翻訳作業を通して git の使い方をマスターするのは結構おすすめだと思います。
+
+https://qiita.com/yhay81/items/3773ab2e001a9e39ccc8
 
 次のような OSS(オープンソースコミュニティ) へのプルリクエストに関する記事なども参考になりますが、翻訳での継続的なプルリクエスト (2 回目、3 回目~) についての全体の流れがわかる記事はあまり見たことがありませんでしたので主にその点について書いてみました。
 
-[【超図解】OSSにPull Requestを出す時の備忘録 - Qiita](https://qiita.com/y-vectorfield/items/b955617712f3b66359f2)
+https://qiita.com/y-vectorfield/items/b955617712f3b66359f2
 
 ドキュメントの翻訳作業をしてみたいが、やり方がよく分からないという方、Git 初心者に役立てばよいなと思います。
 
-また、UI ではなくヘルプドキュメントの翻訳作業を念頭において書いています。というのもヘルプドキュメントは大量のファイルを扱うので、Github 上ではなくローカル環境でしっかりと作業する必要があります。ローカルでの翻訳作業からプルリクエスト作成を通して Git や Github の基本的な使い方がマスタできます。翻訳作業そのものに関しては素人なので注意してください。
+また、UI ではなくヘルプドキュメントの翻訳作業を念頭において書いています。というのもヘルプドキュメントは大量のファイルを扱うので、GitHub 上ではなくローカル環境でしっかりと作業する必要があります。ローカルでの翻訳作業からプルリクエスト作成を通して Git や GitHub の基本的な使い方がマスタできます。翻訳作業そのものに関しては素人なので注意してください。
 
-実際に翻訳されたヘルプドキュメントが Obsidian の公式サイトで公開されています。↓
+実際に翻訳されたヘルプドキュメントが Obsidian の公式サイトで公開されています。
+
 https://publish.obsidian.md/help-ja/
 
-上のドキュメントで表現の向上 (こうしたほうがよい) や誤訳、タイポなどを見つけた場合には公式リポジトリや Fork したリポジトリでもいいので issue かプルリクエストを作成してください。↓
-[obsidianmd/obsidian-docs: Help documentation for Obsidian](https://github.com/obsidianmd/obsidian-docs/)
+上のドキュメントで表現の向上 (こうしたほうがよい) や誤訳、タイポなどを見つけた場合には公式リポジトリや Fork したリポジトリでもいいので issue かプルリクエストを作成してください。
+
+https://github.com/obsidianmd/obsidian-docs/
 
 ### 最低限必要な知識や事前に必要なもの
 
 作業を始めるのに次の最低限必要な知識やアプリケーションなどは準備するようにしてください。
 
 - CLI の使い方の基本
-- Git のインストール
-- github のアカウント作成
-- vscode などのテキストエディタ
+- git のインストール
+- GitHub のアカウント作成
+- VScode などのテキストエディタ
 
 ### 主なソース
 
 - [エンジニアのためのGitの教科書](https://amzn.to/3dcc9h5)
   - 薄くてわかりやすいのでおすすめです。わからなくなったら読むといいです。
-- [Github で Fork してから Pull Request をするまでの流れ](http://kik.xii.jp/archives/179)
+- [GitHub で Fork してから Pull Request をするまでの流れ](http://kik.xii.jp/archives/179)
   - 最初のプルリクエストの流れが分かりやい記事ですが、2 回目以降については言及がなかったので補足します。また `rebase` や `push -f` など初心者が使わない方がよいです。
 - [初めてのPull Request(プルリクエスト)](https://kaworu.jpn.org/kaworu/2017-10-19-1.php#2017-10-19-1-7a386224b42e28c840ef6ce67c51ca62)
   - OSS でのプルリクエストについての記事で、図はないですが細かく、分かりやすいです。
 
-## つまずきポイントメモ
-
-簡易的な箇条書きですが、初心者がつまずきやすいポイントややらかさないようにする注意点などを前もって書いておきます。
-
-- リポジトリ (箱) とブランチ (枝) とコミット (点) の概念の理解
-- 概念を理解していないと予期しない操作をしてしまう
-- upstream と origin と local がごっちゃになるのでリポジトリが 3 つあることを理解する
-- プルリクエスト承認後のながれ (2 回目以降のプルリクエスト) がわからない
-- clone と fork の違い
-- プルリクエストは Github 上で作成する (ターミナルからはやらない)
-- pull は使わないで fetch して merge する
-- checkout する前にブランチ状態を確認する
-- add はファイルごとフォルダごとに行う
-- コミットのハッシュ値は最初の数行のみ扱えば良い
-- master ブランチは触らずに、なにかするときは作業ブランチを作成してそこで行う
-- 強制プッシュは行わない
-- rebase はしない (rebase してほしいと言われたときのみ行う)
-- merge には種類があることを理解 (ファストフォワードとリカーシブを理解) して使い分ける
-- merge や fetch する際にはどこのブランチにいるか確認してから行う
-- Github でプルリクエストのボタンが消えたときの対処
-- 別のブランチに push しないように気をつける
-- アカウントプライバシーを設定してから作業する
-
-やらかしたときはネットで調べまくりましょう。
-[Gitでやらかした時に使える19個の奥義 - Qiita](https://qiita.com/muran001/items/dea2bbbaea1260098051#%E3%82%84%E3%82%89%E3%81%8B%E3%81%97%EF%BC%91%EF%BC%96%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%81%8B%E3%82%89pull%E3%81%97%E3%81%9F%E3%82%89%E3%82%B3%E3%83%B3%E3%83%95%E3%83%AA%E3%82%AF%E3%83%88%E3%81%97%E3%81%BE%E3%81%8F%E3%81%A3%E3%81%9F%E3%81%AE%E3%81%A7%E4%B8%80%E6%97%A6%E5%85%83%E3%81%AB%E6%88%BB%E3%81%97%E3%81%9F%E3%81%84%E6%99%82)
-
 ## 周辺概念
 
-最初に概念の説明をしておこうと思います。長くなってしまったので概念が理解できている方はこのセクションはとばしてください。
+### リポジトリとプルリクエスト
 
-リポジトリとは雑にいうとフォルダです。Git を使うとそのリポジトリ内部 (フォルダ) でさまざまな変更を行い特定の時点の状態そのものをある点 (commit) として保存管理できます。プルリクエストとはそのように自身のリポジトリ内にて行った変更を、Github 上 (ウェブ上) にある他のリポジトリに対して統合 (merge) するように申請する仕組みです。
+リポジトリとは雑にいうとフォルダです。git を使うとそのリポジトリ内部 (フォルダ) でさまざまな変更を行い特定の時点の状態そのものをある点 (`commit`) として保存管理できます。プルリクエストとはそのように自身のリポジトリ内にて行った変更を、GitHub 上 (ウェブ上) にある他のリポジトリに対して統合 (`merge`) するように申請する仕組みです。
 
-プルリクエストを作成してマージ (変更の統合) を行うまでの流れには、**計 3 つのリポジトリを使用します**。この 3 つというのがなぜ必要なのかが最初分かりづらかったので注意してください。
+### Fork & pull model
 
-必要なリポジトリとして、1 つ目は公式のリポジトリ (オリジナルのリポジトリ) で、これを upstream という名前で便宜的に識別します。2 つ目は Github の自分のアカウント上に upstream の複製リポジトリを作成します。この行為を fork すると呼びます。この fork によって作成されたリポジトリを origin として識別します。origin や upstream はリポジトリの名前として考えてください。この origin と upstream はユーザーにとってはオンライン上に存在するので「**リモートリポジトリ**」と呼びます。
+GitHub を利用した開発のモデルは大きく以下の２種類があります。
 
-3 つ目は、自分の PC 上での作業のために origin リポジトリから更にローカル環境に複製リポジトリを作成 (clone) します。clone による複製と fork による複製の違いに注意してください。基本的には、この複製されたリポジトリで編集作業を行っていきます。ローカル環境上にあるリポジトリなので先程のリモートリポジトリに対して「**ローカルリポジトリ**」と呼びます。このリポジトリを origin や upstream と同様に local という名前で識別します。この 3 つのリポジトリを使ってプルリクエストによる共同編集を行います。
+- **Fork and pull model** (フォーク&プルモデル)
+- **Shared repository model** (共有リポジトリモデル)
 
-upstream は自分が管理するリポジトリではなく、他者が管理するオリジナルのリポジトリです。origin は upstream から複製された自分が管理するリポジトリなので自由に編集できます。しかし、実際に触るのは origin ではなく「**ローカル上のリポジトリである local**」です。このあたりが紛らわしいのですが、オンライン上で作業するよりもローカルで作業するほうが軽く、常にネット接続している必要もありません。ゆえに_リポジトリ local で編集作業を行い、その変更をもとのリポジトリ upstream に統合することによって共同で翻訳作業を行っていくわけです_。ですが local からいきなり upstream に対して変更を申請することはできません。local から自分の管理するリモートリポジトリ origin に一度変更を反映させる必要があります。その後、origin から upstream に対して変更の統合を申請するというのがプルリクエストの流れになります。
+オープンソースのプロジェクトでは「**Fork & pull model**」という複数のリポジトリとプルリクエストを使用して開発や翻訳を行うモデルがよく使用されます。逆にクローズドソースのプロジェクトなどでは「**Shared repository mode**l」が使用されます。
 
-このように、リポジトリの複製の流れや内容変更の反映の流れが複雑になるのでつまづきポイントが結構あります。下でそれぞれの流れを図示しているので参考にしてください。
+これらのモデルについては GitHub 公式ドキュメントの以下のページで概要が解説されていますが、図などもなくかなり分かりづらいのでサードパーティで書かれた記事などで情報を補うことになります。
 
-まとめると
+https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/about-collaborative-development-models
+
+Fork & pull model については以下の記事などで比較的分かりやすい図や説明が記載されているので、この記事の説明を補う形で参考にしてみるとよいと思います。
+
+- [Github で Fork してから Pull Request をするまでの流れ](http://kik.xii.jp/archives/179)
+- [The Git Fork-Branch-Pull Workflow](https://www.tomasbeuzen.com/post/git-fork-branch-pull/)
+- [Fork-Based Contribution Model](https://jenkinsci.github.io/templating-engine-plugin/2.5/contributing/fork-based/)
+- [Using Gitflow with the GitHub Fork & Pull Model](https://www.dalescott.net/using-gitflow-with-githubs-fork-pull-model/)
+
+Fork & pull model を簡単に説明すると、公式のリポジトリをまず Fork して、自分のアカウントに複製されたリポジトリを作成します。その複製した Fork リポジトリに自身の変更を反映させていき、一定の変更の塊を元々の公式のリポジトリへと反映させるプルリクエスト(PR)を作成します。このプルリクエストが元々のリポジトリの管理者によってレビューされ、承認、つまりマージされることで自身の行った変更が公式のリポジトリへと実際に反映されます。
+
+ブランチまで含めて図にすると以下のような感じで、かなり複雑です。簡単なパッチ修正などは GitHub 上で行うことも可能ですが、オープンソースの開発や翻訳についてローカルでガッツリ作業を行う際にはこのモデルを使った以下のようなフローをまず習得する必要があります。
+
+```mermaid
+---
+title: Fork and pull model (通常バージョン)
+---
+graph RL
+  Origin -->|clone| Local
+  Upstream -->|fork| Origin
+  subgraph GitHub
+	subgraph Upstream
+	A[master]
+	end
+	subgraph Origin
+	B[master]
+	E[topic]
+	end
+  end
+	subgraph Local
+	C[master]
+	D[topic]
+  C -->|checkout| D
+	end
+  A -->|pull| C
+  C -->|push| B
+  E -->|Pull Request| A
+  D -->|push| E
+```
+
+2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能(**Sync fork**)を使うともう少し分かりやすいフローになります。
+
+https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/
+
+```mermaid
+---
+title: Fork and pull model (sync forkバージョン)
+---
+graph RL
+  Origin -->|clone| Local
+  Upstream -->|fork| Origin
+  subgraph GitHub
+	subgraph Upstream
+	A[master]
+	end
+	subgraph Origin
+	B[master]
+	E[topic]
+	end
+  end
+	subgraph Local
+	C[master]
+	D[topic]
+  C -->|checkout| D
+	end
+  A -->|sync| B
+  E -->|Pull Request| A
+  D -->|push| E
+  B -->|pull| C
+```
+
+:::message alert
+２つのバージョンの違いは単に origin リポジトリの master ブランチの更新をどのようにするかという方法の違いにすぎないのでワークフローに本質的な違いはありません。この記事では伝統的な通常バージョンのフローを解説します。
+
+また、図の "pull" の部分はやっていることは "fetch & merge" であり、"topic" ブランチは任意の作業ブランチのことを示しているので、適宜読み替えてください。
+:::
+
+このモデルが利用されているプロジェクトで代表的なのは MDN のドキュメントやその翻訳プロジェクトなどです。
+
+https://github.com/mdn/content
+
+https://github.com/mdn/translated-content
+
+このモデルでのやり方を覚えれば上記のような翻訳やオープンソースの開発プロジェクトなどに参加できるようになりますのでぜひとも覚えておくことを推奨します。
+
+### 必要な３つのリポジトリ
+
+Fork & pull model において、プルリクエストを作成してマージ (変更の統合) を行うまでの流れには、**合計３つのリポジトリを使用します**。この３つというのがなぜ必要なのかが最初分かりづらかったので注意してください。
+
+必要なリポジトリとして、1 つ目は公式のリポジトリ (オリジナルのリポジトリ) で、これを **upstream** (上流) という名前で便宜的に識別します。2 つ目は GitHub の自分のアカウント上に upstream の複製リポジトリを作成します。この行為を fork すると呼びます。この fork によって作成されたリポジトリを **origin** として識別します。origin や upstream はリポジトリの名前として考えてください。この origin と upstream はユーザーにとってはオンライン上に存在するので「**リモートリポジトリ**」と呼びます。
+
+3 つ目は、自分の PC 上での作業のために origin リポジトリから更にローカル環境に複製リポジトリを作成 (clone) します。clone による複製と fork による複製の違いに注意してください。基本的には、この複製されたリポジトリで編集作業を行っていきます。ローカル環境上にあるリポジトリなので先程のリモートリポジトリに対して「**ローカルリポジトリ**」と呼びます。このリポジトリを origin や upstream と同様に **local** という名前で識別します。
+
+これらの３つのリポジトリを使って以下の図のワークフローに従い、プルリクエストを通じて非同期的な共同編集を行います。
+
+```mermaid
+---
+title: Fork and pull model (通常バージョン)
+---
+graph RL
+  Origin -->|clone| Local
+  Upstream -->|fork| Origin
+  subgraph GitHub
+	subgraph Upstream
+	A[master]
+	end
+	subgraph Origin
+	B[master]
+	E[topic]
+	end
+  end
+	subgraph Local
+	C[master]
+	D[topic]
+  C -->|checkout| D
+	end
+  A -->|pull| C
+  C -->|push| B
+  E -->|Pull Request| A
+  D -->|push| E
+```
+
+なお、upstream は自分が管理するリポジトリではなく、他者が管理するオリジナルのリポジトリです。origin は upstream から複製された自分が管理するリポジトリなので自由に編集できます。しかし、実際に触るのは origin ではなく「**ローカル上のリポジトリである local**」です。このあたりが紛らわしいのですが、オンライン上で作業するよりもローカルで作業するほうが軽く、常にネット接続している必要もありません。ゆえにリポジトリ local で編集作業を行い、その変更をもとのリポジトリ upstream に統合することによって共同で翻訳作業を行っていくわけです。ですが local からいきなり upstream に対して変更を申請することはできません。local から自分の管理するリモートリポジトリ origin に一度変更を反映させる必要があります。その後、origin から upstream に対して変更の統合を申請するというのがプルリクエストの流れになります。
+
+このように、リポジトリの複製の流れや内容変更の反映の流れが複雑になるのでつまづきポイントが結構あります。
+
+表にしてまとめると以下のような３つのリポジトリを使用します。
 
 リポジトリの識別名 | リポジトリの内容 | 備考
 --|--|--
-upstream | オリジナルのリモートリポジトリ | 他人が管理
-origin | fork して複製した自分のアカウントにあるリモートリポジトリ | 自分が管理
-local | 自分のローカルマシンに clone したローカルリポジトリ | 自分が管理、ここで編集を行う
+**upstream** | オリジナルのリモートリポジトリ | 他人が管理
+**origin** | fork して複製した自分のアカウントにあるリモートリポジトリ | 自分が管理
+**local** | 自分のローカルマシンに clone したローカルリポジトリ | 自分が管理、ここで編集を行う
 
-ここにブランチという概念がさらに追加されます。リポジトリでは特定の時点の情報の状態をコミットという形で保存しています。このコミットからさらに変更を加えて意味ある形で再びコミットを作成していくと、コミットが時系列によって連結されたブランチ (枝) ができあがります。枝のある点から全く別の点を派生させることで枝を分岐させることができます。
+### ブランチについて
+
+利用するリポジトリが３つあるわけですが、更にブランチという概念が追加されます。リポジトリでは特定の時点の情報の状態をコミットという形で保存しています。このコミットからさらに変更を加えて意味ある形で再びコミットを作成していくと、コミットが時系列によって連結されたブランチ (枝) ができあがります。枝のある点から全く別の点を派生させることで枝を分岐させることができます。
 
 イメージでまとめると、箱 (リポジトリ) の中に点 (コミット) が時系列に連結した枝 (ブランチ) が存在しているような感じです。分岐して存在する複数の枝の先端の点は枝そのものの名前として扱われます。master ブランチやそこから派生させてつくった作業ブランチなどです。イメージで言うと、プルリクエストというのはリポジトリ upstream の主要な枝 (master ブランチ) の先頭に自分が編集した変更情報を点として (コミットとして) 連結する操作です。
 
@@ -114,32 +221,51 @@ local | 自分のローカルマシンに clone したローカルリポジト�
 
 参考: [マンガでわかるGit 12話「本家リポジトリに追従する方法」](https://next.rikunabi.com/journal/20180322_t12_iq/)
 
----
-
-では、実際にプルリクエスト作成までの流れを説明していきます。最初に流れを時系列順に並べます。その後に具体的な操作について説明していきます (ブラウザ上での操作とターミナル上での操作があることに気をつけてください)。
-
 ## (1) 最初のプルリクエストまでの流れ
 
-0. Github のアカウントプライバシーを設定し、Git で日本語ファイルが文字化けをしないように設定する
+では、実際にプルリクエスト作成までの流れを説明していきます。最初に流れを時系列順に並べます。その後に具体的な操作について説明していきます。※ブラウザ上での操作とターミナル上での操作があることに気をつけてください。
+
+0. GitHub のアカウントプライバシーを設定し、Git で日本語ファイルが文字化けをしないように設定する
 1. 公式リポジトリから自分のアカウントのリポジトリに fork する
 2. ローカル環境に fork したリポジトリを clone する
 3. コーディングスタイルを確認
 4. 作業ブランチを作成してチェックアウト
 5. 作業ブランチにて翻訳開始
 6. ある程度の作業まとまりで add/commit する
-7. orgin に push する
-8. Github にてプルリクエストを作成し、承認を待つ
-9. プルリクエストに修正があれば修正後 origin に再び push する
+7. origin に push する
+8. GitHub にてプルリクエストを作成し、承認を待つ
+9.  プルリクエストに修正があれば修正後 origin に再び push する
 
-![1-プルリクの流れ1](https://storage.googleapis.com/zenn-user-upload/aq1b7im42nlm4376fudurn36k92x)
+```mermaid
+---
+title: 1~9までの流れ
+---
+graph TD
+	Upstream -->|1. GitHubにて<br>fork| Origin
+	subgraph Upstream
+	A[master]
+	end
+	subgraph Origin
+	B[master]
+	E[topic]
+	end
+	subgraph Local
+	C[master]
+	D[topic]
+  D -->|5~6.翻訳作業後<br>add/commit| D
+	C -->|4. checkout|D
+	end
+	B -->|2. clone|C
+	D -->|7. push|E
+```
 
 ### 実際のやり方
 
 上の 0〜9 までの流れを説明していきます。
 
-共同で編集するということで、まず Github のアカウントプライバシーの設定を行います。デフォルトの状態だと PC のユーザー名と Github で登録してアカウントが commit log に表示されてしまいます。このままプルリクエストを出して承認されてしまうと面倒です (表示されてもよいという方はやらなくて結構です)。
+共同で編集するということで、まず GitHub のアカウントプライバシーの設定を行います。デフォルトの状態だと PC のユーザー名と GitHub で登録してアカウントが commit log に表示されてしまいます。このままプルリクエストを出して承認されてしまうと面倒です (表示されてもよいという方はやらなくて結構です)。
 
-参考: [GitHubにホストされているGitからの個人情報流出を防ぐために - ツレヅレナルママニ](https://tkhs0604.hatenablog.com/entry/github-email-exposure)
+参考: [GitHubにホストされているGitからの個人情報流出を防ぐために](https://tkhs0604.hatenablog.com/entry/github-email-exposure)
 
 次に Git で日本語ファイルの文字化けを回避するためにコマンドを打ちます。
 
@@ -147,15 +273,15 @@ local | 自分のローカルマシンに clone したローカルリポジト�
 git config --global core.quotepath false
 ```
 
-それでは最低限準備したので、本格的に作業を開始します。まず upstream を fork して origin を作成します。Github のリポジトリページから右上の fork ボタンをクリックすると自分のアカウントにリポジトリが複製されます。
+それでは最低限準備したので、本格的に作業を開始します。まず upstream を fork して origin を作成します。GitHub のリポジトリページから右上の fork ボタンをクリックすると自分のアカウントにリポジトリが複製されます。
 
-![2-Githubでフォーク](https://storage.googleapis.com/zenn-user-upload/hisqw3tezev16w87t3mver3ax1kk)
+![2-GitHubでフォーク](https://storage.googleapis.com/zenn-user-upload/hisqw3tezev16w87t3mver3ax1kk)
 
 ![3-frokで作成された自分のリポジトリ](https://storage.googleapis.com/zenn-user-upload/5ldouqa8nd0ex0y1jed65uqpy6qp)
 
 ![3-クリップボードにコピー](https://storage.googleapis.com/zenn-user-upload/jwq8xcxsra470ka8nh8r8kcv3y85)
 
-ここまで Github でできたら、ターミナルを開き、作業ディレクトリを作成しフォークした自分のアカウントにあるリポジトリをクローンします。
+ここまで GitHub でできたら、ターミナルを開き、作業ディレクトリを作成しフォークした自分のアカウントにあるリポジトリをクローンします。
 
 ```shell
 git clone リポジトリのURL
@@ -165,7 +291,7 @@ git branch translation
 # 作業ブランチtranslationの作成
 git checkout translation
 # 作業ブランチにチェックアウトする
-git branch -a 
+git branch -a
 # ブランチの確認
 ```
 
@@ -183,7 +309,7 @@ git push origin translation
 # originの作業ブランチtranslationにpush
 ```
 
-origin(リモートリポジトリ) の作業ブランチに push したら Github にてプルリクエストを作成し送信します。master ブランチではなく作業ブランチ translation からプルリクエストを作成する点に注意してください。「Compare & pull request」ボタンを押して、内容に関するコメントを適度に書き承認を待ちます。
+origin(リモートリポジトリ) の作業ブランチに push したら GitHub にてプルリクエストを作成し送信します。master ブランチではなく作業ブランチ translation からプルリクエストを作成する点に注意してください。「Compare & pull request」ボタンを押して、内容に関するコメントを適度に書き承認を待ちます。
 
 ![プルリク説明0-1](https://storage.googleapis.com/zenn-user-upload/zgbrrqjax0ys4xx31d60e9w59ggp)
 
@@ -233,15 +359,36 @@ git push origin translation
 ## (2) 2 回目以降のプルリクエストの流れ
 
 9. upstream の追加と確認
-10. ローカルの master ブランチを upsteream の最新に追いつかせる
+10. ローカルの master ブランチを upstream の最新に追いつかせる
 11. origin の master に push
-12. (a)master の最新内容を前の作業ブランチに merge して反映してからチェックアウト、または (b) 要らない作業ブランチを削除し作業ブランチを作り直しチェックアウト
-13. 更新された内容との差分を確認しながら翻訳再開する
-14. add/commmit した後に origin に push する
-15. Github にてプルリクエストを作成し、承認を待つ
-16. プルリクエストに修正があれば修正後 origin に再び push する
+12. 以下のいずれかを行う
+  a. master の最新内容を前の作業ブランチに merge して反映してからチェックアウト
+  b. 要らない作業ブランチを削除し作業ブランチを作り直しチェックアウト
+1.  更新された内容との差分を確認しながら翻訳再開する
+2.  add/commit した後に origin に push する
+3.  GitHub にてプルリクエストを作成し、承認を待つ
+4.  プルリクエストに修正があれば修正後 origin に再び push する
 
-![プルリクエストの流れ3](https://storage.googleapis.com/zenn-user-upload/wwv11qft5vaoe7ff5rig8xkfz6i5)
+```mermaid
+graph TD
+	E -->|"15(8). Pull request作成"|A
+	subgraph Upstream
+	A[master]
+	end
+	subgraph Origin
+	B[master]
+	E[topic]
+	end
+	subgraph Local
+	C[master]
+	D[topic]
+  D -->|13.翻訳作業後<br>add/commit| D
+	C -->|"12. (a)merge<br>(b)作業ブランチ作成<br>のどちらかを行い<br>チェックアウト"|D
+	end
+	C -->|11. push|B
+	D -->|14. push|E
+	A -->|10. fetch & merge|C
+```
 
 ### 実際のやり方
 
@@ -309,7 +456,7 @@ git diff 作業ブランチ master en/
 # ブランチで比較
 ```
 
-更新内容が複数のファイルや追加内容が多い場合にはターミナルで diff を使うよりも [Githubのcompare機能](https://docs.github.com/ja/github/committing-changes-to-your-project/comparing-commits) や VSCode などの差分表示機能 (特に [GItLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) などの拡張機能) を使った方がよいですが、なれるまでは `git diff` を使ってひとつずつやる方が後学のためになると思います。
+更新内容が複数のファイルや追加内容が多い場合にはターミナルで diff を使うよりも [GitHubのcompare機能](https://docs.github.com/ja/github/committing-changes-to-your-project/comparing-commits) や VSCode などの差分表示機能 (特に [GItLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) などの拡張機能) を使った方がよいですが、なれるまでは `git diff` を使ってひとつずつやる方が後学のためになると思います。
 
 ![プルリク説明11 差分表示](https://storage.googleapis.com/zenn-user-upload/mn6hy4y4ghg95u1ll11grgm1vh6f)
 
@@ -350,13 +497,46 @@ git push origin translation
 # originの作業ブランチtranslationにpush
 ```
 
-push を終えたら同じように Github で作業ブランチ translation からプルリクエストを作成し承認を待ちます。
+push を終えたら同じように GitHub で作業ブランチ translation からプルリクエストを作成し承認を待ちます。
 
 ### 流れのまとめ
 
 シーケンス図でのまとめです。
 
-![シーケンス図](https://storage.googleapis.com/zenn-user-upload/0smd4210ozbpr3a8osgszx14g4h9)
+```mermaid
+sequenceDiagram
+	participant A as upstream(master)
+	participant B as origin(master)
+	participant C as origin(topic)
+	participant D as local(master)
+	participant E as local(topic)
+	rect rgba(0, 255, 0, .1)
+		Note over A,B: 1回目のプルリク
+		A->>B: fork
+		B->>D: clone
+		D->>E: checkout
+		activate E
+		Note left of E: 翻訳作業
+		E->>C: push
+		deactivate E
+		C->>A: pull request
+	end
+	rect rgba(120, 120, 240, .1)
+		Note over A,B: 2回目以降のプルリク
+		A->>D: fetch & merge
+		D-->>B: push
+		D->>E: merge
+		activate E
+		Note left of E: 翻訳作業
+		E->>C: push
+		deactivate E
+		C->>A: pull request
+	end
+```
+
+:::message alert
+`topic` は任意の作業ブランチのことを示しています。
+:::
 
 ## (3) 慣れたらやってみること
 
@@ -366,7 +546,7 @@ push を終えたら同じように Github で作業ブランチ translation か
 
 ### Git client の利用
 
-Working Copy などの Git client を利用してモバイルで作業すると暇なときに翻訳作業を行うことができます。こちらでもメールアドレスを Github で設定した同一のもにする必要があります。
+Working Copy などの Git client を利用してモバイルで作業すると暇なときに翻訳作業を行うことができます。こちらでもメールアドレスを GitHub で設定した同一のもにする必要があります。
 
 ### vscode の拡張機能で作業効率アップ
 
@@ -409,13 +589,25 @@ git checkout -b branchName origin/branchName
 # リモートブランチをローカルにcheckout
 ```
 
+### fork syncバージョンでやってみる
+
+2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能([Sync fork](https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/))を使うことで origin の master に `push` したり、upstream の master から `pull` しなくてもよくなります。
+
+![sync-fork](https://storage.googleapis.com/zenn-user-upload/84cddb81275f-20230815.jpg)
+
+GitHub 上で fork リポジトリ(`origin`)の "Sync fork" ボタンから "Update branch" ボタンをクリックすることでそのリポジトリの master (あるいは main) ブランチを upstream に追従でき、ローカルで以下のコマンドを実行することで local の master を更新できます。
+
+```sh
+git pull origin master
+```
+
 ## 翻訳そのものについて
 
 ### 自由にやると結構楽しい
 
 翻訳の厳密性はプロジェクトごとに色々あると思いますが有志の翻訳であれば、ある程度のゆるさがあっても大丈夫だと思います。あまり気にしすぎずに挑戦してみるとよいと思います。分からない表現や専門用語はどんどんネットで検索しましょう。自分の場合には、不自然な日本語になるくらないなら解釈から相当する自然な言い回しを優先しています。文も切ったりつなげたり、結構自由にやっています。参加者の少ない日本語翻訳のプロジェクトの場合、このように自分の好きなようにできるのも利点だと思います。一方、人数が少ないと校正や、表現性の向上、誤訳やタイポなどの修正があまりできないのが難点です (textlint を使うのがいいかもしれません)。
 
-Obsidian の翻訳プロジェクトでは、翻訳に問題や修正、追加内容があれば誰でもプルリクエストや issue を Github に作成できるスタイルでやっているので翻訳作業自体は結構はやいスピードで進みます。もちろんニッチなソフトウェアのベータ版という開発途中のもの故にこのような自由な事ができるわけで、他のメジャーなソフトウェアやサービスではなかなか難しいのではないでしょうか。
+Obsidian の翻訳プロジェクトでは、翻訳に問題や修正、追加内容があれば誰でもプルリクエストや issue を GitHub に作成できるスタイルでやっているので翻訳作業自体は結構はやいスピードで進みます。もちろんニッチなソフトウェアのベータ版という開発途中のもの故にこのような自由な事ができるわけで、他のメジャーなソフトウェアやサービスではなかなか難しいのではないでしょうか。
 
 他の翻訳プロジェクトってどうやってやっているのかと思って他のサービスなどちょっと調べてみました (スケールによって結構違いますねやはり)。
 
