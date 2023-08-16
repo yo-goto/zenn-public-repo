@@ -91,12 +91,12 @@ GitHub flow は簡単に言えば GitHub 上でプルリクエストを使った
 
 ### Fork and pull model
 
-GitHub を利用した共同開発のモデル(collaborative development model)には以下の２種類があります。
+GitHub を利用した共同開発モデル(collaborative development model)には以下の２種類があります。
 
 - **Fork and pull model** (フォーク&プルモデル)
 - **Shared repository model** (共有リポジトリモデル)
 
-オープンソースのプロジェクトでは「**Fork and pull model**」という複数のリポジトリとプルリクエストを使用して開発や翻訳を行うモデルがよく使用されます。逆にクローズドソースのプロジェクトなどでは「**Shared repository model**」がよく使用されます。
+これらのモデルは共同開発においてリポジトリをどのように扱うかを問題にしたモデルです。オープンソースのプロジェクトでは「**Fork and pull model**」という複数のリポジトリとプルリクエストを使用して開発や翻訳を行うモデルがよく使用されます。逆にクローズドソースのプロジェクトなどでは「**Shared repository model**」がよく使用されます。
 
 これらのモデルについては GitHub 公式ドキュメントの以下のページで概要が解説されていますが、図などが存在せず、解説自体もかなり分かりづらいのでサードパーティで書かれた記事などで情報を補うことになります。
 
