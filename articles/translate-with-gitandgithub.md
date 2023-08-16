@@ -19,9 +19,9 @@ aliases:
 :::details ChangeLog
 - 2023-08-16
   - "Fork and pull model" についての記述を追加
-  - mermaidダイアグラムの修正と追加
+  - mermaid ダイアグラムの修正と追加
   - 内容のリライト
-  - GitHubで完結するモデルについての記述を追加
+  - GitHub で完結するモデルについての記述を追加
   - GitHub flow についての記述を追加
 :::
 
@@ -299,7 +299,7 @@ graph RL
 6. ある程度の作業まとまりで add/commit する
 7. origin に push する
 8. GitHub にてプルリクエストを作成し、承認を待つ
-9.  プルリクエストに修正があれば修正後 origin に再び push する
+9. プルリクエストに修正があれば修正後 origin に再び push する
 
 ```mermaid
 ---
@@ -427,12 +427,12 @@ git push origin translation
 10. ローカルの master ブランチを upstream の最新に追いつかせる
 11. origin の master に push
 12. 以下のいずれかを行う
-  a. master の最新内容を前の作業ブランチに merge して反映してからチェックアウト
-  b. 要らない作業ブランチを削除し作業ブランチを作り直しチェックアウト
-1.  更新された内容との差分を確認しながら翻訳再開する
-2.  add/commit した後に origin に push する
-3.  GitHub にてプルリクエストを作成し、承認を待つ
-4.  プルリクエストに修正があれば修正後 origin に再び push する
+    a. master の最新内容を前の作業ブランチに merge して反映してからチェックアウト
+    b. 要らない作業ブランチを削除し作業ブランチを作り直しチェックアウト
+13. 更新された内容との差分を確認しながら翻訳再開する
+14. add/commit した後に origin に push する
+15. GitHub にてプルリクエストを作成し、承認を待つ
+16. プルリクエストに修正があれば修正後 origin に再び push する
 
 ```mermaid
 graph TD
