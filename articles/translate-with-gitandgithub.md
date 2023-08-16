@@ -96,9 +96,44 @@ Fork and pull model については以下の記事などで比較的分かりや
 - [Fork-Based Contribution Model](https://jenkinsci.github.io/templating-engine-plugin/2.5/contributing/fork-based/)
 - [Using Gitflow with the GitHub Fork & Pull Model](https://www.dalescott.net/using-gitflow-with-githubs-fork-pull-model/)
 
-Fork and pull model を簡単に説明すると、公式のリポジトリをまず fork して、自分のアカウントに複製されたリポジトリを作成します。その複製した fork リポジトリに自身の変更を反映させていき、一定の変更の塊を元々の公式のリポジトリへと反映させるプルリクエスト(PR)を作成します。このプルリクエストが元々のリポジトリの管理者によってレビューされ、承認、つまりマージされることで自身の行った変更が公式のリポジトリへと実際に反映されます。
+Fork and pull model を簡単に説明すると、fork (リポジトリの複製) と pull request (変更のマージリクエスト) を使って安全に他者のリポジトリにコントリビュートできるモデルです。
 
-ブランチまで含めて図にすると以下のような感じで、かなり複雑です。簡単なパッチ修正などは GitHub 上で行うことも可能ですが、オープンソースの開発や翻訳についてローカルでガッツリ作業を行う際にはこのモデルを使った以下のようなフローをまず習得する必要があります。
+より具体的には、公式のリポジトリをまず fork して、自分のアカウントに複製されたリポジトリを作成します。その複製した fork リポジトリに自身の変更を反映させていき、一定の変更の塊を元々の公式のリポジトリへと反映させるプルリクエスト(PR)を作成します。このプルリクエストが元々のリポジトリの管理者によってレビューされ、承認、つまりマージされることで自身の行った変更が公式のリポジトリへと実際に反映されます。
+
+簡単なパッチ修正などは実は GitHub や github.dev だけで済ませることが可能です。この際のワークフローではローカルリポジトリを介さない以下のようなモデルとなります。筆者は MDN の翻訳なども最近行っていますが、日本語などの間違いなどを見つけた場合には実際に以下のワークフローで修正して PR を作成します。
+
+```mermaid
+---
+title: GitHubで完結するパッチ修正のモデル
+---
+graph TD
+  subgraph GitHub
+    direction LR
+    subgraph Upstream
+      A[master]
+    end
+    subgraph Origin
+      B[master]
+      E[topic]
+    end
+  end
+  Upstream -->|fork| Origin
+  E -->|Pull Request| A
+  A -->|sync| B
+  B -->|checkout| E
+  style GitHub fill:#eee, stroke:#000
+```
+
+継続的な翻訳や開発などでじっくり作業したかったり、npm script などで linter や formatter なども走らせたい場合にはローカル環境にリポジトリを clone して作業を行います。
+
+:::message alert
+clone と fork は両者ともに「リポジトリの複製」を行いますが、以下のように異なる概念なので注意してください。
+
+- fork: GitHub 上の他者のリモートリポジトリを自分のアカウントで別のリモートリポジトリとして複製する
+- clone: GitHub 上のリモートリポジトリをローカル環境に複製する
+:::
+
+この際のワークフローは上記のモデルをローカル作業を追加します。ブランチまで含めて図にすると以下のような感じで、かなり複雑です。簡単なパッチ修正を除いて、オープンソースの開発や翻訳についてローカルでガッツリ作業を行う際にはこのモデルを使った以下のようなフローをまず習得する必要があります。
 
 ```mermaid
 ---
@@ -173,30 +208,6 @@ https://github.com/mdn/content
 https://github.com/mdn/translated-content
 
 このモデルでのやり方を覚えれば上記のような翻訳やオープンソースの開発プロジェクトなどに参加できるようになりますのでぜひとも覚えておくことを推奨します。
-
-なお、簡単なパッチ修正などは実は GitHub や github.dev だけで済ませることが可能です。この際のワークフローではローカルリポジトリを介さない以下のようなモデルとなります。筆者は MDN の翻訳なども最近行っていますが、日本語などの間違いなどを見つけた場合には実際に以下のワークフローで修正して PR を作成します。
-
-```mermaid
----
-title: GitHubで完結するパッチ修正のモデル
----
-graph TD
-  subgraph GitHub
-    direction LR
-    subgraph Upstream
-      A[master]
-    end
-    subgraph Origin
-      B[master]
-      E[topic]
-    end
-  end
-  Upstream -->|fork| Origin
-  E -->|Pull Request| A
-  A -->|sync| B
-  B -->|checkout| E
-  style GitHub fill:#eee, stroke:#000
-```
 
 ### 必要な３つのリポジトリ
 
