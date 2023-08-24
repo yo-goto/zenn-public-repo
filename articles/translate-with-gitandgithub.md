@@ -28,7 +28,7 @@ aliases:
 [Obsidian](https://obsidian.md) というソフトウェアの UI とヘルプドキュメントの翻訳と保守を有志で行っています。翻訳作業を通してプルリクエストのやり方を学び、良い機会だと思ったので git と GitHub の使い方からプルリクエストによって共同で翻訳作業をしていく方法を紹介していこうと思います。
 
 :::message
-今回紹介する方法では GitHub での共同開発のモデルの一つである "**Fork and pull model**" を使いますが、このワークフローについては詳細に解説された記事があまりありません。この記事では Obsidian の翻訳だけでなく、Fork and pull model を使った一般的な開発や翻訳のワークフローについての方法を解説します。
+今回の記事で紹介するワークフローでは GitHub での共同開発モデルの一つである "**Fork and pull model**" を使いますが、このワークフローについては詳細に解説された記事が実はあまり存在しません。この記事では Obsidian の翻訳だけでなく、Fork and pull model を使った一般的な開発や翻訳のワークフローについての方法を解説します。
 :::
 
 ### 翻訳から始めるOSS
@@ -81,7 +81,7 @@ https://github.com/obsidianmd/obsidian-docs/
 
 ### GitHub flow
 
-GitHub で開発や翻訳を行う際のワークフローではいわゆる GitHub flow と呼ばれるフローが利用されます。
+GitHub で開発や翻訳を行う際のワークフローではいわゆる **GitHub flow** と呼ばれるフローが利用されます。
 
 https://docs.github.com/en/get-started/quickstart/github-flow
 
@@ -96,13 +96,13 @@ GitHub を利用した共同開発モデル(collaborative development model)に�
 - **Fork and pull model** (フォーク&プルモデル)
 - **Shared repository model** (共有リポジトリモデル)
 
-これらのモデルは共同開発においてリポジトリをどのように扱うかを問題にしたモデルです。オープンソースのプロジェクトでは「**Fork and pull model**」という複数のリポジトリとプルリクエストを使用して開発や翻訳を行うモデルがよく使用されます。逆にクローズドソースのプロジェクトなどでは「**Shared repository model**」がよく使用されます。
+これらのモデルは共同開発においてリポジトリをどのように扱うかを問題にした分類です。パブリックリポジトリでのオープンソースのプロジェクトでは「**Fork and pull model**」という複数のリポジトリとプルリクエストを使用して開発や翻訳を行うモデルがよく使用されます。逆にプライベートリポジトリでのクローズドソースのプロジェクトでは「**Shared repository model**」がよく使用されます。
 
-これらのモデルについては GitHub 公式ドキュメントの以下のページで概要が解説されていますが、図などが存在せず、解説自体もかなり分かりづらいのでサードパーティで書かれた記事などで情報を補うことになります。
+これらのモデルについては GitHub 公式ドキュメントの以下のページで概要が解説されていますが、図なども存在せず、解説自体もかなり分かりづらく分散的になっています。
 
 https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/about-collaborative-development-models
 
-Fork and pull model については以下の記事などで比較的分かりやすい図や説明が記載されているので、この記事の説明を補う形で参考にしてみるとよいと思います。
+俯瞰的に理解するためには、サードパーティで書かれた記事で情報を補うことになります。このモデルについては以下の記事などで比較的に分かりやすい図や説明が記載されているので、この記事の説明を補う形で参考にしてみるとよいと思います。
 
 - [Github で Fork してから Pull Request をするまでの流れ](http://kik.xii.jp/archives/179)
 - [The Git Fork-Branch-Pull Workflow](https://www.tomasbeuzen.com/post/git-fork-branch-pull/)
@@ -140,13 +140,15 @@ graph TD
 継続的な翻訳や開発などでじっくり作業したかったり、npm script などで linter や formatter なども走らせたい場合にはローカル環境にリポジトリを clone して作業を行います。
 
 :::message alert
-clone と fork は両者ともに「リポジトリの複製」を行いますが、以下のように異なる概念なので注意してください。
+clone と fork は両者ともに「リポジトリの複製」を行いますが、以下のように異なる概念なので使い分けに注意してください。
 
-- fork: GitHub 上の他者のリモートリポジトリを自分のアカウントで別のリモートリポジトリとして複製する
-- clone: GitHub 上のリモートリポジトリをローカル環境に複製する
+用語 | 意味
+--|--
+fork | GitHub 上の他者のリモートリポジトリを自分のアカウントで別のリモートリポジトリとして複製する
+clone | GitHub 上のリモートリポジトリをローカル環境に複製する
 :::
 
-この際のワークフローは上記のモデルをローカル作業を追加します。ブランチまで含めて図にすると以下のような感じで、かなり複雑です。簡単なパッチ修正を除いて、オープンソースの開発や翻訳についてローカルでガッツリ作業を行う際にはこのモデルを使った以下のようなフローをまず習得する必要があります。
+この際のワークフローでは、上記のモデルに対して更にローカル作業のフローを追加します。ブランチまで含めて図にすると以下のような感じでかなり複雑です。簡単なパッチ修正を除いて、オープンソースの開発や翻訳についてローカルでガッツリ作業を行う際にはこのモデルを使った以下のようなフローをまず習得する必要があります。
 
 ```mermaid
 ---
@@ -176,7 +178,9 @@ graph RL
   style GitHub fill:#eee, stroke:#000
 ```
 
-2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能(**Sync fork**)を使うともう少し分かりやすいフローになります。
+図に出てくる `fork` や `clone` などの操作はリポジトリレベルでの操作ですが、`push` や `pull` などの操作はブランチレベルの操作であることに気をつけてください。
+
+なおこのワークフローについて、2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能(**Sync fork**)を使うともう少し分かりやすいフローになります。
 
 https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/
 
@@ -274,7 +278,11 @@ graph RL
 
 ### ブランチについて
 
-利用するリポジトリが３つあるわけですが、更にブランチという概念が追加されます。リポジトリでは特定の時点の情報の状態をコミットという形で保存しています。このコミットからさらに変更を加えて意味ある形で再びコミットを作成していくと、コミットが時系列によって連結されたブランチ (枝) ができあがります。枝のある点から全く別の点を派生させることで枝を分岐させることができます。
+利用するリポジトリが３つあるわけですが、更にブランチ(branch)という概念が追加されます。
+
+https://docs.github.com/ja/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches#working-with-branches
+
+リポジトリでは特定の時点の情報の状態をコミットという形で保存しています。このコミットからさらに変更を加えて意味ある形で再びコミットを作成していくと、コミットが時系列によって連結されたブランチ (枝) ができあがります。枝のある点から全く別の点を派生させることで枝を分岐させることができます。
 
 イメージでまとめると、箱 (リポジトリ) の中に点 (コミット) が時系列に連結した枝 (ブランチ) が存在しているような感じです。分岐して存在する複数の枝の先端の点は枝そのものの名前として扱われます。master ブランチやそこから派生させてつくった作業ブランチなどです。イメージで言うと、プルリクエストというのはリポジトリ upstream の主要な枝 (master ブランチ) の先頭に自分が編集した変更情報を点として (コミットとして) 連結する操作です。
 
@@ -660,7 +668,16 @@ git checkout -b branchName origin/branchName
 
 ![sync-fork](https://storage.googleapis.com/zenn-user-upload/84cddb81275f-20230815.jpg)
 
-GitHub 上で fork リポジトリ(`origin`)の "Sync fork" ボタンから "Update branch" ボタンをクリックすることでそのリポジトリの master (あるいは main) ブランチを upstream に追従でき、ローカルで以下のコマンドを実行することで local の master を更新できます。
+GitHub 上で fork リポジトリ(`origin`)の "Sync fork" ボタンから "Update branch" ボタンをクリックすることでそのリポジトリの master (あるいは main) ブランチを upstream に追従できます。
+
+あるいは、GitHub CLI を使って以下のようにコマンドラインから GitHub 上の origin リポジトリを upstream リポジトリに同期できます。
+
+```sh
+# 自分のアカウントのforkリポジトリ名を指定
+gh repo sync yo-goto/obsidian-docs
+```
+
+いずれかの方法で origin を upstream に追従させたら、ローカルで以下のコマンドを実行することで local の master を更新できます。
 
 ```sh
 git pull origin master
