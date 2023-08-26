@@ -495,9 +495,122 @@ git push origin master
 # 自分のリモートリポジトリ(origin)のmasterブランチにその最新内容を反映させる
 ```
 
-`git mrege` コマンドでは、オプション `--ff-only` をつけることでファストフォワードマージでマージを実行します。
+
+#### git fetch と git merge が行うこと
+
+作業の流れからは離れますが、`git fetch` と `git merge` で行っていることを理解しておくことは非常に重要なので、ここで何を行っているかを解説しておきます。
+
+ブランチには種類があり、一般的に作業を行うローカルブランチを `main` としてみると、`main` に対して上流であるリモート追跡ブランチ(remote-tracking branch) の `origin/main` とリモートリポジトリ上にあるリモートブランチ `origin main` という３つのブランチがあることになります。※ なお `origin main` というのはコマンド上での引数としての指定の仕方で通常はリモートの `main` などと識別するのが普通でしょう。
+
+ブランチ名 | 説明
+--|--
+`main` | ローカルブランチ。
+`origin/main` | ローカルブランチ。`origin main` を追跡する、**リモート追跡ブランチ**(remote-tracking branch) である。
+`origin main` | リモートブランチ。リモートリポジトリ `origin` の実際の `main` ブランチ。
+
+```mermaid
+---
+title: ブランチの上流関係
+---
+graph LR
+  subgraph "ローカルリポジトリ(local)"
+    subgraph リモート追跡ブランチ
+      A1[origin/main]
+    end
+    A0[main]
+  end
+  subgraph "リモートリポジトリ(origin)"
+    A2[main]
+  end
+  A0 -.->|上流| A1
+  A1 -.->|上流| A2
+```
+
+`git fetch` を行う際には実際にはリモートリポジトリからの変更をまずリモート追跡ブランチに反映しており、`git merge` を行う際には、リモート追跡ブランチから変更を作業を行うためのローカルブランチ `main` に反映していることになるわけです。
+
+```mermaid
+---
+title: fetchとmergeの流れ
+---
+graph RL
+  subgraph "ローカルリポジトリ(local)"
+    subgraph リモート追跡ブランチ
+      A1[origin/main]
+    end
+    A0[main]
+  end
+  subgraph "リモートリポジトリ(origin)"
+    A2[main]
+  end
+  A1 -->|merge| A0
+  A2 -->|fetch| A1
+```
+
+```sh
+git checkout main
+git fetch origin main # origin main の変更を origin/main に反映
+git merge origin/main # origin/main の変更を main に反映
+```
+
+なお、`git pull` というコマンドはこの作業を一気に行うコマンドです。
+
+```sh
+git pull origin main
+# origin main の変更を origin/main に反映してからその変更を main に反映
+```
+
+fetch, merge, pull の関係は以下の GitHub 公式ドキュメントが詳しいです。
+
+https://github.com/git-guides/git-pull
+
+さて、OSS で使われる Fork and pull model では origin だけではなく upstream という２つのリモートリポジトリがあったので、リモート追跡ブランチも複数あることに注意が必要です。図にすると以下のような複雑な関係になっています。
+
+```mermaid
+---
+title: ３つのリポジトリでの上流関係
+---
+graph LR
+  subgraph local
+    subgraph リモート追跡ブランチ
+      A1[origin/main]
+      AA1[upstream/main]
+      B1[origin/feature]
+    end
+    A0[main] -.-> A1 & AA1
+    B0[feature] -.-> B1
+  end
+  subgraph GitHub
+    subgraph origin
+      A2[main]
+      B2[feature]
+    end
+    A1 -.-> A2
+    B1 -.-> B2
+    subgraph upstream
+      AA2[main]
+    end
+  end
+  AA1 -.-> AA2
+```
+
+fork 元のリポジトリである upstream からの変更を main に反映させるには以下のように行います。
+
+```sh
+git checkout main
+git fetch upstream main # リモート追跡ブランチを更新
+git merge upstream/main # リモート追跡ブランチの内容を取り込む
+```
+
+`git pull` でやるなら以下のように行います。
+
+```sh
+git checkout main
+git pull upstream main
+```
 
 #### 翻訳作業再開
+
+さて元の作業解説の流れに戻ります。
 
 ```shell
 git checkout translation
