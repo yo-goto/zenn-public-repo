@@ -6,7 +6,7 @@ emoji: "👾"
 type: "tech"
 topics: [git, github, 英語, 翻訳, Obsidian]
 date: 2021-03-28
-modified: 2023-08-15
+modified: 2023-08-26
 url: "https://zenn.dev/estra/articles/translate-with-gitandgithub"
 tags: type/zenn, git/GitHub, Zenn, 翻訳, obsidian
 aliases:
@@ -143,7 +143,9 @@ https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/gettin
 - [Fork-Based Contribution Model](https://jenkinsci.github.io/templating-engine-plugin/2.5/contributing/fork-based/)
 - [Using Gitflow with the GitHub Fork & Pull Model](https://www.dalescott.net/using-gitflow-with-githubs-fork-pull-model/)
 
-Fork and pull model を簡単に説明すると、fork (リポジトリの複製) と pull request (変更のマージリクエスト) を使って安全に他者のリポジトリにコントリビュートできるモデルです。
+Fork and pull model を簡単に説明すると、fork (リポジトリの複製) と pull request (変更のマージリクエスト) を使って安全に他者のリポジトリにコントリビュートできるモデルです。なお、git のドキュメントではこのモデル(ワーカーフロー)は Integration-Manager Workflow と呼ばれています。
+
+https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows#wfdiag_b
 
 より具体的には、公式のリポジトリをまず fork して、自分のアカウントに複製されたリポジトリを作成します。その複製した fork リポジトリに自身の変更を反映させていき、一定の変更の塊を元々の公式のリポジトリへと反映させるプルリクエスト(PR)を作成します。このプルリクエストが元々のリポジトリの管理者によってレビューされ、承認、つまりマージされることで自身の行った変更が公式のリポジトリへと実際に反映されます。
 
@@ -465,16 +467,16 @@ git push origin translation
 
 ## (2) 2 回目以降のプルリクエストの流れ
 
-9. upstream の追加と確認
-10. ローカルの master ブランチを upstream の最新に追いつかせる
-11. origin の master に push
+9. `upstream` の追加と確認
+10. ローカルの `master` ブランチを `upstream` の最新に追いつかせる
+11. `origin` の `master` に `push`
 12. 以下のいずれかを行う
-    a. master の最新内容を前の作業ブランチに merge して反映してからチェックアウト
+    a. `master` の最新内容を前の作業ブランチに `merge` して反映してからチェックアウト
     b. 要らない作業ブランチを削除し作業ブランチを作り直しチェックアウト
 13. 更新された内容との差分を確認しながら翻訳再開する
-14. add/commit した後に origin に push する
+14. add/commit した後に `origin` に `push` する
 15. GitHub にてプルリクエストを作成し、承認を待つ
-16. プルリクエストに修正があれば修正後 origin に再び push する
+16. プルリクエストに修正があれば修正後 `origin` に再び `push` する
 
 ```mermaid
 graph TD
@@ -503,11 +505,11 @@ graph TD
 
 #### 翻訳作業再開するまで
 
-作業を再開するために、ローカルリポジトリ (local) の master ブランチの内容をこのオリジナルのリモートリポジトリ (upstream) の master ブランチの状態に追いつかせる必要があります。
+作業を再開するために、ローカルリポジトリ (local) の `master` ブランチの内容を fork 元のオリジナルのリモートリポジトリ (upstream) の `master` ブランチの状態に追いつかせる必要があります。
 
-まず remote の設定を確認し、upstream として追加します。次のコマンドで upstream という名前でオリジナルのリモートリポジトリを追加します。_この作業は 3 回目以降のプルリクエストからは必要ありません_。
+まず remote の設定を確認し、`upstream` として追加します。次のコマンドで `upstream` という名前でオリジナルのリモートリポジトリを追加します。なお、_この作業は 3 回目以降のプルリクエストからは必要ありません_。
 
-```shell
+```shell:今回だけ必要な作業
 git remote -v
 # fork元の公式オリジナルのリモートリポジトリがremoteのupstreamとして設定しているか確認する。
 git remote add upstream fork元のURL
@@ -515,12 +517,12 @@ git remote add upstream fork元のURL
 git remote add upstream https://github.com/obsidianmd/obsidian-docs.git
 ```
 
-upstream から最新を fetch して local の master ブランチにマージしてあげます。local の master ブランチが最新になったら自分のリモートブランチ (origin) の master に push して反映させます。上で提示した 9〜16 までの流れの 12(a) になります。
+`upstream` から最新を `fetch` して local の `master` ブランチにマージしてあげます。local の `master` ブランチが最新になったら自分のリモートブランチ (origin) の `master` に `push` して反映させます。上で提示した 9〜16 までの流れの 12(a) になります。
 
 ```shell
 git checkout master
 # masterブランチにチェックアウトする
-git fetch upstream
+git fetch upstream master
 # upstreamから更新情報をとりよせる
 # 更新情報は upstream/master に
 git merge --ff-only upstream/master
@@ -529,6 +531,7 @@ git push origin master
 # 自分のリモートリポジトリ(origin)のmasterブランチにその最新内容を反映させる
 ```
 
+`git merge` コマンドでは、オプション `--ff-only` をつけることでファストフォワードマージ(fast-forward merge)でマージを実行します。ファストフードマージできない場合にはエラーとなります。
 
 #### git fetch と git merge が行うこと
 
@@ -721,33 +724,33 @@ push を終えたら同じように GitHub で作業ブランチ translation か
 
 ### 流れのまとめ
 
-シーケンス図でのまとめです。
+シーケンス図でのまとめです。リポジトリの種類は３つ(upstream, origin, local)あり、それぞれに `master` や作業ブランチがあることに注意してください。
 
 ```mermaid
 sequenceDiagram
 	participant A as upstream(master)
 	participant B as origin(master)
-	participant C as origin(topic)
+	participant C as origin(feature)
 	participant D as local(master)
-	participant E as local(topic)
+	participant E as local(feature)
 	rect rgba(0, 255, 0, .1)
 		Note over A,B: 1回目のプルリク
 		A->>B: fork
 		B->>D: clone
 		D->>E: checkout
 		activate E
-		Note left of E: 翻訳作業
+		Note left of E: 翻訳作業(add/commit)
 		E->>C: push
 		deactivate E
 		C->>A: pull request
 	end
-	rect rgba(120, 120, 240, .1)
+	rect rgba(250, 150, 10, .1)
 		Note over A,B: 2回目以降のプルリク
 		A->>D: fetch & merge
 		D-->>B: push
-		D->>E: merge
+		D->>E: checkout & merge
 		activate E
-		Note left of E: 翻訳作業
+		Note left of E: 翻訳作業(add/commit)
 		E->>C: push
 		deactivate E
 		C->>A: pull request
@@ -755,7 +758,7 @@ sequenceDiagram
 ```
 
 :::message alert
-`topic` は任意の作業ブランチのことを示しています。
+`feature` は任意の作業ブランチのことを示しています。
 :::
 
 ## (3) 慣れたらやってみること
