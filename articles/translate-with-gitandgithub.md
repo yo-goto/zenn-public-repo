@@ -6,7 +6,7 @@ emoji: "👾"
 type: "tech"
 topics: [git, github, 英語, 翻訳, Obsidian]
 date: 2021-03-28
-modified: 2023-08-15
+modified: 2023-08-26
 url: "https://zenn.dev/estra/articles/translate-with-gitandgithub"
 tags: type/zenn, git/GitHub, Zenn, 翻訳, obsidian
 aliases:
@@ -71,13 +71,47 @@ https://github.com/obsidianmd/obsidian-docs/
 - [初めてのPull Request(プルリクエスト)](https://kaworu.jpn.org/kaworu/2017-10-19-1.php#2017-10-19-1-7a386224b42e28c840ef6ce67c51ca62)
   - OSS でのプルリクエストについての記事で、図はないですが細かく、分かりやすいです。
 
-## 周辺概念
+## 基本的概念
+
+### git と GitHub
+
+まずは git と GitHub の違いを把握しておきましょう。
+
+そもそも git とは分散バージョン管理のソフトウェアであり、これを使うことでソフトウェア開発のバージョン管理を行えます。git を使うことで一人でもバージョン管理を行いながらソフトウェア開発ができますが、インターネット上で複数人で共同開発を行うためには git で管理しているデータをホスティングして、そこからデータを引っ張ってきたり(fetch)、逆にアップロード(push)する必要があります。
+
+GitHub は git を使って共同で開発を行うことができるコラボレーションプラットフォームのサービスです。git でバージョン管理されたソフトウェアのソースコードが GitHub というプラットフォーム上にホスティングされ、このプラットフォームからソースコードをダウンロードしたりアップロードすることで共同で開発を行います。
+
+GitHub はただのホスティングサービスなので、実際には他のサービスでも同じようなことをが行なえます。代表的な別サービスとしては [GitLab](https://about.gitlab.com/ja-jp/) などがあげられます。
+
+`git push` や `git fetch` などの git のコマンド操作はホスティングサービス上にあるリモートのリポジトリ(ソースコード)に対してネットワーク越しにデータのアップロードやダウンロードをするための操作です。このコマンド操作を通じてインターネットで共同開発ができる、というわけです。
+
+:::message alert
+git と GitHub は別物なわけですから、各種の操作が git のコマンド操作なのか、GitHub での操作なのかを区別することが重要です。例えばリポジトリの複製をおこなう fork や clone といった操作がありますが、fork は GitHub での操作であるのに対して、clone は git のコマンド操作である点に注意してください。
+
+また、git ではホスティングサービスを GitHub に限定しているわけではないことから、公式ドキュメントでは GitHub を使った操作ではなくなんらかのサーバーとして抽象化された説明などになっていることにも注意が必要です。
+:::
 
 ### リポジトリとプルリクエスト
 
-リポジトリとは雑にいうとフォルダです。git を使うとそのリポジトリ内部 (フォルダ) でさまざまな変更を行い特定の時点の状態そのものをある点 (`commit`) として保存管理できます。
+git ではバージョン管理のために「リポジトリ」というものを作成します。リポジトリとは大雑把に捉えるなら git で管理しているプロジェクトのフォルダです。git がインストール済みなら `git init` というコマンドをコマンドラインから実行することで現在のフォルダをリポジトリとして初期化することができます。
 
-プルリクエストとはそのように自身のリポジトリ内にて行った変更を、GitHub 上 (ウェブ上) にある他のリポジトリに対して統合 (`merge`) するように申請する仕組みです。
+```sh
+# 現在のフォルダをリポジトリとして初期化する
+git init
+```
+
+git で初期化されたフォルダのことを一般にはリポジトリとして呼びます。
+
+git ではデータを小さなファイルシステムとソースコードのスナップショット(ある時点での完全な状態)の集合として考えます。git を使うとそのリポジトリ内部 (フォルダ) でさまざまな変更を行い特定の時点の状態そのものスナップショットとして保存管理できます。このスナップショットをコミットと呼びます。このコミットをどんどん繋げていくことでブランチが形成されます。
+
+`git init` で git 初期化したフォルダをリポジトリとして呼びましたが、インターネットごしに共同開発するには開発者たちはソースコードを共有している必要があります。GitHub ではこのリポジトリをホスティングしており、開発者たちはホスティングされたリポジトリを自分のローカル環境に複製(clone)することで同じリポジトリで作業を行うことができます。つまり、リポジトリとは自分のパソコン上だけでなく、サーバーにもあったり、他の開発者のパソコン上にもあるという状態が一般的になります。
+
+分散バージョン管理システムである git では、このようにリポジトリがいたるところに存在しており、リポジトリへの変更をホスティングサービスを通じて相互に反映しあうことでソースコードの更新を行っていきます。
+
+このとき、GitHub のプラットフォーム上でソースコードの更新のやり取りを分かりやすく行うための仕組みがプルリクエスト(Pull request)です。
+プルリクエストは git の機能ではなく、GitHub のサービスの機能であることに注意してください。プルリクエストは自身のローカルにあるリポジトリ内にて行った変更を、GitHub 上 (ウェブ上) にあるリポジトリに対してプルリクエストを作成することでその変更を統合 (`merge`) するように申請する仕組みです。
+
+このようにプルリクエストを通じて開発を行うのが GitHub での一般的な共同開発の方法です。OSS でのソフトウェアの翻訳作業は開発作業と同じく、プルリクエストを通じて行われるケースがよくあり、今回の記事はその方法を通じて GitHub での共同開発を学ぶというのが目的です。
 
 ### GitHub flow
 
@@ -109,7 +143,9 @@ https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/gettin
 - [Fork-Based Contribution Model](https://jenkinsci.github.io/templating-engine-plugin/2.5/contributing/fork-based/)
 - [Using Gitflow with the GitHub Fork & Pull Model](https://www.dalescott.net/using-gitflow-with-githubs-fork-pull-model/)
 
-Fork and pull model を簡単に説明すると、fork (リポジトリの複製) と pull request (変更のマージリクエスト) を使って安全に他者のリポジトリにコントリビュートできるモデルです。
+Fork and pull model を簡単に説明すると、fork (リポジトリの複製) と pull request (変更のマージリクエスト) を使って安全に他者のリポジトリにコントリビュートできるモデルです。なお、git のドキュメントではこのモデル(ワーカーフロー)は Integration-Manager Workflow と呼ばれています。
+
+https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows#wfdiag_b
 
 より具体的には、公式のリポジトリをまず fork して、自分のアカウントに複製されたリポジトリを作成します。その複製した fork リポジトリに自身の変更を反映させていき、一定の変更の塊を元々の公式のリポジトリへと反映させるプルリクエスト(PR)を作成します。このプルリクエストが元々のリポジトリの管理者によってレビューされ、承認、つまりマージされることで自身の行った変更が公式のリポジトリへと実際に反映されます。
 
@@ -431,16 +467,16 @@ git push origin translation
 
 ## (2) 2 回目以降のプルリクエストの流れ
 
-9. upstream の追加と確認
-10. ローカルの master ブランチを upstream の最新に追いつかせる
-11. origin の master に push
+9. `upstream` の追加と確認
+10. ローカルの `master` ブランチを `upstream` の最新に追いつかせる
+11. `origin` の `master` に `push`
 12. 以下のいずれかを行う
-    a. master の最新内容を前の作業ブランチに merge して反映してからチェックアウト
+    a. `master` の最新内容を前の作業ブランチに `merge` して反映してからチェックアウト
     b. 要らない作業ブランチを削除し作業ブランチを作り直しチェックアウト
 13. 更新された内容との差分を確認しながら翻訳再開する
-14. add/commit した後に origin に push する
+14. add/commit した後に `origin` に `push` する
 15. GitHub にてプルリクエストを作成し、承認を待つ
-16. プルリクエストに修正があれば修正後 origin に再び push する
+16. プルリクエストに修正があれば修正後 `origin` に再び `push` する
 
 ```mermaid
 graph TD
@@ -469,11 +505,11 @@ graph TD
 
 #### 翻訳作業再開するまで
 
-作業を再開するために、ローカルリポジトリ (local) の master ブランチの内容をこのオリジナルのリモートリポジトリ (upstream) の master ブランチの状態に追いつかせる必要があります。
+作業を再開するために、ローカルリポジトリ (local) の `master` ブランチの内容を fork 元のオリジナルのリモートリポジトリ (upstream) の `master` ブランチの状態に追いつかせる必要があります。
 
-まず remote の設定を確認し、upstream として追加します。次のコマンドで upstream という名前でオリジナルのリモートリポジトリを追加します。_この作業は 3 回目以降のプルリクエストからは必要ありません_。
+まず remote の設定を確認し、`upstream` として追加します。次のコマンドで `upstream` という名前でオリジナルのリモートリポジトリを追加します。なお、_この作業は 3 回目以降のプルリクエストからは必要ありません_。
 
-```shell
+```shell:今回だけ必要な作業
 git remote -v
 # fork元の公式オリジナルのリモートリポジトリがremoteのupstreamとして設定しているか確認する。
 git remote add upstream fork元のURL
@@ -481,12 +517,12 @@ git remote add upstream fork元のURL
 git remote add upstream https://github.com/obsidianmd/obsidian-docs.git
 ```
 
-upstream から最新を fetch して local の master ブランチにマージしてあげます。local の master ブランチが最新になったら自分のリモートブランチ (origin) の master に push して反映させます。上で提示した 9〜16 までの流れの 12(a) になります。
+`upstream` から最新を `fetch` して local の `master` ブランチにマージしてあげます。local の `master` ブランチが最新になったら自分のリモートブランチ (origin) の `master` に `push` して反映させます。上で提示した 9〜16 までの流れの 12(a) になります。
 
 ```shell
 git checkout master
 # masterブランチにチェックアウトする
-git fetch upstream
+git fetch upstream master
 # upstreamから更新情報をとりよせる
 # 更新情報は upstream/master に
 git merge --ff-only upstream/master
@@ -495,9 +531,123 @@ git push origin master
 # 自分のリモートリポジトリ(origin)のmasterブランチにその最新内容を反映させる
 ```
 
-`git mrege` コマンドでは、オプション `--ff-only` をつけることでファストフォワードマージでマージを実行します。
+`git merge` コマンドでは、オプション `--ff-only` をつけることでファストフォワードマージ(fast-forward merge)でマージを実行します。ファストフードマージできない場合にはエラーとなります。
+
+#### git fetch と git merge が行うこと
+
+作業の流れからは離れますが、`git fetch` と `git merge` で行っていることを理解しておくことは非常に重要なので、ここで何を行っているかを解説しておきます。
+
+ブランチには種類があり、一般的に作業を行うローカルブランチを `main` としてみると、`main` に対して上流であるリモート追跡ブランチ(remote-tracking branch) の `origin/main` とリモートリポジトリ上にあるリモートブランチ `origin main` という３つのブランチがあることになります。※ なお `origin main` というのはコマンド上での引数としての指定の仕方で通常はリモートの `main` などと識別するのが普通でしょう。
+
+ブランチ名 | 説明
+--|--
+`main` | ローカルブランチ。
+`origin/main` | ローカルブランチ。`origin main` を追跡する、**リモート追跡ブランチ**(remote-tracking branch) である。
+`origin main` | リモートブランチ。リモートリポジトリ `origin` の実際の `main` ブランチ。
+
+```mermaid
+---
+title: ブランチの上流関係
+---
+graph LR
+  subgraph "ローカルリポジトリ(local)"
+    subgraph リモート追跡ブランチ
+      A1[origin/main]
+    end
+    A0[main]
+  end
+  subgraph "リモートリポジトリ(origin)"
+    A2[main]
+  end
+  A0 -.->|上流| A1
+  A1 -.->|上流| A2
+```
+
+`git fetch` を行う際には実際にはリモートリポジトリからの変更をまずリモート追跡ブランチに反映しており、`git merge` を行う際には、リモート追跡ブランチから変更を作業を行うためのローカルブランチ `main` に反映していることになるわけです。
+
+```mermaid
+---
+title: fetchとmergeの流れ
+---
+graph RL
+  subgraph "ローカルリポジトリ(local)"
+    subgraph リモート追跡ブランチ
+      A1[origin/main]
+    end
+    A0[main]
+  end
+  subgraph "リモートリポジトリ(origin)"
+    A2[main]
+  end
+  A1 -->|merge| A0
+  A2 -->|fetch| A1
+```
+
+```sh
+git checkout main
+git fetch origin main # origin main の変更を origin/main に反映
+git merge origin/main # origin/main の変更を main に反映
+```
+
+なお、`git pull` というコマンドはこの作業を一気に行うコマンドです。
+
+```sh
+git pull origin main
+# origin main の変更を origin/main に反映してからその変更を main に反映
+```
+
+fetch, merge, pull の関係は以下の GitHub 公式ドキュメントが詳しいです。
+
+https://github.com/git-guides/git-pull
+
+さて、OSS で使われる Fork and pull model では origin だけではなく upstream という２つのリモートリポジトリがあったので、リモート追跡ブランチも複数あることに注意が必要です。図にすると以下のような複雑な関係になっています。
+
+```mermaid
+---
+title: ３つのリポジトリでの上流関係
+---
+graph LR
+  subgraph local
+    subgraph リモート追跡ブランチ
+      A1[origin/main]
+      AA1[upstream/main]
+      B1[origin/feature]
+    end
+    A0[main] -.-> A1 & AA1
+    B0[feature] -.-> B1
+  end
+  subgraph GitHub
+    subgraph origin
+      A2[main]
+      B2[feature]
+    end
+    A1 -.-> A2
+    B1 -.-> B2
+    subgraph upstream
+      AA2[main]
+    end
+  end
+  AA1 -.-> AA2
+```
+
+fork 元のリポジトリである upstream からの変更を main に反映させるには以下のように行います。
+
+```sh
+git checkout main
+git fetch upstream main # リモート追跡ブランチを更新
+git merge upstream/main # リモート追跡ブランチの内容を取り込む
+```
+
+`git pull` でやるなら以下のように行います。
+
+```sh
+git checkout main
+git pull upstream main
+```
 
 #### 翻訳作業再開
+
+さて元の作業解説の流れに戻ります。
 
 ```shell
 git checkout translation
@@ -574,33 +724,33 @@ push を終えたら同じように GitHub で作業ブランチ translation か
 
 ### 流れのまとめ
 
-シーケンス図でのまとめです。
+シーケンス図でのまとめです。リポジトリの種類は３つ(upstream, origin, local)あり、それぞれに `master` や作業ブランチがあることに注意してください。
 
 ```mermaid
 sequenceDiagram
 	participant A as upstream(master)
 	participant B as origin(master)
-	participant C as origin(topic)
+	participant C as origin(feature)
 	participant D as local(master)
-	participant E as local(topic)
+	participant E as local(feature)
 	rect rgba(0, 255, 0, .1)
 		Note over A,B: 1回目のプルリク
 		A->>B: fork
 		B->>D: clone
 		D->>E: checkout
 		activate E
-		Note left of E: 翻訳作業
+		Note left of E: 翻訳作業(add/commit)
 		E->>C: push
 		deactivate E
 		C->>A: pull request
 	end
-	rect rgba(120, 120, 240, .1)
+	rect rgba(250, 150, 10, .1)
 		Note over A,B: 2回目以降のプルリク
 		A->>D: fetch & merge
 		D-->>B: push
-		D->>E: merge
+		D->>E: checkout & merge
 		activate E
-		Note left of E: 翻訳作業
+		Note left of E: 翻訳作業(add/commit)
 		E->>C: push
 		deactivate E
 		C->>A: pull request
@@ -608,7 +758,7 @@ sequenceDiagram
 ```
 
 :::message alert
-`topic` は任意の作業ブランチのことを示しています。
+`feature` は任意の作業ブランチのことを示しています。
 :::
 
 ## (3) 慣れたらやってみること
