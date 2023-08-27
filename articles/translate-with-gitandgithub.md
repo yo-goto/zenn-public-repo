@@ -1,12 +1,12 @@
 ---
-title: "プルリクエストによる翻訳作業のやり方 - Fork and pull model"
+title: "プルリクエストを通じたGitHubでの翻訳と開発のサイクル - Fork and pull model"
 published: true
 cssClasses: zenn
 emoji: "👾"
 type: "tech"
 topics: [git, github, 英語, 翻訳, Obsidian]
 date: 2021-03-28
-modified: 2023-08-26
+modified: 2023-08-27
 url: "https://zenn.dev/estra/articles/translate-with-gitandgithub"
 tags: type/zenn, git/GitHub, Zenn, 翻訳, obsidian
 aliases:
@@ -31,7 +31,9 @@ aliases:
 [Obsidian](https://obsidian.md) というソフトウェアの UI とヘルプドキュメントの翻訳と保守を有志で行っています。翻訳作業を通してプルリクエストのやり方を学び、良い機会だと思ったので git と GitHub の使い方からプルリクエストによって共同で翻訳作業をしていく方法を紹介していこうと思います。
 
 :::message
-今回の記事で紹介するワークフローでは GitHub での共同開発モデルの一つである "**Fork and pull model**" を使いますが、このワークフローについては詳細に解説された記事が実はあまり存在しません。この記事では Obsidian の翻訳だけでなく、Fork and pull model を使った一般的な開発や翻訳のワークフローについての方法を解説します。
+今回の記事で紹介するワークフローでは GitHub での共同開発モデルの一つである "**Fork and pull model**" を使いますが、このワークフローについては詳細に解説された記事が実はあまり存在していません。
+
+2023年現在、GitHub 公式ドキュメントにおいてもワークフローについては分散的かつ、具体的すぎる解説となっており、抽象化された図やワークフローとしての俯瞰的な流れがわかるようなドキュメントがありません。そういった不満からこの記事では Obsidian の翻訳作業に限らず、Fork and pull model を使った一般的なオープンソースでの開発や翻訳のワークフローサイクルについて詳細かつ丁寧にドキュメント化することを目的にしています。
 :::
 
 ### 翻訳から始めるOSS
@@ -588,17 +590,19 @@ git push origin master
 
 `git merge` コマンドでは、オプション `--ff-only` をつけることでファストフォワードマージ(fast-forward merge)でマージを実行します。ファストフードマージできない場合にはエラーとなります。
 
-#### git fetch と git merge が行うこと
+#### fetch と merge が行うこと
 
 作業の流れからは離れますが、`git fetch` と `git merge` で行っていることを理解しておくことは非常に重要なので、ここで何を行っているかを解説しておきます。
 
-ブランチには種類があり、一般的に作業を行うローカルブランチを `main` としてみると、`main` に対して上流であるリモート追跡ブランチ(remote-tracking branch) の `origin/main` とリモートリポジトリ上にあるリモートブランチ `origin main` という３つのブランチがあることになります。※ なお `origin main` というのはコマンド上での引数としての指定の仕方で通常はリモートの `main` などと識別するのが普通でしょう。
+ブランチには種類があり、一般的に作業を行うローカルブランチを `main` としてみると、`main` に対して上流であるリモート追跡ブランチ(remote-tracking branch) の `origin/main` というブランチと、さらにリモートリポジトリ上にあるリモートブランチ `origin main` という３つのブランチがあることになります。※ なお `origin main` というのはコマンド上での引数としての指定の仕方で通常はリモートの `main` などと識別するのが普通でしょう。
 
 ブランチ名 | 説明
 --|--
 `main` | ローカルブランチ。
 `origin/main` | ローカルブランチ。`origin main` を追跡する、**リモート追跡ブランチ**(remote-tracking branch) である。
 `origin main` | リモートブランチ。リモートリポジトリ `origin` の実際の `main` ブランチ。
+
+ブランチは以下のように上流の関係があります。
 
 ```mermaid
 ---
@@ -617,6 +621,8 @@ graph LR
   A0 -.->|上流| A1
   A1 -.->|上流| A2
 ```
+
+リモート追跡ブランチとは、リモートリポジトリにあるブランチへのブックマークのようなものであり、`fetch` + `merge` (あるいは `pull`) という操作を行うためのバッファとなるようなブランチです。
 
 `git fetch` を行う際には実際にはリモートリポジトリからの変更をまずリモート追跡ブランチに反映しており、`git merge` を行う際には、リモート追跡ブランチから変更を作業を行うためのローカルブランチ `main` に反映していることになるわけです。
 
@@ -644,18 +650,19 @@ git fetch origin main # origin main の変更を origin/main に反映
 git merge origin/main # origin/main の変更を main に反映
 ```
 
-なお、`git pull` というコマンドはこの作業を一気に行うコマンドです。
+なお、`git pull` というコマンドはこの作業を一気に行うコマンドであり、このコマンドを使う場合にはリモート追跡ブランチを意識する必要なく以下のように描いて実行できます。
 
 ```sh
+git chekcout main
 git pull origin main
 # origin main の変更を origin/main に反映してからその変更を main に反映
 ```
 
-fetch, merge, pull の関係は以下の GitHub 公式ドキュメントが詳しいです。
+なお、fetch, merge, pull の関係は以下の GitHub 公式ドキュメントが詳しいです。
 
 https://github.com/git-guides/git-pull
 
-さて、OSS で使われる Fork and pull model では origin だけではなく upstream という２つのリモートリポジトリがあったので、リモート追跡ブランチも複数あることに注意が必要です。図にすると以下のような複雑な関係になっています。
+さて、OSS で使われる Fork and pull model では origin だけではなく upstream というもう一つのリモートリポジトリがあったので、リモート追跡ブランチも複数あることに注意が必要です。図にすると以下のような複雑な関係になっています。
 
 ```mermaid
 ---
@@ -875,24 +882,70 @@ git checkout -b branchName origin/branchName
 
 ### fork syncバージョンでやってみる
 
-2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能([Sync fork](https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/))を使うことで origin の master に `push` したり、upstream の master から `pull` しなくてもよくなります。
+2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能([Sync fork](https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/))を使うことで origin の master に `push` したり、upstream の master から `pull` せずにワークフロー全体をシンプルにすることができます。
+
+以下のように GitHub 上で fork リポジトリ(`origin`)の "Sync fork" ボタンから "Update branch" ボタンをクリックすることでそのリポジトリの master(main) ブランチを fork 元のリポジトリ upstream の master(main) に追従できます。
 
 ![sync-fork](https://storage.googleapis.com/zenn-user-upload/84cddb81275f-20230815.jpg)
 
-GitHub 上で fork リポジトリ(`origin`)の "Sync fork" ボタンから "Update branch" ボタンをクリックすることでそのリポジトリの master (あるいは main) ブランチを upstream に追従できます。
-
-あるいは、GitHub CLI を使って以下のようにコマンドラインから GitHub 上の origin リポジトリを upstream リポジトリに同期できます。
+あるいは、[GitHub CLI](https://cli.github.com) を使って以下のようにコマンドラインから GitHub 上の origin リポジトリを upstream リポジトリに同期できます。
 
 ```sh
 # 自分のアカウントのforkリポジトリ名を指定
 gh repo sync yo-goto/obsidian-docs
 ```
 
-いずれかの方法で origin を upstream に追従させたら、ローカルで以下のコマンドを実行することで local の master を更新できます。
+いずれかの方法で origin の master(main) を upstream の master(main) に追従させたら、ローカルで以下のコマンドを実行することで local の master(main) を更新できます。
 
 ```sh
+# 通常バージョンだと git pull upstream master
 git pull origin master
 ```
+
+ワークフローの全体図を `fetch` + `merge` も `pull` に置き換えると、Sycn fork バージョンにすると以下のようにシンプルかつ分かりやすくなります。
+
+```mermaid
+---
+title: Sync fork version
+---
+%%{init: { 'sequence': { 'showSequenceNumbers': true } } }%%
+sequenceDiagram
+  box GitHub
+	participant A as upstream(master)
+	participant B as origin(master)
+	participant C as origin(feature)
+  end
+  box Local
+	participant D as local(master)
+	participant E as local(feature)
+  end
+	rect rgba(0, 255, 0, .1)
+		Note over A,B: 1回目のプルリク
+		A->>B: fork
+		B->>D: clone
+		D->>E: checkout
+    loop
+      E->>E: 翻訳作業(add/commit)
+    end
+		E->>C: push
+		C->>A: pull request
+	end
+	rect rgba(250, 150, 10, .1)
+		Note over A,B: 2回目以降のプルリク
+		A->>B: sync
+    B->>D: pull
+		D->>E: checkout & merge
+    loop
+      E->>E: 翻訳作業(add/commit)
+    end
+		E->>C: push
+		C->>A: pull request
+	end
+```
+
+GitHub のドキュメントなどではこのワークフローについて特に名前がついているわけではないのですが、名前をつけて認識することは重要なので、Fork-Pull-Sync cycle workflow (FPS cycle workflow) とでも名前をつけて呼ぶことにしましょう。
+
+もちろん fork 操作は実際には最初の一回だけしか行いませんが、pull 操作 (コントリビューター側の視点では pull request) と sync 操作は何回もサイクルして行うことが重要であり、このワークフローの要となります。
 
 ## 翻訳そのものについて
 
