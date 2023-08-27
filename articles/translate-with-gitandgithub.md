@@ -847,40 +847,7 @@ GitLens や GitGraph などの拡張機能を入れることで作業効率を�
 
 GitLens を利用すればブランチ間 (コミット間) の差分を簡単に確認しながら翻訳作業を行えます。更新された部分のみを見ながら翻訳を追加できます。
 
-## 他によく使うコマンドの概説
-
-```shell
-git checkout -b branchName
-# ブランチを新規作成した上でチェックアウトする
-
-git merge --no-ff branchName
-# non fast-forward(recursiveマージ)
-git merge --ff-only branchName
-# fast-forwardマージできるならマージする、できない場合にはマージしない
-
-git rm fileName
-# git監視下でファイル削除
-git mv 旧ファイル名 新ファイル名
-# ファイルの名称変更
-git mv fileName folderpath
-# ファイルの移動
-
-git config --global list
-# globalのconfig確認(ユーザー情報などの確認)
-git log --graph --oneline
-# ログをグラフとして簡易表示
-```
-
-リモートブランチ関連
-
-```shell
-git push --delete origin branchName
-# リモートブランチの削除
-git checkout -b branchName origin/branchName
-# リモートブランチをローカルにcheckout
-```
-
-### fork syncバージョンでやってみる
+### Sync fork バージョンでやってみる
 
 2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能([Sync fork](https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/))を使うことで origin の master に `push` したり、upstream の master から `pull` せずにワークフロー全体をシンプルにすることができます。
 
@@ -946,6 +913,39 @@ sequenceDiagram
 GitHub のドキュメントなどではこのワークフローについて特に名前がついているわけではないのですが、名前をつけて認識することは重要なので、Fork-Pull-Sync cycle workflow (FPS cycle workflow) とでも名前をつけて呼ぶことにしましょう。
 
 もちろん fork 操作は実際には最初の一回だけしか行いませんが、pull 操作 (コントリビューター側の視点では pull request) と sync 操作は何回もサイクルして行うことが重要であり、このワークフローの要となります。
+
+## 他によく使うコマンドの概説
+
+```shell
+git checkout -b branchName
+# ブランチを新規作成した上でチェックアウトする
+
+git merge --no-ff branchName
+# non fast-forward(recursiveマージ)
+git merge --ff-only branchName
+# fast-forwardマージできるならマージする、できない場合にはマージしない
+
+git rm fileName
+# git監視下でファイル削除
+git mv 旧ファイル名 新ファイル名
+# ファイルの名称変更
+git mv fileName folderpath
+# ファイルの移動
+
+git config --global list
+# globalのconfig確認(ユーザー情報などの確認)
+git log --graph --oneline
+# ログをグラフとして簡易表示
+```
+
+リモートブランチ関連
+
+```shell
+git push --delete origin branchName
+# リモートブランチの削除
+git checkout -b branchName origin/branchName
+# リモートブランチをローカルにcheckout
+```
 
 ## 翻訳そのものについて
 
