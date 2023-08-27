@@ -628,6 +628,7 @@ graph LR
     end
   end
   AA1 -.-> AA2
+  style GitHub fill:#eee, stroke:#000
 ```
 
 fork 元のリポジトリである upstream からの変更を main に反映させるには以下のように行います。
@@ -727,21 +728,26 @@ push を終えたら同じように GitHub で作業ブランチ translation か
 シーケンス図でのまとめです。リポジトリの種類は３つ(upstream, origin, local)あり、それぞれに `master` や作業ブランチがあることに注意してください。
 
 ```mermaid
+%%{init: { 'sequence': { 'showSequenceNumbers': true } } }%%
 sequenceDiagram
+  box GitHub
 	participant A as upstream(master)
 	participant B as origin(master)
 	participant C as origin(feature)
+  end
+  box Local
 	participant D as local(master)
 	participant E as local(feature)
+  end
 	rect rgba(0, 255, 0, .1)
 		Note over A,B: 1回目のプルリク
 		A->>B: fork
 		B->>D: clone
 		D->>E: checkout
-		activate E
-		Note left of E: 翻訳作業(add/commit)
+    loop
+      E->>E: 翻訳作業(add/commit)
+    end
 		E->>C: push
-		deactivate E
 		C->>A: pull request
 	end
 	rect rgba(250, 150, 10, .1)
@@ -749,10 +755,10 @@ sequenceDiagram
 		A->>D: fetch & merge
 		D-->>B: push
 		D->>E: checkout & merge
-		activate E
-		Note left of E: 翻訳作業(add/commit)
+    loop
+      E->>E: 翻訳作業(add/commit)
+    end
 		E->>C: push
-		deactivate E
 		C->>A: pull request
 	end
 ```
