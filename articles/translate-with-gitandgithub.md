@@ -17,6 +17,9 @@ aliases:
 ## はじめに
 
 :::details ChangeLog
+- 2023-08-27
+  - Shared repository modelの説明を追加
+  - mermaid図などを整備
 - 2023-08-16
   - "Fork and pull model" についての記述を追加
   - mermaid ダイアグラムの修正と追加
@@ -102,7 +105,7 @@ git init
 
 git で初期化されたフォルダのことを一般にはリポジトリとして呼びます。
 
-git ではデータを小さなファイルシステムとソースコードのスナップショット(ある時点での完全な状態)の集合として考えます。git を使うとそのリポジトリ内部 (フォルダ) でさまざまな変更を行い特定の時点の状態そのものスナップショットとして保存管理できます。このスナップショットをコミットと呼びます。このコミットをどんどん繋げていくことでブランチが形成されます。
+git ではデータを小さなファイルシステムとソースコードのスナップショット(ある時点での完全な状態)の集合として考えます。git を使うとそのリポジトリ内部 (フォルダ) でさまざまな変更を行い特定の時点の状態そのものスナップショットとして保存管理できます。このスナップショットをコミットと呼びます。
 
 `git init` で git 初期化したフォルダをリポジトリとして呼びましたが、インターネットごしに共同開発するには開発者たちはソースコードを共有している必要があります。GitHub ではこのリポジトリをホスティングしており、開発者たちはホスティングされたリポジトリを自分のローカル環境に複製(clone)することで同じリポジトリで作業を行うことができます。つまり、リポジトリとは自分のパソコン上だけでなく、サーバーにもあったり、他の開発者のパソコン上にもあるという状態が一般的になります。
 
@@ -125,7 +128,7 @@ GitHub flow は簡単に言えば GitHub 上でプルリクエストを使った
 
 ### Fork and pull model
 
-GitHub を利用した共同開発モデル(collaborative development model)には以下の２種類があります。
+GitHub 上での共同開発モデル(collaborative development model)は以下の２種類があります。
 
 - **Fork and pull model** (フォーク&プルモデル)
 - **Shared repository model** (共有リポジトリモデル)
@@ -143,13 +146,42 @@ https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/gettin
 - [Fork-Based Contribution Model](https://jenkinsci.github.io/templating-engine-plugin/2.5/contributing/fork-based/)
 - [Using Gitflow with the GitHub Fork & Pull Model](https://www.dalescott.net/using-gitflow-with-githubs-fork-pull-model/)
 
-Fork and pull model を簡単に説明すると、fork (リポジトリの複製) と pull request (変更のマージリクエスト) を使って安全に他者のリポジトリにコントリビュートできるモデルです。なお、git のドキュメントではこのモデル(ワーカーフロー)は Integration-Manager Workflow と呼ばれています。
+クローズドソース(プライベートリポジトリ)のプロジェクトで使われる Shared repository model は Fork and pull model に比べて非常にシンプルで簡単です。以下のように GitHub 上に一つのリポジトリを作成して、そこにすべての開発者がコミットを作成してこのリポジトリ内部で作業ブランチから main や master などのデフォルトブランチにプルリクエストを作成します。
+
+```mermaid
+---
+title: Shared repository model
+---
+graph RL
+  Origin -->|clone| Local
+  subgraph GitHub
+    subgraph Origin
+      B[master]
+      E[topic]
+    end
+  end
+	subgraph Local
+    C[master]
+    D[topic]
+    C -->|checkout| D
+	end
+  B -->|pull| C
+  E -->|Pull Request| B
+  D -->|push| E
+  style GitHub fill:#eee, stroke:#000
+```
+
+プルリクエストが承認されるとマージでき、デフォルトブランチに変更が反映されるようになります。
+
+この方法はプライベートリポジトリでなら有効ですが、パブリックリポジトリでは、誰でも push できてしまうような状況になるので、オープンソースのプロジェクトではオリジナルのリポジトリに対しての書き込み権を制限して、限られた人しかそのリポジトリへ push できないようにするのが普通です。
+
+Fork and pull model では、このように書き込み権を制限したオリジナルのリポジトリを GitHub 上にまずは作成します。もちろん書き込み権が制限されているので、このままではオープンなコントリビューションができません。ただし、GitHub では fork というリポジトリの複製を行うための機能が提供されており、この機能を使うことで書き込み権が制限されたオリジナルのリポジトリを自分のアカウント上に複製でき、この複製されたリポジトリには自由に編集を行うことができます。
+
+そして、pull request (変更のマージリクエスト) という機能は、一つのリポジトリ内だけでなく、別のリポジトリから作成することが可能になっています。つまり、自身が自由に編集できる複製されたリポジトリでの変更をオリジナルのリポジトリにプルリクエストの形で反映してもらえうように依頼していく開発方法がこのモデルのやり方となります。このモデルを使えば、安全に他者のリポジトリにコントリビュートできます。なお、git のドキュメントではこのモデル(ワーカーフロー)は Integration-Manager Workflow と呼ばれています。
 
 https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows#wfdiag_b
 
-より具体的には、公式のリポジトリをまず fork して、自分のアカウントに複製されたリポジトリを作成します。その複製した fork リポジトリに自身の変更を反映させていき、一定の変更の塊を元々の公式のリポジトリへと反映させるプルリクエスト(PR)を作成します。このプルリクエストが元々のリポジトリの管理者によってレビューされ、承認、つまりマージされることで自身の行った変更が公式のリポジトリへと実際に反映されます。
-
-簡単なパッチ修正などは実は GitHub や github.dev だけで済ませることが可能です。この際のワークフローではローカルリポジトリを介さない以下のようなモデルとなります。筆者は MDN の翻訳なども最近行っていますが、日本語などの間違いなどを見つけた場合には実際に以下のワークフローで修正して PR を作成します。
+Fork and pull model を使った詳細なワークフローの解説に入る前に、GitHub 上でのみ完結する簡易的なバージョンについても図示しておきます。実は簡単なパッチ修正などは GitHub や github.dev だけで済ませることが可能です。この際のワークフローではローカルリポジトリを介さない以下のようなモデルとなります。筆者は MDN の翻訳なども最近行っていますが、日本語などの間違いなどを見つけた場合には実際に以下のワークフローで修正して PR を作成します。
 
 ```mermaid
 ---
@@ -173,7 +205,7 @@ graph TD
   style GitHub fill:#eee, stroke:#000
 ```
 
-継続的な翻訳や開発などでじっくり作業したかったり、npm script などで linter や formatter なども走らせたい場合にはローカル環境にリポジトリを clone して作業を行います。
+継続的な翻訳や開発などでじっくり作業したかったり、npm script などで linter や formatter を走らせたい場合にはローカル環境にリポジトリを clone して作業を行います。
 
 :::message alert
 clone と fork は両者ともに「リポジトリの複製」を行いますが、以下のように異なる概念なので使い分けに注意してください。
@@ -216,9 +248,9 @@ graph RL
 
 図に出てくる `fork` や `clone` などの操作はリポジトリレベルでの操作ですが、`push` や `pull` などの操作はブランチレベルの操作であることに気をつけてください。
 
-なおこのワークフローについて、2021 年頃に追加された GitHub 上での Fork リポジトリの同期機能(**Sync fork**)を使うともう少し分かりやすいフローになります。
+なおこのワークフローについて、[2021 年頃に追加された](https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/) GitHub 上での Fork リポジトリの同期機能(**Sync fork**)を使うとかなり分かりやすいサイクルになります。
 
-https://github.blog/changelog/2021-05-06-sync-an-out-of-date-branch-of-a-fork-from-the-web/
+https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork
 
 ```mermaid
 ---
@@ -251,7 +283,9 @@ graph RL
 :::message alert
 ２つのバージョンの違いは単に origin リポジトリの master ブランチの更新をどのようにするかという方法の違いにすぎないのでワークフローに本質的な違いはありません。この記事では伝統的な通常バージョンのフローを解説します。
 
-また、図の "pull" の部分はやっていることは "fetch & merge" であり、"topic" ブランチは任意の作業ブランチのことを示しているので、適宜読み替えてください。
+ただし、sync fork バージョンではローカル作業で upstream と origin のデフォルトブランチを切り替えて操作する必要がなくなり、複雑性を減らすことができるという大きなメリットがあるので、慣れたらこの方法でやっていくのが良いでしょう。
+
+なお、図の "pull" の部分はやっていることはなれるまでは "fetch & merge" で代用し、"topic" ブランチは任意の作業ブランチのことを示しているので、適宜読み替えてください。
 :::
 
 このモデルが利用されているプロジェクトで代表的なのは MDN のドキュメントやその翻訳プロジェクトなどです。
@@ -318,7 +352,28 @@ graph RL
 
 https://docs.github.com/ja/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches#working-with-branches
 
-リポジトリでは特定の時点の情報の状態をコミットという形で保存しています。このコミットからさらに変更を加えて意味ある形で再びコミットを作成していくと、コミットが時系列によって連結されたブランチ (枝) ができあがります。枝のある点から全く別の点を派生させることで枝を分岐させることができます。
+リポジトリでは特定の時点の情報の状態(スナップショット)をコミットとして保存しています。このコミットからさらに変更を加えて意味ある形で再びコミットを作成していくと、コミットが時系列によって連結されたブランチ (枝) ができあがります。枝のある点から全く別の点を派生させることで枝を分岐させることができます。各種のブランチでの変更をデフォルトブランチである `main` や `master` などにマージ(統合)してくことでソースコードを成長させていきます。
+
+```mermaid
+%%{init: { 'gitGraph': { 'showCommitLabel': false } } }%%
+gitGraph
+  commit
+  commit
+  branch topic1
+  checkout topic1
+  commit
+  commit
+  checkout main
+  merge topic1
+  checkout topic1
+  branch topic2
+  commit
+  commit
+  checkout main
+  commit
+  merge topic2
+  commit
+```
 
 イメージでまとめると、箱 (リポジトリ) の中に点 (コミット) が時系列に連結した枝 (ブランチ) が存在しているような感じです。分岐して存在する複数の枝の先端の点は枝そのものの名前として扱われます。master ブランチやそこから派生させてつくった作業ブランチなどです。イメージで言うと、プルリクエストというのはリポジトリ upstream の主要な枝 (master ブランチ) の先頭に自分が編集した変更情報を点として (コミットとして) 連結する操作です。
 
