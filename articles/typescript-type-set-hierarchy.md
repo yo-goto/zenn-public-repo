@@ -70,16 +70,16 @@ https://www.freecodecamp.org/news/typescript-literal-and-collective-types/
 > **A literal is a more concrete sub-type of a collective type**. What this means is that "Hello World" is a string, but a string is not "Hello World" inside the type system.
 > ([TypeScript: Handbook - Literal Types](https://www.typescriptlang.org/docs/handbook/literal-types.html) より引用)
 
-リテラル型は集合型の具体的な subtype である旨が記載されていますね。
+リテラル型は集合型の具体的な Subtype である旨が記載されていますね。
 
-ちなみに **subtype(部分型、派生型、下位型)** とは型の親子関係のようなもので、ある型の下位の型、つまり子の型として定義されたものを subtype と呼びます。subtype の派生元、つまり親の型となるものは **supertype(基本型、上位型)** と呼ばれます。オブジェクト指向での継承によって作成される子クラスと親クラスの関係のようなものです。
+ちなみに **Subtype(部分型、派生型、下位型)** とは型の親子関係のようなもので、ある型の下位の型、つまり子の型として定義されたものを Subtype と呼びます。Subtype の派生元、つまり親の型となるものは **Supertype(基本型、上位型)** と呼ばれます。オブジェクト指向での継承によって作成される子クラスと親クラスの関係のようなものです。
 
 ```mermaid
 graph LR
-  A["supertype(上位)"] --> B["subtype(下位)"]
+  A["Supertype(上位)"] --> B["Subtype(下位)"]
 ```
 
-２つの型の関係を簡易的に判別するには、受け入れる値の範囲が広く型の制約 (条件) が緩いものが supertype で、受け入れる値の範囲が狭く型の制約がより厳しいものが subtype です。もちろん、supertype と subtype の関係性にない場合もありえます (`number` と `string` を比較した場合など)。
+２つの型の関係を簡易的に判別するには、受け入れる値の範囲が広く型の制約 (条件) が緩いものが Supertype で、受け入れる値の範囲が狭く型の制約がより厳しいものが Subtype です。もちろん、Supertype と Subtype の関係性にない場合もありえます (`number` と `string` を比較した場合など)。
 
 TypeScript で採用されているこういった型の仕組みは Subtyping と呼ばれるそうです。より具体的には [Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system) (property-based type system) です。
 
@@ -96,7 +96,7 @@ Subtyping の概念自体は、1960 年代までさかのぼり、[Simula](https
 - Subtyping: Interface inheritance
 - Inheritance: Implementation inheritance
 
-実際にインターフェース型を継承させて subtype を作り出すことができます。
+実際にインターフェース型を継承させて Subtype を作り出すことができます。
 
 ```ts
 interface Animal {
@@ -140,7 +140,7 @@ const myAnimal: Animal = myDog;
 
 https://en.wikipedia.org/wiki/Unit_type
 
-`string` 型は単位型である文字列リテラル型の集合型であり、各文字列リテラル型は `string` 型の subtype ということです。これは他のリテラル型とその型を Widening した集合型にも言えます。実際、`boolean` 型は `true` と `false` という真偽値リテラル型のユニオン型、つまり `true | false` という型と等しいことも明言されています。
+`string` 型は単位型である文字列リテラル型の集合型であり、各文字列リテラル型は `string` 型の Subtype ということです。これは他のリテラル型とその型を Widening した集合型にも言えます。実際、`boolean` 型は `true` と `false` という真偽値リテラル型のユニオン型、つまり `true | false` という型と等しいことも明言されています。
 
 > The predefined `boolean` type is now equivalent to the union type `true | false`.
 > ([Number, enum, and boolean literal types by ahejlsberg · Pull Request #9407 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/9407) より引用)
@@ -152,7 +152,7 @@ https://en.wikipedia.org/wiki/Unit_type
 > When needed, the compiler widens — **converts to a supertype** — the unit type to the primitive type, such as "foo" to string. This happens when using mutability, which can hamper some uses of mutable variables:
 > ([TypeScript: Documentation - TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#unit-types) より引用)
 
-Unit type は単一のプリミティブ値を持つプリミティブ型の subtype であり、文字列リテラル型 `"foo"` は `string` 型の subtype である旨が記載されていますね。そして、mutable な場所で Widening が起きるときには subtype から派生元の supertype へと変換されるとも書いてあります。
+Unit type は単一のプリミティブ値を持つプリミティブ型の Subtype であり、文字列リテラル型 `"foo"` は `string` 型の Subtype である旨が記載されていますね。そして、mutable な場所で Widening が起きるときには Subtype から派生元の Supertype へと変換されるとも書いてあります。
 
 ### Types as Sets
 
@@ -280,7 +280,7 @@ https://qiita.com/uhyo/items/b1f806531895cb2e7d9a
 
 話は少し変わりますが、`extends` キーワードでの型の集合性について考えてみたいと思います。
 
-`extends` はインタフェース型の継承に利用するキーワードで、構造的部分型においてプロパティが増えるたびに継承元に対して subtype となっていくことがわかりやすいでしょう。
+`extends` はインタフェース型の継承に利用するキーワードで、構造的部分型においてプロパティが増えるたびに継承元に対して Subtype となっていくことがわかりやすいでしょう。
 
 ```ts
 interface Animal {
@@ -306,7 +306,7 @@ const duc: Duck = don;
 const ani: Animal = duc;
 ```
 
-`Donald` は `Duck` の subtype であり、`Duck` は `Animal` の subtype です。
+`Donald` は `Duck` の Subtype であり、`Duck` は `Animal` の Subtype です。
 
 `extends` の基本が分かったところで、少し応用的な話に移ります。
 
@@ -353,7 +353,7 @@ T extends U ? never : T
 */
 ```
 
-`T extends U` では型パラメータ `T` を `U` という型パラメータで制約をかけるので、`U` が supertype で `T` が subtype となるか、あるいは `T` が `U` そのものとなります。この制約は `T` 型が `U` 型の条件を満たせばよいだけです。
+`T extends U` では型パラメータ `T` を `U` という型パラメータで制約をかけるので、`U` が Supertype で `T` が Subtype となるか、あるいは `T` が `U` そのものとなります。この制約は `T` 型が `U` 型の条件を満たせばよいだけです。
 
 ```mermaid
 graph RL
@@ -390,7 +390,7 @@ longer({ length: 42 }, { length: 53, name: "obj" });
 // => { length: 53, name: "obj" }
 ```
 
-話を条件型に戻すと、`extends` での条件部がユニオン型に関するものだと `true` になるか `false` になるかは一見分かりづらいですが、集合で考えることでスッキリと理解できます。subtype は supertype の部分集合です。特にユニオン型では、それを構成する各メンバーはユニオン型自体の部分集合 (subset) となります。
+話を条件型に戻すと、`extends` での条件部がユニオン型に関するものだと `true` になるか `false` になるかは一見分かりづらいですが、集合で考えることでスッキリと理解できます。Subtype は Supertype の部分集合です。特にユニオン型では、それを構成する各メンバーはユニオン型自体の部分集合 (subset) となります。
 
 ![typeSet_6](/images/typescript-widen-narrow/img_typeSet_6.png)
 
@@ -425,13 +425,13 @@ graph RL
 > In type theory, bounded quantification (also bounded polymorphism or constrained genericity) refers to universal or existential quantifiers **which are restricted ("bounded") to range only over the subtypes of a particular type**. Bounded quantification is **an interaction of parametric polymorphism with subtyping**.
 > ([Bounded quantification - Wikipedia](https://en.wikipedia.org/wiki/Bounded_quantification) より引用、太字は筆者強調)
 
-専門用語が多すぎるので分かりづらいですが、簡易的に意訳すると特定の型の subtype の領域にのみ制限する記法のことです (間違ってたらすみません)。これでジェネリクスとサブタイピングの相互作用を表現します。
+専門用語が多すぎるので分かりづらいですが、簡易的に意訳すると特定の型の Subtype の領域にのみ制限する記法のことです (間違ってたらすみません)。これでジェネリクスとサブタイピングの相互作用を表現します。
 
 考え方としては、考慮すべき型の領域として境界 (boundary) を設けることでジェネリクスなどでの型パラメータがとり得る型 (値) の範囲を制限して使いやすくしているだけです。そして型が値の集合であることを知っていると、境界内の領域はすなわち集合の領域そのものとなります。`T extends U` という条件を図で表現すると次のような感じです。
 
 ![img_typeSet_7](/images/typescript-widen-narrow/img_typeSet_7.png)
 
-型パラメータ `T` は境界 (制約) を規定する `U` 型の領域内のあらゆる範囲を動くことができ、その範囲であればどのような subtype でも良いわけです (もちろん `U` そのものでもよい)。１つの supertype に対して subtype は複数ありえるので上のような図となります。
+型パラメータ `T` は境界 (制約) を規定する `U` 型の領域内のあらゆる範囲を動くことができ、その範囲であればどのような Subtype でも良いわけです (もちろん `U` そのものでもよい)。１つの Supertype に対して Subtype は複数ありえるので上のような図となります。
 
 図では `U` も型パラメータにしていますが、例えば `unknown[]` などをいれて `T extends unknown[]` というように配列型などの具体的な型で拘束して考えてみると良いでしょう。
 
@@ -485,7 +485,7 @@ https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-pa
 
 ### Top type と Bottom type
 
-subtype や supertype という関係から分かる通り、型には親と子の関係があり、階層性があります (集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼ぶそうです。
+Subtype や Supertype という関係から分かる通り、型には親と子の関係があり、階層性があります (集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼ぶそうです。
 
 https://en.wikipedia.org/wiki/Top_type
 
@@ -520,9 +520,9 @@ https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c579
 
 ### Type hierarchy
 
-そして、subtype と supertype の関係を辿ると以下のような型の階層図 (Type hierarchy) もできあがります。
+そして、Subtype と Supertype の関係を辿ると以下のような型の階層図 (Type hierarchy) もできあがります。
 
-ただし、以下の図は [mermaid](https://mermaid-js.github.io/mermaid/#/) で記述したものですが、全貌図としては正確ではないと思うので注意してください (複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています (それらの型は `object` 型傘下の subtype です)。
+ただし、以下の図は [mermaid](https://mermaid-js.github.io/mermaid/#/) で記述したものですが、全貌図としては正確ではないと思うので注意してください (複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています (それらの型は `object` 型傘下の Subtype です)。
 
 ```mermaid
 graph LR
@@ -578,14 +578,14 @@ graph LR
   obj --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
-左が supertype で、右が subtype の方向となります。一番左に位置している `unknwon` 型がすべての型の supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の subtype であり Bottom type です (より正確に書こうとするとすべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています)。
+左が Supertype で、右が Subtype の方向となります。一番左に位置している `unknwon` 型がすべての型の Supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の Subtype であり Bottom type です (より正確に書こうとするとすべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています)。
 
-そして subtype の型の変数は supertype の型の変数へ代入可能です。
+そして Subtype の型の変数は Supertype の型の変数へ代入可能です。
 
-> スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `subtype <: supertype` と表記される。
+> スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `Subtype <: Supertype` と表記される。
 > ([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
 
-Widening(型の拡大) が起きる方向は子から親、つまり subtype → supertype の方向であり、代入可能となるのも subtype → supertype の方向で、その逆は型エラーとなります。
+Widening(型の拡大) が起きる方向は子から親、つまり Subtype → Supertype の方向であり、代入可能となるのも Subtype → Supertype の方向で、その逆は型エラーとなります。
 
 ```ts
 const literal = "text" as const;
@@ -595,8 +595,8 @@ let Obj: Object;
 let an: any;
 let unk: unknown;
 
-// subtype → supertype の方向で代入していくと型エラーにならない
-str = literal; // str が supertype(string型) で literal が subtype(文字列リテラル型)
+// Subtype → Supertype の方向で代入していくと型エラーにならない
+str = literal; // str が Supertype(string型) で literal が Subtype(文字列リテラル型)
 Str = str;
 Obj = Str;
 an = Obj;
@@ -637,14 +637,14 @@ const obj2: Object = {};
 const OBJ2: {} = obj2;
 ```
 
-公式で明言されている箇所が見つからないので個人予測ですが、`Object` 型は `{}` 型よりも厳密な振る舞いをするのでより制約が強いということで `Object` 型が subtype かと思います。
+公式で明言されている箇所が見つからないので個人予測ですが、`Object` 型は `{}` 型よりも厳密な振る舞いをするのでより制約が強いということで `Object` 型が Subtype かと思います。
 
 参考
 https://stackoverflow.com/questions/49464634/difference-between-object-and-object-in-typescript
 
 これらの `Object` 型、`{}` 型、`object` 型は通常使うことはほとんど無いと思いますが、明示的にそれらの型で型注釈しようとすると Deno 環境だとリンタールールの１つである "[ban-types](https://lint.deno.land/?q=ban-types#ban-types)" に別の型注釈をするように注意されます。
 
-具体的にそれぞれがどんか型かを説明すると、`Object` 型は `null` と `undefined` 以外のすべての値 (プリミティブ型とオブジェクト型に含まれるあらゆる型) が代入可能な型です。`unknown` 型と `any` 型の subtype であり、それら以外のすべての型の supertype です。この型で型注釈するとエディタで Deno のリンターによって次のように注意されます。
+具体的にそれぞれがどんか型かを説明すると、`Object` 型は `null` と `undefined` 以外のすべての値 (プリミティブ型とオブジェクト型に含まれるあらゆる型) が代入可能な型です。`unknown` 型と `any` 型の Subtype であり、それら以外のすべての型の Supertype です。この型で型注釈するとエディタで Deno のリンターによって次のように注意されます。
 
 > This type may be different from what you expect it to be
 If you want a type meaning "any object", use `Record<string, unknown> ` instead. Or if you want a type meaning "any value", you probably want `unknown` instead.
@@ -659,7 +659,7 @@ If you want a type meaning "any object", use `Record<string, unknown> ` instead.
 > This type is tricky to use so should be avoided if possible
 Use `Record<string, unknown> ` instead.
 
-空ではないオブジェクトリテラル型 (一般的なオブジェクトの型) はこの `object` 型の傘下の subtype であり、`interface` を使ったユーザー定義の型などもすべて `object` 型傘下の subtype となります。
+空ではないオブジェクトリテラル型 (一般的なオブジェクトの型) はこの `object` 型の傘下の Subtype であり、`interface` を使ったユーザー定義の型などもすべて `object` 型傘下の Subtype となります。
 
 ```ts
 interface I { prop: string }
@@ -667,7 +667,7 @@ const i: I = { prop: "val" };
 const obj: object = i;
 ```
 
-関数の型も `object` 型傘下の subtype です。より具体的に言えば、`object` 型の subtype であるグローバルインターフェース `Function` 型傘下の subtype です。
+関数の型も `object` 型傘下の Subtype です。より具体的に言えば、`object` 型の Subtype であるグローバルインターフェース `Function` 型傘下の Subtype です。
 
 ```ts
 type FT<T> = (arg: T) => T;
@@ -676,9 +676,9 @@ const fc: Function = ft;
 const obj: object = ft;
 ```
 
-話は変わって、`null` 型と `undefined` 型についてですが、`unll` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。また、単一の値からなる型なので Unit type として見なされます。それぞれの型は階層図にあるように `any` 型の subtype です。
+話は変わって、`null` 型と `undefined` 型についてですが、`unll` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。また、単一の値からなる型なので Unit type として見なされます。それぞれの型は階層図にあるように `any` 型の Subtype です。
 
-そして、`--strictNullChecks` のオプションを無効化している場合は、変数が mutable となる場所で `null` 型と `undefined` 型は [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening)(Literal widening ではなく一般の Widening) によって supertype である `any` 型へと拡大されます。`undefined` 型は一階層上の `void` 型ではなく、その上の `any` 型へと拡大されます。
+そして、`--strictNullChecks` のオプションを無効化している場合は、変数が mutable となる場所で `null` 型と `undefined` 型は [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening)(Literal widening ではなく一般の Widening) によって Supertype である `any` 型へと拡大されます。`undefined` 型は一階層上の `void` 型ではなく、その上の `any` 型へと拡大されます。
 
 ```ts
 const nullConst = null;
@@ -703,11 +703,11 @@ let u = undefined;
 
 ### Compatibility
 
-さて、上記の階層図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると subtype → supertype で代入可能である一方で、supertype → subtype で代入できないというのが上の階層図と一致しているので納得できます (ただし、`any` 型は例外で、[strictNullChecks](https://www.typescriptlang.org/docs/handbook/2/basic-types.html#strictnullchecks) によって `null` 型と `undefined` 型の挙動も変動します)。
+さて、上記の階層図と Handbook の『[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability)』の図を見比べると Subtype → Supertype で代入可能である一方で、Supertype → Subtype で代入できないというのが上の階層図と一致しているので納得できます (ただし、`any` 型は例外で、[strictNullChecks](https://www.typescriptlang.org/docs/handbook/2/basic-types.html#strictnullchecks) によって `null` 型と `undefined` 型の挙動も変動します)。
 
 ![型の互換性](/images/typescript-widen-narrow/img_ts_type_compatibility.png)*[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability) より引用*
 
-代入可能であることや subtype の関係性は型の compatibility (互換性) として定められています。assignable (代入可能または割当可能) であることと subtype であることは近似していますが、微妙に異なるということが Handbook の以下の箇所に記載されています。
+代入可能であることや Subtype の関係性は型の compatibility (互換性) として定められています。assignable (代入可能または割当可能) であることと Subtype であることは近似していますが、微妙に異なるということが Handbook の以下の箇所に記載されています。
 
 > So far, we’ve used “compatible”, which is not a term defined in the language spec. In TypeScript, **there are two kinds of compatibility: subtype and assignment**. These differ only in that **assignment extends subtype compatibility with rules to allow assignment to and from any**, and to and from enum with corresponding numeric values.
 > ([TypeScript: Documentation - Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment) より引用、太字は筆者強調)
@@ -715,7 +715,7 @@ let u = undefined;
 subytype 互換性を拡張したものが代入 (assignment) 互換性であり、具体的には、`any` 型から様々な型に代入できることと `any` 型に様々な型を代入できるというルールが追加されていることが記載されていますね (`enum` についての言及は無視しています)。
 
 :::message
-他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます (これらのルールは any 型についてのルールが追加された subtype-supertype 関係性の部分的な言い換えにすぎないからです)。
+他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます (これらのルールは any 型についてのルールが追加された Subtype-Supertype 関係性の部分的な言い換えにすぎないからです)。
 
 - すべての型は自身の型へ代入可能
 - `any` 型と `unknown` 型はそれら自身への代入可能な型は同じだが、`unknown` 型は `any` 型の除いて他の型へ代入することはできない
@@ -731,7 +731,7 @@ https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assig
 
 #### any 型
 
-上で述べたように `any` 型は型チェック自体を放棄するので、例外的にすべての型に代入可能であり、自身の subtype である型にも代入できます (上の代入可能であるかの図でもそうなっていますね)。ただし Bottom type である `never` 型には `never` 型以外は何も代入できないので `any` 型でも代入することはできません。
+上で述べたように `any` 型は型チェック自体を放棄するので、例外的にすべての型に代入可能であり、自身の Subtype である型にも代入できます (上の代入可能であるかの図でもそうなっていますね)。ただし Bottom type である `never` 型には `never` 型以外は何も代入できないので `any` 型でも代入することはできません。
 
 ```ts
 // any 型は型チェックしなくなるので assignable の概念もなくなってすべての型の変数に代入できてしまう
@@ -746,7 +746,7 @@ const nev: never = numAsAny; // [Error]
 
 #### never 型
 
-`never` 型は本来的には「値を持たない」ということを表現する型なので、`never` 型には `never` 型しか代入できないということを検証するには型アサーションで `never` 型としてあげることで可能です。また、`never` 型は最下層の subtype つまり Bottom type なので `never` 型からみればあらゆる型が supertype となり代入可能です (各リテラル型も supertype です)。
+`never` 型は本来的には「値を持たない」ということを表現する型なので、`never` 型には `never` 型しか代入できないということを検証するには型アサーションで `never` 型としてあげることで可能です。また、`never` 型は最下層の Subtype つまり Bottom type なので `never` 型からみればあらゆる型が Supertype となり代入可能です (各リテラル型も Supertype です)。
 
 ```ts
 // 通常 never 型は値を持たないはずだが、型アサーションで never 型にできて、never 型に代入できる
@@ -762,22 +762,22 @@ const nev2: never = nev; // never 型(自身)に代入可能
 
 #### void 型と undefined 型
 
-関数の返り値がないことを表現する `void` 型ですが、`return` 文を持たない関数の返り値の型は自動で `void` 型であると型推論されます。そういった関数から返り値を得ようとして返ってくるのは `undefined` という値です。この２つも supertype と subtype の関係です (階層図を参照)。`void` 型が supertype で、`undefined` 型が subtype なので、`void` 型に `undefined` 型は代入可能です (逆はできない)。
+関数の返り値がないことを表現する `void` 型ですが、`return` 文を持たない関数の返り値の型は自動で `void` 型であると型推論されます。そういった関数から返り値を得ようとして返ってくるのは `undefined` という値です。この２つも Supertype と Subtype の関係です (階層図を参照)。`void` 型が Supertype で、`undefined` 型が Subtype なので、`void` 型に `undefined` 型は代入可能です (逆はできない)。
 
 ```ts
 const u: undefined = undefined;
 const v: void = u;
 ```
 
-このような代入関係から明らかに `void` 型が supertype であり、`undefined` 型が subtype なのですが、Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目では `void` 型の説明が "a subtype of `undefined` intended for use as a return type." となっています。ただし、[アーカイブされた古い仕様](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#325-the-void-type) を見ると `void` 型は `undefined` 型の supertype として明記してあるのでこれは現在の公式ドキュメントのミスだと思われます。おそらくミスだろうということでプルリクエストを作成しました (バージョン更新によって supertype と subtype が入れ替わってしまうような仕様変更は流石にないと思います)。
+このような代入関係から明らかに `void` 型が Supertype であり、`undefined` 型が Subtype なのですが、Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目では `void` 型の説明が "a subtype of `undefined` intended for use as a return type." となっています。ただし、[アーカイブされた古い仕様](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md#325-the-void-type) を見ると `void` 型は `undefined` 型の Supertype として明記してあるのでこれは現在の公式ドキュメントのミスだと思われます。おそらくミスだろうということでプルリクエストを作成しました (バージョン更新によって Supertype と Subtype が入れ替わってしまうような仕様変更は流石にないと思います)。
 
 https://github.com/microsoft/TypeScript-Website/pull/2470
 
-どうやら別の PR で subtype の記述自体が削除されたようです。
+どうやら別の PR で Subtype の記述自体が削除されたようです。
 
 https://github.com/microsoft/TypeScript-Website/pull/2760
 
-ちなみに、Subtyping 一般においては subtype であるかの評価や定義には包摂 ([subsumption](https://en.wikipedia.org/wiki/Subtyping#Subsumption)) という概念が利用されるそうです。
+ちなみに、Subtyping 一般においては Subtype であるかの評価や定義には包摂 ([subsumption](https://en.wikipedia.org/wiki/Subtyping#Subsumption)) という概念が利用されるそうです。
 
 ## 参考
 
