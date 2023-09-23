@@ -32,6 +32,9 @@ aliases:
 :::details ChangeLog
 大きな変更のみトラッキングしています。
 
+- 2023-09-23
+  - 構造を整理
+  - ３つのオブジェクト型についての情報を修正
 - 2023-09-19
   - 全体的に内容更新
   - 推移性と順序集合についての記述を追加
@@ -83,7 +86,7 @@ graph LR
 
 ２つの型の関係を簡易的に判別するには、受け入れる値の範囲が広く型の制約 (条件) が緩いものが Supertype で、受け入れる値の範囲が狭く型の制約がより厳しいものが Subtype です。もちろん、Supertype と Subtype の関係性にない場合もありえます (`number` と `string` を比較した場合など)。
 
-TypeScript で採用されているこういった型の仕組みは「部分型 (Subtyping)」と呼ばれるものでありり、より具体的には 「構造的部分型 ([Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system))」というシステムです。
+TypeScript で採用されているこういった型の仕組みは「部分型 (Subtyping)」と呼ばれるものでありり、より具体的には「構造的部分型 ([Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system))」というシステムです。
 
 https://en.wikipedia.org/wiki/Subtyping
 
@@ -526,27 +529,37 @@ Subtype と Supertype の関係を辿ると型の階層 (Type hierarchy) がで�
 
 https://docs.scala-lang.org/tour/unified-types.html
 
-Scala ではプリミティブ型が存在せず、あらゆる型が Top type である `Any` 型 (`Any` クラス) を継承してサブタイプとなっているため、以下のようなヒエラルキーが形成されています。この図は部分型の推移性に基づいた階層図です。階層図と最上位と最下位に位置している `Any` 型と `Nothing` 型が Top type と Bottom type となります。
+Scala ではプリミティブ型が存在せず、あらゆる型が Top type である `Any` 型 (`Any` クラス) を継承してサブタイプとなっているため、以下のようなヒエラルキーが形成されており、継承による階層図となっています。
 
 ![ScalaのType hierarchy](/images/typescript-widen-narrow/img_scala-type-hierarchy.jpg)*Scala の Type hierarchy (公式ドキュメントより)*
 
 C# や Scala といった言語でのこのような型のシステムを [Unified type system](https://en.wikipedia.org/wiki/Type_system#Unified_type_system) と呼ぶそうですが、Java や JavaScript (TypeScript) ではプリミティブ型が存在しているため完全に同じように考えることができません。
 
-JavaScript (TypeScript) ではプリミティブ型のデータに対して `"str".length` のようにプロパティアクセスを行ったり、`"str".toUpperCase()` のようにメソッド呼び出しを行うことができますが、この際には `string` 型というプリミティブ型から `String` というオブジェクトラッパー型への暗黙的な型変換 (**自動ボックス化**) が行われています。
+TypeScript と同じように Top type と Bottom type が存在しており、階層図の最上位と最下位に位置している `Any` 型と `Nothing` 型が Top type と Bottom type となります。`Any` 型は TypeScript の `Object` 型と同じように `toString()` などのあらゆるオブジェクトで利用できるメソッドなどを定義しています。
+
+Scala と JavaScript の機能的な違いについては以下のドキュメントを参照してください。
+
+https://docs.scala-lang.org/scala3/book/scala-for-javascript-devs.html
+
+#### 自動ボックス化とラッパーオブジェクト型
+
+JavaScript (TypeScript) ではプリミティブ型のデータに対して `"str".length` のようにプロパティアクセスを行ったり、`"str".toUpperCase()` のようにメソッド呼び出しを行うことができますが、この際には `string` 型というプリミティブ型の値から `String` というオブジェクトラッパー型への値に暗黙的な変換 (**自動ボックス化**) が行われています。
 
 ```ts
 // プリミティブ型のデータ
 const st = "string";
 st.toUpperCase();
 // => "STRING"
-// 自動ボックス化でString型のオブジェクトに対してメソッド呼び出しを起こってる
+// 自動ボックス化でString型のオブジェクトに対してメソッド呼び出しを行っている
 
 // 上と同じことが起きている
 (new String("string")).toUpperCase();
 // => "STRING"
 ```
 
-JavaScript ですべてのデータがオブジェクト型のように見えてもプリミティブ型とラッパーオブジェクトの型での変換プロセスがあるためそのように見えるだけで Scala とは異なる型のシステムであることがわかります。とはいっても、部分型関係の推移性に基づく階層図は同じように作成することが可能です。
+JavaScript ではプリミティブ型の値に対してメソッド呼び出しなどが可能ため、すべてのデータがオブジェクト型のように見えてしまいますが、プリミティブ型とラッパーオブジェクトの型での変換プロセスがあるためそのように見えるだけで Scala とは異なる型のシステムであることがわかります。とはいっても、部分型関係の推移性に基づく階層図は同じように作成することが可能です。
+
+#### 部分型関係と順序関係
 
 部分型関係は異なる型同士での親子のような関係でした。より厳密には Subtype である型を Supertype の型が期待される場所で安全に置換できるという関係です。
 
@@ -564,19 +577,21 @@ JavaScript ですべてのデータがオブジェクト型のように見えて
 
 https://mathlandscape.com/ordered-set-2/
 
-例えば実数の集合 $\mathbb{R}$ において大小関係 ($<$) は上記４つのすべてを満たすことから全順序集合 (Total order set) と呼ばれます。
+例えば実数の集合 $\mathbb{R}$ において大小関係 ($\leq$) は上記４つのすべてを満たします。したがって、実数の集合は全順序集合 (Totally ordered set) と呼ばれる順序集合となります。
 
 当該の部分型関係 ($<:$) についてですが、反射律 ($S <: S$) と推移律 ($T <: S$ かつ $S <: U$ なら $T <: U$) を満たす関係ですが、反対称律は満たしません。
 
-反対称律は $S <: T$ かつ $T <: S$ なら $S = T$ が成り立つというものなので、一見すると部分型関係で成り立っているように思えますが、これはオブジェクト型のプロパティの順番が関係して成り立たくなる場合があるので満たされません。例えば、`type A = { a: string; b: number; }` と `type B = { b: number; a: string; }` という２つの型は実は異なる型なのですが、それぞれ部分型関係なので $A <: B$ かつ $B <:A$ が成り立ちますが、$A = B$ というわけではありません。このように反対称律を満たさない場合が成立するので部分型関係を持つ型の集合は反射律と推移律を満たす前順序集合 (Preorder set) と言えます。
+反対称律は $S <: T$ かつ $T <: S$ なら $S = T$ が成り立つというものなので、一見すると部分型関係で成り立っているように思えますが、これはオブジェクト型のプロパティの順番が関係して成り立たくなる場合があるので満たされません。例えば、`type A = { a: string; b: number; }` と `type B = { b: number; a: string; }` という２つの型は実は異なる型なのですが、それぞれ部分型関係なので $A <: B$ かつ $B <:A$ が成り立ちますが、$A = B$ というわけではありません。このように反対称律を満たさない場合が成立するので部分型関係を持つ型の集合は反射律と推移律を満たす前順序集合 (Preordered set) と言えます。
 
 値の集合を型としてみなしたように、今度は型そのものを要素として考えることで型の集合を考えることができます。型システム入門ではこのような型の見方を「**部分集合意味論**」という言葉で表現しています。型はユニオン型やインターセクション型などで型と型を合成した型も作成できたわけなので、型の集合全体で元ではなく部分集合となるようなものも一つの型として扱えます。つまり、型の集合全体の部分集合の全体として作られる擬似的な [べき集合](https://ja.wikipedia.org/wiki/%E5%86%AA%E9%9B%86%E5%90%88) を考えることですべての型を要素とする集合として捉えることができそうです。
 
-集合性の話で見たように型同士には包含関係がありました。実はべき集合はこの包含関係を順序とする順序集合 (半順序集合) となります。ただし半順序集合は、前順序集合からさらに反対称律を満たす必要がある厳密には型の集合はべき集合ではなさそうですね (擬似的といったのはその部分があるからです)。実際、部分型の機能を持つ型システムにおいて型同士の包含関係 (のようにみえていたもの) の本質は部分型関係です。
+集合性の話で見たように型同士には包含関係がありました。実はべき集合はこの包含関係を順序とする半順序集合 (Partially ordered set) となります。ただし半順序集合は、前順序集合であることを前提に更に反対称律を満たす必要があるため、厳密には型の集合はべき集合ではなさそうですね (擬似的といったのはその部分があるからです)。実際、部分型の機能を持つ型システムにおいて型同士の包含関係 (のようにみえていたもの) の本質は部分型関係です。
+
+#### 部分型関係の推移性
 
 さて、階層の話に戻りますが、部分型関係の推移律 ($T <: S$ かつ $S <: U$ なら $T <: U$) を図示することで Scala でみたような型の階層図をつくることができそうです。Top type を最上位の階層、Bottom type を最下位の階層としてみることで階層構造 (ツリーではないです) が作れます。Unified type system のようなすべてがクラスの継承で行われているわけではないですが、部分型関係の推移性に基づく階層は同じようになります。
 
-以下の図が [mermaid](https://mermaid-js.github.io/mermaid/#/) で型階層を記述したものです。ただし、全貌図としては正確ではないと思うので注意してください (複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています (それらの型は `Object` 型傘下の Subtype です)。
+以下の図は Mermaid で型階層を記述したものです。ただし、全貌図としては正確ではないと思うので注意してください (複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています (それらの型は `Object` 型傘下の Subtype です)。
 
 ```mermaid
 graph LR
@@ -634,7 +649,7 @@ graph LR
   obj -.-> O
 ```
 
-左が Supertype で、右が Subtype の方向となります。一番左に位置している `unknown` 型がすべての型の Supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の Subtype であり Bottom type です。なお部分型関係をより正確に書こうとすると完全にツリー的な階層図ではなくなるので至る所の関係を省略して図示しています。例えば Bottom type である `never` 型については、すべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています。
+左が Supertype で、右が Subtype の方向となります。一番左に位置している `unknown` 型がすべての型の Supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の Subtype であり Bottom type です。なお部分型関係をより正確に書こうとすると完全にツリー的な階層図ではなくなるので至る所の関係を省略して図示しています。つまり[ハッセ図](https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%83%E3%82%BB%E5%9B%B3)に近いです。例えば Bottom type である `never` 型については、すべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています。
 
 そして Subtype の型の変数は Supertype の型の変数へ代入可能です。
 
@@ -708,44 +723,72 @@ graph LR
   obj x-.-x P
 ```
 
+#### ３つのオブジェクト型
+
 `Object` 型、`{}`(empty object type: 空オブジェクト型)、`object` 型はそれぞれ違いがあります。図では `Object` 型と `{}` 型を同じ階層に置いていますがこれは相互に代入可能であるためです。`object` もそれら２つに相互で代入可能であるため、この部分だけかなり特殊な状況になっています。
 
 ```ts
 const obj1: object = {};
 const emp1: {} = {};
 let Obj1: Object;
-Obj1 = obj1;
-Obj1 = emp1;
+Obj1 = obj1; // OK
+Obj1 = emp1; // OK
 
 const obj2: Object = {};
 const Obj2: {} = {};
 let emp2: {};
-emp2 = obj2;
-emp2 = Obj2;
+emp2 = obj2; // OK
+emp2 = Obj2; // OK
 
 const Obj3: Object = {};
 const emp3: {} = {};
 let obj3: object;
-obj3 = Obj3;
-obj3 = emp3;
+obj3 = Obj3; // OK
+obj3 = emp3; // OK
 ```
 
 これらの `Object` 型、`{}` 型、`object` 型は通常使うことはほとんど無いと思いますが、明示的にそれらの型で型注釈しようとすると Deno 環境だとリンタールールの１つである "[ban-types](https://lint.deno.land/?q=ban-types#ban-types)" に別の型注釈をするように注意されます。
 
-具体的にそれぞれがどんか型かを説明すると、`Object` 型は `null` と `undefined` 以外のすべての値 (プリミティブ型とオブジェクト型に含まれるあらゆる型) が代入可能な型です。`unknown` 型と `any` 型の Subtype であり、それら以外のすべての型の Supertype です。この型で型注釈するとエディタで Deno のリンターによって次のように注意されます。
+具体的にそれぞれがどんか型かを説明すると、`Object` 型は `null` と `undefined` 以外のすべての値 (通常のプリミティブ型とオブジェクト型に含まれるあらゆる型) が代入可能な型です。`Object` 型は `unknown` 型と `any` 型の Subtype であり、それら以外のすべての型の Supertype です。
+
+```ts
+let Obj: Object;
+Obj = 42; // OK
+Obj = "str"; // OK
+Obj = { a: 42 }; // OK
+
+Obj = undefined;
+// Error: Type 'undefined' is not assignable to type 'Object'.
+Obj = null;
+// Error: Type 'null' is not assignable to type 'Object'.
+```
+
+なお `Object` 型で型注釈するとエディタで Deno のリンターによって次のように注意され、なんらかのオブジェクトの型で型付けしたい場合には `object` 型を代わりに使うか、何かしらの値を意味して型付けしたい場合には `unknown` 型を代わりに使うようにと言われます。
 
 > This type may be different from what you expect it to be
-If you want a type meaning "any object", use `Record<string, unknown> ` instead. Or if you want a type meaning "any value", you probably want `unknown` instead.
+If you want a type meaning "any object", use `object` instead. Or if you want a type meaning "any value", you probably want `unknown` instead.
 
-`{}` は空オブジェクト型 (empty object type) で、そのまま空のオブジェクトの型です。"ban-types" のリンタールールで注意される文には `null` と `undefined` 以外を表現するための型であると記載されています。
+`{}` はプロパティを持たないオブジェクトの型です。"ban-types" のリンタールールで注意される文には `null` と `undefined` 以外を表現するための型であると記載されています。プロパティを持たないオブジェクトと言っても以下のように "ban-types" のルールで空のオブジェクトを意味したいなら `Record<string | number | symbol | never>` 型を使うようにと促されます。
 
-> `{}` doesn't mean an empty object, **but means any types other than `null` and `undefined`**
-> If you want a type that means "empty object", use `Record<never, never> ` instead.
+> `{}` doesn't mean an empty object, but means any types other than `null` and `undefined`
+> If you want a type that means "empty object", use `Record<string | number | symbol, never>`
+
+```ts
+let e: {};
+e = undefined;
+// Error: Type 'undefined' is not assignable to type '{}'.
+e = null;
+// Error: Type 'null' is not assignable to type '{}'.
+```
 
 `object` 型 (小文字から始まる方) は [TypeScript v2.2 から導入された型](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#object-type) で、"**non-primitve type**" (プリミティブ型ではない型) ということを表現するための型であり、`number | string | boolean | symbol | null | undefined` の否定を満たす型です。この型も Deno 環境で明示的に型注釈しようとすると、可能な限り使わないようにと "ban-types" のリンタールール以下のように注意されます。
 
 > This type is tricky to use so should be avoided if possible
-Use `Record<string, unknown> ` instead.
+> Use `Record<string, unknown> ` instead.
+
+2023-09-20 追記: なお `object` 型を使わないように警告するリンタールールは以下の PR で除去されました。
+
+https://github.com/denoland/deno_lint/issues/1159
 
 空ではないオブジェクトリテラル型 (一般的なオブジェクトの型) はこの `object` 型の傘下の Subtype であり、`interface` を使ったユーザー定義の型などもすべて `object` 型傘下の Subtype となります。
 
@@ -775,7 +818,11 @@ const obj: object = ft;
 参考
 https://stackoverflow.com/questions/49464634/difference-between-object-and-object-in-typescript
 
-話は変わって、`null` 型と `undefined` 型についてですが、`unll` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。また、単一の値からなる型なので Unit type として見なされます。それぞれの型は階層図にあるように `any` 型の Subtype です。
+#### null 型と undefined 型
+
+話は変わって、`null` 型と `undefined` 型についてですが、`unll` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。`string` や `number` といった他のプリミティブ型とは違ってラッパーオブジェクトやその型は存在しません。
+
+また、単一の値からなる型なので Unit type として見なされます。それぞれの型は階層図にあるように `any` 型の Subtype です。
 
 そして、`--strictNullChecks` のオプションを無効化している場合は、変数が mutable となる場所で `null` 型と `undefined` 型は [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening)(Literal widening ではなく一般の Widening) によって Supertype である `any` 型へと拡大されます。`undefined` 型は一階層上の `void` 型ではなく、その上の `any` 型へと拡大されます。
 
@@ -800,9 +847,11 @@ let u = undefined;
 //  ^: any 型として拡大されて型推論される
 ```
 
-### 推移性が成り立たない場合
+#### 推移性が成り立たない場合
 
-上記の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。通常、部分型関係では推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
+https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+
+これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。通常、部分型関係では推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
 
 以下のドットの矢印の部分に注目してください。
 
@@ -813,14 +862,14 @@ graph TD
   obj[object]
   W[Wrapper]
   P[プリミティブ型全般]
-  objs[オブジェクト型配下]
+  objs[オブジェクト型全般]
   O --> obj & objs
   O ----> W
   obj --> W
   obj --> objs --> N
   obj -.-> O
   W --> P --> N
-  P -.-x obj
+  P x-.-x obj
 ```
 
 プリミティブ型全般 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
@@ -830,13 +879,13 @@ graph TD
 ```ts
 let obj: object;
 let str: string = "str";
-  obj = str;
-//^^^ error: Type 'string' is not assignable to type 'object'
+    obj = str;
+//  ^^^ error: Type 'string' is not assignable to type 'object'
 ```
 
 $object <: Object$ と $object <: \{\}$ が成り立ちますが、$string <: object$ は成り立ちません。元々 `object` はプリミティブ型でないこと表現するために新しく追加された型なので、`object` に `string` のようなプリミティブ型の値が代入できたらいけないわけですから、このような推移性が成立しないケースとなるのは本来的な目的からは妥当でしょう。
 
-個人的な意見としては $Object <: object$ が成立している方がまず不自然で、この関係性が特殊すぎてこの箇所によって推移性が壊れている箇所が多くでてきしまっています。この部分型関係を経由すれば、オブジェクトラッパー型が `object` 型の Supertype になったり、`never` 型が `object` 型の supertype になるようなおかしな状況が生まれるような話になります (もちろんそのようなことは禁止されていますが)。この部分型関係がなくなれば推移性はより自然になるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
+個人的な意見としては $Object <: object$ が成立している方がまず不自然で、この関係性が特殊すぎて `object` 型を原因として推移性が壊れている箇所が多くでてきしまっています。この部分型関係を経由すれば、オブジェクトラッパー型が `object` 型の Supertype になったり、`never` 型が `object` 型の supertype になるようなおかしな状況が生まれるような話になります (もちろんそのようなことは禁止されていますが)。この部分型関係がなくなれば推移性はより自然になるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
 
 ```mermaid
 graph TD
@@ -844,15 +893,13 @@ graph TD
   O["Object, { }"]
   W[Wrapper]
   P[プリミティブ型全般]
-  objs[オブジェクト型配下]
+  objs[オブジェクト型全般]
   O --> objs & W
   objs --> N
   W --> P --> N
 ```
 
-なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、以下のブログでそのようなケースについて解説されていました。
-
-https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、上記のブログ記事でそのようなケースについて解説されていました。
 
 ### Compatibility
 
