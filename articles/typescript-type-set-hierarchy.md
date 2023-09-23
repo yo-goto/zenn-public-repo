@@ -86,7 +86,7 @@ graph LR
 
 ２つの型の関係を簡易的に判別するには、受け入れる値の範囲が広く型の制約 (条件) が緩いものが Supertype で、受け入れる値の範囲が狭く型の制約がより厳しいものが Subtype です。もちろん、Supertype と Subtype の関係性にない場合もありえます (`number` と `string` を比較した場合など)。
 
-TypeScript で採用されているこういった型の仕組みは「部分型 (Subtyping)」と呼ばれるものでありり、より具体的には 「構造的部分型 ([Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system))」というシステムです。
+TypeScript で採用されているこういった型の仕組みは「部分型 (Subtyping)」と呼ばれるものでありり、より具体的には「構造的部分型 ([Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system))」というシステムです。
 
 https://en.wikipedia.org/wiki/Subtyping
 
@@ -591,7 +591,7 @@ https://mathlandscape.com/ordered-set-2/
 
 さて、階層の話に戻りますが、部分型関係の推移律 ($T <: S$ かつ $S <: U$ なら $T <: U$) を図示することで Scala でみたような型の階層図をつくることができそうです。Top type を最上位の階層、Bottom type を最下位の階層としてみることで階層構造 (ツリーではないです) が作れます。Unified type system のようなすべてがクラスの継承で行われているわけではないですが、部分型関係の推移性に基づく階層は同じようになります。
 
-以下の図はMermaidで型階層を記述したものです。ただし、全貌図としては正確ではないと思うので注意してください (複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています (それらの型は `Object` 型傘下の Subtype です)。
+以下の図は Mermaid で型階層を記述したものです。ただし、全貌図としては正確ではないと思うので注意してください (複数の文献を参考にして作成してますが、TypeScript のバージョン更新によって古い階層図と変わっているところなどもあるので、大体はこんな感じという程度です)。また、`enum` などの型は JS に存在しない TS の独自機能なので意図的に排除しており、Promise 型や Iterable 型などの型も省略しています (それらの型は `Object` 型傘下の Subtype です)。
 
 ```mermaid
 graph LR
@@ -786,7 +786,7 @@ e = null;
 > This type is tricky to use so should be avoided if possible
 > Use `Record<string, unknown> ` instead.
 
-2023-09-20 追記: なお `object` 型を使わないように警告するリンタールールは以下のPRで除去されました。
+2023-09-20 追記: なお `object` 型を使わないように警告するリンタールールは以下の PR で除去されました。
 
 https://github.com/denoland/deno_lint/issues/1159
 
