@@ -6,9 +6,11 @@ emoji: "🕺"
 type: "tech"
 topics: ["typescript", "deno"]
 date: 2022-07-29
-modified: 2023-02-26
+modified: 2023-09-23
 url: "https://zenn.dev/estra/articles/typescript-widening"
-tags: [" #type/zenn #TypeScript/inference "]
+tags:
+  - type/zenn
+  - TypeScript/inference
 aliases:
   - 記事『TypeScript の Widening』
   - Widening
@@ -17,9 +19,7 @@ aliases:
 
 ## はじめに
 
-前回の記事では Promise などの非同期処理から逆に TypeScript の型について理解してみるという試みをしてみました。
-
-https://zenn.dev/estra/articles/ts-with-promise-type-annotation
+[前回の記事](https://zenn.dev/estra/articles/ts-with-promise-type-annotation) では Promise などの非同期処理から逆に TypeScript の型について理解してみるという試みをしてみました。
 
 冒頭『[変数の型注釈](https://zenn.dev/estra/articles/ts-with-promise-type-annotation#%E5%A4%89%E6%95%B0%E3%81%B8%E3%81%AE%E5%9E%8B%E6%B3%A8%E9%87%88)』の項目では、TypeScript では変数の初期化において型注釈を省略できることについて説明しました。
 
@@ -37,8 +37,8 @@ const str3 = "文字列リテラル";
 
 そして、[Deno 環境](https://deno.land/manual) には備え付けのリンターがあり、変数の初期化で型が明らかなものではむしろ型注釈を省略しないと注意される [no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) というリンタールールがありました。
 
->Variable initializations to JavaScript primitives (and `null`) are obvious in their type. Specifying their type can add additional verbosity to the code. For example, with `const x: number = 5`, specifying `number` is unnecessary as it is obvious that `5` is a number.
->([deno_lint docs no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
+> Variable initializations to JavaScript primitives (and `null`) are obvious in their type. Specifying their type can add additional verbosity to the code. For example, with `const x: number = 5`, specifying `number` is unnecessary as it is obvious that `5` is a number.
+> ([deno_lint docs no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
 
 実際、以下のような TypeScript を書くとリンターに型注釈を省略するように注意されます。
 
@@ -127,7 +127,7 @@ let obj = { a: "text", b: 42 };
 //        ^^^^^^^^^^^^^^^^^^^^ オブジェクトリテラル
 ```
 
-`const` でなく `let` の宣言で変数を初期化しているのは意味がありますが、一旦それは置いておいて、これらを TypeScript で型注釈をすると次のようになりました (省略できる型注釈をわざわざ書いています)。
+`const` でなく `let` の宣言で変数を初期化しているのは意味がありますが、一旦それは置いておいて、これらの変数を TypeScript で型注釈をすると次のようになりました。なお省略できる型注釈をわざわざ書いています。
 
 ```ts:TypeScript
 let str: string = "text";
@@ -151,7 +151,7 @@ let bool: boolean = true;
 let arr: number[] = [1, 2, 3];
 let obj: { a: string; b: number; } = { a: "text", b: 42 };
 
-// let 宣言した変数は同じ型の値で再代入可能
+// let宣言した変数は同じ型の値で再代入可能
 str = "string val";
 num = 55;
 bool = false;
@@ -159,10 +159,11 @@ arr = [100, 99, 98, 97];
 obj = { a: "string val", b: 0 };
 
 // 別の型の値を代入しようとすると型エラーとなる
-str = 1000; // [Error]: Type 'number' is not assignable to type 'string'
+str = 1000;
+// [Error]: Type 'number' is not assignable to type 'string'
 ```
 
-これは、初期化の時点での型注釈を省略してもまったく同じことになります。むしろ型注釈を省略することで "no-inferrable-types" のリンタールールに怒られなくなります。
+これは、変数の初期化の時点での型注釈を省略してもまったく同じことになります。むしろ型注釈を省略することで "no-inferrable-types" のリンタールールに怒られなくなります。
 
 ```ts:型注釈の省略
 let str = "text";
@@ -187,7 +188,7 @@ obj = { a: "string val", b: 0 };
 str = 1000; // [Error]: Type 'number' is not assignable to type 'string'
 ```
 
-具体的な値を使って初期化せずに宣言だけする場合には、型注釈のみを書いておくことで型安全になります。
+具体的な値を使って初期化せずに宣言だけする場合には、型注釈のみを書いておくことで同じように型注釈した型の値を再代入できます。
 
 ```ts
 // 初期化せずに型注釈だけしておく
@@ -205,7 +206,7 @@ arr = [100, 99, 98, 97];
 obj = { a: "string val", b: 0 };
 ```
 
-`string` 型や `number` 型などの一般的なプリミティブ値の型がある一方で、それらよりも更に具体的な型としてリテラル型 (Literal type) という型が存在しています。各リテラル値によってそのまま型注釈することでリテラル型として型注釈したことになります。
+`string` 型や `number` 型などの一般的なプリミティブ値の型がある一方で、それらよりも更に具体的な型として**リテラル型** (Literal type) という型が存在しています。各リテラルの値によってそのまま型注釈することでリテラル型として型注釈したことになります。
 
 ```ts
 let str: "text" = "text";
@@ -216,15 +217,15 @@ let bool: true = true;
 //        ^^^^ true という真偽値リテラルのリテラル型として型注釈
 ```
 
-リテラル型によって、`string` や `number`、`boolean` といった一般的な値の型よりもより具体的な型として変数に型注釈を施したことになります。これにより、値の再代入をしようとしてもリテラル型で指定したモノ以外の値は受け付けなくなります。
+リテラル型による型注釈は `string` や `number`、`boolean` といった一般的なプリミティブ型よりも**より具体的な型**として変数に型注釈を施したことになります。これにより、値の再代入をしようとしてもリテラル型で指定したモノ以外の値は受け付けなくなります。
 
 ```ts
-// リテラル型で型注釈
+// リテラル型で型注釈して初期化
 let str: "text" = "text";
 let num: 42 = 42;
 let bool: true = true;
 
-// 同じ値の再代入はできる
+// 同じ値(同じリテラル型)の再代入はできる
 str = "text";
 num = 42;
 bool = true;
@@ -265,12 +266,12 @@ obj = { a: "error", b: 100 }; // [Error]
 
 ## const 宣言とリテラル型
 
-値の宣言は再代入しないなら `const` で宣言するのが通例だと思います。Deno 環境でも、"[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" というリンタールールが存在しており、`let` 宣言した変数で再代入していないものがあれば `const` を使って宣言するように注意されます。
+値の宣言は再代入しないなら `const` で宣言するのが通例です。Deno 環境でも、"[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" というリンタールールが存在しており、`let` 宣言した変数で再代入していないものがあれば `const` を使って宣言するように注意されます。
 
->Since ES2015, JavaScript supports `let` and `const` for declaring variables. If variables are declared with `let`, then **they become mutable**; we can set other values to them afterwards. Meanwhile, if declared with `const`, **they are immutable; we cannot perform re-assignment to them**.
->
->In general, to make the codebase more robust, maintainable, and readable, it is highly recommended to use `const` instead of `let` wherever possible. **The fewer mutable variables are, the easier it should be to keep track of the variable states** while reading through the code, and thus it is less likely to write buggy code. So this lint rule **checks if there are `let` variables that could potentially be declared with `const` instead**.
->([deno_lint docs prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const) より引用、太字は筆者強調)
+> Since ES2015, JavaScript supports `let` and `const` for declaring variables. If variables are declared with `let`, then **they become mutable**; we can set other values to them afterwards. Meanwhile, if declared with `const`, **they are immutable; we cannot perform re-assignment to them**.
+> 
+> In general, to make the codebase more robust, maintainable, and readable, it is highly recommended to use `const` instead of `let` wherever possible. **The fewer mutable variables are, the easier it should be to keep track of the variable states** while reading through the code, and thus it is less likely to write buggy code. So this lint rule **checks if there are `let` variables that could potentially be declared with `const` instead**.
+> ([deno_lint docs prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const) より引用、太字は筆者強調)
 
 要約すると、より堅牢で保守可能かつ可読性の高いコードにするため、再代入可能な `let` から再代入のできない `const` に変更できる可能性のあるものには警告を出して immutable なコードを書かせるようにしているとのことです。
 
@@ -296,7 +297,7 @@ const arr = [1, 2, 3];
 const obj = { a: "text", b: 42 };
 ```
 
-もちろん型推論が働きますが、`const` 宣言によってプリミティブ値で初期化した際には、その変数は `string` や `number` といった一般的な型で推論はされません。実は **変数の初期化に使ったリテラル値のリテラル型として型推論がされています**。
+もちろん型推論が働きますが、`const` 宣言によってプリミティブ型の値で初期化した際には、その変数は `string` や `number` といった一般的な型で推論はされません。実は **変数の初期化に使ったリテラル値のリテラル型として型推論がされています**。
 
 ```ts:リテラル型で型推論されている
 const str = "text";
@@ -327,7 +328,9 @@ const obj = { a: "text", b: 42 };
 //    ^^^: オブジェクト { a: string; b: number; } 型として型推論される
 ```
 
-`const` 宣言によって変数に対しての値の再代入ができなくなるわけですから、一般的な `string` や `number` といった型で型推論するよりも、より具体的なリテラル型として型推論を働かせた方が合理的になるわけです。ただし、**オブジェクトや配列など場合には値の再代入はできなくても、要素の値やプロパティの値は変更が可能であり mutable なわけですから、このような違いがでてくるわけです**。`let` 宣言で見たようにここでリテラル型を使ってしまったら、値の変更ができなくってしまいます。
+リミティブ型ではなく、リテラル型で型推論される理由ですが、`const` 宣言によってそもそも変数に対しての値の再代入ができなくなるわけですから、一般的な `string` や `number` といった型で型推論するよりも、より具体的な情報を持つリテラル型として型推論を働かせた方が合理的になるわけです。
+
+その一方で、**オブジェクトや配列など場合には値の再代入はできなくても、要素の値やプロパティの値は変更が可能であり mutable なわけですから、このような違いがでてくるわけです**。`let` 宣言で見たようにここでリテラル型を使ってしまったら、値の変更ができなくってしまいます。
 
 ```ts
 const arr = [1, 2, 3];
@@ -368,7 +371,7 @@ console.log(str.toUpperCase());
 console.log(Math.floor(num));
 ```
 
-上記のコードは TypeScript の範疇ですが、型注釈などが無いので明らかに JavaScript のままとなっています。そして JavaScript では上のコードは何も間違っていませんし、正しく実行できます。
+上記のコードは TypeScript の範疇ですが、型注釈などが無いので明らかに JavaScript のままとなっています。そして JavaScript では上のコードは何も間違っていませんし、正しく実行できます。JavaScript ではプリミティブ型のデータに対してメソッド呼び出しやプロパティアクセスを行うと暗黙的にラッパーオブジェクト型に変換が行われる自動ボックス化の機能があります。
 
 ということで、基本的に問題はまったくありませんが、TypeScript でもなぜ大丈夫なのかを理解するには Widening という概念が必要になります。
 
@@ -388,7 +391,7 @@ JavaScript 機能と TypeScript 独自のサンプルコードと説明があり
 
 https://www.typescriptlang.org/play/?q=111#example/type-widening-and-narrowing
 
-色々調べた結果、公式ドキュメントである Handbook は分かりやすく構成されている一方で「情報が遅く、豊富ではない」場合があります。より詳しく知りたい場合には Playground のサンプルや実際に機能が追加された際のプルリクエストと『What's new』の項目を見て検索したほうがいいです。
+調査の結果、公式ドキュメントである Handbook は分かりやすく構成されている一方で「情報が遅く、豊富ではない」場合があります。より詳しく知りたい場合には Playground のサンプルや実際に機能が追加された際のプルリクエストと『What's new』の項目を見て検索したほうがいいです。
 
 バージョン毎に細分化されている『What's new』の内容は『[Overview](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)』という１つのページに網羅されているので、このページで用語や機能をページ内検索するのが早そうですね。また、最近のバージョンの説明では機能ごとにオリジナルのプルリクエストが紐付いているようなのでここからプルリクエスト内の説明へ移動できます。プルリクエストの説明が最も詳細なようです。
 
@@ -415,7 +418,7 @@ strConst = "再代入できない"; // NG
 // [Error]: Cannot assign to 'strConst' because it is a constant
 ```
 
-`let` 宣言で型注釈を省略して文字列リテラルで初期化した場合に `string` 型として型推論されるのは、そもそも `let` 宣言された変数は再代入可能な変数であり、他の `string` 型の値を再代入できるように一般的な `string` 型にしておくためであり、逆に具体的すぎるリテラル型として型推論されるのは合理的ではありません。その一方で、`const` した変数はそもそも再代入できないので、一般的な `string` 型として型推論するよりも初期化に使ったリテラル値のリテラル型として型推論した方が合理的ですね。
+`let` 宣言で型注釈を省略して文字列リテラルで初期化した場合に `string` 型として型推論されるのは、そもそも `let` 宣言された変数は**再代入可能な変数**であり、他の `string` 型の値を再代入できるように一般的な `string` 型にしておくためであり、逆に具体的すぎるリテラル型として型推論されるのは合理的ではありません。その一方で、`const` した変数はそもそも再代入できないので、一般的な `string` 型として型推論するよりも初期化に使ったリテラル値のリテラル型として型推論した方が合理的です。
 
 このように、`let` は `const` よりも広い (wide) 型を受け入れるように型推論が働くというわけです。再度、`const` 宣言と `let` 宣言での型推論の違いをまとめておきます。それぞれの変数から `typeof` 型演算子で型を抽出すると `const` なら文字列リテラル型、`let` なら拡大された一般的な `string` 型などが得られます。
 
@@ -439,7 +442,7 @@ let boolLet = true;
 type StringLet = typeof strLet; // string 型が抽出される
 ```
 
-Widening(型の拡大) や Narrowing(型の絞り込み) は変数の型を拡大して受け入れる値の範囲を広くしたり、逆に変数の型を具体的に絞り込んで使えるメソッドなどを特定の型のものとして限定するように推定する機能や行為、概念のことを指します。
+Widening (型の拡大) や Narrowing (型の絞り込み) は変数の型を拡大して受け入れる値の範囲を広くしたり、逆に変数の型を具体的に絞り込んで使えるメソッドなどを特定の型のものとして限定するように推定する機能や行為、概念のことを指します。
 
 現在の『The TypeScript Handbook』の方には言及されていませんが、Playground の最後に記載されている以下のリソースには Wideing について詳しく解説されています。
 
@@ -454,24 +457,24 @@ https://github.com/Microsoft/TypeScript/pull/10676
 
 Literal Widening の具体的な機能やルールは以下のものであると言及されています。いくつかを抜粋しています。
 
->- The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
->- The type of a string or numeric literal occurring in an _expression_ is a widening literal type.
->- The type of a string or numeric literal occurring in a _type_ is a non-widening literal type.
->- The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
->- The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
->- The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
->- The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
->
->([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より抜粋引用)
+> - The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
+> - The type of a string or numeric literal occurring in an _expression_ is a widening literal type.
+> - The type of a string or numeric literal occurring in a _type_ is a non-widening literal type.
+> - The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
+> - The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
+> - The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
+> - The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
+> 
+> ([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より抜粋引用)
 
 長いので、全部いきなり理解するのは難しいですがすこしずつ見ていきます。まずはこれですが、式内でのリテラル値の型は常にリテラル型になるといっていますね。
 
->- The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
+> - The type of a literal in an expression is _always_ a literal type (e.g. `true`, `1`, `"abc"`).
 
 次の２つは今まで見てきた `const` と `let` の宣言での違いについてです。
 
->- The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
->- The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
+> - The type inferred for a `const` variable or `readonly` property without a type annotation is the type of the initializer _as-is_.
+> - The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
 
 明示的に型注釈されずに `const` 宣言された変数や `readonly` 修飾されたプロパティの値の型は初期化に使われた値そのものとなります。一方で、明示的に型注釈されずに `let` 宣言された変数や、`readonly` 修飾されていないプロパティの値の型は初期化に使われた値のリテラル型を拡大したものとなります。
 
@@ -494,10 +497,10 @@ class C2 = {
 参考文献
 https://stackoverflow.com/questions/51263813/type-inferred-from-readonly-class-property
 
-考えかとしては、変数が immutable な場所では常に最も具体的な型として型推論がなされ、逆に変数が mutable になる場所では、推論される型はより一般的なものとして拡大 (Widen) されます。
+考え方としては、変数が immutable な場所では常に最も具体的な型として型推論がなされ、逆に変数が mutable になる場所では、推論される型はより一般的なものとして拡大 (Widen) されます。
 
->The intuitive way to think of these rules is that immutable locations always have the most specific type inferred for them, whereas mutable locations have a widened type inferred.
->([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より引用)
+> The intuitive way to think of these rules is that immutable locations always have the most specific type inferred for them, whereas mutable locations have a widened type inferred.
+> ([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より引用)
 
 具体的に言えば、`const` で宣言した変数の値を `let` で宣言した変数の初期化に使う時に Widening が起こり、変数の型は `string` や `number` などの一般的な型に拡大されて型推論されるというわけです。
 
@@ -531,8 +534,8 @@ let c: "foo" | "bar" = Math.random() < 0.5 ? "foo" : "bar";
 
 `const` 宣言時に配列やオブジェクトの場合はリテラル型が関与した型としてみなされなかったことも言及されていますね。
 
->- The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
->- The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
+> - The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
+> - The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
 
 プロパティの値や配列要素の値など、具体的なリテラル型となるところを型が拡大されて型推論されます。
 
@@ -564,8 +567,8 @@ let obj: { a: "text"; b: 42 } = { a: "text", b: 42 };
 
 ただし、Deno 環境でこのようなリテラル型の型注釈をしてしまうと "[prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const)" というリンタールールで以下のように注意されてしまいます ("[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" とは別のリンタールールです)。
 
->Expected a `const` assertion instead of a literal type annotation
->Remove a literal type annotation and add `as const`
+> Expected a `const` assertion instead of a literal type annotation
+> Remove a literal type annotation and add `as const`
 
 リテラル型として型注釈するのではなく、**型アサーション (Type assertion)** を使って、`as const` を付けろという注意です。
 
@@ -604,8 +607,8 @@ let d = { foo: 1 as 1 }; // 通常の型アサーション
 
 const アサーションが推奨されるのは、一般的に const アサーションを使用した方がより安全なコードになるためと記載されています。
 
->This lint rule suggests using const assertion **because it will generally lead to a safer code**. For more details about const assertion, see [the official handbook](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions).
->([deno_lint docs prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const) より引用、太字は筆者強調)
+> This lint rule suggests using const assertion **because it will generally lead to a safer code**. For more details about const assertion, see [the official handbook](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions).
+> ([deno_lint docs prefer-as-const](https://lint.deno.land/?q=prefer-as-const#prefer-as-const) より引用、太字は筆者強調)
 
 通常の型アサーションでは、実際の値と異なるリテラル型としてアサーションしてもエラーがでないので危険です。
 
@@ -922,8 +925,8 @@ https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-
 
 文字列リテラル型が `string` 型の subtype であることは実際に TypeScript のリポジトリの次の Pull Request で明言されています。
 
->A string literal type can be considered **a subtype of the `string` type**. This means that a string literal type is assignable to a plain `string`, but not vice-versa.
->([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用、太字は筆者強調)
+> A string literal type can be considered **a subtype of the `string` type**. This means that a string literal type is assignable to a plain `string`, but not vice-versa.
+> ([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用、太字は筆者強調)
 
 文字列リテラル型は `string` 型に代入可能であることから、`string` 型を受け入れる静的メソッドや、`string` 型の変数を引数にとる関数などでも文字列リテラル型を受け入れることができるというわけです。
 
@@ -973,8 +976,8 @@ supertype とは subtype の逆で派生元となる型のことです。つま�
 
 supertype と subtype の話はリテラル型だけではなく、タプル型と通常の配列型などの関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能あるいは割当可能 (assignable) です。
 
->A tuple type is assignable to a compatible array type.
->([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
+> A tuple type is assignable to a compatible array type.
+> ([Adding support for tuple types (e.g. [number, string]) by ahejlsberg · Pull Request #428 · microsoft/TypeScript](https://github.com/microsoft/TypeScript/pull/428) より引用)
 
 ```ts
 let a1: number[] = [42];
@@ -993,13 +996,13 @@ t2 = a2; // [Error]
 
 このような変数から別の変数へ代入できるかどうかを Assignability(割当可能性) と呼びます。関連して subtypable や comparable などの概念も派生的にあるそうです。
 
->Assignability is the function that determines whether one variable can be assigned to another. It happens when the compiler checks assignments and function calls, but also return statements.
->([TypeScript-New-Handbook/Assignability.md at master · microsoft/TypeScript-New-Handbook](https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md) より引用)
+> Assignability is the function that determines whether one variable can be assigned to another. It happens when the compiler checks assignments and function calls, but also return statements.
+> ([TypeScript-New-Handbook/Assignability.md at master · microsoft/TypeScript-New-Handbook](https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md) より引用)
 
 文字列リテラル型の話に戻りますが、同じ PR 内は、文字列リテラル型は `string` 型と同一のプロパティ (プロトタイプメソッドなど) を持ち、`+` などの演算子のとの互換性があることが明言されています。
 
->String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
->([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
+> String literal types have the same apparent properties as `string` (i.e. the String global type), and are mostly compatible with operators like `+` in the same way that a `string` is:
+> ([String literal types by DanielRosenwasser · Pull Request #5185 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/5185) より引用)
 
 ただし、`toUpperCase()` などのプロトタイプメソッドで返ってくる値を `const` 宣言した変数に代入しようとすると、結局は拡大された `string` 型の変数となります。これは `toUpperCase()` メソッドの返り値の型が `string` 型として決まっているからでしょう。
 
@@ -1080,8 +1083,8 @@ const opResult = arr[0] + arr[1] + arr[2];
 
 明示的にリテラル型として型注釈することはできませんし、演算結果に `as const` をつければいいかもしれないと思いますが、`as const` のオペランドは以下のようにリテラルであると決まっています。
 
->A `const` assertion requires the operand to be a string, number, bigint, boolean, array, or object literal, optionally enclosed in one or more levels of parentheses. It is an error to apply a `const` assertion to expressions of other forms.
->([Const contexts for literal expressions by ahejlsberg · Pull Request #29510 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/29510) より引用)
+> A `const` assertion requires the operand to be a string, number, bigint, boolean, array, or object literal, optionally enclosed in one or more levels of parentheses. It is an error to apply a `const` assertion to expressions of other forms.
+> ([Const contexts for literal expressions by ahejlsberg · Pull Request #29510 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/29510) より引用)
 
 それ故に、以下のように書いてもエラーとなります。
 
@@ -1186,7 +1189,7 @@ https://sandersn.github.io/manual/Widening-and-Narrowing-in-Typescript.html
 
 ## 型の集合と階層性
 
-こちらについては別の記事にしました。
+Widening の機能は型システムにおける部分型の機能に基づきます。こちらについては別の記事にしました。
 
 https://zenn.dev/estra/articles/typescript-type-set-hierarchy
 

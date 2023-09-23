@@ -1,16 +1,22 @@
 ---
-title: "TypeScript の Narrowing"
+cssclasses:
+  - zenn
+title: TypeScript の Narrowing
 published: true
-emoji: "💃"
-type: "tech"
-topics: ["typescript"]
+emoji: 💃
+type: tech
+topics:
+  - typescript
 date: 2022-08-31
-modified: 2023-09-1724
-url: "https://zenn.dev/estra/articles/typescript-narrowing"
-tags: type/zenn
+modified: 2023-09-12724
+url: https://zenn.dev/estra/articles/typescript-narrowing
+tags:
+  - type/zenn
 aliases:
   - 記事 TypeScript の Narrowing
   - 集合論的な判別可能なユニオン型と網羅性チェック
+cssclasses:
+  - zenn
 ---
 
 ## はじめに
