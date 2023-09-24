@@ -847,32 +847,33 @@ let u = undefined;
 //  ^: any 型として拡大されて型推論される
 ```
 
-#### 推移性が成り立たない場合
+#### 推移性が成り立たないケース
 
-https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。部分型関係はその推論規則から推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
 
-これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。通常、部分型関係では推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
-
-以下のドットの矢印の部分に注目してください。
+以下の図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。
 
 ```mermaid
 graph TD
+  U[unknown]
+  A[any]
   N[never]
   O["Object, { }"]
   obj[object]
   W[Wrapper]
-  P[プリミティブ型全般]
-  objs[オブジェクト型全般]
+  P[プリミティブ型]
+  objs[オブジェクト型]
+  U --> A --> O
   O --> obj & objs
   O ----> W
   obj --> W
   obj --> objs --> N
-  obj -.-> O
+  obj -.->|特異な互換性| O
   W --> P --> N
-  P x-.-x obj
+  P x-.-x |直接的に代入不可能|obj
 ```
 
-プリミティブ型全般 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
+より具体的には、プリミティブ型 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
 
 つまり、`object` 型にプリミティブ型 `string` の値が代入できてしまう可能性があるわけですが、実際にそのようなことは起きず、代入しようとすると型エラーが発生します。
 
@@ -883,23 +884,45 @@ let str: string = "str";
 //  ^^^ error: Type 'string' is not assignable to type 'object'
 ```
 
-$object <: Object$ と $object <: \{\}$ が成り立ちますが、$string <: object$ は成り立ちません。元々 `object` はプリミティブ型でないこと表現するために新しく追加された型なので、`object` に `string` のようなプリミティブ型の値が代入できたらいけないわけですから、このような推移性が成立しないケースとなるのは本来的な目的からは妥当でしょう。
+$string <: Object$ と $string <: \{\}$ は成り立ちますが、$string <: object$ は成り立ちません。元々 `object` はプリミティブ型でないこと表現するために新しく追加された型なので、`object` に `string` のようなプリミティブ型の値が代入できたらいけないわけですから、このような推移性が成立しないケースとなるのは本来的な目的からは妥当でしょう。
 
-個人的な意見としては $Object <: object$ が成立している方がまず不自然で、この関係性が特殊すぎて `object` 型を原因として推移性が壊れている箇所が多くでてきしまっています。この部分型関係を経由すれば、オブジェクトラッパー型が `object` 型の Supertype になったり、`never` 型が `object` 型の supertype になるようなおかしな状況が生まれるような話になります (もちろんそのようなことは禁止されていますが)。この部分型関係がなくなれば推移性はより自然になるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
+ただし、上図に表現したように `object` 型の部分型関係において $Object <: object$ が成立している箇所があるため、この部分型関係を経由すれば `object` 型にプリミティブ型を代入することが可能となってしまっています。
+
+```ts
+let pri: string = "st";
+let Obj: Object;
+let obj: object;
+
+// string → Object → object の部分型関係を経由することで代入可能
+Obj = pri; // OK → Object :> string
+obj = Obj; // OK → object :> Object
+
+// string → object への直接の代入は禁止されている
+obj = pri; // NG → Error: Type 'string' is not assignable to type 'object'
+```
+
+このような部分型関係がなくなれば推移性はより整合性が確保されるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
 
 ```mermaid
 graph TD
+  U[unknown]
+  A[any]
   N[never]
   O["Object, { }"]
   W[Wrapper]
-  P[プリミティブ型全般]
-  objs[オブジェクト型全般]
+  P[プリミティブ型]
+  objs[オブジェクト型]
+  U --> A --> O
   O --> objs & W
   objs --> N
   W --> P --> N
 ```
 
-なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、上記のブログ記事でそのようなケースについて解説されていました。
+なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、下記のブログ記事でそのようなケースについて解説されていました。
+
+https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+
+このケースはおそらく後述する Assignment 互換性が Subtype 互換性の拡張であることが原因となっていると思われます。
 
 ### Compatibility
 
@@ -989,6 +1012,7 @@ https://github.com/microsoft/TypeScript-Website/pull/2760
 - [TypeScriptのコンパイルプロセス / 型の階層構造 - knmts.com](https://knmts.com/as-a-engineer-52/)
 - [TypeScriptの型メモ - Qiita](https://qiita.com/dico_leque/items/06ac5837b7a333c5c8da)
 - [Diagram of every possible TypeScript type](https://gist.github.com/laughinghan/31e02b3f3b79a4b1d58138beff1a2a89)
+- [TypeScriptにおける代入可能関係の推移性 | sititou70](https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/)
 
 参考書籍
 
