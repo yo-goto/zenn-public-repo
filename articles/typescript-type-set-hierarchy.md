@@ -487,7 +487,7 @@ https://criceta.com/category-theory-with-scala/01_Category.html
 
 https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-parameter-bivariance
 
-長くなるのであまり詳細には解説しませんが、関数型 `S1 -> S2` と `T1 -> T2` があったときに入力の値の型について `T1 <: S1` (T1がS1の部分型) であり、かつ出力の値の型について `S2 <: T2` (S2がT2の部分型) になっているとき関数型 `T1 -> T2` が期待される場所で `S1 -> S2` で安全に置換できるといい、このとき `S1 -> S2` は `T1 -> T2` の Subtype である、ということになります。
+長くなるのであまり詳細には解説しませんが、関数型 `S1 -> S2` と `T1 -> T2` があったときに入力の値の型について `T1 <: S1` (T1 が S1 の部分型) であり、かつ出力の値の型について `S2 <: T2` (S2 が T2 の部分型) になっているとき関数型 `T1 -> T2` が期待される場所で `S1 -> S2` で安全に置換できるといい、このとき `S1 -> S2` は `T1 -> T2` の Subtype である、ということになります。
 
 ![関数型の入力と出力の包含関係](/images/typescript-widen-narrow/img_functionType_subtypingRelation-set.jpg)
 
