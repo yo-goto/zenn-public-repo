@@ -32,6 +32,9 @@ aliases:
 :::details ChangeLog
 大きな変更のみトラッキングしています。
 
+- 2023-09-24
+  - 推移性についての記述を修正
+  - 関数型の部分型関係の説明を追加
 - 2023-09-23
   - 構造を整理
   - ３つのオブジェクト型についての情報を修正
@@ -476,7 +479,7 @@ const sqrt: NumberOp = (param) => {
 
 このようにある関数の型定義を満たすような具体的な関数の実装がその関数型の集合についての要素となります。
 
-ただし、プリミティブ型やオブジェクト型の値 (value) のように関数の型を集合として捉えて、型の合成やサブタイプ互換性について考えるにはいくつか難しいことがあるので、素朴な集合論よりも対象 (object) と射 (arrow) を扱う圏論の方が適しているようです。
+ただし、プリミティブ型やオブジェクト型の値 (value) のように関数の型を集合として捉えて、型の合成やサブタイプ互換性について考えるにはいくつか難しいことがあるので、素朴な集合論よりも対象 (object) と射 (arrow) を扱う圏論の方が適しているかもしれません。
 
 https://criceta.com/category-theory-with-scala/01_Category.html
 
@@ -484,21 +487,37 @@ https://criceta.com/category-theory-with-scala/01_Category.html
 
 https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-parameter-bivariance
 
-長くなるのでここでは解説しません。
+長くなるのであまり詳細には解説しませんが、関数型 `S1 -> S2` と `T1 -> T2` があったときに入力の値の型について `T1 <: S1` (T1 が S1 の部分型) であり、かつ出力の値の型について `S2 <: T2` (S2 が T2 の部分型) になっているとき関数型 `T1 -> T2` が期待される場所で `S1 -> S2` で安全に置換できるといい、このとき `S1 -> S2` は `T1 -> T2` の Subtype である、ということになります。
+
+![関数型の入力と出力の包含関係](/images/typescript-widen-narrow/img_functionType_subtypingRelation-set.jpg)
+
+これまでの単純な型同士の包含関係が部分型関係となっていたのとは異なり、直感的な理解は少し難しくなっています。実は部分型関係というのはそもそもが型の互換性(期待される型に対して安全に置換できるかどうか)という関係なので実際には包含関係とは異なるものとなっています。そのため関数型では実際の部分型関係の本質的な理解が必要となります。
+
+関数型の部分型関係は直感的に集合の包含関係で理解するのは少しむずかしいですが、集合論的な考えをもったまま以下の図の(2)のように入口と出口があるパイプの管を置き換えるようなイメージで考えると理解できます。
+
+![関数型の部分型関係](/images/typescript-widen-narrow/img_functionType-subtype-comp.jpg)
+
+`T1 -> T2` という関数型を図のような `T1` という領域の大きさを持つ入力口と `T2` という領域の大きさを持つ出力口のある水が流れるパイプとして考えてください。`T1` の面積を流れてくる入力をパイプ外にこぼさず、かつ `T2` の面積を流れてくる出力をパイプ外にこぼさないように別のパイプ(`S1 -> S2`)で安全に置き換えるとします。
+
+図の(1)では入力口である `S1` の面積が元の入力口の `T1` よりも小さいため入力となる水がこぼれて危険であり、(3)では逆に出力口である `S2` の面積が元の出力口の `T2` よりも小さいため出力となる水がこぼれて危険な置換となります。
+
+一方、図の(2)では元の入力口の `T1` よりも大きな面積をもつ `S1` で入力となる水を受け取り、元の出力口の `T2` よりも小さな面積を持つ `S2` で出力となる水を吐き出します。これによって上下で繋がっているパイプの外側に水がこぼれることなく安全にパイプの入れ替えができることがわかります。
+
+このように入力と出力の値の範囲の外側となるような危険な入出力をとらない関数であれば元の関数が期待されるような場所で使用しても大丈夫というわけです。
 
 ## 型の階層性
 
 ### Top type と Bottom type
 
-Subtype や Supertype という関係から分かる通り、型には親と子の関係があり、階層性があります (集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼ぶそうです。
+Subtype や Supertype という関係から分かる通り、型には親と子のような関係があり、階層性があります (集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼びます。
 
 https://en.wikipedia.org/wiki/Top_type
 
-逆に最下位となる型は TypeScript では `never` 型であり、型理論ではこのような型を **Bottom type(ボトム型)** と呼ぶそうです。
+逆に最下位となる型は TypeScript では `never` 型であり、型理論ではこのような型を **Bottom type(ボトム型)** と呼びます。
 
 https://en.wikipedia.org/wiki/Bottom_type
 
-公式 Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目でも `unknown` 型が Top type で `never` 型が Bottom type であると明示されています。
+実際、公式 Handbook の『[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types)』の項目でも `unknown` 型が Top type で `never` 型が Bottom type であると明示されています。
 
 ![unknown & never type](/images/typescript-widen-narrow/img_ts_handbook_toptype_bottomtype.jpg)*[TypeScript for Functional Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#other-important-typescript-types) より引用*
 
@@ -514,7 +533,7 @@ https://github.com/microsoft/TypeScript/pull/8652
 記事内で PR を提示しているのはハンドブックに記載されていない細かい情報を追うには PR の説明が一番詳しいからです。
 :::
 
-型の集合性で見たとおり、型は値の集合なので、TypeScript のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合 (Empty set) です。全体集合 (Universal set) を `unknown` 型としてみなすと以下のような図が書けました。
+型の集合性で見たとおり、直感的に型は値の集合なので、TypeScript のリテラル型は単一の値からなる単集合で、`never` 型は値を持たないので空集合 (Empty set) です。全体集合 (Universal set) を `unknown` 型としてみなすと以下のような図が書けました。
 
 ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
@@ -535,7 +554,7 @@ Scala ではプリミティブ型が存在せず、あらゆる型が Top type �
 
 C# や Scala といった言語でのこのような型のシステムを [Unified type system](https://en.wikipedia.org/wiki/Type_system#Unified_type_system) と呼ぶそうですが、Java や JavaScript (TypeScript) ではプリミティブ型が存在しているため完全に同じように考えることができません。
 
-TypeScript と同じように Top type と Bottom type が存在しており、階層図の最上位と最下位に位置している `Any` 型と `Nothing` 型が Top type と Bottom type となります。`Any` 型は TypeScript の `Object` 型と同じように `toString()` などのあらゆるオブジェクトで利用できるメソッドなどを定義しています。
+図を見てわかるように Scala では TypeScript と同じように Top type と Bottom type が存在しており、階層図の最上位と最下位に位置している `Any` 型と `Nothing` 型が Top type と Bottom type となります。`Any` 型は TypeScript の `Object` 型と同じように `toString()` などのあらゆるオブジェクトで利用できるメソッドなどを定義しています。
 
 Scala と JavaScript の機能的な違いについては以下のドキュメントを参照してください。
 
@@ -543,9 +562,9 @@ https://docs.scala-lang.org/scala3/book/scala-for-javascript-devs.html
 
 #### 自動ボックス化とラッパーオブジェクト型
 
-JavaScript (TypeScript) ではプリミティブ型のデータに対して `"str".length` のようにプロパティアクセスを行ったり、`"str".toUpperCase()` のようにメソッド呼び出しを行うことができますが、この際には `string` 型というプリミティブ型の値から `String` というオブジェクトラッパー型への値に暗黙的な変換 (**自動ボックス化**) が行われています。
+JavaScript (TypeScript) ではプリミティブ型のデータに対して `"str".length` のようにプロパティアクセスを行ったり、`"str".toUpperCase()` のようにメソッド呼び出しを行うことができますが、この際には `string` 型というプリミティブ型の値から `String` というオブジェクトラッパーへの値に暗黙的な変換 (**自動ボックス化**) が行われています。
 
-```ts
+```js
 // プリミティブ型のデータ
 const st = "string";
 st.toUpperCase();
@@ -557,7 +576,19 @@ st.toUpperCase();
 // => "STRING"
 ```
 
-JavaScript ではプリミティブ型の値に対してメソッド呼び出しなどが可能ため、すべてのデータがオブジェクト型のように見えてしまいますが、プリミティブ型とラッパーオブジェクトの型での変換プロセスがあるためそのように見えるだけで Scala とは異なる型のシステムであることがわかります。とはいっても、部分型関係の推移性に基づく階層図は同じように作成することが可能です。
+JavaScript のラッパーオブジェクトに対応して TypeScript にはそのラッパーオブジェクトの型が用意されています。
+
+プリミティブ型 | ラッパーオブジェクト型
+--|--
+`string` | `String`
+`number` | `Number`
+`boolean` | `Boolean`
+`symbol` | `Symbol`
+`bigint` | `BigInt`
+`null` | なし
+`undefined` | なし
+
+JavaScript では `string` 型などのプリミティブ型の値に対してメソッド呼び出しなどが可能ため、すべてのデータがオブジェクト型のように見えてしまいますが、プリミティブ型とラッパーオブジェクトの型での変換プロセスがあるためそのように見えるだけで Scala とは異なる型のシステムであることがわかります。とはいっても、部分型関係の推移性に基づく階層図は同じように作成することが可能です。
 
 #### 部分型関係と順序関係
 
@@ -566,7 +597,7 @@ JavaScript ではプリミティブ型の値に対してメソッド呼び出し
 > スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `Subtype <: Supertype` と表記される。
 > ([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
 
-部分型関係というのは数学で言うところの [二項関係](https://ja.wikipedia.org/wiki/%E4%BA%8C%E9%A0%85%E9%96%A2%E4%BF%82)(binary relation) の一種ですが、部分型関係は反射性 (reflexive) と推移性 (transitive) を満たすが、反対称律 (antisymmetic) を満たさないような関係です。
+部分型関係というのは数学で言うところの[二項関係](https://ja.wikipedia.org/wiki/%E4%BA%8C%E9%A0%85%E9%96%A2%E4%BF%82)(binary relation) の一種ですが、部分型関係は反射性 (reflexive) と推移性 (transitive) を満たすが、反対称律 (antisymmetic) を満たさないような関係です。
 
 これらの条件は集合論での順序集合 (要素同士に順序関係がある集合) を考える上で必要で、二項関係 ($\prec$) についての以下のような規則です。
 
@@ -585,7 +616,12 @@ https://mathlandscape.com/ordered-set-2/
 
 値の集合を型としてみなしたように、今度は型そのものを要素として考えることで型の集合を考えることができます。型システム入門ではこのような型の見方を「**部分集合意味論**」という言葉で表現しています。型はユニオン型やインターセクション型などで型と型を合成した型も作成できたわけなので、型の集合全体で元ではなく部分集合となるようなものも一つの型として扱えます。つまり、型の集合全体の部分集合の全体として作られる擬似的な [べき集合](https://ja.wikipedia.org/wiki/%E5%86%AA%E9%9B%86%E5%90%88) を考えることですべての型を要素とする集合として捉えることができそうです。
 
+
 集合性の話で見たように型同士には包含関係がありました。実はべき集合はこの包含関係を順序とする半順序集合 (Partially ordered set) となります。ただし半順序集合は、前順序集合であることを前提に更に反対称律を満たす必要があるため、厳密には型の集合はべき集合ではなさそうですね (擬似的といったのはその部分があるからです)。実際、部分型の機能を持つ型システムにおいて型同士の包含関係 (のようにみえていたもの) の本質は部分型関係です。
+
+:::message
+部分型関係は厳密には集合論で扱えかったりしますが、部分型関係をより直感的に、より集合論的に扱えるようにする "Semantic Subtyping" という型システムの理論があるそうです。
+:::
 
 #### 部分型関係の推移性
 
@@ -847,32 +883,33 @@ let u = undefined;
 //  ^: any 型として拡大されて型推論される
 ```
 
-#### 推移性が成り立たない場合
+#### 推移性が成り立たないケース
 
-https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。部分型関係はその推論規則から推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
 
-これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。通常、部分型関係では推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
-
-以下のドットの矢印の部分に注目してください。
+以下の図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。
 
 ```mermaid
 graph TD
+  U[unknown]
+  A[any]
   N[never]
   O["Object, { }"]
   obj[object]
   W[Wrapper]
-  P[プリミティブ型全般]
-  objs[オブジェクト型全般]
+  P[プリミティブ型]
+  objs[オブジェクト型]
+  U --> A --> O
   O --> obj & objs
   O ----> W
   obj --> W
   obj --> objs --> N
-  obj -.-> O
+  obj -.->|特異な互換性| O
   W --> P --> N
-  P x-.-x obj
+  P x-.-x |直接的に代入不可能|obj
 ```
 
-プリミティブ型全般 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
+より具体的には、プリミティブ型 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
 
 つまり、`object` 型にプリミティブ型 `string` の値が代入できてしまう可能性があるわけですが、実際にそのようなことは起きず、代入しようとすると型エラーが発生します。
 
@@ -883,23 +920,45 @@ let str: string = "str";
 //  ^^^ error: Type 'string' is not assignable to type 'object'
 ```
 
-$object <: Object$ と $object <: \{\}$ が成り立ちますが、$string <: object$ は成り立ちません。元々 `object` はプリミティブ型でないこと表現するために新しく追加された型なので、`object` に `string` のようなプリミティブ型の値が代入できたらいけないわけですから、このような推移性が成立しないケースとなるのは本来的な目的からは妥当でしょう。
+$string <: Object$ と $string <: \{\}$ は成り立ちますが、$string <: object$ は成り立ちません。元々 `object` はプリミティブ型でないこと表現するために新しく追加された型なので、`object` に `string` のようなプリミティブ型の値が代入できたらいけないわけですから、このような推移性が成立しないケースとなるのは本来的な目的からは妥当でしょう。
 
-個人的な意見としては $Object <: object$ が成立している方がまず不自然で、この関係性が特殊すぎて `object` 型を原因として推移性が壊れている箇所が多くでてきしまっています。この部分型関係を経由すれば、オブジェクトラッパー型が `object` 型の Supertype になったり、`never` 型が `object` 型の supertype になるようなおかしな状況が生まれるような話になります (もちろんそのようなことは禁止されていますが)。この部分型関係がなくなれば推移性はより自然になるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
+ただし、上図に表現したように `object` 型の部分型関係において $Object <: object$ が成立している箇所があるため、この部分型関係を経由すれば `object` 型にプリミティブ型を代入することが可能となってしまっています。
+
+```ts
+let pri: string = "st";
+let Obj: Object;
+let obj: object;
+
+// string → Object → object の部分型関係を経由することで代入可能
+Obj = pri; // OK → Object :> string
+obj = Obj; // OK → object :> Object
+
+// string → object への直接の代入は禁止されている
+obj = pri; // NG → Error: Type 'string' is not assignable to type 'object'
+```
+
+このような部分型関係がなくなれば推移性はより整合性が確保されるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
 
 ```mermaid
 graph TD
+  U[unknown]
+  A[any]
   N[never]
   O["Object, { }"]
   W[Wrapper]
-  P[プリミティブ型全般]
-  objs[オブジェクト型全般]
+  P[プリミティブ型]
+  objs[オブジェクト型]
+  U --> A --> O
   O --> objs & W
   objs --> N
   W --> P --> N
 ```
 
-なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、上記のブログ記事でそのようなケースについて解説されていました。
+なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、下記のブログ記事でそのようなケースについて解説されていました。
+
+https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+
+このケースはおそらく後述する Assignment 互換性が Subtype 互換性の拡張であることが原因となっていると思われます。
 
 ### Compatibility
 
@@ -989,6 +1048,7 @@ https://github.com/microsoft/TypeScript-Website/pull/2760
 - [TypeScriptのコンパイルプロセス / 型の階層構造 - knmts.com](https://knmts.com/as-a-engineer-52/)
 - [TypeScriptの型メモ - Qiita](https://qiita.com/dico_leque/items/06ac5837b7a333c5c8da)
 - [Diagram of every possible TypeScript type](https://gist.github.com/laughinghan/31e02b3f3b79a4b1d58138beff1a2a89)
+- [TypeScriptにおける代入可能関係の推移性 | sititou70](https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/)
 
 参考書籍
 
