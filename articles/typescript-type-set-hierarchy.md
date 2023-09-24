@@ -535,7 +535,7 @@ Scala ではプリミティブ型が存在せず、あらゆる型が Top type �
 
 C# や Scala といった言語でのこのような型のシステムを [Unified type system](https://en.wikipedia.org/wiki/Type_system#Unified_type_system) と呼ぶそうですが、Java や JavaScript (TypeScript) ではプリミティブ型が存在しているため完全に同じように考えることができません。
 
-TypeScript と同じように Top type と Bottom type が存在しており、階層図の最上位と最下位に位置している `Any` 型と `Nothing` 型が Top type と Bottom type となります。`Any` 型は TypeScript の `Object` 型と同じように `toString()` などのあらゆるオブジェクトで利用できるメソッドなどを定義しています。
+図を見てわかるように Scala では TypeScript と同じように Top type と Bottom type が存在しており、階層図の最上位と最下位に位置している `Any` 型と `Nothing` 型が Top type と Bottom type となります。`Any` 型は TypeScript の `Object` 型と同じように `toString()` などのあらゆるオブジェクトで利用できるメソッドなどを定義しています。
 
 Scala と JavaScript の機能的な違いについては以下のドキュメントを参照してください。
 
@@ -543,9 +543,9 @@ https://docs.scala-lang.org/scala3/book/scala-for-javascript-devs.html
 
 #### 自動ボックス化とラッパーオブジェクト型
 
-JavaScript (TypeScript) ではプリミティブ型のデータに対して `"str".length` のようにプロパティアクセスを行ったり、`"str".toUpperCase()` のようにメソッド呼び出しを行うことができますが、この際には `string` 型というプリミティブ型の値から `String` というオブジェクトラッパー型への値に暗黙的な変換 (**自動ボックス化**) が行われています。
+JavaScript (TypeScript) ではプリミティブ型のデータに対して `"str".length` のようにプロパティアクセスを行ったり、`"str".toUpperCase()` のようにメソッド呼び出しを行うことができますが、この際には `string` 型というプリミティブ型の値から `String` というオブジェクトラッパーへの値に暗黙的な変換 (**自動ボックス化**) が行われています。
 
-```ts
+```js
 // プリミティブ型のデータ
 const st = "string";
 st.toUpperCase();
@@ -557,7 +557,19 @@ st.toUpperCase();
 // => "STRING"
 ```
 
-JavaScript ではプリミティブ型の値に対してメソッド呼び出しなどが可能ため、すべてのデータがオブジェクト型のように見えてしまいますが、プリミティブ型とラッパーオブジェクトの型での変換プロセスがあるためそのように見えるだけで Scala とは異なる型のシステムであることがわかります。とはいっても、部分型関係の推移性に基づく階層図は同じように作成することが可能です。
+JavaScript のラッパーオブジェクトに対応して TypeScript にはそのラッパーオブジェクトの型が用意されています。
+
+プリミティブ型 | ラッパーオブジェクト型
+--|--
+`string` | `String`
+`number` | `Number`
+`boolean` | `Boolean`
+`symbol` | `Symbol`
+`bigint` | `BigInt`
+`null` | なし
+`undefined` | なし
+
+JavaScript では `string` 型などのプリミティブ型の値に対してメソッド呼び出しなどが可能ため、すべてのデータがオブジェクト型のように見えてしまいますが、プリミティブ型とラッパーオブジェクトの型での変換プロセスがあるためそのように見えるだけで Scala とは異なる型のシステムであることがわかります。とはいっても、部分型関係の推移性に基づく階層図は同じように作成することが可能です。
 
 #### 部分型関係と順序関係
 
@@ -566,7 +578,7 @@ JavaScript ではプリミティブ型の値に対してメソッド呼び出し
 > スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `Subtype <: Supertype` と表記される。
 > ([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
 
-部分型関係というのは数学で言うところの [二項関係](https://ja.wikipedia.org/wiki/%E4%BA%8C%E9%A0%85%E9%96%A2%E4%BF%82)(binary relation) の一種ですが、部分型関係は反射性 (reflexive) と推移性 (transitive) を満たすが、反対称律 (antisymmetic) を満たさないような関係です。
+部分型関係というのは数学で言うところの[二項関係](https://ja.wikipedia.org/wiki/%E4%BA%8C%E9%A0%85%E9%96%A2%E4%BF%82)(binary relation) の一種ですが、部分型関係は反射性 (reflexive) と推移性 (transitive) を満たすが、反対称律 (antisymmetic) を満たさないような関係です。
 
 これらの条件は集合論での順序集合 (要素同士に順序関係がある集合) を考える上で必要で、二項関係 ($\prec$) についての以下のような規則です。
 
@@ -585,7 +597,12 @@ https://mathlandscape.com/ordered-set-2/
 
 値の集合を型としてみなしたように、今度は型そのものを要素として考えることで型の集合を考えることができます。型システム入門ではこのような型の見方を「**部分集合意味論**」という言葉で表現しています。型はユニオン型やインターセクション型などで型と型を合成した型も作成できたわけなので、型の集合全体で元ではなく部分集合となるようなものも一つの型として扱えます。つまり、型の集合全体の部分集合の全体として作られる擬似的な [べき集合](https://ja.wikipedia.org/wiki/%E5%86%AA%E9%9B%86%E5%90%88) を考えることですべての型を要素とする集合として捉えることができそうです。
 
+
 集合性の話で見たように型同士には包含関係がありました。実はべき集合はこの包含関係を順序とする半順序集合 (Partially ordered set) となります。ただし半順序集合は、前順序集合であることを前提に更に反対称律を満たす必要があるため、厳密には型の集合はべき集合ではなさそうですね (擬似的といったのはその部分があるからです)。実際、部分型の機能を持つ型システムにおいて型同士の包含関係 (のようにみえていたもの) の本質は部分型関係です。
+
+:::message
+部分型関係は厳密には集合論で扱えかったりしますが、部分型関係をより直感的に、より集合論的に扱えるようにする "Semantic Subtyping" という型システムの理論があるそうです。
+:::
 
 #### 部分型関係の推移性
 
