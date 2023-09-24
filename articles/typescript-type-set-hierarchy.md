@@ -4,7 +4,7 @@ published: true
 cssclass: zenn
 emoji: "🕴"
 type: "tech"
-topics: ["typescript"]
+topics: ["typescript", "型システム"]
 date: 2022-08-04
 modified: 2023-09-19
 url: "https://zenn.dev/estra/articles/typescript-type-set-hierarchy"
@@ -678,11 +678,10 @@ graph LR
   bl --> N
   bil --> N
   us --> N
+  O <--> obj
   O --> Function --> cons --> N
   O --> udt --> N
   O --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
-  O --> obj
-  obj -.-> O
 ```
 
 左が Supertype で、右が Subtype の方向となります。一番左に位置している `unknown` 型がすべての型の Supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の Subtype であり Bottom type です。なお部分型関係をより正確に書こうとすると完全にツリー的な階層図ではなくなるので至る所の関係を省略して図示しています。つまり[ハッセ図](https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%83%E3%82%BB%E5%9B%B3)に近いです。例えば Bottom type である `never` 型については、すべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています。
@@ -755,13 +754,13 @@ graph LR
   W --> P --> N
   O --> obj
   objs --> N
-  obj -.-> O
-  obj x-.-x P
+  obj ---> O
+  obj -.-x P
 ```
 
 #### ３つのオブジェクト型
 
-`Object` 型、`{}`(empty object type: 空オブジェクト型)、`object` 型はそれぞれ違いがあります。図では `Object` 型と `{}` 型を同じ階層に置いていますがこれは相互に代入可能であるためです。`object` もそれら２つに相互で代入可能であるため、この部分だけかなり特殊な状況になっています。
+オブジェクトの型である `Object` 型、`{}` 型、`object` 型はそれぞれ違いがあります。図では `Object` 型と `{}` 型を同じ階層に置いていますがこれは相互に代入可能、つまり相互に部分型であるためです。`object` もそれら２つに相互で代入可能であるため、この部分だけかなり特殊な状況になっています。
 
 ```ts
 const obj1: object = {};
@@ -781,6 +780,18 @@ const emp3: {} = {};
 let obj3: object;
 obj3 = Obj3; // OK
 obj3 = emp3; // OK
+```
+
+それぞれに部分型関係について詳細に図示すると以下のように３つとも相互に部分型となっています。
+
+```mermaid
+graph LR
+  O[Object]
+  E["{}"]
+  obj[object]
+  O <--> E
+  E <--> obj
+  obj <--> O
 ```
 
 これらの `Object` 型、`{}` 型、`object` 型は通常使うことはほとんど無いと思いますが、明示的にそれらの型で型注釈しようとすると Deno 環境だとリンタールールの１つである "[ban-types](https://lint.deno.land/?q=ban-types#ban-types)" に別の型注釈をするように注意されます。
@@ -804,6 +815,23 @@ Obj = null;
 > This type may be different from what you expect it to be
 If you want a type meaning "any object", use `object` instead. Or if you want a type meaning "any value", you probably want `unknown` instead.
 
+ユーザー定義のオブジェクトリテラル型 (一般的なオブジェクトの型) はこの `Object` 型の傘下の Subtype であり、`interface` を使ったユーザー定義の型などもすべて `Object` 型傘下の Subtype となります。
+
+```ts
+interface I { prop: string }
+const i: I = { prop: "val" };
+const obj: object = i;
+```
+
+関数の型も `Object` 型傘下の Subtype です。より具体的に言えば、`Object` 型の Subtype であるグローバルインターフェース `Function` 型傘下の Subtype です。
+
+```ts
+type FT<T> = (arg: T) => T;
+const ft: FT<string> = (arg: string) => arg.toUpperCase();
+const fc: Function = ft;
+const obj: object = ft;
+```
+
 `{}` はプロパティを持たないオブジェクトの型です。"ban-types" のリンタールールで注意される文には `null` と `undefined` 以外を表現するための型であると記載されています。プロパティを持たないオブジェクトと言っても以下のように "ban-types" のルールで空のオブジェクトを意味したいなら `Record<string | number | symbol | never>` 型を使うようにと促されます。
 
 > `{}` doesn't mean an empty object, but means any types other than `null` and `undefined`
@@ -826,29 +854,12 @@ e = null;
 
 https://github.com/denoland/deno_lint/issues/1159
 
-空ではないオブジェクトリテラル型 (一般的なオブジェクトの型) はこの `object` 型の傘下の Subtype であり、`interface` を使ったユーザー定義の型などもすべて `object` 型傘下の Subtype となります。
-
-```ts
-interface I { prop: string }
-const i: I = { prop: "val" };
-const obj: object = i;
-```
-
-関数の型も `object` 型傘下の Subtype です。より具体的に言えば、`object` 型の Subtype であるグローバルインターフェース `Function` 型傘下の Subtype です。
-
-```ts
-type FT<T> = (arg: T) => T;
-const ft: FT<string> = (arg: string) => arg.toUpperCase();
-const fc: Function = ft;
-const obj: object = ft;
-```
-
 ３つの型の違いをまとめると以下のようになります。
 
 型 | 説明
 --|--
 `Object` | `toString()` や `hasOwnProperty()` などのすべてのオブジェクトが持つメソッドの提供元であり、あらゆる値 (プリミティブもオブジェクトも) 代入可能な型です
-`{}` | 空のオブジェクトを表現する型で `Object` 型と似ているが、コンパイル時に異なる挙動を取り、`Object` が持つメンバーを持たず、より厳密な挙動を取ります
+`{}` | 空のオブジェクトを表現する型で `Object` 型と似ているが、コンパイル時に異なる挙動を取り、`Object` が持つメンバーを持たず `null` と `undefined` 以外を表現する型です
 `object` | [TypeScript 2.2](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#object-type) から導入されたプリミティブではないという否定を表現するような型 (**non-primitive type**) であり、プリミティブ型の値を代入できません
 
 参考
@@ -856,7 +867,7 @@ https://stackoverflow.com/questions/49464634/difference-between-object-and-objec
 
 #### null 型と undefined 型
 
-話は変わって、`null` 型と `undefined` 型についてですが、`unll` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。`string` や `number` といった他のプリミティブ型とは違ってラッパーオブジェクトやその型は存在しません。
+話は変わって、`null` 型と `undefined` 型についてですが、`null` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。`string` や `number` といった他のプリミティブ型とは違ってラッパーオブジェクトやその型は存在しません。
 
 また、単一の値からなる型なので Unit type として見なされます。それぞれの型は階層図にあるように `any` 型の Subtype です。
 
@@ -887,7 +898,7 @@ let u = undefined;
 
 これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。部分型関係はその推論規則から推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
 
-以下の図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。
+以下の図は部分型関係について部分的に詳細にしたものです。図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。
 
 ```mermaid
 graph TD
@@ -900,13 +911,14 @@ graph TD
   P[プリミティブ型]
   objs[オブジェクト型]
   U --> A --> O
-  O --> obj & objs
+  O -->|相互に部分型| obj
+  O --> objs
   O ----> W
-  obj --> W
+  obj -->|代入可能| W
   obj --> objs --> N
-  obj -.->|特異な互換性| O
-  W --> P --> N
-  P x-.-x |直接的に代入不可能|obj
+  obj --->|相互に部分型| O
+  W -->|代入可能| P --> N
+  obj -.-x |直接的に代入不可能| P
 ```
 
 より具体的には、プリミティブ型 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
