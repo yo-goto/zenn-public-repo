@@ -32,6 +32,10 @@ aliases:
 :::details ChangeLog
 大きな変更のみトラッキングしています。
 
+- 2023-10-15
+  - any 型を特別扱いして部分型の図を整理
+  - Lattice の話などを追加
+  - 圏論の話や双変性についての話を追加
 - 2023-09-24
   - 推移性についての記述を修正
   - 関数型の部分型関係の説明を追加
@@ -89,9 +93,7 @@ graph LR
 
 ２つの型の関係を簡易的に判別するには、受け入れる値の範囲が広く型の制約 (条件) が緩いものが Supertype で、受け入れる値の範囲が狭く型の制約がより厳しいものが Subtype です。もちろん、Supertype と Subtype の関係性にない場合もありえます (`number` と `string` を比較した場合など)。
 
-TypeScript で採用されているこういった型の仕組みは「部分型 (Subtyping)」と呼ばれるものでありり、より具体的には「構造的部分型 ([Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system))」というシステムです。
-
-https://en.wikipedia.org/wiki/Subtyping
+TypeScript で採用されているこういった型の仕組みは「部分型 (Subtyping)」と呼ばれるものであり、より具体的には「構造的部分型 ([Structural subtyping system](https://en.wikipedia.org/wiki/Structural_type_system))」というシステムです。このシステムを採用しているのは Go、Scala、OCaml などの言語です。
 
 :::message
 Subtyping の概念自体は、1960 年代までさかのぼり、[Simula](https://en.wikipedia.org/wiki/Simula) というプログラミング言語によって初めて導入され、その概念が脚光を浴びたのはオブジェクト指向プログラミング (OOP: Object-Oriented Programming) でそれが主流になったためであるとのことです。
@@ -205,21 +207,21 @@ https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
 
 ![集合型の和集合](/images/typescript-widen-narrow/img_typeSet_3.png)
 
-空集合 (Empty set) となる値を持たない型は `never` 型であり、各リテラル型の積集合や異なる集合型の積集合をインターセクション型で作ろうとすると `never` 型となります。図にあるように `number & string` という異なるプリミティブ型同士のインターセクションによる積集合は共通部部分が存在しないため、型の合成結果として `never` 型が返ってきます。ちなみに空の交差が `never` 型になるというこの機能は以下の PR で実装されました。
+空集合 (Empty set) となる値を持たない型は `never` 型であり、各リテラル型の交差や異なる集合型の交差をインターセクション型で作ろうとすると `never` 型となります。図にあるように `number & string` という異なるプリミティブ型同士のインターセクションによる交差は共通部部分が存在しないため、型の合成結果として `never` 型が返ってきます。ちなみに空の交差が `never` 型になるというこの機能は以下の PR で実装されました。
 
 https://github.com/microsoft/TypeScript/pull/31838
 
-そして型の全体集合 (Universal set) は `unknown` 型となります (`unknown` 型がなぜ全体集合になるかは後述する階層性で見れば分かります)。
+そして型の全体集合 (Universal set) は `unknown` 型となります。
 
 ![全体集合](/images/typescript-widen-narrow/img_typeSet_4.png)
 
-和集合 (Union type) と積集合 (Intersection type) についてはオブジェクトの型で考えると分かりやすいです。`{ a: "st" }` という型と `{ b: 42 }` という型について考えたときのユニオン型とインターセクション型を図示すると以下のような分かりやすいベン図になります。
+和集合 (Union type) と交差 (Intersection type) についてはオブジェクトの型で考えると分かりやすいです。`{ a: "st" }` という型と `{ b: 42 }` という型について考えたときのユニオン型とインターセクション型を図示すると以下のような分かりやすいベン図になります。
 
 ![オブジェクトの型](/images/typescript-widen-narrow/img_typeSet_5.png)
 
 図にあるように、`{ a: "st" }` 型は `a` というプロパティの値の型が文字列リテラル型 `"st"` であるという **条件を満たしたあらゆるオブジェクトの集合** を表し、`{ b: 42 }` 型は `b` というプロパティの値の型が数値リテラル型 `42` であるという **条件を満たしたあらゆるオブジェクトの集合** を表します。
 
-そして、`{ a: "st" }` 型と `{ b: 42 }` 型の和集合 (Union type) と積集合 (Intersection type) が上の図のようになるのは実際にコードを書くことで分かります。ユニオン型が和集合なのでそれぞれの集合の要素を受け入れますが、インターセクション型は共通要素のみしか受け入れません。
+そして、`{ a: "st" }` 型と `{ b: 42 }` 型の和集合 (Union type) と交差 (Intersection type) が上の図のようになるのは実際にコードを書くことで分かります。ユニオン型が和集合なのでそれぞれの集合の要素を受け入れますが、インターセクション型は共通要素のみしか受け入れません。
 
 ```ts
 type A = { a: "st" };
@@ -278,7 +280,7 @@ const b: B = ab; // B という型の範疇
 
 実際にこのような代入が可能なのは、TypeScript が [構造的部分型(Structural Type System)](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#structural-type-system) というシステムを採用しているからです。
 
-オブジェクト型のユニオンやインターセクションを見ればわかるように、合成などの型操作は集合の領域に対しての操作と同じことになります。オブジェクト型でなくても例えば `string | number` と `string | boolean` という２つのユニオン型を合成すれば、積集合 (インターセクション) は `string` 型となり、和集合 (ユニオン) は `string | number | boolean` 型となります。
+オブジェクト型のユニオンやインターセクションを見ればわかるように、合成などの型操作は集合の領域に対しての操作と同じことになります。オブジェクト型でなくても例えば `string | number` と `string | boolean` という２つのユニオン型を合成すれば、交差 (インターセクション) は `string` 型となり、和集合 (ユニオン) は `string | number | boolean` 型となります。
 
 余剰プロパティチェックについては uhyo さんの以下の記事で非常に分かりやすく解説されていたので参考にしてください。ユニオン型が OR 演算によって生成されるということについても解説されています。
 
@@ -318,7 +320,7 @@ const ani: Animal = duc;
 
 `extends` の基本が分かったところで、少し応用的な話に移ります。
 
-ユーティリティ型である `Exclude<UnionType, ExcludedMembers>` 型などを [自分で実装すると](https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.ja.md) 理解できるのですが、`extends` キーワードを使った条件型 (Conditional type) は型変数がユニオン型だと分配法則によって条件判定をユニオン型を構成する各要素に対してイテレーションします。
+ユーティリティ型である `Exclude<UnionType, ExcludedMembers>` 型などを [自分で実装すると](https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.ja.md) 理解できるのですが、`extends` キーワードを使った条件型 (Conditional type) は型変数がユニオン型だと分配法則によって条件判定をユニオン型を構成する各要素に対してイテレーションします。この機能は分配条件型([Distributive Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types))と呼ばれています。条件の判断を型の要素それぞれに分配して新しい型を作成するわけです。
 
 ```ts
 type MyExclude<T, U> = T extends U ? never : T;
@@ -485,15 +487,17 @@ https://criceta.com/category-theory-with-scala/01_Category.html
 
 また、関数の型はシグネチャ (引数の数、引数の型、返り値の型) について考慮しなくてはなりません。このときにそれぞれの要素についてサブタイプ互換性の変性 (variance) という概念も必要になります。特に関数の型は引数の型については双変 (bivariant) あるいは反変 (contravariant) になります。
 
-https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-parameter-bivariance
+:::message
+変性 (variance) の概念は圏論の関手([functor](https://en.wikipedia.org/wiki/Functor))から来ています。関手とはある圏から別の圏の写像(mapping)であり、その関手によって射(関係性)の方向が保存されるか逆転されるかというのを表します。関係性の方向が保存されるのが共変で、逆転するのが反変です。
+:::
 
-長くなるのであまり詳細には解説しませんが、関数型 `S1 -> S2` と `T1 -> T2` があったときに入力の値の型について `T1 <: S1` (T1 が S1 の部分型) であり、かつ出力の値の型について `S2 <: T2` (S2 が T2 の部分型) になっているとき関数型 `T1 -> T2` が期待される場所で `S1 -> S2` で安全に置換できるといい、このとき `S1 -> S2` は `T1 -> T2` の Subtype である、ということになります。
+長くなるのであまり詳細には解説しませんが(詳細について[公式ドキュメント](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-parameter-bivariance)を参照してください)、関数型 `S1 -> S2` と `T1 -> T2` があったときに入力の値の型について `T1 <: S1` (T1 が S1 の部分型) であり、かつ出力の値の型について `S2 <: T2` (S2 が T2 の部分型) になっているとき関数型 `T1 -> T2` が期待される場所で `S1 -> S2` で安全に置換できるといい、このとき `S1 -> S2` は `T1 -> T2` の Subtype である、ということになります。
 
 ![関数型の入力と出力の包含関係](/images/typescript-widen-narrow/img_functionType_subtypingRelation-set.jpg)
 
 これまでの単純な型同士の包含関係が部分型関係となっていたのとは異なり、直感的な理解は少し難しくなっています。実は部分型関係というのはそもそもが型の互換性(期待される型に対して安全に置換できるかどうか)という関係なので実際には包含関係とは異なるものとなっています。そのため関数型では実際の部分型関係の本質的な理解が必要となります。
 
-関数型の部分型関係は直感的に集合の包含関係で理解するのは少しむずかしいですが、集合論的な考えをもったまま以下の図の(2)のように入口と出口があるパイプの管を置き換えるようなイメージで考えると理解できます。
+関数型の部分型関係は直感的に集合の包含関係で理解するのは少しむずかしいですが、集合論的な考えをもったまま関数について以下の図の(2)のように入口と出口があるパイプの管を置き換えるようなイメージで考えると理解できます。パイプの入口と出口はそれぞれ集合を表現する領域の大きさを持つとして考えてください。
 
 ![関数型の部分型関係](/images/typescript-widen-narrow/img_functionType-subtype-comp.jpg)
 
@@ -505,11 +509,13 @@ https://www.typescriptlang.org/docs/handbook/type-compatibility.html#function-pa
 
 このように入力と出力の値の範囲の外側となるような危険な入出力をとらない関数であれば元の関数が期待されるような場所で使用しても大丈夫というわけです。
 
+これが関数の型における部分型についての基本的な関係です。現実的には TypeScript の関数型では利便性のために関数の引数については双変(bivariant)となるように設計されています。引数として受け取る関数の型がより特殊化されたものとして受け取れるほうが便利なケースが多いためです。つまり上図の(1)のようなパターンを認めています。
+
 ## 型の階層性
 
 ### Top type と Bottom type
 
-Subtype や Supertype という関係から分かる通り、型には親と子のような関係があり、階層性があります (集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります)。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼びます。
+Subtype や Supertype という関係から分かる通り、型には親と子のような関係があり、これをたどることで階層性が見えてきます。これは集合性について見方を変えるだけですが階層性で考える方が都合のよい場合があります。すべての型の最上位となる親の型は TypeScript では `unknown` 型であり、[型理論(Type theory)](https://en.wikipedia.org/wiki/Type_theory) ではこのような型を **Top type(トップ型)** と呼びます。
 
 https://en.wikipedia.org/wiki/Top_type
 
@@ -544,13 +550,17 @@ https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c579
 
 ### Type hierarchy
 
-Subtype と Supertype の関係を辿ると型の階層 (Type hierarchy) ができあがります。Type hierarchy という言葉は TypeScript の文脈ではなかなか見ない言葉ですが、例えば Scala の公式ドキュメントにでてきます。
+Subtype と Supertype の関係を辿ると型の階層 (**Type hierarchy**) ができあがります。Type hierarchy という言葉は TypeScript の文脈ではなかなか見ない言葉ですが、例えば Scala の公式ドキュメントにでてきます。
 
 https://docs.scala-lang.org/tour/unified-types.html
 
 Scala ではプリミティブ型が存在せず、あらゆる型が Top type である `Any` 型 (`Any` クラス) を継承してサブタイプとなっているため、以下のようなヒエラルキーが形成されており、継承による階層図となっています。
 
 ![ScalaのType hierarchy](/images/typescript-widen-narrow/img_scala-type-hierarchy.jpg)*Scala の Type hierarchy (公式ドキュメントより)*
+
+:::message
+このような構造は階層というよりも[束(Lattice)](https://en.wikipedia.org/wiki/Lattice_(order))と呼ばれる半順序集合が適切です。実際、Scala の型の構造は Type hierarchy だけでなく、**Type lattice** と呼ばれることもあります。より正確には **Subtype lattice** という表現がされることもあります。
+:::
 
 C# や Scala といった言語でのこのような型のシステムを [Unified type system](https://en.wikipedia.org/wiki/Type_system#Unified_type_system) と呼ぶそうですが、Java や JavaScript (TypeScript) ではプリミティブ型が存在しているため完全に同じように考えることができません。
 
@@ -597,6 +607,13 @@ JavaScript では `string` 型などのプリミティブ型の値に対して�
 > スーパータイプは、そのサブタイプの数々によって代替/代入可能とされており、これは代入可能性（substitutability）と呼ばれる。そのスーパータイプとサブタイプの関係は、[is-a](https://ja.wikipedia.org/wiki/Is-a) とも言われる。記号 `<:` を用いて `Subtype <: Supertype` と表記される。
 > ([サブタイピング (計算機科学) - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B5%E3%83%96%E3%82%BF%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0_(%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%A6)?oldformat=true) より引用)
 
+部分型関係は図では `is-a-subtype-of` という形式で矢印の方向が Supertype になるように表現します。この記事では階層性を表現したいので矢印を逆転させて表現するので注意してください。
+
+```mermaid
+graph LR
+S -->|is-a-subtype-of| T
+```
+
 部分型関係というのは数学で言うところの[二項関係](https://ja.wikipedia.org/wiki/%E4%BA%8C%E9%A0%85%E9%96%A2%E4%BF%82)(binary relation) の一種ですが、部分型関係は反射性 (reflexive) と推移性 (transitive) を満たすが、反対称律 (antisymmetic) を満たさないような関係です。
 
 これらの条件は集合論での順序集合 (要素同士に順序関係がある集合) を考える上で必要で、二項関係 ($\prec$) についての以下のような規則です。
@@ -608,7 +625,7 @@ JavaScript では `string` 型などのプリミティブ型の値に対して�
 
 https://mathlandscape.com/ordered-set-2/
 
-例えば実数の集合 $\mathbb{R}$ において大小関係 ($\leq$) は上記４つのすべてを満たします。したがって、実数の集合は全順序集合 (Totally ordered set) と呼ばれる順序集合となります。
+例えば実数の集合 $\mathbb{R}$ において大小関係 ($\leqq$) は上記４つのすべてを満たします。したがって、実数の集合は全順序集合 (Totally ordered set) と呼ばれる順序集合となります。
 
 当該の部分型関係 ($<:$) についてですが、反射律 ($S <: S$) と推移律 ($T <: S$ かつ $S <: U$ なら $T <: U$) を満たす関係ですが、反対称律は満たしません。
 
@@ -632,16 +649,13 @@ https://mathlandscape.com/ordered-set-2/
 graph LR
   U[unknown]
   N[never]
-  A[any]
   V[void]
-  O["Object, { }"]
-  obj[object]
-  udt["User Defined Types (Class)"]
+  O["Object\n { }\n object"]
+  udt["User Defined Types"]
   cons["Constructor Function Types"]
-  U --> A
-  A --> V --> undefined --> N
-  A --> null --> N
-  A --> O --> Number & String & Boolean & BigInt & Symbol
+  U --> V --> undefined --> N
+  U --> null --> N
+  U --> O --> Number & String & Boolean & BigInt & Symbol
   subgraph Wrap[Object wrapper type]
     Number
     String
@@ -677,15 +691,19 @@ graph LR
   bl --> N
   bil --> N
   us --> N
-  O <--> obj
   O --> Function --> cons --> N
   O --> udt --> N
   O --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
 ```
 
-左が Supertype で、右が Subtype の方向となります。一番左に位置している `unknown` 型がすべての型の Supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の Subtype であり Bottom type です。なお部分型関係をより正確に書こうとすると完全にツリー的な階層図ではなくなるので至る所の関係を省略して図示しています。つまり[ハッセ図](https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%83%E3%82%BB%E5%9B%B3)に近いです。例えば Bottom type である `never` 型については、すべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています。
+左が Supertype で、右が Subtype の方向となります。一番左に位置している `unknown` 型がすべての型の Supertype であり Top type です。逆に一番右に位置している `never` 型がすべての型の Subtype であり Bottom type です。なお部分型関係をより正確に書こうとするとツリー的な階層図ではなくなるので至る所の関係を省略して図示しています。つまり[ハッセ図](https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%83%E3%82%BB%E5%9B%B3)に近いです。例えば Bottom type である `never` 型については、すべての型から `never` 型に矢印が必要となり図が汚くなるので省略しています。
 
 そして Subtype の型の変数は Supertype の型の変数へ代入可能です。
+
+:::message
+2023-10-15 追記
+このような構造は階層図として見るよりも束(Lattice)として見るほうがしっくり来ます。ただし、束は条件として半順序集合であること必要なので、現実には型全体の集合は束を形成しません。構造が同じで、フィールドの順序が異なるようなオブジェクト型の間では半順序の条件である反対称律を満たさないためです。ただし、そのような同一の型ではないが相互に部分型同士の関係にある型を同値類としてまとめ同じ型であるとみなした「商集合」というものを考えることで半順序集合つまり、束に変換することができます。
+:::
 
 Widening(型の拡大) が起きる方向は子から親、つまり Subtype → Supertype の方向であり、代入可能となるのも Subtype → Supertype の方向で、その逆は型エラーとなります。
 
@@ -694,14 +712,12 @@ const literal = "text" as const;
 let str: string;
 let Str: String;
 let Obj: Object;
-let an: any;
 let unk: unknown;
 
 // Subtype → Supertype の方向で代入していくと型エラーにならない
 str = literal; // str が Supertype(string型) で literal が Subtype(文字列リテラル型)
 Str = str;
 Obj = Str;
-an = Obj;
 unk = an;
 ```
 
@@ -711,9 +727,8 @@ unk = an;
 graph LR
   U[unknown]
   N[never]
-  A[any]
   V[void]
-  O["Object, { }"]
+  O["Object\n { }\n object"]
   W[Wrapper]
   subgraph Primitive
     u[undefined]
@@ -721,45 +736,20 @@ graph LR
     P[プリミティブ型全般]
   end
   objs[オブジェクト型全般]
-  U --> A
-  A --> V --> u --> N
-  A --> n --> N
-  A --> O --> W
+  U --> V --> u --> N
+  U --> n --> N
+  U --> O --> W
   W --> P --> N
   O --> objs --> N
 ```
 
-上の図では特殊な `object` 型を省いて表示していますが、それも表示すると以下のようになります。
-
-```mermaid
-graph LR
-  U[unknown]
-  N[never]
-  A[any]
-  V[void]
-  O["Object, { }"]
-  obj[object]
-  W[Wrapper]
-  subgraph Primitive
-    u[undefined]
-    n[null]
-    P[プリミティブ型全般]
-  end
-  objs[オブジェクト型全般]
-  U --> A
-  A --> V --> u --> N
-  A ---> n --> N
-  A --> O --> W & objs
-  W --> P --> N
-  O --> obj
-  objs --> N
-  obj ---> O
-  obj -.-x P
-```
+:::message alert
+上記の図は部分型の関係を捉える図であり、後述のある型の変数が別の型の変数に割当可能かどうかどうかを表す割当可能性という概念は別にあるので注意してください。
+:::
 
 #### ３つのオブジェクト型
 
-オブジェクトの型である `Object` 型、`{}` 型、`object` 型はそれぞれ違いがあります。図では `Object` 型と `{}` 型を同じ階層に置いていますがこれは相互に代入可能、つまり相互に部分型であるためです。`object` もそれら２つに相互で代入可能であるため、この部分だけかなり特殊な状況になっています。
+オブジェクトの型である `Object` 型、`{}` 型、`object` 型はそれぞれ違いがあります。図では３つの型を同じ階層に置いていますがこれは相互に代入可能、つまり相互に部分型であるためです。
 
 ```ts
 const obj1: object = {};
@@ -844,7 +834,7 @@ e = null;
 // Error: Type 'null' is not assignable to type '{}'.
 ```
 
-`object` 型 (小文字から始まる方) は [TypeScript v2.2 から導入された型](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#object-type) で、"**non-primitve type**" (プリミティブ型ではない型) ということを表現するための型であり、`number | string | boolean | symbol | null | undefined` の否定を満たす型です。この型も Deno 環境で明示的に型注釈しようとすると、可能な限り使わないようにと "ban-types" のリンタールール以下のように注意されます。
+`object` 型 (小文字から始まる方) は [TypeScript v2.2 から導入された型](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#object-type) で、"**non-primitve type**" (プリミティブ型ではない型) ということを表現するための型であり、`number | string | boolean | symbol | null | undefined` の否定を満たす型です。この型も Deno 環境で明示的に型注釈しようとすると、可能な限り使わないようにと "ban-types" のリンタールール以下のように注意されます。
 
 > This type is tricky to use so should be avoided if possible
 > Use `Record<string, unknown> ` instead.
@@ -869,6 +859,10 @@ https://stackoverflow.com/questions/49464634/difference-between-object-and-objec
 話は変わって、`null` 型と `undefined` 型についてですが、`null` と `undefined` はぞれぞれプリミティブ型の値であり、それぞれの型はプリミティブ型の範疇です。`string` や `number` といった他のプリミティブ型とは違ってラッパーオブジェクトやその型は存在しません。
 
 また、単一の値からなる型なので Unit type として見なされます。それぞれの型は階層図にあるように `any` 型の Subtype です。
+
+:::message
+`any` 型は意図的に部分型の階層図から省いていますが、これについては後述します。
+:::
 
 そして、`--strictNullChecks` のオプションを無効化している場合は、変数が mutable となる場所で `null` 型と `undefined` 型は [Widening](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html#type-widening)(Literal widening ではなく一般の Widening) によって Supertype である `any` 型へと拡大されます。`undefined` 型は一階層上の `void` 型ではなく、その上の `any` 型へと拡大されます。
 
@@ -895,21 +889,24 @@ let u = undefined;
 
 #### 推移性が成り立たないケース
 
-これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。部分型関係はその推論規則から推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
+これまでの型の階層図は部分型関係の推移性に基づいて作成したものですが、TypeScript の部分型関係では推移性が成り立たないようなケースが存在するそうです。
+
+https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
+
+部分型関係はその推論規則から推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
 
 以下の図は部分型関係について部分的に詳細にしたものです。図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。
 
 ```mermaid
 graph TD
   U[unknown]
-  A[any]
   N[never]
   O["Object, { }"]
   obj[object]
   W[Wrapper]
   P[プリミティブ型]
   objs[オブジェクト型]
-  U --> A --> O
+  U --> O
   O -->|相互に部分型| obj
   O --> objs
   O ----> W
@@ -953,23 +950,18 @@ obj = pri; // NG → Error: Type 'string' is not assignable to type 'object'
 ```mermaid
 graph TD
   U[unknown]
-  A[any]
   N[never]
   O["Object, { }"]
   W[Wrapper]
   P[プリミティブ型]
   objs[オブジェクト型]
-  U --> A --> O
+  U --> O
   O --> objs & W
   objs --> N
   W --> P --> N
 ```
 
-なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、下記のブログ記事でそのようなケースについて解説されていました。
-
-https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB%A3%E5%85%A5%E5%8F%AF%E8%83%BD%E9%96%A2%E4%BF%82%E3%81%AE%E6%8E%A8%E7%A7%BB%E6%80%A7/
-
-このケースはおそらく後述する Assignment 互換性が Subtype 互換性の拡張であることが原因となっていると思われます。
+なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、上記のブログ記事でそのようなケースについて解説されていました。このケースはおそらく後述する Assignment 互換性が Subtype 互換性の拡張であることが原因となっていると思われます。
 
 ### Compatibility
 
@@ -982,7 +974,7 @@ https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB
 > So far, we’ve used “compatible”, which is not a term defined in the language spec. In TypeScript, **there are two kinds of compatibility: subtype and assignment**. These differ only in that **assignment extends subtype compatibility with rules to allow assignment to and from any**, and to and from enum with corresponding numeric values.
 > ([TypeScript: Documentation - Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#subtype-vs-assignment) より引用、太字は筆者強調)
 
-subytype 互換性を拡張したものが代入 (assignment) 互換性であり、具体的には、`any` 型から様々な型に代入できることと `any` 型に様々な型を代入できるというルールが追加されていることが記載されていますね (`enum` についての言及は無視しています)。
+Subtype 互換性を拡張したものが割当 (Assignment) 互換性であり、具体的には、`any` 型から様々な型に代入できることと `any` 型に様々な型を代入できるというルールが追加されていることが記載されていますね (`enum` についての言及は無視しています)。
 
 :::message
 他にも Handbook には次のようなルールが記載されていますが、上のような階層図で考えれば細かいルールを言葉で覚えなくても理解できます (これらのルールは any 型についてのルールが追加された Subtype-Supertype 関係性の部分的な言い換えにすぎないからです)。
@@ -995,16 +987,27 @@ subytype 互換性を拡張したものが代入 (assignment) 互換性であり
 - `strictNullChecks` を有効化すると、`null` 型と `undefined` 型は `void` 型のように振る舞い、`any` 型や `unknown` 型、`never` 型そして `void` 型を除くすべての型が・に代入できない (`undefined` 型は常に `void` 型) へ代入できる。
 :::
 
-ちなみに assignability についての基本的な仕組みについての説明はアーカイブされている古いハンドブックの方に記載されているので気になる方はこのドキュメントを見るとよいです。
+Assignability 互換性は実は条件型の条件判定などで利用されています。つまり、以下のような `T extends U` での判定は正確には部分型関係の判断でなく、割当可能関係の判断となります。
+
+```ts
+type A = T extends U ? X : Y;
+```
+
+> The type above means when `T` is **assignable** to `U` the type is `X`, otherwise the type is `Y`.
+> (from: [docs](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#conditional-types))
+
+ちなみに Assignability についての基本的な仕組みについての説明はアーカイブされている古いハンドブックの方に記載されているので気になる方はこのドキュメントを見るとよいです。
 
 https://github.com/microsoft/TypeScript-New-Handbook/blob/master/reference/Assignability.md
 
+Assignment 互換性は Subtype 互換性を拡張したものですが、なぜそのようなことをする必要があるのかというと、any 型の特殊性に由来すると考えられます。
+
 #### any 型
 
-上で述べたように `any` 型は型チェック自体を放棄するので、例外的にすべての型に代入可能であり、自身の Subtype である型にも代入できます (上の代入可能であるかの図でもそうなっていますね)。ただし Bottom type である `never` 型には `never` 型以外は何も代入できないので `any` 型でも代入することはできません。
+上で述べたように `any` 型は型チェック自体を放棄(型チェックをオフにする)するので、例外的にすべての型に代入可能であり、自身の Subtype である型にも代入できます (上の代入可能であるかの図でもそうなっていますね)。ただし Bottom type である `never` 型には `never` 型以外は何も代入できないので `any` 型でも代入することはできません。
 
 ```ts
-// any 型は型チェックしなくなるので assignable の概念もなくなってすべての型の変数に代入できてしまう
+// any 型は型チェックをOFFにしてすべての型の変数に代入できてしまう
 const numAsAny = 42 as any;
 
 const und: undefined = numAsAny;
@@ -1013,6 +1016,71 @@ const str: string = numAsAny;
 const nev: never = numAsAny; // [Error]
 // Type 'any' is not assignable to type 'never'
 ```
+
+`any` 型は型理論の文脈では一般的に **Dynamic type** と呼ばれ `?` で表現されます。Dynamic type は漸進的型付け(Gradual type system)というシステムで出てくる型で、静的型付けの世界と動的型付けの世界の境界となる型です。Gradual type のシステムは Subtyping とは関係がない独立したものですが、Subtyping の階層に加えることで両立した型システムを作成可能です。
+
+:::message
+TypeScript で採用されている漸進的型付けのシステムの源流となった Siek と Taha の論文で発表された Gradual typing における Dynamic type であると[厳密には言えない部分](https://qiita.com/uhyo/items/df276348b966f0e9fe1c)がいくつかありますが、上の開発者の動画では Gradual typing であると言っているので Gradual として扱います。公式ドキュメントでも Gradual typing であると書かれていますが、元々の Dynamic type とはいくから異なることが暗示されています。
+
+> TypeScript uses the type any whenever it can’t tell what the type of an expression should be. Compared to Dynamic, calling any a type is an overstatement. It just turns off the type checker wherever it appears. 
+> (https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#gradual-typing)
+:::
+
+`any` 型を部分型関係の階層図に加えると以下のようになります。`object` 型の関係も修正しておきます。Assignability 互換性を表現するための図に近くなりましたが、`any` 型の変数はあらゆる型へ割当可能なため、正確に Assignability 互換性を表現しようと思うと `any` 型に対してすべての型から矢印が必要となります。
+
+```mermaid
+graph LR
+  U[unknown]
+  A[any]
+  N[never]
+  V[void]
+  O["Object\n { }"]
+  obj[object]
+  udt["User Defined Types"]
+  cons["Constructor Function Types"]
+  U <--> A
+  A --> V --> undefined --> N
+  A --> null --> N
+  A --> O --> Number & String & Boolean & BigInt & Symbol
+  O <--> obj
+  subgraph Wrap[Object wrapper type]
+    Number
+    String
+    Boolean
+    BigInt
+    Symbol
+  end
+  subgraph Primitive
+    subgraph Unit[Unit type]
+      undefined
+      null
+      nl[number literal]
+      sl[string literal]
+      bl[boolean literal]
+      bil[bigint literal]
+      us[unique symbol]
+    end
+    subgraph Col[Collective type]
+      number
+      string
+      boolean
+      bigint
+      symbol
+    end
+    Number --> number --> nl[number literal]
+    String --> string --> sl[string literal]
+    Boolean --> boolean --> bl[boolean literal]
+    BigInt --> bigint --> bil[bigint literal]
+    Symbol --> symbol --> us[unique symbol]
+  end
+  obj -.-x Col
+  nl & sl & bl & bil & us --> N
+  O --> Function --> cons --> N
+  O --> udt --> N
+  O --> ReadonlyArray --> Array & RT[readonly Tuple] --> Tuple --> N
+```
+
+`any` 型は TypeScript の初期から存在しており、`unknown` 型が入るまでは唯一の Top type としてあつかわれていました。`unknown` 型は型安全な Top type として TypeScript 3.0 から追加された機能です。つまり、`any` と `unknown` はどちらも Top type であり、相互に代入可能です。
 
 #### never 型
 
