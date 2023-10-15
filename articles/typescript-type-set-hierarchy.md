@@ -33,8 +33,8 @@ aliases:
 大きな変更のみトラッキングしています。
 
 - 2023-10-15
-  - any型を特別扱いして部分型の図を整理
-  - Latticeの話などを追加
+  - any 型を特別扱いして部分型の図を整理
+  - Lattice の話などを追加
   - 圏論の話や双変性についての話を追加
 - 2023-09-24
   - 推移性についての記述を修正
@@ -559,7 +559,7 @@ Scala ではプリミティブ型が存在せず、あらゆる型が Top type �
 ![ScalaのType hierarchy](/images/typescript-widen-narrow/img_scala-type-hierarchy.jpg)*Scala の Type hierarchy (公式ドキュメントより)*
 
 :::message
-このような構造は階層というよりも[束(Lattice)](https://en.wikipedia.org/wiki/Lattice_(order))と呼ばれる半順序集合が適切です。実際、Scalaの型の構造は Type hierarchy だけでなく、**Type lattice** と呼ばれることもあります。より正確には **Subtype lattice** という表現がされることもあります。
+このような構造は階層というよりも[束(Lattice)](https://en.wikipedia.org/wiki/Lattice_(order))と呼ばれる半順序集合が適切です。実際、Scala の型の構造は Type hierarchy だけでなく、**Type lattice** と呼ばれることもあります。より正確には **Subtype lattice** という表現がされることもあります。
 :::
 
 C# や Scala といった言語でのこのような型のシステムを [Unified type system](https://en.wikipedia.org/wiki/Type_system#Unified_type_system) と呼ぶそうですが、Java や JavaScript (TypeScript) ではプリミティブ型が存在しているため完全に同じように考えることができません。
@@ -1017,7 +1017,7 @@ const nev: never = numAsAny; // [Error]
 // Type 'any' is not assignable to type 'never'
 ```
 
-`any` 型は型理論の文脈では一般的に **Dynamic type** と呼ばれ `?` で表現されます。Dynamic type は漸進的型付け(Gradual type system)というシステムで出てくる型で、静的型付けの世界と動的型付けの世界の境界となる型です。Gradual typeのシステムは Subtyping とは関係がない独立したものですが、Subtyping の階層に加えることで両立した型システムを作成可能です。
+`any` 型は型理論の文脈では一般的に **Dynamic type** と呼ばれ `?` で表現されます。Dynamic type は漸進的型付け(Gradual type system)というシステムで出てくる型で、静的型付けの世界と動的型付けの世界の境界となる型です。Gradual type のシステムは Subtyping とは関係がない独立したものですが、Subtyping の階層に加えることで両立した型システムを作成可能です。
 
 :::message
 TypeScript で採用されている漸進的型付けのシステムの源流となった Siek と Taha の論文で発表された Gradual typing における Dynamic type であると[厳密には言えない部分](https://qiita.com/uhyo/items/df276348b966f0e9fe1c)がいくつかありますが、上の開発者の動画では Gradual typing であると言っているので Gradual として扱います。公式ドキュメントでも Gradual typing であると書かれていますが、元々の Dynamic type とはいくから異なることが暗示されています。
