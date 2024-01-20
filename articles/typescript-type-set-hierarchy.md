@@ -15,8 +15,6 @@ aliases:
   - 型の階層性
   - 型の階層図
   - Type hierarchy
-  - 代入可能性
-  - assignability
 ---
 
 ## はじめに
@@ -1020,10 +1018,10 @@ const nev: never = numAsAny; // [Error]
 `any` 型は型理論の文脈では一般的に **Dynamic type** と呼ばれ `?` で表現されます。Dynamic type は漸進的型付け(Gradual type system)というシステムで出てくる型で、静的型付けの世界と動的型付けの世界の境界となる型です。Gradual type のシステムは Subtyping とは関係がない独立したものですが、Subtyping の階層に加えることで両立した型システムを作成可能です。
 
 :::message
-TypeScript で採用されている漸進的型付けのシステムの源流となった Siek と Taha の論文で発表された Gradual typing における Dynamic type であると[厳密には言えない部分](https://qiita.com/uhyo/items/df276348b966f0e9fe1c)がいくつかありますが、上の開発者の動画では Gradual typing であると言っているので Gradual として扱います。公式ドキュメントでも Gradual typing であると書かれていますが、元々の Dynamic type とはいくから異なることが暗示されています。
+TypeScript で採用されている漸進的型付けのシステムの源流となった Siek と Taha の論文で発表された Gradual typing における Dynamic type であると[厳密には言えない部分](https://qiita.com/uhyo/items/df276348b966f0e9fe1c)がいくつかありますが、上の開発者の動画では Gradual typing であると言っているので Gradual として扱います。公式ドキュメントでも Gradual typing であると書かれていますが、元々の Dynamic type とはいくらか異なることが暗示されています。
 
-> TypeScript uses the type any whenever it can’t tell what the type of an expression should be. Compared to Dynamic, calling any a type is an overstatement. It just turns off the type checker wherever it appears. 
-> (https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#gradual-typing)
+> TypeScript uses the type any whenever it can’t tell what the type of an expression should be. Compared to Dynamic, calling any a type is an overstatement. It just turns off the type checker wherever it appears.
+> ([公式ドキュメント](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#gradual-typing)より)
 :::
 
 `any` 型を部分型関係の階層図に加えると以下のようになります。`object` 型の関係も修正しておきます。Assignability 互換性を表現するための図に近くなりましたが、`any` 型の変数はあらゆる型へ割当可能なため、正確に Assignability 互換性を表現しようと思うと `any` 型に対してすべての型から矢印が必要となります。
