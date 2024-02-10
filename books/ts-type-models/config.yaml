@@ -1,0 +1,16 @@
+title: "TypeScriptの代数的型模型"
+summary: "TypeScriptの型がなす代数的構造についての解説およびその調査記録"
+topics: [typescript, 型システム, 部分型, 型理論]
+published: false
+price: 0
+chapters:
+  - 1-ttm-begin #『はじめに』
+  - 2-ttm-mental-model #『』
+  - 3-ttm-algebraic-structures-laws #『』
+  - 4-ttm-subtyping-concept #『』
+  - 5-ttm-set-theoretic-model #『』
+  - 6-ttm-order-theoretic-model #『』
+  - 7-ttm-ring-theoretic-model #『』
+  - 8-ttm-category-theoretic-model #『』
+  - x-ttm-references #『参考文献』
+
