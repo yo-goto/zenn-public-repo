@@ -5,7 +5,7 @@ date: 2024-01-27
 modified: 2024-01-27
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: 代数的構造と代数法則
+aliases: TAM本『代数的構造と代数法則』
 ---
 
 代数的構造 (Algebraic structure) は、集合上に定まった演算により決まる構造のことであり、形式的には元となる集合 (**台集合**と言います) $S$ とその集合上に定まった演算 $*$ の組 $(S, *)$ のことを言います。

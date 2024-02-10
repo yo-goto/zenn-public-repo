@@ -1,11 +1,11 @@
 ---
 title: "型のメンタルモデル"
 cssclass: zenn
-date: 2024-01-27
-modified: 2024-01-27
+date: 2024-02-10
+modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TTM本『型のメンタルモデル』
+aliases: TAM本『型のメンタルモデル』
 ---
 
 ## 表示的意味論

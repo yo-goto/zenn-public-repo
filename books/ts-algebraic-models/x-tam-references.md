@@ -1,11 +1,11 @@
 ---
 title: "参考文献"
 cssclass: zenn
-date: 2024-01-27
-modified: 2024-01-27
+date: 2024-02-10
+modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TTM本『型のメンタルモデル』
+aliases: TAM本『参考文献』
 ---
 
 ## Algebraic Subtyping

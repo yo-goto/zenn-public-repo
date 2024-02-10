@@ -1,11 +1,11 @@
 ---
 title: "順序理論による模型"
 cssclass: zenn
-date: 2024-01-27
-modified: 2024-01-27
+date: 2024-02-10
+modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TTM本『順序理論による模型』
+aliases: TAM本『順序理論による模型』
 ---
 
 ## 有界束としての構造

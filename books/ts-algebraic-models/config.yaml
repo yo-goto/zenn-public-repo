@@ -5,12 +5,12 @@ published: false
 price: 0
 chapters:
   - 1-ttm-begin #『はじめに』
-  - 2-ttm-mental-model #『』
-  - 3-ttm-algebraic-structures-laws #『』
-  - 4-ttm-subtyping-concept #『』
-  - 5-ttm-set-theoretic-model #『』
-  - 6-ttm-order-theoretic-model #『』
-  - 7-ttm-ring-theoretic-model #『』
-  - 8-ttm-category-theoretic-model #『』
+  - 2-ttm-mental-model #『型のメンタルモデル』
+  - 3-ttm-algebraic-structures-laws #『代数的構造と代数法則』
+  - 4-ttm-subtyping-concept #『部分型関係の概念』
+  - 5-ttm-set-theoretic-model #『集合論による模型』
+  - 6-ttm-order-theoretic-model #『順序理論による模型』
+  - 7-ttm-ring-theoretic-model #『環論による模型』
+  - 8-ttm-category-theoretic-model #『圏論による模型』
   - x-ttm-references #『参考文献』
 
