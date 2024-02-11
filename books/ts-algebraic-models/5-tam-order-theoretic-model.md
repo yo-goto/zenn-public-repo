@@ -533,5 +533,61 @@ $\text{TYPES}$ においては、同値関係に基づき反対称律が成り�
 ここで $\equiv$ は核 (kernel) と呼ばれるもので、半順序関係における核は等価関係 $=$ となります。
 :::
 
-これで型の集合は半順序集合 (partial ordered set) となりました。
+
+## 推移律の破れについて
+
+『[TypeScript における型の集合性と階層性](https://zenn.dev/estra/articles/typescript-type-set-hierarchy)』の記事で解説したように`object`型は「プリミティブ型ではないこと」を表現するような導入された新しい特殊な型であり、以下の図で表現するように、`string` や `number` などのプリミティブ型から`object`型への直接の割当が禁止されています。
+
+```mermaid
+graph BT
+  U[unknown]
+  N[never]
+  O["Object, { }"]
+  obj[object]
+  W[Wrapper]
+  P[プリミティブ型]
+  OBJS[オブジェクト型]
+  N --> OBJS --> O --> U
+  N --> P -->|割当可能| W --> O
+  W -->|割当可能| obj
+  OBJS --> obj
+  P -.-x|直接の割当不可能| obj
+  O -->|割当可能| obj
+  obj -->|割当可能| O
+  subgraph A["プリミティブではないことを表現"]
+  direction LR
+  obj
+  end
+```
+
+このことから、そもそも前順序関係において`object`型とプリミティブ型には関係がないということになります。とは言え、別の型を経由することで割り当てが可能にはなっています。
+
+```ts
+let pri: string = "st";
+let Obj: Object;
+let obj: object;
+
+// string → Object → object の部分型関係を経由することで代入可能
+Obj = pri; // OK → Object :> string
+obj = Obj; // OK → object :> Object
+
+// string → object への直接の代入は禁止されている
+obj = pri; // NG → Error: Type 'string' is not assignable to type 'object'
+```
+
+プリミティブ型($P$ として抽象化)とそのラッパーオブジェクトの型($W$ として抽象化)と `object` 型の関係について見ると以下のように推移律が破れている箇所があります。
+
+$$
+P <: W \land W <: object \not \Rightarrow P <: object
+$$
+
+これは直接的な部分型関係が壊れているというよりかは、その拡張的概念である割当可能性において特別に割当不能であるとして定められているとして捉える方が自然です。
+
+:::message alert
+そもそも TypeScript は型システムの健全性よりも利便性を重視して、そのバランスを取っているので、このようなモデルとして綺麗にならないような場合は多々あります。
+:::
+
+ただし、このまま `object` 型を放置してモデルを考えのも都合が悪くなる場合がありえるので安全のために `object` 型も考えるモデルから取り除くことにしましょう。
+
+同値類を考える上では `object, Object, {}` の３つがある方が話の都合上良かったので３つのオブジェクト型を含む型の集合 $Types$ を考えていましたが、そもそも `object` 型を取り除いた型の集合を $Types$ として扱い、その商集合を $\text{TYPES}$ とすることにします。新しい名前をつけるのが面倒なのでここは省略させてください。
 
