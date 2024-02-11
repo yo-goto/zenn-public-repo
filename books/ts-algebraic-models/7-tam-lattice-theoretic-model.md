@@ -457,6 +457,35 @@ style A fill:#ddd
 
 部分集合 $A$ の下界の集合の極大元が一つとなる、つまり最大元が存在するような場合にその最大元が最大下界となります。上記の図では $f$ が最大下界となっています。このとき $a \le f$ と $b \le f$ の関係が重要であり、これらの関係がなくなると $f$ について比較不能な場所がでてくるので、そのような場合には最大下界が存在しないことになります。
 
+ただし、『[順序理論による模型](5-tam-order-theoretic-model)』の章のハッセ図のところで説明した通り、この図は $a \le f \le c$ のように $a$ と $c$ の間に中間点 $f$ があるのに $a$ と $c$ を直接的に線分で結んでおり、ハッセ図としては正しくありません。正しいハッセ図に修正すると以下のようになります。
+
+```mermaid
+graph BT
+subgraph P''
+  direction BT
+  e:::ub
+  a:::lb
+  b:::lb
+  f:::glb
+  subgraph A
+    direction BT
+    c
+    d
+  end
+  c --> e
+  subgraph B["下界の集合"]
+    direction BT
+    a & b --> f
+    f --> d & c
+  end
+  d --> e
+end
+classDef ub fill:#f66
+classDef lb fill:#2bb
+classDef glb fill:#78d
+style A fill:#ddd
+```
+
 そして最大下界と最小上界は双対なので、今までしてきた議論は最小上界についても成り立ちます。最小上界は以下のような半順序集合 $P'''$ の部分集合 $B = \lbrace b, c \rbrace$ について存在し、$f$ が上界の集合の唯一の極小元、つまり最小元になるので、$f$ が最小上界です。
 
 ```mermaid
@@ -485,6 +514,39 @@ subgraph P'''
   f --> d & e
   c --> d
   a --> c --> e
+end
+classDef ub fill:#f66
+classDef lb fill:#2bb
+classDef lub fill:#f29
+style B fill:#ddd
+```
+
+この図も中間点の存在する点同士を直接結んでおり、ハッセ図としては正しくないので正しいハッセ図に修正しておきましょう。
+
+```mermaid
+graph BT
+subgraph P'''
+  direction BT
+  e:::ub
+  a:::lb
+  f:::lub
+  d:::ub
+  subgraph B
+    direction BT
+    b
+    c
+  end
+  a --> b
+  subgraph C["上界の集合"]
+    direction BT
+    e
+    d
+    f
+  end
+  b --> f
+  c --> f
+  f --> d & e
+  a --> c
 end
 classDef ub fill:#f66
 classDef lb fill:#2bb
