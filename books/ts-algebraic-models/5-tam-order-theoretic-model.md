@@ -419,6 +419,11 @@ TypeScript ではハックして型の同一性の概念検証を手に入れる
 二つの型が相互に部分型であるときにそれらの型を同値関係($\equiv$)として扱うというのは、筆者のアイデアなどでなく、例えば Kotlin 言語の仕様書にある[部分型のセクション](https://kotlinlang.org/spec/type-system.html?paragraph=,subtyping,3#subtyping-rules)などに見られます。
 
 > Two types $A$ and $B$ are equivalent ($A \equiv B$), iff $A <: B \land B <: A$.
+
+Scala言語の[仕様書にある同値関係のセクション](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#equivalence)では以下のように同値関係が定義されています。Scalaの場合は直接の部分型関係ではなく conformance という拡張された概念を利用しているようです。
+
+> Equivalence is defined as mutual conformance.
+> $S =:= T$ if and only if both $S <: T$ and $T <: S$
 :::
 
 これまで部分型関係 (割当可能性) についての検証を行うために使ってきた型構築子 `Assignable` の代わりに、型の同値関係を調べるための新しい型構築子 `Equivalent` と型の関係を調べる `Compat` を以下のように定義して導入します。
