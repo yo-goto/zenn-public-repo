@@ -1,0 +1,707 @@
+---
+title: "束論による模型(2)"
+cssclass: zenn
+date: 2024-02-10
+modified: 2024-02-10
+AutoNoteMover: disable
+tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
+aliases: TAM本『順序理論による模型(2)』
+---
+
+## 結びと交わり
+
+さて、任意の二要素についての最小上界と最大下界の存在は束の構成条件となることからその二つには特別な名前が付いています。束論の文脈では、最小上界は「**結び**(join)」という名前で呼ばれ、最大下界は「**交わり**(meet)」という名前で呼ばれます。
+
+$\text{TYPES'}$ が全体としては束にならないにもかかわらず束論を扱ってきたのはこの概念を手に入れるためといっていいです。
+
+シンプルな束構造において、部分集合が比較不能な二つの要素からなる場合には以下のように Top と Bottom の位置が最小上界と最大下界だったので、それぞれ Join と Meet と呼べるわけです。これは単に名前が変わっただけなので変に身構える必要はないです。
+
+```mermaid
+graph BT
+subgraph P
+direction BT
+  T["Top -> Join (結び)"]:::lub
+  L["Left"]
+  R["Right"]
+  B["Bottom -> Meet (交わり)"]:::glb
+  subgraph A
+  L
+  R
+  end
+  B --> L & R --> T
+end
+style A fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+```
+
+そろそろこの章の本題に入りますが、TypeScript の型には集合演算に相当する `|` と `&` がありましたが、束論の文脈では和集合(union: $\cup$)あるいは論理和(or: $|$)は「**結び**(join: $\lor$)」に相当し、共通部分(intersection: $\cap$)あるいは論理積(and: $\&$)は「**交わり**(meet: $\land$)」に相当します。
+
+馴染み深い型で置き換えると join と meet は以下のような関係です。
+
+```mermaid
+graph BT
+subgraph P
+direction BT
+  T["string | number (join)"]:::lub
+  L["string"]
+  R["number"]
+  B["string & number (meet)"]:::glb
+  subgraph A
+  L
+  R
+  end
+  B --> L & R --> T
+end
+style A fill:#ddd
+classDef lub fill:#f29
+classDef glb fill:#78d
+```
+
+これまで $\lor$ を「または」として $\land$ を「かつ」として論理記号で使ってきましたが、同じ記号で join と meet を表現できます。つまり、ユニオン型 `string | number` は join として $string \lor number$ で表現でき、インターセクション型 `string & number` は meet として $string \land number$ のように表現可能です。
+
+```mermaid
+graph BT
+subgraph P
+direction BT
+  T["a ∨ b"]:::lub
+  L["a"]
+  R["b"]
+  B["a ∧ b"]:::glb
+  subgraph A
+  L
+  R
+  end
+  B --> L & R --> T
+end
+style A fill:#ddd
+classDef lub fill:#f29
+classDef glb fill:#78d
+```
+
+また、部分集合 $S$ の join を $\lor S$ と表現し、meet を $\land S$ と表現することがあります。
+
+さて、`Object, {}` などの相互に部分型関係となる、すなわち同値関係となるような型同士を同値類としてまとめた商集合は半順序集合になりました。このような型の集合 $\text{TYPES'}$ は半順序集合であり、以下のような基本構造(あるいは基本配置)を構築します。
+
+```mermaid
+graph BT
+  U[unknown]
+  N[never]
+  V[void]
+  O["{ }\n Object"]
+  W[Wrapper types]
+  subgraph Primitive
+    u[undefined]
+    n[null]
+    P[Primitive types]
+  end
+  objs[Object types]
+  N --> u --> V --> U
+  N --> n --> U
+  N --> P --> W --> O
+  N --> objs --> O
+  O --> U
+```
+
+「join 演算と meet 演算では任意の二つの型についてユニークな最大下界と最小上界を生成できるため、TypeScript の型の集合は上記の配置を基本とした束を形成します」と言えればよかったのですが、束にならない例で見たようにオブジェクト型の join 演算と meet 演算で生成される型は実際には厳密な最小上界と最大下界には相当しません。したがって、束に非常によく似た構造ではあるものの束にはなりません。
+
+ただし、重要なことして、join (union) と meet (intersection) 演算の結果の型は一つに定まることが分かります。もしも join 演算と meet 演算が本当に最小上界と最大下界を生成するだけならそもそも束にならない構造においてユニオン型とインターセクション型を生成できないことになります。
+
+## 有向集合
+
+束じゃないなら何なんだという話になりますが、ここで[型システム入門](https://www.ohmsha.co.jp/book/9784274069116/)でどのように部分型関係における型の結びと交わりについて語られているか見てみましょう。
+
+> 部分型関係がその部分型付けを持つ言語においてどのように定義されているかに依存して、すべての型の二つ組が結びを持つこともあり、そうでないこともある。ある部分型関係について、すべての $S$ と $T$ に対して $S$ と $T$ の結びとなる $J$ が存在するとき、この部分型関係は**結びを持**つという。同様に、すべての $S$ と $T$ に対して $S$ と $T$ の交わり $M$ が存在するとき、この部分型関係は**交わりを持つ**という。
+> (型システム入門 p171 より引用)
+
+述べられているように、部分型の型システムを持つ言語では、束になったり、ならなかったりすることがあります。このとき、部分型関係によって構成される束は Scala などの言語では「型束(type lattice)」あるいはそのまま「部分型束(subtype lattice)」などと呼ばれます。日本語での訳は見かけたことがないので筆者の適当な訳で申し訳ないですが、ここでは型の形成する束を型束と呼ぶことにします。
+
+束という構造はそもそも非常に強い制約条件を持つため、もう少し緩めた条件の構造が概念としてあるとよいですね。そのような緩めた構造については最小上界や最大下界ではなく、上界や下界の概念を用いて集合を定義します。
+
+> この節で考える部分型関係は結びを持つが交わりを持たない。例えば ${}$ と $Top \rightarrow Top$ は共通の部分型を全く持たないので、確実に最大の共通の部分型は存在しない。しかし、すこしだけ弱めた性質を満たす。型の二つ組 $S$ と $T$ が、ある型 $L$ が存在して $L <: S$ かつ $L <: T$ となるとき、**下に有界**であるという。
+> (型システム入門 p171 より引用)
+
+すでに上界と下界の概念は扱っていたので結構簡単に理解できるかと思います。前順序集合 $P$ に任意の二元部分集合 $A$ が上界と下界を持つとき、この集合を「有向集合([directed set](https://en.wikipedia.org/wiki/Directed_set))」と呼びます。
+
+:::message alert
+単に任意の二元部分集合が上界を持つ場合だけで有向集合と呼ばれることがありますが、ここでは上界と下界の両方を持つものを有向集合と呼ぶことにしています。
+:::
+
+有向集合はまず条件として前順序集合(pre-ordered set)の必要があるため、条件としてはそもそもかなり緩く、束も有向集合の一つとなります。
+
+有向集合のイメージは集合全体がある一定の方向を向いているというものになります。これまで見てきた半順序集合は基本的には方向がありますが、上界と下界の説明で出した以下のような半順序集合は上界も下界も存在しないため、有向集合ではないです。なお、極小元と極大元は存在します。
+
+```mermaid
+graph BT
+subgraph L
+  direction BT
+  e:::mx
+  f:::mx
+  a:::mi
+  b:::mi
+  a --> c --> e
+  subgraph A
+    direction BT
+    c
+    d
+  end
+  b --> d --> f
+end
+classDef mx fill:#f4a
+classDef mi fill:#94d
+style A fill:#ddd
+```
+
+この図だと集合全体に方向があるようにみえてしまうので、以下のように書き直せば一定の方向がないことが分かります。
+
+```mermaid
+graph BT
+e:::mx
+f:::mx
+a:::mi
+b:::mi
+subgraph S1
+  direction BT
+  a --> c --> e
+end
+subgraph S2
+  direction LR
+  b --> d --> f
+end
+classDef mx fill:#f4a
+classDef mi fill:#94d
+style S1 fill:white
+style S2 fill:white
+```
+
+これを有向集合に改造するとしたら、二つの鎖をどこかで連結する必要がでてきますが、極小元や極大元が複数個あるとそれらを部分集合とした場合にその部分集合の下界や上界が存在しなくなります。したがって極大元と極大元は一つずつとなるように、つまり最大元と最小元が存在するように鎖の bottom 位置と top 位置を連結します。
+
+ということで有向集合は一本鎖(全順序集合)でない半順序集合の場合には最低でも以下のような構造を必要とすることが分かります。
+
+```mermaid
+graph BT
+subgraph L
+  direction BT
+  e:::ub
+  f:::ub
+  a:::lb
+  b:::lb
+  bot:::glb
+  top:::lub
+  bot --> a & b
+  a --> c --> e
+  subgraph A
+    direction BT
+    c
+    d
+  end
+  b --> d --> f
+  e & f --> top
+end
+classDef lb fill:#2bb
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef glb fill:#78d
+
+style A fill:#ddd
+```
+
+
+## 他言語での最小上界と最大下界
+
+部分型関係を型システムに持つ言語は束になったり、ならなかったりしますが、他の言語で束の条件となる最小上界と最大下界がどのように扱われているか見てみましょう。
+
+また、束という構造は相当強い条件なので型が束になる方が珍しいわけですが。
+
+### Scala
+
+#### 型の基本配置
+
+Scala3 は束を持つと言われ、[公式ドキュメント](https://docs.scala-lang.org/tour/unified-types.html)では以下のような基本の配置構造が図示されています。
+
+```mermaid
+graph BT
+  A[Any]
+  AV[AnyVal]
+  AR[AnyRef]
+  LI[List]
+  O[Option]
+  Y[YourClass]
+  NL[Null]
+  D[Double]
+  F[Float]
+  L[Long]
+  I[Int]
+  S[Short]
+  B[Byte]
+  U[Unit]
+  BL[Boolean]
+  C[Char]
+  N[Nothing]
+
+  N --> D & F & L & I & S & B & U & BL & C --> AV -->A
+  N --> NL --> LI & O & Y --> AR --> A
+```
+
+そして Scala3 が束を持つことは仕様書レベルで語られています。
+
+> All types live in a single lattice with respect to a [conformance](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#conformance) relationship $<:$. The *top type* is `AnyKind` and the *bottom type* is `Nothing`: all types conform to `AnyKind`, and `Nothing` conforms to all types.
+
+基本配置図の [`Any`](https://scala-lang.org/api/3.x/scala/Any.html) 型はどうやらクラス階層のルートではあるもの Top 型ではなく、[`AnyKind`](https://scala-lang.org/api/3.x/scala/AnyKind.html) と呼ばれる型が Top 型となるようです。
+
+また、束についての概念的説明は以下の動画で行われています。束の他にも pre-order や Category を形成することが語られているので Scala を扱っている方は参考に視聴することをおすすめします。
+
+https://www.youtube.com/watch?v=vuTFg5g_f6w
+
+#### 最小上界と最大下界
+
+Scala3 のユニオン型のドキュメントを除いてみると、最小上界(least upper bound)についての言及があります。
+
+> From these rules it follows that the least upper bound (LUB) of a set of types is the union of these types. This replaces the [definition of least upper bound in the Scala 2 specification](https://dotty.epfl.ch/docs/reference/new-types/union-types-spec.html#:~:text=definition%20of%20least%20upper%20bound%20in%20the%20Scala%202%20specification).
+
+ユニオン型は最小上界に相当し、部分型規則として結合律、可換律、乗法の加法上への分配律(インターセクション型のユニオン型に対しての分配律)を満たすことも記載されています。
+
+[言語の仕様書](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#internal-types)にもユニオン型とインターセクション型が最小上界と最大下界に相当することが記載されています。
+
+> By construction, for all types A and B, the least upper bound of A and B is A ｜ B, and their greatest lower bound is A ＆ B.
+
+:::message alert
+ただ、Scalaの謎なところは直接の部分型関係ではなく、Conformanceと呼ばれる拡張的関係($<:$)による順序関係が推移律を満たさないと言っているのにもかかわらず、前順序関係であると述べられていたり、そもそも前順序なら束を形成しないのですが、同値類と商集合を導入して変換しているのでしょうか。このあたり、Scalaには詳しくないので有識者がいれば教えてほしいです。
+:::
+
+なお、Scala2 では最小上界や最大下界が常に存在するとは限らなかったそうです。
+
+### Kotlin
+
+#### 型の基本配置
+
+Kotlin の型の基本配置は以下のブログ記事が参考になります。
+
+http://natpryce.com/articles/000818.html
+
+Non-Nullable の型は以下のような順序関係が構成されます。
+
+```mermaid
+graph BT
+  A[Any]
+  S[String]
+  I[Int]
+  U[Unit]
+  F[Fruit]
+  B[Banana]
+  P[Peach]
+  N[Nothing]
+  N --> S --> A
+  N --> I --> A
+  N --> U --> A
+  N --> B & P --> F --> A
+```
+
+Nullable の型は以下のような型の順序関係が構成されます。
+
+```mermaid
+graph BT
+  A?[Any?]
+  S?[String?]
+  I?[Int?]
+  U?[Unit?]
+  F?[Fruit?]
+  B?[Banana?]
+  P?[Peach?]
+  N?[Nothing?]
+  N? --> I? --> A?
+  N? --> S? --> A?
+  N? --> U? --> A?
+  N? --> B? & P? --> F? --> A?
+```
+
+Nullable と Non-Nullable を組み合わせると以下のような複雑な型の順序関係が構築されます。
+
+```mermaid
+graph BT
+  A[Any]
+  S[String]
+  I[Int]
+  U[Unit]
+  F[Fruit]
+  B[Banana]
+  P[Peach]
+  N[Nothing]
+  subgraph Non-Nullable
+    N --> S --> A
+    N --> I --> A
+    N --> U --> A
+    N --> B & P --> F --> A
+  end
+  A?[Any?]
+  S?[String?]
+  I?[Int?]
+  U?[Unit?]
+  F?[Fruit?]
+  B?[Banana?]
+  P?[Peach?]
+  N?[Nothing?]
+  subgraph Nullable
+    N? --> I? --> A?
+    N? --> S? --> A?
+    N? --> U? --> A?
+    N? --> B? & P? --> F? --> A?
+  end
+
+  A --> A?
+  S --> S?
+  I --> I?
+  U --> U?
+  F --> F?
+  B --> B?
+  P --> P?
+  N --> N?
+```
+
+#### 最小上界と最大下界
+
+Kotlin の仕様書にはユニオン型とインターセクション型が最小上界(LUB: least upper bound)と最大下界(GLB: greatest lower bound)に相当するととの記述があります。
+
+> Union types of two types $A$ and $B$ is denoted $A | B$ and is equivalent to the least upper bound of its components LUB(A, B). Thus, the normalization procedure for LUB may be used to normalize a union type.
+> (https://kotlinlang.org/spec/type-system.html#union-types より引用)
+
+> intersection types of two types $A$ and $B$ is denoted $A\ \&\ B$ and is equivalent to the least upper bound of its components GLB(A, B). Thus, the normalization procedure for GLB may be used to normalize a union type.
+> (https://kotlinlang.org/spec/type-system.html#intersection-types より引用)
+
+なお、Kotlin はユニオン型を型システムに持ちませんが、型システムの機能についての推論を助けるために概念が仕様書に記載されているらしいです。
+
+### CUE
+
+通常のプログラミング言語とは別に構成記述言語などでも本当に束を持つ言語があります。それが [CUE](https://cuelang.org) 言語です。
+
+CUE (Configure Unify Execute) はデータバリデーション機能と強力な推論エンジンを搭載している構成記述言語であり、CUE では型が値であるというコンセプトの元で、型と値の境界をなくし、さらに更に値(と型)を束として順序付けることで柔軟な制約条件を表現することができます。
+
+以下のドキュメントで束とはそもそもなにか、CUE で束の構造がどのように役立つかが細かに解説されています。
+
+https://cuelang.org/docs/concepts/logic/
+
+CUE では TypeScript と同じく join 演算として `|` が利用でき、meet 演算として `&` が利用できます。これらが最小上界と最大下界を生成するようです。
+
+## 束になるには
+
+理想的には完全な束になると色々な構造的な性質が明言できて非常に便利なので、ここでは $\text{TYPES'}$ が束になるための条件を考えてみましょう。
+
+問題となるオブジェクト型の集合的な解釈をベン図にしたものをもう一度見てみましょう。筆者はこの図に問題があると考えています。
+
+![オブジェクト型のベン図表現](/images/ts-type-models/img_three-types-venn.png)
+
+このベン図で型の積と和で表現しきれない領域が存在していることがわかるでしょうか。それは以下の図で表現される領域 $X \cap (\overline{Y \cup Z})$ 及び $Y \cap (\overline{Z \cup X})$ と $Z \cap (\overline{X \cup Y})$ です。
+
+![完全な和と積のベン図](/images/ts-type-models/img_absolute_venn.png)
+
+ユニオン型とインターセクション型だけでは実はこれらの型を表現することはできません。そう、集合の否定演算つまり補集合を表現する型が必要となります。
+
+https://github.com/microsoft/TypeScript/issues/4196
+
+これによってオブジェクト型の和と積が束になることを示します。まず３つの型の構造を考える前に以下のような２つの集合の和と積が束になることから確認します。
+
+![２つの集合のベン図](/images/ts-type-models/img_two-sets-venn.png)
+
+これを使いベン図内のすべての領域について順序を構築します。
+
+```mermaid
+graph BT
+  B["Φ"]
+  YZC["Y ∩ Z̅"]
+  YZ["Y ∩ Z"]
+  ZYC["Z ∩ Y̅"]
+  Y["Y"]
+  YZCZYC["(Y ∩ Z̅) ∪ (Z ∩ Y̅)"]
+  Z["Z"]
+  T["Y ∪ Z"]
+  B --> YZC & YZ & ZYC
+  YZC --> Y
+  YZ --> Y
+  ZYC --> YZCZYC
+  YZ --> Z
+  YZC --> YZCZYC
+  ZYC --> Z
+  Y & Z & YZCZYC --> T
+```
+
+否定型を `~` 型構築子を使い、`A | B` の否定は `~(A | B)`と表現することにして、型で表現してみると以下のようになり、数値リテラル型の冪集合と同じ構造の束となります。
+
+```mermaid
+graph BT
+  B["never"]
+  YZC["Y & ~Z"]
+  YZ["Y & Z"]
+  ZYC["Z & ~Y"]
+  Y["Y"]
+  YZCZYC["(Y & ~Z) | (Z & ~Y)"]
+  Z["Z"]
+  T["Y | Z"]
+  B --> YZC & YZ & ZYC
+  YZC --> Y
+  YZ --> Y
+  ZYC --> YZCZYC
+  YZ --> Z
+  YZC --> YZCZYC
+  ZYC --> Z
+  Y & Z & YZCZYC --> T
+```
+
+次に３つの型 `X, Y, Z` で考えます。再びベン図を眺めます。
+
+![完全な和と積のベン図](/images/ts-type-models/img_absolute_venn.png)
+
+３つの集合のベン図内の集合要素について和・積・否定のすべてを使った組み合わせはとんでもなく複雑なハッセ図を構築します。考え方としては、今３つの集合 `X, Y, Z` が非空であり、ベン図内に図示される分割された領域がすべて非空であって、各領域に１個の要素があるとして、各要素(各領域) $a, b, c, d, e, f, g$ として名前付けます。
+
+![７要素の冪集合](/images/ts-type-models/img_7sets-power-venn.png)
+
+描きたいハッセ図はこのベン図内のすべての部分集合の包含関係です。したがって、この領域から構成される集合をすべてかき集めた冪集合の包含関係のハッセ図が書ければいいわけです。つまり、集合 $S = \lbrace a, b, c, d, e, f, g \rbrace$ の冪集合を考えることになります。
+
+ただし、この冪集合の要素は元の集合 $S$ の要素数が7個なので $2^7 = 128$ 個となります(そのうち一つは空集合の場合です)。つまり、このベン図で表現されるすべての部分集合の包含関係による半順序集合は128個の要素からなるハッセ図を構築するはずです。前章では4個の要素からなる集合の冪集合がかなり複雑になることを示しましたが、7個の要素からなる集合の冪集合を手動で図示するのは非常に困難です。
+
+ということで [graphviz](https://graphviz.org) と [ts-graphviz](https://github.com/ts-graphviz/ts-graphviz) と ChatGPT の力を借りて TypeScript プログラムで生成したものが以下となります。
+
+![7個の要素からなる集合の冪集合のハッセ図](/images/ts-type-models/img_7-power-sets-hasse-diagram.png)
+
+:::details 冪集合のハッセ図生成プログラムのソースコード
+ts-graphviz は Graphviz の [Dot 言語](https://graphviz.org/doc/info/lang.html)を作成できる TypeScript 向けのライブラリです。
+
+まず、graphviz 必要なので macOS なら Homebrew でインストールします。
+
+```sh
+brew install graphviz
+```
+
+そして、ts-graphviz は [Deno でも利用可能](https://github.com/ts-graphviz/ts-graphviz/blob/main/README_ja.md#deno-)でも利用できます。とうことで以下が上記のハッセ図を生成したプログラムのソースコードは以下となります。
+
+※ Deno の環境は v1.40.5 (std: v.0.216.0)を使用しています。
+
+```ts:genPowerHasse.ts
+import { digraph, toDot } from "npm:ts-graphviz";
+import { format } from "https://deno.land/std@0.216.0/datetime/format.ts";
+import { ensureDir } from "https://deno.land/std@0.216.0/fs/ensure_dir.ts";
+
+const empty = "Φ"
+
+// 与えられた集合の全ての部分集合を生成
+function powerSet<T>(set: T[]): T[][] {
+  return set.reduce<T[][]>(
+    (subsets, value) => subsets.concat(subsets.map((set) => [value, ...set])),
+    [[]]
+  );
+  // [1, 2] => [[], [ 1 ], [ 2 ], [ 2, 1 ]]
+  // [1, 2, 3] =>
+  // [
+  //   [],       [ 1 ],
+  //   [ 2 ],    [ 2, 1 ],
+  //   [ 3 ],    [ 3, 1 ],
+  //   [ 3, 2 ], [ 3, 2, 1 ]
+  // ]
+}
+
+// 部分集合間の被覆関係を判定
+function isCoverRelation<T>(smaller: T[], larger: T[]): boolean {
+  if (larger.length - smaller.length !== 1) {
+    return false; // 要素数の差が1でなければ被覆関係ではない
+  }
+  const set = new Set(larger);
+  return smaller.every((element) => set.has(element));
+}
+
+// 要素のラベル表現をフォーマット
+function lavelFormat(element: string): string {
+  return `{ ${element} }`;
+}
+
+// 冪集合のハッセ図を生成
+function generateHasseDiagramDot<T>(set: T[]): string {
+  const subsets = powerSet(set);
+  const G = digraph('G', (g) => {
+    g.set('rankdir', 'BT'); // グラフの構築方向
+    g.set('ranksep', 2.5); // ranksep属性を設定(値を大きくするとスペースが広がる)
+
+    // ノードを追加
+    subsets.forEach((subset) => {
+      const label = subset.length > 0 ? lavelFormat(subset.join(',')) : empty;
+      g.node(label, { label });
+    });
+
+    // エッジを追加（直接的な包含関係のみ）
+    subsets.forEach((smaller) => {
+      subsets.forEach((larger) => {
+        if (isCoverRelation(smaller, larger)) {
+          const smallerLabel = smaller.length > 0 ? lavelFormat(smaller.join(',')) : empty;
+          const largerLabel = larger.length > 0 ? lavelFormat(larger.join(',')) : empty;
+          g.edge([smallerLabel, largerLabel]);
+        }
+      });
+    });
+  });
+
+  console.log(`ノード数は ${subsets.length} 個です.`);
+
+  return toDot(G);
+}
+
+async function main() {
+
+  const defaultSetElements = [
+    'a', // 1個目
+    'b', // 2個目
+    'c', // 3個目
+    'd', // 4個目
+    'e', // 5個目
+    'f', // 6個目
+    'g', // 7個目
+  ];
+
+  const arg = Number(Deno.args[0]);
+  const numberOfElements = Number(arg) ? arg : defaultSetElements.length;
+
+  if (numberOfElements > defaultSetElements.length) {
+    console.log(`指定要素数が最大${defaultSetElements.length}個を超えています.`)
+    return;
+  }
+  console.log(`${numberOfElements}個の要素から成る集合の冪集合のハッセ図を生成します.`)
+
+  // 指定要素から成る集合の冪集合のハッセ図を生成
+  const graph = generateHasseDiagramDot(defaultSetElements.slice(0, numberOfElements));
+
+  // ファイルを生成
+  const currentTime = format(new Date(), "yyyyMMddHHmmss");
+  const dirPath = './graph';
+  await ensureDir(dirPath);
+  const dotFileName = `${dirPath}/${currentTime}.dot`;
+  const outputFileName = `${dirPath}/${currentTime}.png`;
+
+  await Deno.writeTextFile(dotFileName, graph);
+
+  const cmd = ["-Tpng", dotFileName, "-o", outputFileName];
+  const command = new Deno.Command("dot", { args: cmd });
+  const { success } = await command.output();
+  if (success) {
+    console.log(`${outputFileName} が生成されました.`);
+  } else {
+    console.error("Error: Graphvizが画像の生成に失敗しました.");
+  }
+}
+
+await main();
+```
+
+デフォルトでは7個の要素からなる集合の冪集合のハッセ図を生成しますが、便利なように元の集合の要素数を指定してハッセ図を生成できるようにしています。使い方としては以下のようにコマンドラインから実行して、ハッセ図を生成できます。
+
+```sh
+❯ deno run -A genPowerHasse.ts 3
+3個の要素から成る集合の冪集合のハッセ図を生成します.
+ノード数は 8 個です.
+./graph/20240218105033.png が生成されました.
+```
+
+一応、要素2個の場合と3個の場合で出力される冪集合のハッセ図を図示しておきます。
+
+二元集合の冪集合 | 三元集合の冪集合
+--|--
+![濃度2](/images/ts-type-models/img_2el-power-set-hasse.png) | ![濃度3](/images/ts-type-models/img_3el-power-set-hasse.png)
+:::
+
+このような狂ったハッセ図が束になるかどうかを調べるにはこれまでのやり方ではほぼ無理でしょう。
+
+## ブール束
+
+ということで天下り的に知識を利用しますが、冪集合は必ず有界束となるため、このハッセ図による表現では任意の二元部分集合が常に最小上界と最大下界を持ちます。
+
+通常の束は join 演算と meet 演算のみを持ちますが、否定演算 ($\neg$) を持つ束はブール束(boolean lattice)あるいはブール代数(boolean algebra)と呼ばれる特殊な束となります。
+
+そして、ブール代数は冪集合の一般化であり、冪集合はブール束を形成することが知られています。つまり、以下のような冪集合はブール束です。
+
+```mermaid
+graph BT
+  B["Φ"]
+  X["{1}"]
+  Y["{2}"]
+  Z["{3}"]
+  XY["{1, 2}"]
+  ZX["{3, 1}"]
+  YZ["{2 ,3}"]
+  T["{1, 2, 3}"]
+  B --> X & Y & Z
+  X --> XY
+  Y --> XY
+  Z --> ZX
+  Y --> YZ
+  X --> ZX
+  Z --> YZ
+  XY & YZ & ZX --> T
+```
+
+ブール束は最小元(bottom) $0$ と最大元(top) $1$ を持ち、二項演算である join 演算($\lor$) と meet 演算($\land$) と、単項演算である not 演算($\neg$) を備えた半順序集合であり、以下のような代数法則を満たします。
+
+| 法則名 | 恒等式 |
+|---|:---:|
+| 結合律 (associativity) | $a \lor (b \lor c) = (a \lor b) \lor c$ <br/> $a \land (b \land c) = (a \land b) \land c$ |
+| 可換律 (commutativity) | $a \lor b = b \lor a$ <br/> $a \land b = b \land a$ |
+| 吸収律 (absorption) | $a \lor (a \land b) = a$ <br/> $a \land (a \lor b) = a$ |
+| 冪等律 (idempotent) | $a \lor a = a$ <br/> $a \land a = a$
+| 単位元 (identity) | $a \lor 0 = a$ <br/> $a \land 1 = a$ |
+| 分配律 (distributivity) | $a \lor (b \land c) = (a \lor b) \land (a \lor c)$ <br/> $a \land (b \lor c) = (a \land b) \lor (a \land c)$ |
+| 補元 (complements) | $a \lor \neg a = 1$ <br/> $a \land \neg a = 0$ |
+
+ブール束の条件を緩めて、通常の束構造が持つ代数法則は以下のようになります。
+
+| 法則名 | 恒等式 |
+|---|:---:|
+| 結合律 (associative) | $a \lor (b \lor c) = (a \lor b) \lor c$ <br/> $a \land (b \land c) = (a \land b) \land c$ |
+| 可換律 (commutative) | $a \lor b = b \lor a$ <br/> $a \land b = b \land a$ |
+| 吸収律 (absorptive) | $a \lor (a \land b) = a$ <br/> $a \land (a \lor b) = a$ |
+| 冪等律 (idempotent) | $a \lor a = a$ <br/> $a \land a = a$
+
+有限な束は有界束(bound lattice)であり、最小元(bottom) $0$ と最大元(top) $1$ も持ちます。つまり、有界束は以下の単位元の存在性も満たします。
+
+| 法則名 | 恒等式 |
+|---|:---:|
+| 単位元 (identity) | $a \lor 0 = a$ <br/> $a \land 1 = a$ |
+
+このことからブール束はシンプルに見れば有界束に否定演算が追加されただけの構造のように見えますが、演算二つから三つとなって組合せ数が多くなるため、相当の表現力を持つことになります。またブール束の構造の条件としては分配束([distributed lattice](https://en.wikipedia.org/wiki/Distributive_lattice))かつ可補束([complemented lattice](https://en.wikipedia.org/wiki/Complemented_lattice))である必要もあります。
+
+分配束とは以下のような分配律を満たす束のことです。通常の束は分配率を満たすとは限りません。
+
+| 法則名 | 恒等式 |
+|---|:---:|
+| 分配律 (distributive) | $a \lor (b \land c) = (a \lor b) \land (a \lor c)$ <br/> $a \land (b \lor c) = (a \land b) \lor (a \land c)$ |
+
+可補束とは特殊な有界束で、すべての要素がすくなくても一つの補元(complement)を持つ有界束です。つまり、集合内の任意の要素 $a$ について以下のような性質を持つ要素 $b$ (補元)が必ず一つ以上存在するという構造です。
+
+$$
+\begin{aligned}
+a \lor b = 1 \\
+a \land b = 0 \\
+\end{aligned}
+$$
+
+ブール束では否定演算があるので補元 $b$ を $\neg a$ と表現できます。
+
+なお、このような代数法則は次の環論の章で扱うのでよく覚えておいてください。
+
+### 和と積と否定を有する型システム
+
+和集合に相当するユニオン型(join演算)と共通部分に相当するインターセクション型(meet演算)に加えて補集合に相当する否定型(not演算)がある言語について興味があれば Giuseppe Castagna 氏による以下の論文が参考になるでしょう。
+※ 以下は Giuseppe 氏本人が公開している論文のURLです。
+
+https://www.irif.fr/~gc/papers/set-theoretic-types-2022.pdf
+
+Giuseppe 氏は Semantic Subtyping の研究なども行っており、ユニオン型、インターセクション型、否定形、Semantic Subtyping の型システムを備えた Roblox の [Luau 言語](https://luau-lang.org)にもコメントを寄せています。
+
+https://blog.roblox.com/2022/11/semantic-subtyping-luau/
+
+Luau は通常の構文主導の構文的部分型(Syntactic Subtyping)のシステムではなく、意味論主導で以下の公理を実装するような意味論的部分型(Semantic Subtyping)のシステムを採用しています。
+
+- 型の意味論は値の集合である
+- インターセクション型は集合の共通部分である
+- ユニオン型は集合の和集合である
+- 部分型関係は集合の包含関係である
+
+『[部分型関係の概念](4-tam-subtyping-concept)』の章において、部分型関係は厳密には集合の包含関係ではないと述べましたが、Semantic Subtypingの型システムにおいては集合論を公理として実装を行うため、これまで考えてきた部分型関係をそのまま集合の包含関係として扱うことができるようです。
+
+Luau でもすべての否定形を実装できているわけではなく、実装的に難しい箇所などによって理想的な意味論的部分型にはできていない部分もあるそうです。

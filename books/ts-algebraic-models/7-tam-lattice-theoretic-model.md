@@ -1,11 +1,11 @@
 ---
-title: "束論による模型"
+title: "束論による模型(1)"
 cssclass: zenn
 date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『順序理論による模型』
+aliases: TAM本『順序理論による模型(1)』
 ---
 
 ## 束論の導入
@@ -19,7 +19,7 @@ graph BT
   U[unknown]
   N[never]
   V[void]
-  O["Object\n { }\n object"]
+  O["{ }\n Object"]
   udt["User Defined Types"]
   cons["Constructor Function Types"]
   N --> undefined --> V --> U
@@ -61,7 +61,7 @@ graph BT
   N --> Tuple --> Array & RT[readonly Tuple] --> ReadonlyArray --> O
 ```
 
-部分型関係による順序関係 $A <: B$ について $A$ を下位、$B$ を上位として位置づけすることで、このような構造は階層構造(hierarchy structure)とみなすことができますね。
+部分型関係による順序関係 $A <: B$ について、部分型 $A$ を下位、上位型 $B$ を上位として位置付けすることで、全体の構造を階層構造(hierarchy structure)とみなすことができます。
 
 階層構造は上下関係を持つような構造を表す観念ではありますが、厳密な定義がないのであまり使えません。例えば木構造([tree structure](https://en.wikipedia.org/wiki/Tree_(graph_theory)))は階層構造を表す一つのグラフ構造ですが、以下のように木構造の各ノードは常に単一の親ノードを持つ構造であり、`never`型の箇所で見れるような複数の親を持つ構造ではありません。
 
@@ -73,11 +73,11 @@ C --> G & H
 D --> I
 ```
 
-型の集合は一見すると木構造に見えますが、前の章で数値リテラル型が作る冪集合が木構造ではなかったようにTypeScriptの型がなす集合は木構造ではありません。このような構造にはより適切な概念名があります。それが「束(そく)」とよばれる構造です。
+型の集合は一見すると木構造に見えますが、前の章で数値リテラル型が作る冪集合が木構造ではなかったようにTypeScriptの型がなす集合は木構造ではありません。このような構造を理解するには「束(そく)」とよばれる構造の知識が必要となります。
 
 ## 前提となる順序の諸概念
 
-束論の詳細に入る前に準備として半順序集合におけるいくつかの概念を導入しておきましょう。ただし、半順序をそのまま扱うよりもわかりやすい全順序でまずは考えてみます。
+束を扱う束論(lattice theory)は順序理論に基づいており、束論の詳細に入る前に準備として半順序集合におけるいくつかの概念を導入しておきましょう。ただし、半順序をそのまま扱うよりもわかりやすい全順序でまずは考えてみます。
 
 ### 最大元と最小元
 
@@ -126,13 +126,17 @@ b --> d --> e
 
 ```mermaid
 graph BT
+a:::glb
+e:::lub
 a --> c --> e
 a --> b --> e
+classDef lub fill:#f29
+classDef glb fill:#78d
 ```
 
 このように最大元と最小元は存在する場合には必ず一つに定まります。二つ以上となることはありえません。
 
-## 上界と下界
+### 上界と下界
 
 ここから更に上界と下界('かかい')の概念を導入します。
 
@@ -196,7 +200,7 @@ classDef ub fill:#f66
 style A fill:#ddd
 ```
 
-集合 $A$ の上界の中で $A$ に属するものがあればそれは $A$ の最大元となります。同様に $A$ の下界の中で $A$ に属するものがあればそれは $A$ の最小元となります。上図では $4$ が $A$ の最大元であり、$2$ 最小元となります。
+集合 $A$ の上界の中で $A$ に属するものがあればそれは $A$ の最大元となります。同様に $A$ の下界の中で $A$ に属するものがあればそれは $A$ の最小元となります。上図では $4$ が $A$ の最大元であり、$2$ が最小元となります。
 
 全順序集合での例は分かったので典型的な半順序集合で考えてみます。以下のような台集合 $P$ とその部分集合 $A$ がある時、$A$ の上界と下界は何になるでしょうか。
 
@@ -264,6 +268,33 @@ classDef ub fill:#f66
 classDef lb fill:#2bb
 style B fill:#ddd
 ```
+
+今度は部分集合を $C = \lbrace a, b \rbrace$ とします。この場合には上界の集合は $c, d, e$ の三つとなりますが、下界はどうでしょうか?
+
+```mermaid
+graph BT
+subgraph P
+  direction BT
+  a
+  b
+  c:::ub
+  d:::ub
+  e:::ub
+  subgraph C
+    a
+    b
+  end
+  a --> c --> e
+  b --> c
+  a --> d
+  b --> d --> e
+end
+classDef ub fill:#f66
+classDef lb fill:#2bb
+style C fill:#ddd
+```
+
+この場合には下界は存在しません。なぜなら下界は部分集合のすべての要素よりも小さい集合 $P$ の要素である必要があります。下界の候補としては $a, b$ がありますが、両者は比較不能であるためどちらがより小さいかを言えません。したがって部分集合 $C$ の下界は存在しません。
 
 ### 極大元と極小元
 
@@ -556,46 +587,34 @@ style B fill:#ddd
 
 ## 束とは
 
-最大元・最小元から始まり、上界・下界、極大元・極小元、最小上界・最大下界とややこしい用語と概念を説明してきましたが、これらを理解することで、ようやく束の構造を理解するための土台ができました。
+最大元・最小元から始まり、上界・下界、極大元・極小元、最小上界・最大下界と紛らわしい用語と概念を説明してきましたが、これらを理解することで、ようやく束の構造を理解するための土台ができました。
 
-典型的な構造として、ちょうど『[集合論による模型](6-tam-set-theoretic-model)』の章での冪集合のところででてきたオブジェクト型の集合族が都合のよい構造が実はイメージのしやすい束(lattice)の構造となります。Lattice という英単語は日本語では普通「格子」とも訳されますが、束はこのような格子上の構造となる場合があります。
+典型的な構造として、ちょうど『[集合論による模型](6-tam-set-theoretic-model)』の章での冪集合のところででてきた数値リテラル型の冪集合が実はイメージのしやすい束(lattice)の構造となります。Lattice という英単語は日本語では普通「格子」とも訳されますが、束はこのような格子上の構造となる場合があります。
 
 ```mermaid
----
-title: fig.典型的な束の構造
----
 graph BT
-  xyz["X | Y | Z"]
-  xy["X | Y"]
-  yz["Y | Z"]
-  zx["Z | X"]
-  X["X"]
-  Y["Y"]
-  Z["Z"]
-  XY["X & Y"]
-  ZX["Z & X"]
-  YZ["Y & Z"]
-  B["X & Y & Z"]
-  B --> XY & YZ & ZX
-  YZ --> Y
-  XY --> Y
-  XY --> X
-  ZX --> X
-  ZX --> Z
-  YZ --> Z
-  X --> xy
-  Y --> xy
-  Y --> yz
-  Z --> yz
-  X --> zx
-  Z --> zx
-  xy & yz & zx --> xyz
+  B["never"]
+  X["1"]
+  Y["2"]
+  Z["3"]
+  XY["1 | 2"]
+  ZX["3 | 1"]
+  YZ["2 | 3"]
+  T["1 | 2 | 3"]
+  B --> X & Y & Z
+  X --> XY
+  Y --> XY
+  Z --> ZX
+  Y --> YZ
+  X --> ZX
+  Z --> YZ
+  XY & YZ & ZX --> T
 ```
 
-束(lattice)は特殊な半順序集合であり、集合内の任意の二つの要素についてユニークな最小上界と最大下界の両方を持つような構造で、有限集合の場合には単一のルート要素(最大元)とリーフ要素(最小元)を常に持つ有界束(bounded lattice)という構造になります。
+束は特殊な半順序集合です。**集合内の任意の二つの要素が常に最小上界と最大下界を持つ構造**が束であり、集合要素が有限の場合には単一のルート要素(最大元)とリーフ要素(最小元)を常に持つ「**有界束**(bounded lattice)」という構造になります。
 
 :::message
-有界束にならない束はその半順序集合が無限集合の場合のときだけです。
+有界束にならない束はその半順序集合が無限集合の場合の時だけです。有限である場合には必ず有界束なので常に最小元と最大元を持ちます。
 :::
 
 例えば $S = \lbrace 1, 2, 3, 4, 5 \rbrace$ という自然数の集合と大小関係 $\le$ による鎖(全順序集合) $(S, \le)$ は以下の図のように分岐なく一直線になりました。全順序集合はまず半順序集合である必要がありましたが、全順序集合の場合には常にその集合は束になり、任意の二つの要素を選んで最小上界と最大下界があることが直感的にわかります。
@@ -625,7 +644,9 @@ style A fill:#ddd
 
 例えば部分集合を $A = \lbrace 2, 4 \rbrace$ と定めると、上界の集合は $UB = \lbrace 3, 4, 5 \rbrace$ となり、最小上界は $3$ に定まります。同様に下界の集合は $LB = \lbrace 1, 2 \rbrace$ となり、最大下界は $2$ に定まります。
 
-全順序ではない半順序でのシンプルな束は以下のようになります。$Right$ と $Left$ は比較不能であり(関係を持たない)、完全律を満たさないことから全順序ではないことが明らかです。
+### 単純な束
+
+全順序ではない半順序集合でのシンプルな束は以下のようになります。$Right$ と $Left$ の要素は比較不能、つまり関係を持たず、これらは完全律を満たさないことから全順序ではないことが明らかです。
 
 ```mermaid
 graph BT
@@ -638,7 +659,26 @@ graph BT
 
 復習として基本的なことを再度確認していくと、束は半順序集合だったので、要素間には順序関係が存在します。上図で矢印の方向が半順序関係 $\le$ を表すとして、$Bottom \le Left \le Top$ や $Bottom \le Right \le Top$ のような順序があるわけです。
 
-半順序や前順序では反射律という自己言及的な法則($A \le A$)がありました。これまで図で表現してきせんでしたが、これも図で表現すると以下のようになりましたね。図が汚くなるので以後も省略します(上の全順序集合の図においても省略しています)。
+そして、上記の半順序集合においては $Top$ が最大元であり、$Bottom$ が最小元となります。有界束ではこのような Top と Bottom の位置の要素が常に存在しています。
+
+お気づきかと思いますが半順序集合である $\text{TYPES'}$ には最小元(top)と最大元(bottom)が存在しており、以下のように非常に単純化した構造で考えると Top 位置に存在する `unknown` 型が最大元であり、Bottom 位置に存在する `never` 型が最小元となります。これらの型は一般には Top 型や Bottom 型とも呼ばれます。
+
+```mermaid
+graph BT
+U["unknown"]
+N["never"]
+E["{ }"]
+null
+undefined
+N --> null & undefined --> U
+N --> E --> U
+```
+
+:::message alert
+実は筆者はこの本を執筆するまで $\text{TYPES'}$ は有界束になると思っていました。しかし、そもそも束という構造自体がかなり強い条件を満たす必要があり、$\text{TYPES'}$ は部分的には束の構造を持つものの、全体としては束ではないことが判明しています。章の進行上の都合もありますが、束ではないが束の知識がないと構造が見えないという理由もあり、束についての知識は理解する必要があります。$\text{TYPES'}$ が束ではないことについての解説は後ほど行います。
+:::
+
+さて、半順序や前順序では反射律という自己言及的な法則($A \le A$)があり、これも図で表現すると以下のようになりましたね。図が汚くなるので以後も省略します(上の全順序集合の図においても省略しています)。
 
 ```mermaid
 graph BT
@@ -653,34 +693,722 @@ graph BT
   B --> L & R --> T
 ```
 
-さて、このダイアモンド形状の半順序集合が束になることを確認していきます。束は任意の二要素について最小上界と最大下界を持つ半順序集合ですから、実際に考えられる限りの二要素の部分集合を列挙して、その部分集合についての最小上界と最大下界が存在するかをすべて確認すればいいわけですね。
+それではこのダイアモンド形状の半順序集合が束になることを確認していきます。束は任意の二元部分集合について最小上界と最大下界を持つ半順序集合ですから、実際に考えられる限りの二要素の部分集合を列挙して、その部分集合についての最小上界と最大下界が存在するかをすべて確認すればいいわけですね。
+
+極大元と極小元のところで解説したように、半順序集合は複数の鎖から構成されていました。実は鎖上の任意の二要素は半順序関係の推移律によって必ず関係があるため、鎖上の二要素を選んだ場合には常に最小上界と最大下界があるということになります。
+
+例えば、$A = \lbrace Bottom, Top \rbrace$ という二元部分集合を選択した場合には、その最小上界と最大下界は鎖のルート上では $Top$ が最小上界となり、$Bottom$ が最大下界となります。
 
 ```mermaid
 graph BT
+subgraph P
+  direction BT
   T["Top(⊤)"]
   L["Left"]
   R["Right"]
   B["Bottom(⊥)"]
+  subgraph A
+  B:::glb
+  T:::lub
+  end
   B --> L & R --> T
+end
+style A fill:#ddd
+classDef lub fill:#f29
+classDef glb fill:#78d
+linkStyle 0 stroke: red
+linkStyle 2 stroke: red
 ```
 
+そもそも半順序集合 $P$ の部分集合 $A$ についての上界となる要素の定義は以下のようなものでした。
 
-## 結びと交わり
+$$
+x \in P, \forall y \in A, y \le x
+$$
 
-TypeScript の型には集合演算に相当する `|` と `&` がありましたが、束論の文脈では和集合(union: $\cup$)あるいは論理和(or: $|$)**は「結び**(join: $\lor$)」と呼ばれ、共通部分(intersection: $\cap$)あるいは論理積(and: $\&$)は「**交わり**(meet: $\land$)」と呼ばれ、結びは最小上界に、交わりは最大下界に対応します。
+上界は部分集合 $A$ のすべての要素よりも大きい、つまり前提として比較可能であることが必要でした。部分集合が二元集合である場合には、その二要素が元の半順序集合の推移律によるルートで形成される鎖上に配置されているか、そうでないかの二択となります。鎖上に配置されてる、つまり矢印を辿って二要素の直接の関係を作れる場合には最小上界はその二要素の大きい方ということになります。
 
-もう少し複雑な例を挙げます。冪集合において部分集合の包含関係は半順序を形成すると述べましたが、以下のようにハッセ図を作ってみると冪集合は束を形成することが分かります。
+下界と最大下界はそれぞれ上界と最小上界の双対概念なので、同じ議論ができ、二元部分集合が鎖上に配置されている場合には最大下界は二要素の小さい方ということになります。
+
+一応、同じケースでもう一つ例をあげておくと部分集合が $A' = \lbrace Bottom, Left \rbrace$ の場合では $Left$ が最小上界で、$Bottom$ が最大下界となります。
 
 ```mermaid
 graph BT
-  B["Φ"]
-  X["{x}"]
-  Y["{y}"]
-  Z["{z}"]
-  XY["{x, y}"]
-  ZX["{x, z}"]
-  YZ["{y ,z}"]
-  T["{x, y, z}"]
+subgraph P
+  direction BT
+  T["Top(⊤)"]
+  L["Left"]
+  R["Right"]
+  B["Bottom(⊥)"]
+  subgraph A["A'"]
+  B:::glb
+  L:::lub
+  end
+  B --> L & R --> T
+end
+style A fill:#ddd
+classDef lub fill:#f29
+classDef glb fill:#78d
+linkStyle 0 stroke: red
+```
+
+さて、ここで問題になるのは鎖上に配置されていない二元部分集合の場合であり、そのような二要素の間には関係がなく比較不能という場合となります。つまり、考えている部分集合が下記のような $A'' = \lbrace Left, Right \rbrace$ の場合には最小上界と最大下界はあるかどうかが問題になりますが、このようなシンプルな場合については最小上界と最大下界の説明ですでに説明しており、$Top$ と $Bottom$ がそれぞれ最小上界と最小上界になります。
+
+```mermaid
+graph BT
+subgraph P
+  direction BT
+  T["Top(⊤)"]:::lub
+  L["Left"]
+  R["Right"]
+  B["Bottom(⊥)"]:::glb
+  subgraph A["A''"]
+  L
+  R
+  end
+  B --> L & R --> T
+end
+style A fill:#ddd
+classDef lub fill:#f29
+classDef glb fill:#78d
+```
+
+ということで、このダイアモンド形状の半順序集合は任意の二要素について最小上界と最大下界を持つことから束であることが言えます。
+
+この単純な束を改造して、すこしだけ複雑な場合を考えてみましょう。基本的な配置はそのままに、$Bottom$ と $Left$ の間に $L2$ と挿入し、$Bottom$ と $Right$ の間に $R2$ を挿入します。この場合の最小上界と最大下界は実は単純な束と変わらず $Top$ と $Bottom$ のままとなります。
+
+```mermaid
+graph BT
+subgraph P["P'"]
+  direction BT
+  T["Top(⊤)"]:::lub
+  L["Left"]
+  R["Right"]
+  B["Bottom(⊥)"]:::glb
+  subgraph A["A''"]
+  L
+  R
+  end
+  B --> L2 --> L --> T
+  B --> R --> R2 --> T
+end
+style A fill:#ddd
+classDef lub fill:#f29
+classDef glb fill:#78d
+```
+
+最小上界は上界の集合の中の最小元でしたが、そもそも上界は部分集合のすべての要素よりも大きいため、前提として比較可能であることが必要でした。$R2$ は $Left$ に対して比較不能なため上界ではなく、$Left$ と $Right$ の両方ともに比較可能な $Top$ が唯一の上界であり、そして最小上界でもあります。同様に $L2$ は $Right$ と比較不能で下界ではなく、$Bottom$ が唯一の下界かつ最大下界となります。
+
+それではもっと複雑な例を考えてみましょう。上記の半順序集合 $P'$ に以下のように新しく $Top$ と関係を持たないが他要素に対して同じ関係を持つ $T2$ を挿入し、$Bottom$ と関係を持たないが他要素に対して同じ関係を持つ $B2$ を挿入し、新しい半順序集合 $P''$ を作成します。
+
+```mermaid
+graph BT
+subgraph P["P''"]
+  direction BT
+  T["Top(⊤)"]:::ub
+  T2:::ub
+  L["Left"]
+  R["Right"]
+  B2:::lb
+  B["Bottom(⊥)"]:::lb
+  subgraph A["A''"]
+  L
+  R
+  end
+  B --> L2 --> L --> T
+  B --> R --> R2 --> T
+  B2 --> L2
+  B2 --> R
+  L --> T2
+  R2 --> T2
+end
+style A fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+```
+
+この場合についても最小上界と最大下界のところで説明済みでした。上界の集合は $UB = \lbrace Top, T2 \rbrace$ であり、この二つの要素は上界集合の中での極小元ではありますが、最小元はないため最小上界は存在しません。同様に下界の集合は $LB = \lbrace Bottom, B2 \rbrace$ であり、この二つは下界集合の中での極大元ではありますが、最大元がないため最大下界は存在しません。
+
+この構造から要素や関係を削らずに、最小上界を作り出すには、上界の集合の中でどの極小元よりも小さい追加の要素をいれるか、極小元同士の中に順序関係を入れるかの二通りです。同様に最大下界を作り出すには、下界の集合の中でどの極大元よりも大きい追加の要素を入れるか、極大元同士の中に順序関係を入れるかの二通りとなります。
+
+最小上界については上界の中で一番小さい極小元を追加する方法で、最大下界については既存の極大元同士の中で順序関係を入れるように修正した半順序集合 $K$ を図示すると以下のようになります。
+
+```mermaid
+graph BT
+subgraph P["K"]
+  direction BT
+  T["Top(⊤)"]:::ub
+  T2:::ub
+  L["Left"]
+  R["Right"]
+  B2:::glb
+  B["Bottom(⊥)"]:::lb
+  subgraph LB
+    B
+    B2
+  end
+  subgraph A["A''"]
+    L
+    R
+  end
+  subgraph UB
+    T
+    TGUB:::lub
+    T2
+  end
+  B --> L2 --> L --> T
+  B --> R --> R2 --> T
+  B --> B2
+  B2 --> L2
+  B2 --> R
+  L --> TGUB
+  R2 --> TGUB
+  TGUB --> T & T2
+  L --> T2
+  R2 --> T2
+end
+style A fill:#ddd
+style LB fill:#ddd
+style UB fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+```
+
+図の中で、$TUBG$ が最小上界であり、$B2$ が最大下界となっていることが分かります。ただし、いつものごとく中間点が存在する二点間に直接線分が引かれてしまっているため正しいハッセ図に修正しておきましょう。以下が正しいハッセ図で表現された半順序集合 $K$ となります。
+
+```mermaid
+graph BT
+subgraph P["K"]
+  direction BT
+  T["Top(⊤)"]:::ub
+  T2:::ub
+  L["Left"]
+  R["Right"]
+  B2:::glb
+  B["Bottom(⊥)"]:::lb
+  subgraph LB
+    B
+    B2
+  end
+  subgraph A["A''"]
+    L
+    R
+  end
+  subgraph UB
+    T
+    TGUB:::lub
+    T2
+  end
+  L2 --> L
+  R --> R2
+  B --> B2
+  B2 --> L2
+  B2 --> R
+  L --> TGUB
+  R2 --> TGUB
+  TGUB --> T & T2
+end
+style A fill:#ddd
+style LB fill:#ddd
+style UB fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+```
+
+結構ヘビーな例を考えてきたので、ここまでで最小上界と最大下界のイメージが結構掴めてきたと思います。
+
+### 束ではない半順序集合
+
+束のイメージは逆に束ではない構造を見ることで理解できてきます。例えば上の集合 $K$ は半順序集合ではありますが束ではありません。なぜなら Top と T2 の二元部分集合についての最小上界が存在しないからです。
+
+:::message
+集合 $K$ のような場合、完全な束ではありませんが、最大下界については任意の二元部分集合が常に持つため「下半束 (meet-semilattice)」であると言えます。逆に、任意の二元部分集合が常に最小上界を持つ場合にはその半順序集合は「上半束 (join-semilattice)」であると言えます。上半束と下半足は双対概念であり、上半束かつ下半束でもある場合にその半順序集合は束(lattice)であると言えます。
+:::
+
+まず、有限な束は有界束であり、最小元と最大元が存在するはずなので、集合全体が有限で最大元と最小元が存在しない場合にはその半順序集合は束ではないことになります。より具体的には複数個ありえる極大元を二個部分集合の要素として選択した場合に最小上界がなく、同様に極小元から二個を選んで部分集合とした場合にも最大下界がないためです。例えば、以下の半順序集合が例として挙げられます。
+
+```mermaid
+graph BT
+a --> c & d
+b --> c & d
+```
+
+この構造では極大元は $\lbrace c, d \rbrace$ の二つであり、最大元が存在しません。極小元も同様で $\lbrace a, b \rbrace$ の二つであり、最小元が存在しません。したがって、束ではないことが明らかです。
+
+最大元と最小元が存在した場合でも束にならないケースとして、例えば以下のような構造が考えられます。このケースについてもすでに見ているのですが、例えば部分集合を $A = \lbrace b, c \rbrace$ とした場合に上界の集合には最小元となるものが存在しません。
+
+```mermaid
+graph BT
+subgraph P
+direction BT
+subgraph A["A"]
+  b
+  c
+end
+f:::ub
+a:::glb
+d:::ub
+e:::ub
+a --> b & c
+b --> d
+b --> e
+c --> d
+c --> e
+d & e --> f
+subgraph B["上界の集合"]
+d
+e
+f
+end
+end
+style A fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+```
+
+さて、ここからが重要な話となりますが、前の章でオブジェクト型のユニオン型とインターセクション型による以下のような関係構造を見ました(すべての型関係を網羅していない図)。この中途半端な構造は**束にはなりません**。
+
+```mermaid
+graph BT
+  xyz["X | Y | Z"]
+  xy["X | Y"]
+  yz["Y | Z"]
+  zx["Z | X"]
+  X["X"]
+  Y["Y"]
+  Z["Z"]
+  XY["X & Y"]
+  ZX["Z & X"]
+  YZ["Y & Z"]
+  B["X & Y & Z"]
+  B --> XY & YZ & ZX
+  YZ --> Y
+  XY --> Y
+  XY --> X
+  ZX --> X
+  ZX --> Z
+  YZ --> Z
+  X --> xy
+  Y --> xy
+  Y --> yz
+  Z --> yz
+  X --> zx
+  Z --> zx
+  xy & yz & zx --> xyz
+```
+
+この構造が束にならない理由について考えていきます。まず、この集合全体を $P$、その二元部分集合を $A = \lbrace X | Y, Y | Z \rbrace$ として、いつも通り最小上界と最大下界を調べます。
+
+```mermaid
+graph BT
+subgraph P
+direction BT
+  xyz["X | Y | Z"]:::lub
+  xy["X | Y"]
+  yz["Y | Z"]
+  zx["Z | X"]
+  X["X"]
+  Y["Y"]:::mxe
+  Z["Z"]
+  XY["X & Y"]:::lb
+  ZX["Z & X"]:::mxe
+  YZ["Y & Z"]:::lb
+  B["X & Y & Z"]:::lb
+  B --> XY & YZ & ZX
+  YZ --> Y
+  XY --> Y
+  XY --> X
+  ZX --> X
+  ZX --> Z
+  YZ --> Z
+  X --> xy
+  Y --> xy
+  Y --> yz
+  Z --> yz
+  X --> zx
+  Z --> zx
+  subgraph A["A"]
+    xy
+    yz
+  end
+  xy & yz & zx --> xyz
+end
+style A fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+classDef mxe fill:#29f
+classDef mie fill:#f5f
+linkStyle 0 stroke: red
+linkStyle 1 stroke: red
+linkStyle 2 stroke: red
+linkStyle 3 stroke: red
+linkStyle 4 stroke: red
+linkStyle 5 stroke: blue
+linkStyle 6 stroke: blue
+linkStyle 7 stroke: green
+linkStyle 8 stroke: green
+linkStyle 9 stroke: blue
+linkStyle 10 stroke: blue
+linkStyle 11 stroke: green
+linkStyle 12 stroke: green
+```
+
+上界の集合は明らかに $UB = \lbrace X | Y | Z \rbrace$ であり、これが最小上界であると分かります。問題なのは最大下界であり、一見すると $Y$ が相当するように思えますが、実は下界の集合の中での極大元は一つに定まらないので最大下界が存在していません。
+
+下界の集合は $LB = \lbrace Y, Z \& X, X \& Y, Y \& Z, X \& Y \& Z \rbrace$ であり、極大元は $Y$ だけでなく $Z \& X$ も極大元となります。これは図の色付きの矢印を追ってみると分かります。$X | Y$ よりも小さい要素はハッセ図の青矢印を辿った要素で、$Y | Z$ よりも小さい要素はハッセ図の緑矢印を追った要素となります。赤矢印はその前に青矢印と緑矢印が交わってすでに $X | Y$ と $Y | Z$ の両方よりも小さいことがわかっている要素です。このように見ると、青矢印と緑矢印が最初に交わる点が下界集合の中での極大元となることが分かります。初めて交わるのが $Y$ と $Z \& X$ であり、この２つには直接の関係がありません。したがって下界の中での極大元が一つにならず、最大元つまり最大下界が存在しないことになります。
+
+最小上界は存在したので、まだ上半束である可能性もありますが、この構造の対称性から明らかに最大下界についても言えてしまいます。
+
+実際に、以下の図で逆側も考えてみると、最小上界が存在しない二元部分集合の取り方があることが分かります。したがって、上半束でもないことが分かりました。
+
+```mermaid
+graph BT
+subgraph P
+direction BT
+  xyz["X | Y | Z"]:::lub
+  xy["X | Y"]:::mie
+  yz["Y | Z"]:::ub
+  zx["Z | X"]:::ub
+  X["X"]
+  Y["Y"]
+  Z["Z"]:::mie
+  XY["X & Y"]
+  ZX["Z & X"]
+  YZ["Y & Z"]
+  B["X & Y & Z"]:::glb
+  B --> XY & YZ & ZX
+  subgraph A["A"]
+    ZX
+    YZ
+  end
+  YZ --> Y
+  XY --> Y
+  XY --> X
+  ZX --> X
+  ZX --> Z
+  YZ --> Z
+  X --> xy
+  Y --> xy
+  Y --> yz
+  Z --> yz
+  X --> zx
+  Z --> zx
+  xy & yz & zx --> xyz
+end
+style A fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+classDef mie fill:#f5f
+classDef mxe fill:#29f
+linkStyle 3 stroke: green
+linkStyle 6 stroke: blue
+linkStyle 7 stroke: blue
+linkStyle 8 stroke: green
+linkStyle 9 stroke: blue
+linkStyle 10 stroke: green
+linkStyle 11 stroke: green
+linkStyle 12 stroke: red
+linkStyle 13 stroke: blue
+linkStyle 14 stroke: red
+linkStyle 15 stroke: red
+linkStyle 16 stroke: red
+linkStyle 17 stroke: red
+```
+
+さて、このような中途半端な構造が束にならない典型的な構造ですが、オブジェクト型の包含関係は以下のようにより複雑でした。
+
+```mermaid
+graph BT
+Bot["X ∩ Y ∩ Z"]
+xy["X ∩ Y"]
+zx["Z ∩ X"]
+yz["Y ∩ Z"]
+xy+zx["(X ∩ Y) ∪ (Z ∩ X)"]
+yz+xy["(X ∩ Y) ∪ (Y ∩ Z)"]
+zx+yz["(Z ∩ X) ∪ (Y ∩ Z)"]
+x["X"]
+y["Y"]
+z["Z"]
+x+yz["X ∪ (Y ∩ Z)"]
+y+zx["Y ∪ (Z ∩ X)"]
+z+xy["Z ∪ (X ∩ Y)"]
+x+y["X ∪ Y"]
+y+z["Y ∪ Z"]
+z+x["Z ∪ X"]
+Top["X ∪ Y ∪ Z"]
+
+Bot --> xy
+Bot --> yz
+Bot --> zx
+xy ---> yz+xy
+xy ---> xy+zx
+
+zx ---> xy+zx
+zx ---> zx+yz
+yz ---> yz+xy
+yz ---> zx+yz
+xy+zx --> x
+yz+xy --> y
+zx+yz --> z
+
+x --> x+yz
+y --> y+zx
+z --> z+xy
+
+xy --> z+xy
+yz --> x+yz
+zx --> y+zx
+
+x+yz --> x+y
+x+yz --> z+x
+y+zx --> x+y
+y+zx --> y+z
+z+xy --> z+x
+z+xy --> y+z
+x+y --> Top
+z+x --> Top
+y+z --> Top
+```
+
+この構造が束になるかどうかを見てみましょう。
+
+とりあえずのところ、最小元と最大元が存在するため、この半順序集合は元と最大元を結ぶ複数の鎖から構成されているとみなせます。鎖上の二要素の比較では最小上界と最大下界はその二要素となるため、二元部分集合の要素の片方が最小元と最大元なら最小上界と最大下界が決まります。問題なのは直接比較不能な二要素です。
+
+そのような二元部分集合についてまず $A1 = \lbrace X ∪ Y, Z ∪ X \rbrace$ として、これまでと同じ考え方で経路をたどると最小上界と最大下界がそれぞれ存在することがわかります。
+
+```mermaid
+graph BT
+
+Bot["X ∩ Y ∩ Z"]:::lb
+xy["X ∩ Y"]:::lb
+zx["Z ∩ X"]:::lb
+yz["Y ∩ Z"]:::lb
+xy+zx["(X ∩ Y) ∪ (Z ∩ X)"]:::lb
+yz+xy["(X ∩ Y) ∪ (Y ∩ Z)"]
+zx+yz["(Z ∩ X) ∪ (Y ∩ Z)"]
+x["X"]:::lb
+y["Y"]
+z["Z"]
+x+yz["X ∪ (Y ∩ Z)"]:::glb
+y+zx["Y ∪ (Z ∩ X)"]
+z+xy["Z ∪ (X ∩ Y)"]
+x+y["X ∪ Y"]
+y+z["Y ∪ Z"]
+z+x["Z ∪ X"]
+Top["X ∪ Y ∪ Z"]:::lub
+
+subgraph A1
+x+y
+z+x
+end
+
+Bot --> xy
+Bot --> yz
+Bot --> zx
+xy ---> yz+xy
+xy ---> xy+zx
+
+zx ---> xy+zx
+zx ---> zx+yz
+yz ---> yz+xy
+yz ---> zx+yz
+xy+zx --> x
+yz+xy --> y
+zx+yz --> z
+
+x --> x+yz
+y --> y+zx
+z --> z+xy
+
+xy --> z+xy
+yz --> x+yz
+zx --> y+zx
+
+x+yz --> x+y
+x+yz --> z+x
+y+zx --> x+y
+y+zx --> y+z
+z+xy --> z+x
+z+xy --> y+z
+x+y --> Top
+z+x --> Top
+y+z --> Top
+
+style x+y stroke:red
+style z+x stroke:green
+
+linkStyle 18 stroke: red
+linkStyle 19 stroke: green
+linkStyle 20 stroke: red
+linkStyle 22 stroke: green
+
+linkStyle 0 stroke: orange
+linkStyle 1 stroke: orange
+linkStyle 2 stroke: orange
+
+linkStyle 3 stroke: red
+linkStyle 4 stroke: orange
+linkStyle 5 stroke: orange
+linkStyle 6 stroke: green
+linkStyle 7 stroke: red
+linkStyle 8 stroke: green
+linkStyle 9 stroke: orange
+linkStyle 10 stroke: red
+
+linkStyle 11 stroke: green
+linkStyle 12 stroke: orange
+linkStyle 13 stroke: red
+linkStyle 14 stroke: green
+linkStyle 15 stroke: green
+linkStyle 16 stroke: orange
+linkStyle 17 stroke: red
+
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+classDef mxe fill:#29f
+classDef mie fill:#f5f
+```
+
+`X ∪ Y`、`Z ∪ X`、`Y ∪ Z` は明らかに対称なので、その３つについて選び方によらずに最小上界と最大下界が存在します。
+
+次に二元部分集合を $A2 = \lbrace X ∪ Y, Y ∪ (Z ∩ X) \rbrace$ とすると下界の集合内で最大元が定まらないため、残念ながら最大下界が存在しないことが分かります。
+
+```mermaid
+graph BT
+
+Bot["X ∩ Y ∩ Z"]:::lb
+xy["X ∩ Y"]:::mxe
+zx["Z ∩ X"]:::mxe
+yz["Y ∩ Z"]:::mxe
+xy+zx["(X ∩ Y) ∪ (Z ∩ X)"]
+yz+xy["(X ∩ Y) ∪ (Y ∩ Z)"]
+zx+yz["(Z ∩ X) ∪ (Y ∩ Z)"]
+x["X"]
+y["Y"]
+z["Z"]
+x+yz["X ∪ (Y ∩ Z)"]
+y+zx["Y ∪ (Z ∩ X)"]
+z+xy["Z ∪ (X ∩ Y)"]
+x+y["X ∪ Y"]
+y+z["Y ∪ Z"]
+z+x["Z ∪ X"]
+Top["X ∪ Y ∪ Z"]:::lub
+
+subgraph A2-1
+x+y
+end
+
+subgraph A2-2
+z+xy
+end
+
+Bot --> xy
+Bot --> yz
+Bot --> zx
+xy ---> yz+xy
+xy ---> xy+zx
+
+zx ---> xy+zx
+zx ---> zx+yz
+yz ---> yz+xy
+yz ---> zx+yz
+xy+zx --> x
+yz+xy --> y
+zx+yz --> z
+
+x --> x+yz
+y --> y+zx
+z --> z+xy
+
+xy --> z+xy
+yz --> x+yz
+zx --> y+zx
+
+x+yz --> x+y
+x+yz --> z+x
+y+zx --> x+y
+y+zx --> y+z
+z+xy --> z+x
+z+xy --> y+z
+x+y --> Top
+z+x --> Top
+y+z --> Top
+
+style x+y stroke:red
+style z+xy stroke:green
+
+linkStyle 0 stroke: orange
+linkStyle 1 stroke: orange
+linkStyle 2 stroke: orange
+
+linkStyle 3 stroke: red
+linkStyle 4 stroke: red
+linkStyle 5 stroke: red
+linkStyle 6 stroke: green
+linkStyle 7 stroke: red
+linkStyle 8 stroke: green
+linkStyle 9 stroke: red
+linkStyle 10 stroke: red
+
+linkStyle 11 stroke: green
+linkStyle 12 stroke: red
+linkStyle 13 stroke: red
+linkStyle 14 stroke: green
+linkStyle 15 stroke: green
+linkStyle 16 stroke: red
+linkStyle 17 stroke: red
+
+linkStyle 18 stroke: red
+linkStyle 20 stroke: red
+linkStyle 22 stroke: green
+
+linkStyle 23 stroke: green
+linkStyle 24 stroke: red
+linkStyle 25 stroke: green
+linkStyle 26 stroke: green
+
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+classDef mxe stroke:#29f, fill:#2bb
+classDef mie stroke:#f5f, fill:#f66
+```
+
+$\text{TYPES'}$ はこのような構造を部分集合としてもっています。束は任意の二元部分集合について最小下界と最大下界を持つ必要があったため、元の台集合のいかなる部分集合についてもその二元部分集合が束である必要があります。しかしここまで見てきたようにオブジェクト型のユニオンとインターセクションがなす型の構造は束にならないため、元の台集合である $\text{TYPES'}$ も束ではないことが言えます。
+
+また、オブジェクト型の集合族は集合の領域を完全に表現しきれていないことも判明しました。逆に考えると束ではないため冪集合を完全に表現できていないことも明らかになります(なぜなら冪集合は束だから)。
+
+### 冪集合は有界束となる
+
+束にならない構造についてみてきましたが、一方で典型的な束の例として上げた冪集合については束になります。集合 $S$ の冪集合 $P(S)$ とその部分集合の包含関係 $\subseteq$ についての半順序集合 $(P(S), \subseteq)$ は集合 $S$ 自身を最大元とし、空集合 $\phi$ を最小元とする有界束になることが知られています。
+
+例えば、集合 $S = \lbrace 1, 2, 3 \rbrace$ の冪集合は以下のような半順序集合でした。$S$ 自身が最大元であり、$\phi$ が最小元になっていることが明らかですね。鎖上の任意の二要素要素については最小元と最大元があるので、直接的に比較不能な二要素 $\lbrace \lbrace 3, 1 \rbrace, \lbrace 2, 3 \rbrace \rbrace$ について考えてみると、最小上界は $S$ であり、最大下界は $\lbrace 3 \rbrace$ となります。
+
+```mermaid
+graph BT
+  B["Φ"]:::lb
+  X["{1}"]
+  Y["{2}"]
+  Z["{3}"]:::glb
+  XY["{1, 2}"]
+  ZX["{3, 1}"]:::target1
+  YZ["{2 ,3}"]:::target2
+  T["{1, 2, 3}"]:::lub
   B --> X & Y & Z
   X --> XY
   Y --> XY
@@ -688,166 +1416,30 @@ graph BT
   Y --> YZ
   X --> ZX
   Z --> YZ
-  XY & YZ & ZX --> T
-```
-
-さて、`Object, {}, object` などの相互に部分型関係となる、すなわち同値関係となるような型同士を同値類としてまとめた商集合は半順序集合になりました。このような型の集合 $\text{TYPES'}$ は半順序集合であり、以下のような基本構造を構築します。
-
-```mermaid
-graph BT
-  U[unknown]
-  N[never]
-  V[void]
-  O["Object\n { }\n object"]
-  W[Wrapper types]
-  subgraph Primitive
-    u[undefined]
-    n[null]
-    P[Primitive types]
+  subgraph A
+    ZX
+    YZ
   end
-  objs[Object types]
-  N --> u --> V --> U
-  N --> n --> U
-  N --> P --> W --> O
-  N --> objs --> O
-  O --> U
+XY & YZ & ZX --> T
+
+linkStyle 0 stroke: red
+linkStyle 1 stroke: green
+linkStyle 2 stroke: orange
+linkStyle 5 stroke: red
+linkStyle 6 stroke: green
+linkStyle 7 stroke: red
+linkStyle 8 stroke: green
+
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+
+classDef target1 fill:red
+classDef target2 fill:green
 ```
 
-join 演算と meet 演算では任意の二つの型についてユニークな最大下界と最小上界を生成できるため、TypeScript の型の集合は上記の配置を基本とした束を形成します。
+オブジェクト型のユニオンとインターセクションがなす構造は束でないですが、このように似た構造である冪集合は束になります。
 
-部分型関係によって構成される束は Scala などの言語では型束(type lattice)あるいはそのまま部分型束(subtype lattice)などと呼ばれます。ここでは型の形成する束を型束と呼ぶことにしましょう。
+そして、冪集合の束において、**最小上界は二元部分集合の要素の和集合が相当し**、**最大下界は二元部分集合の要素の共通部分となる**ことが知られています。冪集合は集合族であり要素は集合でした。実際に、$\lbrace 3, 1 \rbrace$ と $\lbrace 2, 3 \rbrace$ の和集合は $\lbrace 1, 2, 3 \rbrace$ であり、共通部分は $\lbrace 3 \rbrace$ です。
 
-## 有界束としての構造
-
-## 他言語での有界束
-
-### Scala
-
-Scala 3 は束を持つと言われ、[公式ドキュメント](https://docs.scala-lang.org/tour/unified-types.html)では以下のような束構造が図示されています。
-
-```mermaid
-graph BT
-  A[Any]
-  AV[AnyVal]
-  AR[AnyRef]
-  LI[List]
-  O[Option]
-  Y[YourClass]
-  NL[Null]
-  D[Double]
-  F[Float]
-  L[Long]
-  I[Int]
-  S[Short]
-  B[Byte]
-  U[Unit]
-  BL[Boolean]
-  C[Char]
-  N[Nothing]
-
-  N --> D & F & L & I & S & B & U & BL & C --> AV -->A
-  N --> NL --> LI & O & Y --> AR --> A
-```
-
-Scala が束を持つことは以下の動画で解説されています。束の他にも pre-order や Category を形成することが語られているので参考に視聴することをおすすめします。
-
-https://www.youtube.com/watch?v=vuTFg5g_f6w
-
-### Kotlin
-
-Kotlin も束を持ちます。
-
-http://natpryce.com/articles/000818.html
-
-Non-Nullable の型は以下のような順序関係が構成されます。
-
-```mermaid
-graph BT
-  A[Any]
-  S[String]
-  I[Int]
-  U[Unit]
-  F[Fruit]
-  B[Banana]
-  P[Peach]
-  N[Nothing]
-  N --> S --> A
-  N --> I --> A
-  N --> U --> A
-  N --> B & P --> F --> A
-```
-
-Nullable の型は以下のような型の順序関係が構成されます。
-
-```mermaid
-graph BT
-  A?[Any?]
-  S?[String?]
-  I?[Int?]
-  U?[Unit?]
-  F?[Fruit?]
-  B?[Banana?]
-  P?[Peach?]
-  N?[Nothing?]
-  N? --> I? --> A?
-  N? --> S? --> A?
-  N? --> U? --> A?
-  N? --> B? & P? --> F? --> A?
-```
-
-Nullable と Non-Nullable を組み合わせると以下のような複雑な型の順序関係が構築されます。
-
-```mermaid
-graph BT
-  A[Any]
-  S[String]
-  I[Int]
-  U[Unit]
-  F[Fruit]
-  B[Banana]
-  P[Peach]
-  N[Nothing]
-  subgraph Non-Nullable
-    N --> S --> A
-    N --> I --> A
-    N --> U --> A
-    N --> B & P --> F --> A
-  end
-  A?[Any?]
-  S?[String?]
-  I?[Int?]
-  U?[Unit?]
-  F?[Fruit?]
-  B?[Banana?]
-  P?[Peach?]
-  N?[Nothing?]
-  subgraph Nullable
-    N? --> I? --> A?
-    N? --> S? --> A?
-    N? --> U? --> A?
-    N? --> B? & P? --> F? --> A?
-  end
-
-  A --> A?
-  S --> S?
-  I --> I?
-  U --> U?
-  F --> F?
-  B --> B?
-  P --> P?
-  N --> N?
-```
-
-### CUEは束を持つ
-
-部分型を持つ言語で、トップ型とボトム型を持っているなら束を考えることができますが、そのような言語とは別に、束を持つ言語の例として [CUE](https://cuelang.org) が挙げられます。
-
-CUE (Configure Unify Execute) は構成記述言語と呼ばれ、データバリデーション機能と強力な推論エンジンを搭載してます。
-
-CUE では型が値であるというコンセプトの元で、型と値の境界をなくし、さらに更に値(と型)を束として順序付けることで柔軟な制約条件を表現することができます。
-
-以下のドキュメントで束(lattice)とはなにか、CUE で束の構造がどのように役立つかが細かに解説されています。
-
-https://cuelang.org/docs/concepts/logic/
-
-TypeScript よりも束としての機能的振る舞いがわかりやすいので参考にしてください。

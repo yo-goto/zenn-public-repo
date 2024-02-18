@@ -10,7 +10,8 @@ chapters:
   - 4-tam-subtyping-concept #『部分型関係の概念』
   - 5-tam-order-theoretic-model #『順序理論による模型』
   - 6-tam-set-theoretic-model #『集合論による模型』
-  - 7-tam-lattice-theoretic-model #『束論による模型』
+  - 7-tam-lattice-theoretic-model #『束論による模型(1)』
+  - 7-2-tam-lattice-theoretic-model-2 #『束論による模型(2)』
   - 8-tam-ring-theoretic-model #『環論による模型』
   - 9-tam-category-theoretic-model #『圏論による模型』
   - x-tam-references #『参考文献』
