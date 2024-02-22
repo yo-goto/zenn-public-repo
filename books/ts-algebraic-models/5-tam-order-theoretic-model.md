@@ -614,7 +614,7 @@ obj = pri; // NG → Error: Type 'string' is not assignable to type 'object'
 プリミティブ型($P$ として抽象化)とそのラッパーオブジェクトの型($W$ として抽象化)と `object` 型の関係について見ると以下のように推移律が破れている箇所があります。
 
 $$
-P <: W \land W <: object \not \Rightarrow P <: object
+P <: W \land W <: \text{object} \not \Rightarrow P <: \text{object}
 $$
 
 これは直接的な部分型関係が壊れているというよりかは、その拡張的概念である割当可能性において特別に割当不能であるとして定められているとして捉える方が自然です。
