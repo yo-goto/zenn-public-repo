@@ -37,6 +37,33 @@ classDef lb fill:#2bb
 classDef glb fill:#78d
 ```
 
+二元部分集合 $a, b$ が鎖上で、$a \le b$ なら最小上界と最大下界はそれぞれの要素となりました。つまり結びは $a$ となり、交わりは $b$ となります。
+
+```mermaid
+graph BT
+
+  T["Top"]
+  L1["Left1"]
+  L2["Left2"]
+  R1["Right1 -> Meet"]:::glb
+  R2["Right2 -> Join"]:::lub
+  B["Bottom"]
+
+  subgraph A
+  R1
+  R2
+  end
+
+  B --> L1 --> L2 --> T
+  B --> R1 --> R2 --> T
+
+style A fill:#ddd
+classDef ub fill:#f66
+classDef lub fill:#f29
+classDef lb fill:#2bb
+classDef glb fill:#78d
+```
+
 そろそろこの章の本題に入りますが、TypeScript の型には集合演算に相当する `|` と `&` がありましたが、束論の文脈では和集合(union: $\cup$)あるいは論理和(or: $|$)は「**結び**(join: $\lor$)」に相当し、共通部分(intersection: $\cap$)あるいは論理積(and: $\&$)は「**交わり**(meet: $\land$)」に相当します。
 
 馴染み深い型で置き換えると join と meet は以下のような関係です。
@@ -60,7 +87,7 @@ classDef lub fill:#f29
 classDef glb fill:#78d
 ```
 
-これまで $\lor$ を「または」として $\land$ を「かつ」として論理記号で使ってきましたが、同じ記号で join と meet を表現できます。つまり、ユニオン型 `string | number` は join として $string \lor number$ で表現でき、インターセクション型 `string & number` は meet として $string \land number$ のように表現可能です。
+これまで $\lor$ を「または」として $\land$ を「かつ」として論理記号で使ってきましたが、同じ記号で join と meet を表現できます。つまり、ユニオン型 `string | number` は join として $\text{string} \lor \text{number}$ で表現でき、インターセクション型 `string & number` は meet として $\text{string} \land \text{number}$ のように表現可能です。
 
 ```mermaid
 graph BT
@@ -81,7 +108,7 @@ classDef lub fill:#f29
 classDef glb fill:#78d
 ```
 
-また、部分集合 $S$ の join を $\lor S$ と表現し、meet を $\land S$ と表現することがあります。
+また、部分集合 $S$ の結び(join)を $\lor S$ と表現し、交わり(meet)を $\land S$ と表現することがあります。
 
 さて、`Object, {}` などの相互に部分型関係となる、すなわち同値関係となるような型同士を同値類としてまとめた商集合は半順序集合になりました。このような型の集合 $\text{TYPES'}$ は半順序集合であり、以下のような基本構造(あるいは基本配置)を構築します。
 
@@ -92,6 +119,7 @@ graph BT
   V[void]
   O["{ }\n Object"]
   W[Wrapper types]
+  L[Literal types]
   subgraph Primitive
     u[undefined]
     n[null]
@@ -100,12 +128,12 @@ graph BT
   objs[Object types]
   N --> u --> V --> U
   N --> n --> U
-  N --> P --> W --> O
+  N --> L --> P --> W --> O
   N --> objs --> O
   O --> U
 ```
 
-「join 演算と meet 演算では任意の二つの型についてユニークな最大下界と最小上界を生成できるため、TypeScript の型の集合は上記の配置を基本とした束を形成します」と言えればよかったのですが、束にならない例で見たようにオブジェクト型の join 演算と meet 演算で生成される型は実際には厳密な最小上界と最大下界には相当しません。したがって、束に非常によく似た構造ではあるものの束にはなりません。
+このとき「join 演算と meet 演算では任意の二つの型についてユニークな最大下界と最小上界を生成できるため、TypeScript の型の集合は上記の配置を基本とした束を形成します」と言えればよかったのですが、束にならない例で見たようにオブジェクト型の join 演算と meet 演算で生成される型は実際には厳密な最小上界と最大下界には相当しません。したがって、束に非常によく似た構造ではあるものの束にはなりません。
 
 ただし、重要なことして、join (union) と meet (intersection) 演算の結果の型は一つに定まることが分かります。もしも join 演算と meet 演算が本当に最小上界と最大下界を生成するだけならそもそも束にならない構造においてユニオン型とインターセクション型を生成できないことになります。
 
@@ -248,6 +276,7 @@ graph BT
 そして Scala3 が束を持つことは仕様書レベルで語られています。
 
 > All types live in a single lattice with respect to a [conformance](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#conformance) relationship $<:$. The *top type* is `AnyKind` and the *bottom type* is `Nothing`: all types conform to `AnyKind`, and `Nothing` conforms to all types.
+> (https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#kinds より引用)
 
 基本配置図の [`Any`](https://scala-lang.org/api/3.x/scala/Any.html) 型はどうやらクラス階層のルートではあるもの Top 型ではなく、[`AnyKind`](https://scala-lang.org/api/3.x/scala/AnyKind.html) と呼ばれる型が Top 型となるようです。
 
@@ -257,9 +286,10 @@ https://www.youtube.com/watch?v=vuTFg5g_f6w
 
 #### 最小上界と最大下界
 
-Scala3 のユニオン型のドキュメントを除いてみると、最小上界(least upper bound)についての言及があります。
+Scala3 のコンパイラのユニオン型のドキュメントを除いてみると、最小上界(least upper bound)についての言及があります。
 
 > From these rules it follows that the least upper bound (LUB) of a set of types is the union of these types. This replaces the [definition of least upper bound in the Scala 2 specification](https://dotty.epfl.ch/docs/reference/new-types/union-types-spec.html#:~:text=definition%20of%20least%20upper%20bound%20in%20the%20Scala%202%20specification).
+> (https://dotty.epfl.ch/docs/reference/new-types/union-types-spec.html より引用)
 
 ユニオン型は最小上界に相当し、部分型規則として結合律、可換律、乗法の加法上への分配律(インターセクション型のユニオン型に対しての分配律)を満たすことも記載されています。
 
@@ -648,6 +678,28 @@ graph BT
 | 分配律 (distributivity) | $a \lor (b \land c) = (a \lor b) \land (a \lor c)$ <br/> $a \land (b \lor c) = (a \land b) \lor (a \land c)$ |
 | 補元 (complements) | $a \lor \neg a = 1$ <br/> $a \land \neg a = 0$ |
 
+実際に上記の法則が成り立っているかを先の冪集合と同じ束構造で確認してみてください。
+
+```mermaid
+graph BT
+  B["0"]
+  X["a"]
+  Y["b"]
+  Z["c"]
+  XY["¬c"]
+  ZX["¬b"]
+  YZ["¬a"]
+  T["1"]
+  B --> X & Y & Z
+  X --> XY
+  Y --> XY
+  Z --> ZX
+  Y --> YZ
+  X --> ZX
+  Z --> YZ
+  XY & YZ & ZX --> T
+```
+
 ブール束の条件を緩めて、通常の束構造が持つ代数法則は以下のようになります。
 
 | 法則名 | 恒等式 |
@@ -665,7 +717,7 @@ graph BT
 
 このことからブール束はシンプルに見れば有界束に否定演算が追加されただけの構造のように見えますが、演算二つから三つとなって組合せ数が多くなるため、相当の表現力を持つことになります。またブール束の構造の条件としては分配束([distributed lattice](https://en.wikipedia.org/wiki/Distributive_lattice))かつ可補束([complemented lattice](https://en.wikipedia.org/wiki/Complemented_lattice))である必要もあります。
 
-分配束とは以下のような分配律を満たす束のことです。通常の束は分配率を満たすとは限りません。
+分配束とは以下のような分配律を満たす束のことであり、通常の束は分配律を満たすとは限りません。
 
 | 法則名 | 恒等式 |
 |---|:---:|
@@ -680,11 +732,19 @@ a \land b = 0 \\
 \end{aligned}
 $$
 
-ブール束では否定演算があるので補元 $b$ を $\neg a$ と表現できます。
+ブール束では否定演算があり、補元 $b$ を $\neg a$ と表現できます。つまり、上の恒等式は以下のようになります。
 
-なお、このような代数法則は次の環論の章で扱うのでよく覚えておいてください。
+$$
+\begin{aligned}
+a \lor \neg a = 1 \\
+a \land \neg a = 0 \\
+\end{aligned}
+$$
 
-### 和と積と否定を有する型システム
+ブール束の構造的なイメージについては以下の記事が参考にしてください。
+https://www.cs-study.com/koga/cmath/cmath01.html#bool
+
+### 和集合と共通部分と補集合を有する型システム
 
 和集合に相当するユニオン型(join演算)と共通部分に相当するインターセクション型(meet演算)に加えて補集合に相当する否定型(not演算)がある言語について興味があれば Giuseppe Castagna 氏による以下の論文が参考になるでしょう。
 ※ 以下は Giuseppe 氏本人が公開している論文のURLです。
@@ -705,3 +765,300 @@ Luau は通常の構文主導の構文的部分型(Syntactic Subtyping)のシス
 『[部分型関係の概念](4-tam-subtyping-concept)』の章において、部分型関係は厳密には集合の包含関係ではないと述べましたが、Semantic Subtypingの型システムにおいては集合論を公理として実装を行うため、これまで考えてきた部分型関係をそのまま集合の包含関係として扱うことができるようです。
 
 Luau でもすべての否定形を実装できているわけではなく、実装的に難しい箇所などによって理想的な意味論的部分型にはできていない部分もあるそうです。
+
+## 型束の代数的振る舞い
+
+$\text{TYPES'}$ は厳密には束ではないですが、有向集合を前提としてかなり束に近い構造をしています。加えて任意の型についてユニークなユニオン型とインターセクション型を生成できます。仮にそれらの型が半順序集合内で最小上界や最大下界にならずとも、joinとmeetの演算結果が定まることから束と同じような代数的振る舞いを有することが推測されます。
+
+ここで、ブール束の代数法則から補元の存在性だけを除いた有界な分配束を考えましょう。
+
+| 法則名 | 恒等式 |
+|---|:---:|
+| 結合律 (associativity) | $a \lor (b \lor c) = (a \lor b) \lor c$ <br/> $a \land (b \land c) = (a \land b) \land c$ |
+| 可換律 (commutativity) | $a \lor b = b \lor a$ <br/> $a \land b = b \land a$ |
+| 吸収律 (absorption) | $a \lor (a \land b) = a$ <br/> $a \land (a \lor b) = a$ |
+| 冪等律 (idempotent) | $a \lor a = a$ <br/> $a \land a = a$
+| 単位元 (identity) | $a \lor 0 = a$ <br/> $a \land 1 = a$ |
+| 分配律 (distributivity) | $a \lor (b \land c) = (a \lor b) \land (a \lor c)$ <br/> $a \land (b \lor c) = (a \land b) \lor (a \land c)$ |
+
+有界ということで、$\text{TYPES'}$ では `never` 型は最小元 $0$ に相当し、`unknown` 型は最大元 $1$ に相当します。そしてこれらの型は束のjoin演算とmeet演算において単位元として振る舞います。
+
+### 単位元の存在性
+
+ある二項演算において単位元(identity element)とは、他のどの元もその単位元との演算において影響を受けないという法則です。例えば自然数の集合では加法の単位元は $0$ であり、乗法の単位元は $1$ です。
+
+$$
+\begin{aligned}
+0 + 3 &= 3 + 0 = 3 \\
+1 \times 3 &= 3 \times 1 = 3
+\end{aligned}
+$$
+
+和集合に相当するユニオン型のjoin演算について表現の仕方を網羅すると以下のようになります。
+
+$$
+\begin{aligned}
+a \lor \text{never} &= \text{never} \lor a =  a \\
+a \cup \text{never} &= \text{never} \cup a = a \\
+a\ |\ \text{never} &= \text{never}\ |\ a = a
+\end{aligned}
+$$
+
+これは直感的にも明らかであり、任意の型と `never` 型とのユニオンは必ずその型自身になります。集合論的に見れば任意の集合と空集合の和集合は元の集合になります。
+
+同様に、共通部分に相当するインターセクション型のmeet演算について表現の仕方を網羅すると以下のようになります。
+
+$$
+\begin{aligned}
+a \land \text{unknown} &= \text{unknown} \land a = a \\
+a \cap \text{unknown} &= \text{unknown} \cap a = a \\
+a\ \&\ \text{unknown} &= \text{unknown}\ \&\ a = a
+\end{aligned}
+$$
+
+これは直感的にも明らかであり、任意の型と `unknown` 型とのインターセクションは必ずその型自身になります。集合論的に見れば任意の部分集合と全体集合の共通部分は部分集合そのものになります。
+
+### 可換律
+
+可換律(commutativity)は交換律とも呼ばれます。演算のオペランドの順番を交換しても結果は同じとなります。例えば、自然数の集合において加法と乗法はこの可換律を満たします。
+
+$$
+\begin{aligned}
+2 + 3 &= 3 + 2 = 5 \\
+2 \times 3 &= 3 \times 2 = 6
+\end{aligned}
+$$
+
+集合論的に見れば、和集合を得る演算について対象の順番を交換しても同じ結果になります。
+
+$$
+\begin{aligned}
+a \lor b &= b \lor a \\
+a \cup b &= b \cup b \\
+a\ |\ b &= b\ |\ a
+\end{aligned}
+$$
+
+共通部分を得る演算について対象の順番を交換しても同じ結果になります。
+
+$$
+\begin{aligned}
+a \land b &= b \land a \\
+a \cap b &= b \cap b \\
+a\ \&\ b &= b\ \&\ a
+\end{aligned}
+$$
+
+### 結合律
+
+結合律(associativity)は、同じ演算子が式に複数個出力する場合に演算を施す順番が結果に影響を与えないという法則です。例えば自然数の集合では加法も乗法も結合律を満たします。
+
+$$
+\begin{aligned}
+2 + (3 + 4) &= (2 + 3) + 4 = 9 \\
+2 \times (3 \times 4) &= (2 \times 3) \times 4 = 24
+\end{aligned}
+$$
+
+集合論的に見てもどのような順番で和集合をつくっても同じになることは直感的に分かります。
+
+$$
+\begin{aligned}
+a \lor (b \lor c) &= (a \lor b) \lor c \\
+a \cap (b \cap c) &= (a \cap b) \cap c \\
+a\ \&\ (b\ \&\ c) &= (a\ \&\ b)\ \&\ c
+\end{aligned}
+$$
+
+共通部分についてはそこまで直感的ではないですが、同様に順番によりません。
+
+$$
+\begin{aligned}
+a \land (b \land c) &= (a \land b) \land c \\
+a \cup (b \cup c) &= (a \cup b) \cup c \\
+a\ \&\ (b\ \&\ c) &= (a\ \&\ b)\ \&\ c
+\end{aligned}
+$$
+
+### 吸収律
+
+吸収律(absorption)は束としての構造を最も特徴づける代数法則であり、かなり特殊な法則なため具体的な例は思いつきません。
+
+ただし、これも集合論的に見ればある集合 $a$ と $b$ の共通部分を作ってから元の集合 $a$ との和集合を作れば元の集合 $a$ に戻るということは直感的に分かります。
+
+$$
+\begin{aligned}
+a \lor (a \land b) &= (a \land b) \lor a = a \\
+a \cup (a \cap b) &= (a \cap b) \cup a = a \\
+a\ |\ (a\ \&\ b) &= (a\ \&\ b)\ |\ a = a
+\end{aligned}
+$$
+
+同様にある集合 $a$ と $b$ の和集合を作ってから元の集合 $a$ との共通部分を作れば元の集合 $a$ に戻るということも直感的に分かります。
+
+$$
+\begin{aligned}
+a \land (a \lor b) &= (a \lor b) \land a = a \\
+a \cap (a \cup b) &= (a \cup b) \cap a = a \\
+a\ \&\ (a\ |\ b) &= (a\ |\ b)\ \&\ a = a
+\end{aligned}
+$$
+
+### 冪等律
+
+冪等性(idempotence)とは、$x^2 = x$ のような文字通り冪が元の要素と等しくなる性質のことです。
+
+ユニオン型(和集合/join演算)について表現すると以下のような法則となります。これも集合的に見れば、ある集合の自分自身との和集合はその集合そのものになります。
+
+$$
+\begin{aligned}
+a \lor a &= a \\
+a \cup a &= a \\
+a\ |\ a &= a
+\end{aligned}
+$$
+
+インターセクション型(共通部分/meet演算)について表現すると以下のような法則となります。これも集合的に見れば、ある集合の自分自身との共通部分はその集合そのものになります。
+
+$$
+\begin{aligned}
+a \land a &= a \\
+a \cap a &= a \\
+a\ \&\ a &= a
+\end{aligned}
+$$
+
+冪等律は順序関係の反射律や圏の恒等射のようなものとしても見れるかもしれません。
+
+### 分配律
+
+分配律(distributivity)とは文字通りある演算を別の演算に対して分配できるという法則です。例えば自然数の集合の乗法は加法に対して分配律を満たします。
+
+$$
+\begin{aligned}
+2 \times (3 + 4) &= (2 \times 3) + (2 \times 4) = 14
+\end{aligned}
+$$
+
+一方で、加法は乗法に対して分配律を満たしません。
+
+$$
+\begin{aligned}
+2 + (3 \times 4) &= 14 \\
+(2 + 3) \times (2 + 4) &= 30
+\end{aligned}
+$$
+
+自然数では一方の分配律しか成り立ちませんが、今考えている束的な構造ではブール束と同じように異なる二つの演算が相互に分配律を満たしています。
+
+$$
+\begin{aligned}
+a \land (b \lor c) &= (a \land b) \lor (a \land c) = (b \lor c) \land a \\
+a \cap (b \cup c) &= (a \cap b) \cup (a \cap c) = (b \cup c) \cap a \\
+a\ \&\ (b\ |\ c) &= (a\ \&\ b)\ |\ (a\ \&\ c) = (b\ |\ c)\ \&\ a
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+a \lor (b \land c) &= (a \lor b) \land (a \lor c) = (b \land c) \lor a \\
+a \cup (b \cap c) &= (a \cup b) \cap (a \cup c) = (b \cap c) \cup a \\
+a\ |\ (b\ \&\ c) &= (a\ |\ b)\ \&\ (a\ |\ c) = (b\ \&\ c)\ |\ a
+\end{aligned}
+$$
+
+### 検証
+
+単純な型のレベルではこれらはすべて少なくても同値関係で成り立つ事がわかります。特に吸収律は同一ではなく同値レベルになります。
+
+```ts
+type A = number;
+type B = string;
+type C = boolean;
+
+// 結合律
+type A1 = Relation<A | (B | C), (A | B) | C>;
+// => Identical
+type A2 = Relation<A & (B & C), (A & B) & C>;
+// => Identical
+type A3 = Relation<A | B | C, C | A | B>
+// => Identical
+
+// 可換律
+type C1 = Relation<A | B, B | A>;
+// => Identical
+type C2 = Relation<A & B, B & A>;
+// => Identical
+
+// 単位元の存在性
+// join演算の単位元: 0 → never
+type R1 = Relation<A, A | never>;
+// => Identical
+// meet演算の単位元: 1 → unknown
+type R2 = Relation<A, A & unknown>;
+// => Identical
+
+// 吸収律
+type H1 = Relation<A | (A & B), A>;
+// => Equivalent
+type H2 = Relation<A & (A | B), A>;
+// => Equivalent
+
+// 分配律
+type D1 = Relation<A & (B | C), (A & B) | (A & C)>;
+// => Identical
+type D2 = Relation<(A | B) & C, (A & C) | (B & C)>;
+// => Identical
+type D3 = Relation<A | (B & C), (A | B) & (A | C)>;
+// => Identical
+type D4 = Relation<A & (B | C), (A & B) | (A & C)>;
+// => Identical
+```
+
+オブジェクト型についても同様です。
+
+```ts
+type A = { fst: number };
+type B = { snd: string };
+type C = { trd: boolean };
+
+// 結合律
+type A1 = Relation<A | (B | C), (A | B) | C>;
+// => Identical
+type A2 = Relation<A & (B & C), (A & B) & C>;
+// => Identical
+type A3 = Relation<A | B | C, C | A | B>
+// => Identical
+
+// 可換律
+type C1 = Relation<A | B, B | A>;
+// => Identical
+type C2 = Relation<A & B, B & A>;
+// => Identical
+
+// 単位元の存在性
+// join演算の単位元: 0 → never
+type R1 = Relation<A, A | never>;
+// => Identical
+// meet演算の単位元: 1 → unknown
+type R2 = Relation<A, A & unknown>;
+// => Identical
+
+// 吸収律
+type H2 = Relation<A | (A & B), A>;
+// => Equivalent
+type H3 = Relation<A & (A | B), A>;
+// => Equivalent
+
+// 分配律
+type D1 = Relation<A & (B | C), (A & B) | (A & C)>;
+// => Identical
+type D2 = Relation<(A | B) & C, (A & C) | (B & C)>;
+// => Identical
+type D3 = Relation<A | (B & C), (A | B) & (A | C)>;
+// => Equivalent
+type D4 = Relation<A & (B | C), (A & B) | (A & C)>;
+// => Identical
+```
+
+
