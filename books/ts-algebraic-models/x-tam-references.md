@@ -25,3 +25,4 @@ aliases: TAM本『参考文献』
 - [Akihiko Koga, "順序集合や束などに関する基本的な概念の説明"](https://www.cs-study.com/koga/lattice/explanations_on_concepts_of_posets.html)
 - [Steve Awodey, "Category Theory"](https://global.oup.com/ukhe/product/category-theory-9780199237180?cc=gb&lang=en&)
 - [Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/)
+- [復刊 束論](https://www.kyoritsu-pub.co.jp/book/b10007810.html)
