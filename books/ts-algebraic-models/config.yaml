@@ -1,5 +1,5 @@
-title: "TypeScriptの代数的型模型"
-summary: "TypeScriptの型がなす代数的構造についての解説およびその調査記録"
+title: "TypeScriptの代数的部分型模型"
+summary: "TypeScriptの部分型関係がなす代数的構造についての解説、およびその調査記録。"
 topics: [typescript, 型システム, 部分型, 代数的構造]
 published: false
 price: 0
