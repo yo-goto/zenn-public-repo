@@ -4,15 +4,15 @@ topics: [typescript, 型システム, 部分型, 代数的構造]
 published: false
 price: 0
 chapters:
-  - 1-tam-begin #『はじめに』
-  - 2-tam-mental-model #『型のメンタルモデル』
-  - 3-tam-algebraic-structures-laws #『代数的構造と代数法則』
-  - 4-tam-subtyping-concept #『部分型関係の概念』
-  - 5-tam-order-theoretic-model #『順序理論による模型』
-  - 6-tam-set-theoretic-model #『集合論による模型』
-  - 7-tam-lattice-theoretic-model #『束論による模型(1)』
-  - 7-2-tam-lattice-theoretic-model-2 #『束論による模型(2)』
-  - 8-tam-ring-theoretic-model #『環論による模型』
-  - 9-tam-category-theoretic-model #『圏論による模型』
-  - x-tam-references #『参考文献』
+  - 1-ast-begin #『はじめに』
+  - 2-ast-mental-model #『型のメンタルモデル』
+  - 3-ast-algebraic-structures-laws #『代数的構造と代数法則』
+  - 4-ast-subtyping-concept #『部分型関係の概念』
+  - 5-ast-order-theoretic-model #『順序理論による模型』
+  - 6-ast-set-theoretic-model #『集合論による模型』
+  - 7-1-ast-lattice-theoretic-model #『束論による模型(1)』
+  - 7-2-ast-lattice-theoretic-model-2 #『束論による模型(2)』
+  - 8-ast-ring-theoretic-model #『環論による模型』
+  - 9-ast-category-theoretic-model #『圏論による模型』
+  - x-ast-references #『参考文献』
 
