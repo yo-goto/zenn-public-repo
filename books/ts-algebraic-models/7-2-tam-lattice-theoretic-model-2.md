@@ -110,7 +110,7 @@ classDef glb fill:#78d
 
 また、部分集合 $S$ の結び(join)を $\lor S$ と表現し、交わり(meet)を $\land S$ と表現することがあります。
 
-さて、`Object, {}` などの相互に部分型関係となる、すなわち同値関係となるような型同士を同値類としてまとめた商集合は半順序集合になりました。このような型の集合 $\text{TYPES'}$ は半順序集合であり、以下のような基本構造(あるいは基本配置)を構築します。
+さて、`Object, {}` などの相互に部分型関係となる、すなわち同値関係となるような型同士を同値類としてまとめた商集合は半順序集合になりました。このような型の集合 $\text{TYPES'}$ は半順序集合であり、以下のような基本構造(あるいは基本配置)を構築します。※ 一部簡略化しています。
 
 ```mermaid
 graph BT
@@ -123,6 +123,7 @@ graph BT
   subgraph Primitive
     u[undefined]
     n[null]
+    L
     P[Primitive types]
   end
   objs[Object types]

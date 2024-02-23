@@ -20,7 +20,13 @@ aliases: TAM本『集合論による模型』
 
 型が厳密には集合ではないことを考慮しても、そもそも型そのものと複数の型の集まりについて集合論的に扱えるかどうかは一般的に言えることではありません。
 
-一方で、TypeScript は公式ドキュメントの「[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)」にも記載してあるとおり、かなり集合論的に扱えるようにデザインされています。ということで、直感的な集合論で型についてのメンタルモデルを構築することに大きな問題はありません。集合論で扱えきれない部分については後述する圏論などを使って補います。
+一方で、TypeScript は公式ドキュメントの「[Types as Sets](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html#types-as-sets)」にも記載してあるとおり、かなり集合論的に扱えるようにデザインされています。Microsoft Developers の以下の動画にて TypeScript の開発者である [Anders Hejlsberg](https://en.wikipedia.org/wiki/Anders_Hejlsberg) 氏も型が集合として扱えることを語っています。
+
+https://www.youtube.com/watch?v=hDACN-BGvI8&t=1592s
+
+> This works -- this is really more like reasoning about sets of possible values. That is really what the type system is doing.
+
+ということで、直感的な集合論で型についてのメンタルモデルを構築することに大きな問題はありません。集合論で扱えきれない部分については後述する圏論などを使って補います。
 
 集合論的に扱えるとは、例えば、ユニオン型やインターセクション型が集合の演算としての和集合や交差などに相当する概念として使えることや、リテラル型とプリミティブ型の関係や、空集合や全体集合に相当する `never` 型や `unknown` 型が存在しているということです。
 
