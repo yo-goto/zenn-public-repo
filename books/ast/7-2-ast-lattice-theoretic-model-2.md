@@ -421,11 +421,11 @@ CUE では TypeScript と同じく join 演算として `|` が利用でき、me
 
 問題となるオブジェクト型の集合的な解釈をベン図にしたものをもう一度見てみましょう。筆者はこの図に問題があると考えています。
 
-![オブジェクト型のベン図表現](/images/ts-type-models/img_three-types-venn.png)
+![オブジェクト型のベン図表現](/images/ast/img_three-types-venn.png)
 
 このベン図で型の積と和で表現しきれない領域が存在していることがわかるでしょうか。それは以下の図で表現される領域 $X \cap (\overline{Y \cup Z})$ 及び $Y \cap (\overline{Z \cup X})$ と $Z \cap (\overline{X \cup Y})$ です。
 
-![完全な和と積のベン図](/images/ts-type-models/img_absolute_venn.png)
+![完全な和と積のベン図](/images/ast/img_absolute_venn.png)
 
 ユニオン型とインターセクション型だけでは実はこれらの型を表現することはできません。そう、集合の否定演算つまり補集合を表現する型が必要となります。
 
@@ -433,7 +433,7 @@ https://github.com/microsoft/TypeScript/issues/4196
 
 これによってオブジェクト型の和と積が束になることを示します。まず３つの型の構造を考える前に以下のような２つの集合の和と積が束になることから確認します。
 
-![２つの集合のベン図](/images/ts-type-models/img_two-sets-venn.png)
+![２つの集合のベン図](/images/ast/img_two-sets-venn.png)
 
 これを使いベン図内のすべての領域について順序を構築します。
 
@@ -481,11 +481,11 @@ graph BT
 
 次に３つの型 `X, Y, Z` で考えます。再びベン図を眺めます。
 
-![完全な和と積のベン図](/images/ts-type-models/img_absolute_venn.png)
+![完全な和と積のベン図](/images/ast/img_absolute_venn.png)
 
 ３つの集合のベン図内の集合要素について和・積・否定のすべてを使った組み合わせはとんでもなく複雑なハッセ図を構築します。考え方としては、今３つの集合 `X, Y, Z` が非空であり、ベン図内に図示される分割された領域がすべて非空であって、各領域に１個の要素があるとして、各要素(各領域) $a, b, c, d, e, f, g$ として名前付けます。
 
-![７要素の冪集合](/images/ts-type-models/img_7sets-power-venn.png)
+![７要素の冪集合](/images/ast/img_7sets-power-venn.png)
 
 描きたいハッセ図はこのベン図内のすべての部分集合の包含関係です。したがって、この領域から構成される集合をすべてかき集めた冪集合の包含関係のハッセ図が書ければいいわけです。つまり、集合 $S = \lbrace a, b, c, d, e, f, g \rbrace$ の冪集合を考えることになります。
 
@@ -493,7 +493,7 @@ graph BT
 
 ということで [graphviz](https://graphviz.org) と [ts-graphviz](https://github.com/ts-graphviz/ts-graphviz) と ChatGPT の力を借りて TypeScript プログラムで生成したものが以下となります。
 
-![7個の要素からなる集合の冪集合のハッセ図](/images/ts-type-models/img_7-power-sets-hasse-diagram.png)
+![7個の要素からなる集合の冪集合のハッセ図](/images/ast/img_7-power-sets-hasse-diagram.png)
 
 :::details 冪集合のハッセ図生成プログラムのソースコード
 ts-graphviz は Graphviz の [Dot 言語](https://graphviz.org/doc/info/lang.html)を作成できる TypeScript 向けのライブラリです。
@@ -634,7 +634,7 @@ await main();
 
 二元集合の冪集合 | 三元集合の冪集合
 --|--
-![濃度2](/images/ts-type-models/img_2el-power-set-hasse.png) | ![濃度3](/images/ts-type-models/img_3el-power-set-hasse.png)
+![濃度2](/images/ast/img_2el-power-set-hasse.png) | ![濃度3](/images/ast/img_3el-power-set-hasse.png)
 :::
 
 このような狂ったハッセ図が束になるかどうかを調べるにはこれまでのやり方ではほぼ無理でしょう。
