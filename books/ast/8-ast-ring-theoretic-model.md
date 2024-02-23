@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『環論による模型』
+aliases: AST本『環論による模型』
 ---
 
 ## 半環としての構造

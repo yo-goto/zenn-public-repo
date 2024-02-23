@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『参考文献』
+aliases: AST本『参考文献』
 ---
 
 ## Algebraic Subtyping

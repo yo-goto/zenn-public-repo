@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『集合論による模型』
+aliases: AST本『集合論による模型』
 ---
 
 ## 集合論による型の取り扱い

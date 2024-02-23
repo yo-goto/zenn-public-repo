@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『型のメンタルモデル』
+aliases: AST本『型のメンタルモデル』
 ---
 
 ## 表示的意味論

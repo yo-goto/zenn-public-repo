@@ -4,7 +4,7 @@ date: 2024-01-27
 modified: 2024-02-10
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
 aliases:
-  - TAM本
+  - AST本
   - TypeScriptの代数的模型
 ---
 

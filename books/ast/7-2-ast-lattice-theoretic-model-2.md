@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『順序理論による模型(2)』
+aliases: AST本『順序理論による模型(2)』
 ---
 
 ## 結びと交わり

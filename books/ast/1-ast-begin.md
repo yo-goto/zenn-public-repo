@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『はじめに』
+aliases: AST本『はじめに』
 ---
 
 この本では、これまで書いてきた以下の TypeScript の型についての話をさらに発展させた内容についての解説およびその調査記録について語りたいと思います。

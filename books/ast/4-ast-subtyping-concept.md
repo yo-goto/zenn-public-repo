@@ -5,7 +5,7 @@ date: 2024-02-10
 modified: 2024-02-10
 AutoNoteMover: disable
 tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
-aliases: TAM本『部分型関係の概念』
+aliases: AST本『部分型関係の概念』
 ---
 
 ## 部分型関係
