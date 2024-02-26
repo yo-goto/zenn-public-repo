@@ -306,8 +306,101 @@ end
 
 ![部分圏](/images/ast/img_subcategory.png)
 
+## 型と部分型関係の圏
 
-## 変性と自己関手
+この章の冒頭で述べたように、TypeScript の型システムで考える圏は Haskell における「**対象を型、射を関数とする圏**」である [Hask](https://ja.wikibooks.org/wiki/Haskell/%E5%9C%8F%E8%AB%96) のような圏とはまったく異なります。
+
+むしろ Hask のような圏よりもかなりシンプルで扱いやすい構造として「**対象を型、射を部分型関係とする圏**」を考えます。部分型関係は少なくとも前順序であり、同値類の導入で半順序に変換できました。したがって型と部分型関係の圏は半順序集合の圏として構築することが可能です。
+
+同値関係($\equiv$)を核とした商集合 $\text{TYPES'}$ を台集合として、半順序関係となる部分型関係 $<:$ を射とした圏を構築します。順序集合の圏についての説明で見たように、順序集合では反射律による関係が恒等射となります。つまり、任意の型 $T$ についての自己言及的な部分型関係 $T <: T$ が恒等射です。また、射の合成についても同様に部分型関係が満たす推移律を使って行うことで合成射を定義できます。
+
+![部分型関係の圏](/images/ast/img_subtype-category.png)
+
+基本的に圏において二対象間の射は一つであるとは限りませんが、半順序集合の圏では対象と対象の間の射はあってもただ一つとなりますした。もちろん前順序では要素間が比較不能である場合(関係がない場合)もあるので、そのような二対象間では射が無い(部分型関係がない)わけです。推移律によって合成された部分型関係はどのルートを取ろうが一つの関係 $\le$ があるかないかだけなので、半順序集合の圏においては複数個ありえる射の合成は必ず一つの射に定まります。
+
+もう少し具体的に見ると、例えば簡略化された以下の型の配置図ではそれぞれの線分は部分型関係を表しており、これもある種の圏の図式としてみなせます。各部分型関係はそれぞれが型(対象)から型(対象)への射となります。
+
+```mermaid
+graph BT
+U["unknown"]
+N["never"]
+E["{ }"]
+NU["null"]
+UN["undefined"]
+N --> NU & UN --> U
+N --> E --> U
+```
+
+ただし、この図式では恒等射や合成射が表現されていませんね。推移律による合成射や型や反射律による恒等射までを表現すると以下のようになります。
+
+```mermaid
+graph BT
+U["unknown"]
+N["never"]
+E["{ }"]
+NU["null"]
+UN["undefined"]
+N --> NU --> U
+N -.-> U
+N --> UN --> U
+N --> E --> U
+N --> N
+NU --> NU
+UN --> UN
+E --> E
+U --> U
+```
+
+`never` 型という対象から `unknown` 型という対象までパスの基本ルートは `null`、`undefined`、`{}` の三つがありますが、どの部分型関係の推移律で射の合成を行おうが、合成結果はすべて $\text{never} <: \text{unknown}$ となります。つまり合成の方法によらず必ず一つの射に定まります。反射律による循環の関係を途中で使っても同様です。
+
+このような恒等射と合成射は表現するとキリがないため今後も省略します。そして以下の基本型配置図は基本的な型の被覆関係を示したものですが、これも恒等射や合成射が省略された圏の図式としてみなすことができます。
+
+```mermaid
+graph BT
+  U[unknown]
+  N[never]
+  V[void]
+  O["{ }\n Object"]
+  udt["User Defined Types"]
+  cons["Constructor Function Types"]
+  N --> undefined --> V --> U
+  N --> null --> U
+  Number & String & Boolean & BigInt & Symbol --> O --> U
+  subgraph Wrap[Object wrapper type]
+    Number
+    String
+    Boolean
+    BigInt
+    Symbol
+  end
+  subgraph Primitive
+    subgraph Unit[Unit type]
+      undefined
+      null
+      nl[number literal]
+      sl[string literal]
+      bl[boolean literal]
+      bil[bigint literal]
+      us[unique symbol]
+    end
+    subgraph Col[Collective type]
+      number
+      string
+      boolean
+      bigint
+      symbol
+    end
+      nl[number literal] --> number --> Number
+      sl[string literal] --> string --> String
+      bl[boolean literal] --> boolean --> Boolean
+      bil[bigint literal] --> bigint --> BigInt
+      us[unique symbol] --> symbol --> Symbol
+  end
+  N --> nl & sl & bl & bil & us
+  N --> cons --> Function --> O
+  N --> udt --> O
+  N --> Tuple --> Array & RT[readonly Tuple] --> ReadonlyArray --> O
+```
 
 圏論の概念を導入することでやっかいな変性(variance)の概念をかなりスッキリと理解できるようになります。
 
