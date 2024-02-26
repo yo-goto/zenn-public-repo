@@ -1,7 +1,7 @@
 title: "TypeScriptの代数的部分型模型"
 summary: "TypeScriptの部分型関係がなす代数的構造についての解説、およびその調査記録。"
 topics: [typescript, 型システム, 部分型, 代数的構造]
-published: false
+published: true
 price: 0
 chapters:
   - 1-ast-begin #『はじめに』
@@ -15,4 +15,3 @@ chapters:
   - 8-ast-ring-theoretic-model #『環論による模型』
   - 9-ast-category-theoretic-model #『圏論による模型』
   - x-ast-references #『参考文献』
-
