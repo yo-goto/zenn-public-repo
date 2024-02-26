@@ -64,7 +64,7 @@ url: https://zenn.dev/estra/books/obsidian-dot-zenn
 [[ohzflow-zenn-hugo-obsidian]]
 
 一般説明
-[[lifeHackDougubako_2022_draft_obsidian|『ライフハックの道具箱』2022年版ドラフト_obsidian]]
+[[lhd_2022_obsidian|『ライフハックの道具箱』2022年版ドラフト_obsidian]]
 
 プラグイン系
 [[Obsidian Plugin Linter]]

@@ -15,8 +15,6 @@ aliases:
   - 型の階層性
   - 型の階層図
   - Type hierarchy
-  - 代入可能性
-  - assignability
 ---
 
 ## はじめに
@@ -895,26 +893,28 @@ https://sititou70.github.io/TypeScript%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E4%BB
 
 部分型関係はその推論規則から推移性が成り立ちますが、例えばプリミティブ型とプリミティブ型の否定を表現する non-primitive object(`object`) 型の間の関係では推移律が成り立たないケースが発生します。
 
-以下の図は部分型関係について部分的に詳細にしたものです。図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。
+以下の図は部分型関係について部分的に詳細にしたものです。図の `object` 型とプリミティブ型の関係に注目してください。`object :> Wrapper :> プリミティブ型` という部分型関係があるため、推移律から `object >: プリミティブ型` が成立するはずです。※ この節では矢印の方向を正当な向きに戻しています。
 
 ```mermaid
-graph TD
+graph BT
   U[unknown]
   N[never]
   O["Object, { }"]
   obj[object]
   W[Wrapper]
   P[プリミティブ型]
-  objs[オブジェクト型]
-  U --> O
-  O -->|相互に部分型| obj
-  O --> objs
-  O ----> W
-  obj -->|代入可能| W
-  obj --> objs --> N
-  obj --->|相互に部分型| O
-  W -->|代入可能| P --> N
-  obj -.-x |直接的に代入不可能| P
+  OBJS[オブジェクト型]
+  N --> OBJS --> O --> U
+  N --> P -->|割当可能| W --> O
+  W -->|割当可能| obj
+  OBJS --> obj
+  P -.-x|直接の割当不可能| obj
+  O -->|割当可能| obj
+  obj -->|割当可能| O
+  subgraph A["プリミティブではないことを表現"]
+  direction LR
+  obj
+  end
 ```
 
 より具体的には、プリミティブ型 (`string` など) がオブジェクトラッパー型 (`String` など) の Subtype であり、オブジェクトラッパー型が `Object` 型 (あるいは `{}`) の Subtype であるので、それらと相互に置換できる `object` についても通常は部分型関係が推移的に成り立たないといけなくなります。
@@ -948,17 +948,15 @@ obj = pri; // NG → Error: Type 'string' is not assignable to type 'object'
 このような部分型関係がなくなれば推移性はより整合性が確保されるはずで、`object` が入る前の推移性はおそらく以下のようにきれいな状態になっていたと思われます。
 
 ```mermaid
-graph TD
+graph BT
   U[unknown]
   N[never]
   O["Object, { }"]
   W[Wrapper]
   P[プリミティブ型]
   objs[オブジェクト型]
-  U --> O
-  O --> objs & W
-  objs --> N
-  W --> P --> N
+  N --> objs --> O --> U
+  N --> P --> W --> O
 ```
 
 なお、enum などの型についても推移性が成り立たなくなるケースがあるらしく、上記のブログ記事でそのようなケースについて解説されていました。このケースはおそらく後述する Assignment 互換性が Subtype 互換性の拡張であることが原因となっていると思われます。
@@ -1020,10 +1018,10 @@ const nev: never = numAsAny; // [Error]
 `any` 型は型理論の文脈では一般的に **Dynamic type** と呼ばれ `?` で表現されます。Dynamic type は漸進的型付け(Gradual type system)というシステムで出てくる型で、静的型付けの世界と動的型付けの世界の境界となる型です。Gradual type のシステムは Subtyping とは関係がない独立したものですが、Subtyping の階層に加えることで両立した型システムを作成可能です。
 
 :::message
-TypeScript で採用されている漸進的型付けのシステムの源流となった Siek と Taha の論文で発表された Gradual typing における Dynamic type であると[厳密には言えない部分](https://qiita.com/uhyo/items/df276348b966f0e9fe1c)がいくつかありますが、上の開発者の動画では Gradual typing であると言っているので Gradual として扱います。公式ドキュメントでも Gradual typing であると書かれていますが、元々の Dynamic type とはいくから異なることが暗示されています。
+TypeScript で採用されている漸進的型付けのシステムの源流となった Siek と Taha の論文で発表された Gradual typing における Dynamic type であると[厳密には言えない部分](https://qiita.com/uhyo/items/df276348b966f0e9fe1c)がいくつかありますが、上の開発者の動画では Gradual typing であると言っているので Gradual として扱います。公式ドキュメントでも Gradual typing であると書かれていますが、元々の Dynamic type とはいくらか異なることが暗示されています。
 
-> TypeScript uses the type any whenever it can’t tell what the type of an expression should be. Compared to Dynamic, calling any a type is an overstatement. It just turns off the type checker wherever it appears. 
-> (https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#gradual-typing)
+> TypeScript uses the type any whenever it can’t tell what the type of an expression should be. Compared to Dynamic, calling any a type is an overstatement. It just turns off the type checker wherever it appears.
+> ([公式ドキュメント](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#gradual-typing)より)
 :::
 
 `any` 型を部分型関係の階層図に加えると以下のようになります。`object` 型の関係も修正しておきます。Assignability 互換性を表現するための図に近くなりましたが、`any` 型の変数はあらゆる型へ割当可能なため、正確に Assignability 互換性を表現しようと思うと `any` 型に対してすべての型から矢印が必要となります。
