@@ -139,6 +139,54 @@ type R2 = Relation<boolean, false>;
 
 ![型の包含関係と部分型関係](/images/typescript-widen-narrow/img_typeSet_6.png)
 
+## 和集合と共通部分
+
+ユニオン型(`|`)とインターセクション型(`&`)は論理学的に言えば型についての論理和(disjunction)と論理積(conjunction)を表現する演算です。
+
+一方で TypeScript の型を集合として解釈するとき、ユニオン型は集合の和集合(union)の演算に相当し、インターセクション型は集合の共通部分(intersection)の演算に相当します。
+
+![和集合](/images/typescript-widen-narrow/img_typeSet_2.png)
+
+話が少し変わりますが、HaskellやOCamlで「または」という論理和を表現するにはバリアント型(variant type)を利用します。バリアント型は例えば以下のように書きますが、バリアント型は集合的には共通部分がありません。
+
+```hs
+type tree =
+  Leaf of { value: int } |
+  Node of { left: tree; right: tree }
+```
+
+バリアント型は和を表す型の一種ですが、共通部分がないというのは以下の図の右のように表現する領域に共通部分がありません。このような集合を「互いに素な合併(disjoint union)」あるいは「非交和」と呼びます。
+
+![Disjoint union](/images/typescript-widen-narrow/img_typeSet_11.png)
+
+バリアント型は常にこのような非交和を表現しますが、TypeScript におけるユニオン型は非交和になる場合もあれば共通部分を持つ両方の場合があります。
+
+例えば、プリミティブ型同士の和集合は共通部分を持たないので非交和を表現します。共通部分を持たないということは型の共通部分の演算であるインターセクション型の結果が空集合に相当する `never` 型になるということです。
+
+```ts
+type U = string | number;
+
+const u1: U = "st";
+const u2: U = 42;
+
+type N = string & number;
+// => never (共通部分がないため)
+```
+
+逆にオブジェクト型同士などであれば共通部分を持つので、上図の左のような集合表現と一致します。
+
+```ts
+type U = { x: string; } | { y: number; };
+type I = { x: string; } & { y: number; };
+
+const u1: U = { x: "st" };
+const u2: U = { y: 42 };
+
+// 共通部分となる型の領域の値
+const i1: I = { x: "st", y: 42 };
+const u3: U = i1;
+```
+
 ## 冪集合
 
 このように考えると型の集合 $\text{TYPES'}$ は「**冪集合** (power set)」と呼ばれる構造になります。冪集合は集合 $S$ の部分集合をすべてかき集めて作った集合 $P(S)$ であり、その要素は集合となります。冪集合のような集合が要素であるような集まりを一般には「**集合族** (family of sets)」とよびます。例えば集合 $A = \lbrace 1, 2, 3 \rbrace$ (濃度が $3$ の集合)の冪集合の要素は以下の８個です。
