@@ -799,9 +799,9 @@ $$
 
 $$
 \begin{aligned}
-a \lor \text{never} &= \text{never} \lor a =  a \\
-a \cup \text{never} &= \text{never} \cup a = a \\
-a\ |\ \text{never} &= \text{never}\ |\ a = a
+a \lor \text{never} &\equiv \text{never} \lor a \equiv  a \\
+a \cup \text{never} &\equiv \text{never} \cup a \equiv a \\
+a\ |\ \text{never} &\equiv \text{never}\ |\ a \equiv a
 \end{aligned}
 $$
 
@@ -811,9 +811,9 @@ $$
 
 $$
 \begin{aligned}
-a \land \text{unknown} &= \text{unknown} \land a = a \\
-a \cap \text{unknown} &= \text{unknown} \cap a = a \\
-a\ \&\ \text{unknown} &= \text{unknown}\ \&\ a = a
+a \land \text{unknown} &\equiv \text{unknown} \land a \equiv a \\
+a \cap \text{unknown} &\equiv \text{unknown} \cap a \equiv a \\
+a\ \&\ \text{unknown} &\equiv \text{unknown}\ \&\ a \equiv a
 \end{aligned}
 $$
 
@@ -834,9 +834,9 @@ $$
 
 $$
 \begin{aligned}
-a \lor b &= b \lor a \\
-a \cup b &= b \cup b \\
-a\ |\ b &= b\ |\ a
+a \lor b &\equiv b \lor a \\
+a \cup b &\equiv b \cup b \\
+a\ |\ b &\equiv b\ |\ a
 \end{aligned}
 $$
 
@@ -844,9 +844,9 @@ $$
 
 $$
 \begin{aligned}
-a \land b &= b \land a \\
-a \cap b &= b \cap b \\
-a\ \&\ b &= b\ \&\ a
+a \land b &\equiv b \land a \\
+a \cap b &\equiv b \cap b \\
+a\ \&\ b &\equiv b\ \&\ a
 \end{aligned}
 $$
 
@@ -865,9 +865,9 @@ $$
 
 $$
 \begin{aligned}
-a \lor (b \lor c) &= (a \lor b) \lor c \\
-a \cap (b \cap c) &= (a \cap b) \cap c \\
-a\ \&\ (b\ \&\ c) &= (a\ \&\ b)\ \&\ c
+a \lor (b \lor c) &\equiv (a \lor b) \lor c \\
+a \cap (b \cap c) &\equiv (a \cap b) \cap c \\
+a\ \&\ (b\ \&\ c) &\equiv (a\ \&\ b)\ \&\ c
 \end{aligned}
 $$
 
@@ -875,9 +875,9 @@ $$
 
 $$
 \begin{aligned}
-a \land (b \land c) &= (a \land b) \land c \\
-a \cup (b \cup c) &= (a \cup b) \cup c \\
-a\ \&\ (b\ \&\ c) &= (a\ \&\ b)\ \&\ c
+a \land (b \land c) &\equiv (a \land b) \land c \\
+a \cup (b \cup c) &\equiv (a \cup b) \cup c \\
+a\ \&\ (b\ \&\ c) &\equiv (a\ \&\ b)\ \&\ c
 \end{aligned}
 $$
 
@@ -889,9 +889,9 @@ $$
 
 $$
 \begin{aligned}
-a \lor (a \land b) &= (a \land b) \lor a = a \\
-a \cup (a \cap b) &= (a \cap b) \cup a = a \\
-a\ |\ (a\ \&\ b) &= (a\ \&\ b)\ |\ a = a
+a \lor (a \land b) &\equiv (a \land b) \lor a \equiv a \\
+a \cup (a \cap b) &\equiv (a \cap b) \cup a \equiv a \\
+a\ |\ (a\ \&\ b) &\equiv (a\ \&\ b)\ |\ a \equiv a
 \end{aligned}
 $$
 
@@ -899,9 +899,9 @@ $$
 
 $$
 \begin{aligned}
-a \land (a \lor b) &= (a \lor b) \land a = a \\
-a \cap (a \cup b) &= (a \cup b) \cap a = a \\
-a\ \&\ (a\ |\ b) &= (a\ |\ b)\ \&\ a = a
+a \land (a \lor b) &\equiv (a \lor b) \land a \equiv a \\
+a \cap (a \cup b) &\equiv (a \cup b) \cap a \equiv a \\
+a\ \&\ (a\ |\ b) &\equiv (a\ |\ b)\ \&\ a \equiv a
 \end{aligned}
 $$
 
@@ -913,9 +913,9 @@ $$
 
 $$
 \begin{aligned}
-a \lor a &= a \\
-a \cup a &= a \\
-a\ |\ a &= a
+a \lor a &\equiv a \\
+a \cup a &\equiv a \\
+a\ |\ a &\equiv a
 \end{aligned}
 $$
 
@@ -923,9 +923,9 @@ $$
 
 $$
 \begin{aligned}
-a \land a &= a \\
-a \cap a &= a \\
-a\ \&\ a &= a
+a \land a &\equiv a \\
+a \cap a &\equiv a \\
+a\ \&\ a &\equiv a
 \end{aligned}
 $$
 
@@ -954,21 +954,21 @@ $$
 
 $$
 \begin{aligned}
-a \land (b \lor c) &= (a \land b) \lor (a \land c) = (b \lor c) \land a \\
-a \cap (b \cup c) &= (a \cap b) \cup (a \cap c) = (b \cup c) \cap a \\
-a\ \&\ (b\ |\ c) &= (a\ \&\ b)\ |\ (a\ \&\ c) = (b\ |\ c)\ \&\ a
+a \land (b \lor c) &\equiv (a \land b) \lor (a \land c) \equiv (b \lor c) \land a \\
+a \cap (b \cup c) &\equiv (a \cap b) \cup (a \cap c) \equiv (b \cup c) \cap a \\
+a\ \&\ (b\ |\ c) &\equiv (a\ \&\ b)\ |\ (a\ \&\ c) \equiv (b\ |\ c)\ \&\ a
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-a \lor (b \land c) &= (a \lor b) \land (a \lor c) = (b \land c) \lor a \\
-a \cup (b \cap c) &= (a \cup b) \cap (a \cup c) = (b \cap c) \cup a \\
-a\ |\ (b\ \&\ c) &= (a\ |\ b)\ \&\ (a\ |\ c) = (b\ \&\ c)\ |\ a
+a \lor (b \land c) &\equiv (a \lor b) \land (a \lor c) \equiv (b \land c) \lor a \\
+a \cup (b \cap c) &\equiv (a \cup b) \cap (a \cup c) \equiv (b \cap c) \cup a \\
+a\ |\ (b\ \&\ c) &\equiv (a\ |\ b)\ \&\ (a\ |\ c) \equiv (b\ \&\ c)\ |\ a
 \end{aligned}
 $$
 
-### 検証
+### 代数法則の検証
 
 単純な型のレベルではこれらは少なくても同値関係ですべての法則が成り立つ事がわかります。なお吸収律は同一性ではなく同値関係レベルで成り立ちます。
 
@@ -1004,6 +1004,12 @@ type H1 = Relation<A | (A & B), A>;
 // => Equivalent
 type H2 = Relation<A & (A | B), A>;
 // => Equivalent
+
+// 冪等律
+type I1 = Relation<A | A, A>;
+// => Identical
+type I2 = Relation<A & A, A>;
+// => Identical
 
 // 分配律
 type D1 = Relation<A & (B | C), (A & B) | (A & C)>;
@@ -1050,6 +1056,12 @@ type H2 = Relation<A | (A & B), A>;
 // => Equivalent
 type H3 = Relation<A & (A | B), A>;
 // => Equivalent
+
+// 冪等律
+type I1 = Relation<A | A, A>;
+// => Identical
+type I2 = Relation<A & A, A>;
+// => Identical
 
 // 分配律
 type D1 = Relation<A & (B | C), (A & B) | (A & C)>;
