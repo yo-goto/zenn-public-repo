@@ -1,8 +1,7 @@
 ---
-cssclasses:
-  - zenn
-title: TypeScript の Narrowing
+title: "TypeScript の Narrowing"
 published: true
+cssclass: zenn
 emoji: 💃
 type: tech
 topics:
