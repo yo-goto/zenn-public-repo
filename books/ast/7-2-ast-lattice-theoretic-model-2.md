@@ -279,7 +279,7 @@ graph BT
 > All types live in a single lattice with respect to a [conformance](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#conformance) relationship $<:$. The *top type* is `AnyKind` and the *bottom type* is `Nothing`: all types conform to `AnyKind`, and `Nothing` conforms to all types.
 > (https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#kinds より引用)
 
-基本配置図の [`Any`](https://scala-lang.org/api/3.x/scala/Any.html) 型はどうやらクラス階層のルートではあるもの Top 型ではなく、[`AnyKind`](https://scala-lang.org/api/3.x/scala/AnyKind.html) と呼ばれる型が Top 型となるようです。
+また最近のScala3について、基本配置図の [`Any`](https://scala-lang.org/api/3.x/scala/Any.html) 型はどうやらクラス階層のルートではあるもの Top 型ではなく、[`AnyKind`](https://scala-lang.org/api/3.x/scala/AnyKind.html) と呼ばれる型が Top 型となるようです。
 
 また、束についての概念的説明は以下の動画で行われています。束の他にも pre-order や Category を形成することが語られているので Scala を扱っている方は参考に視聴することをおすすめします。
 
@@ -287,19 +287,19 @@ https://www.youtube.com/watch?v=vuTFg5g_f6w
 
 #### 最小上界と最大下界
 
-Scala3 のコンパイラのユニオン型のドキュメントを除いてみると、最小上界(least upper bound)についての言及があります。
+Scala3 のコンパイラのユニオン型のドキュメントを覗いてみると、最小上界(least upper bound)についての言及があります。
 
 > From these rules it follows that the least upper bound (LUB) of a set of types is the union of these types. This replaces the [definition of least upper bound in the Scala 2 specification](https://dotty.epfl.ch/docs/reference/new-types/union-types-spec.html#:~:text=definition%20of%20least%20upper%20bound%20in%20the%20Scala%202%20specification).
 > (https://dotty.epfl.ch/docs/reference/new-types/union-types-spec.html より引用)
 
 ユニオン型は最小上界に相当し、部分型規則として結合律、可換律、乗法の加法上への分配律(インターセクション型のユニオン型に対しての分配律)を満たすことも記載されています。
 
-[言語の仕様書](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#internal-types)にもユニオン型とインターセクション型が最小上界と最大下界に相当することが記載されています。
+[言語仕様書](https://www.scala-lang.org/files/archive/spec/3.4/03-types.html#internal-types)にもユニオン型とインターセクション型が最小上界と最大下界に相当することが記載されています。
 
 > By construction, for all types A and B, the least upper bound of A and B is A ｜ B, and their greatest lower bound is A ＆ B.
 
 :::message alert
-ただ、Scalaの謎なところは直接の部分型関係ではなく、Conformanceと呼ばれる拡張的関係($<:$)による順序関係が推移律を満たさないと言っているのにもかかわらず、前順序関係であると述べられていたり、そもそも前順序なら束を形成しないのですが、同値類と商集合を導入して変換しているのでしょうか。このあたり、Scalaには詳しくないので有識者がいれば教えてほしいです。
+Scalaの謎なところは直接の部分型関係ではなく、Conformanceと呼ばれる拡張的関係($<:$)による順序関係が推移律を満たさないと言っているのにもかかわらず、前順序関係であると述べられていたり、そもそも前順序なら束を形成しないのですが、同値類と商集合を導入して変換しているのでしょうか。このあたり、Scalaには詳しくないので有識者がいれば教えてほしいです。
 :::
 
 なお、Scala2 では最小上界や最大下界が常に存在するとは限らなかったそうです。
@@ -308,11 +308,11 @@ Scala3 のコンパイラのユニオン型のドキュメントを除いてみ�
 
 #### 型の基本配置
 
-Kotlin の型の基本配置は以下のブログ記事が参考になります。
+Kotlin については筆者は詳しくないですが、Kotlin の型の基本配置については以下のブログ記事が非常に参考になります。
 
 http://natpryce.com/articles/000818.html
 
-Non-Nullable の型は以下のような順序関係が構成されます。
+上記記事の内容を元に Non-Nullable の型の順序関係を図示すると以下のようになります。
 
 ```mermaid
 graph BT
@@ -330,7 +330,7 @@ graph BT
   N --> B & P --> F --> A
 ```
 
-Nullable の型は以下のような型の順序関係が構成されます。
+Nullable とは TypeScript で言うところの `type Nnullable<T> = T | null` のような型で `null` を許容します。この Nullable の型は以下のような型の順序関係が構成されます。
 
 ```mermaid
 graph BT
@@ -970,7 +970,7 @@ $$
 
 ### 検証
 
-単純な型のレベルではこれらはすべて少なくても同値関係で成り立つ事がわかります。特に吸収律は同一ではなく同値レベルになります。
+単純な型のレベルではこれらは少なくても同値関係ですべての法則が成り立つ事がわかります。なお吸収律は同一性ではなく同値関係レベルで成り立ちます。
 
 ```ts
 type A = number;

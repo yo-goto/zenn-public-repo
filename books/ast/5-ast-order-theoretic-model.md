@@ -413,9 +413,7 @@ $$
 - 推移律 (transitive) : $A \equiv B \land B \equiv C \Rightarrow A \equiv C$
 
 :::message
-TypeScript ではハックして型の同一性の概念検証を手に入れることができましたが、別の言語ではそのようなことができない場合もあるかもしれません。
-
-二つの型が相互に部分型であるときにそれらの型を同値関係($\equiv$)として扱うというのは、筆者のアイデアなどでなく、例えば Kotlin 言語の仕様書にある[部分型のセクション](https://kotlinlang.org/spec/type-system.html?paragraph=,subtyping,3#subtyping-rules)などに見られます。
+二つの型が相互に部分型関係(順序関係)であるときにそれらの型に同値関係($\equiv$)があるものとして扱うというのは、筆者が勝手に思いついたアイデアなどでなく、順序理論やプログラミング言語の世界でもよくあることで、例えば Kotlin 言語の仕様書にある[部分型のセクション](https://kotlinlang.org/spec/type-system.html?paragraph=,subtyping,3#subtyping-rules)などに見られます。
 
 > Two types $A$ and $B$ are equivalent ($A \equiv B$), iff $A <: B \land B <: A$.
 
@@ -471,8 +469,7 @@ type T = Compat<object, {}>;
 // => Equivalent
 ```
 
-:::message
-型の関係性についてすべてを網羅するための型構築子 `Relation` も導入しておきます。
+型の関係性についてすべてを網羅するための型構築子 `Relation` も導入しておきます。これを使えば同一(identical)でない場合には同値(equivalent)かどうかをフォールバックとして検証できます。
 
 ```ts
 type Relation<Fst, Snd> =
@@ -480,9 +477,6 @@ type Relation<Fst, Snd> =
     ? "Identical"
     : Compat<Fst, Snd>;
 ```
-
-同一でない場合には同値かどうかをフォールバックとして検証できます。
-:::
 
 さて、型について同値関係を導入できたので、次に同値類の概念を導入します。
 
@@ -526,7 +520,7 @@ end
 N --> null & undefined --> U
 ```
 
-このような循環を形成する型は同値類にまとめてしまうことで元の半順序集合に変換できます。要素間の相互関係が折り畳まれたものとしても考えることができます。
+このような循環を形成する型は同値類にまとめてしまい、それぞれを同じ型として扱うことで元の半順序集合に変換できます。要素間の相互関係が折り畳まれたものとしても考えることができます。
 
 ```mermaid
 graph BT
