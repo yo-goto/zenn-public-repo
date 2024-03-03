@@ -732,9 +732,7 @@ const numProp: GeneralProp<number> = {
 
 型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
 
-## ジェネリック関
-
-数
+## ジェネリック関数
 ジェネリック関数 (generic functio n) はこのジェネリクスの概念を利用した関数になります。
 
 https://www.typescriptlang.org/docs/handbook/2/generics.html
