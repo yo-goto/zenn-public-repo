@@ -6,7 +6,7 @@ emoji: "🕴"
 type: "tech"
 topics: ["typescript", "型システム"]
 date: 2022-08-04
-modified: 2023-09-19
+modified: 2024-03-03
 url: "https://zenn.dev/estra/articles/typescript-type-set-hierarchy"
 tags: type/zenn, TypeScript/inference
 aliases:
@@ -16,6 +16,12 @@ aliases:
   - 型の階層図
   - Type hierarchy
 ---
+
+## 宣伝 (本を作成しました)
+
+この記事についての発展的研究内容を以下の本としてまとめました。この記事を読んで興味が湧いたら、ぜひ読んでみてください。
+
+https://zenn.dev/estra/books/algebraic-subtyping-models
 
 ## はじめに
 
