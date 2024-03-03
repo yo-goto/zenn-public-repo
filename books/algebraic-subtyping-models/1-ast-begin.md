@@ -18,9 +18,11 @@ https://www.geekly.co.jp/column/cat-geeklycolumn/specialtalk5_ikyu_shikano
 
 https://criceta.com/category-theory-with-scala/
 
-そのような文献で特に重要となるのは圏論 (category theory) における「**型と関数がなす圏**」であり、より一般に拡張した**カルテシアン閉圏** (CCC: Cartesian closed category) の話が中心となっています。
+そのような文献で特に重要となるのは圏論 (category theory) であり、特に「**型と関数がなす圏**」あるいはより一般に拡張した「**カルテシアン閉圏** (CCC: [Cartesian closed category](https://en.wikipedia.org/wiki/Cartesian_closed_category))」の話が中心となっています。
 
 https://qiita.com/inamiy/items/9af1da1faec22cd968f0
+
+https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/
 
 それらの言語習得者が TypeScript の型システムについて言及することがあっても、TypeScript で重要な部分型というシステム特有の数理的構造についての理論を展開しているところを見かけることは稀です。
 
