@@ -61,7 +61,7 @@ const tr: true = true;
 // 濃度2の型
 type UN = null | undefined;
 
-declare let un: UN;
+let un: UN;
 un = null;
 un = undefined;
 ```
@@ -72,7 +72,7 @@ un = undefined;
 // 濃度2の型
 type OneTwo = 1 | 2;
 
-declare let ot: OneTwo;
+let ot: OneTwo;
 ot = 1;
 ot = 2;
 ```
@@ -96,7 +96,7 @@ type R = Relation<Bl, boolean>;
 濃度が $1$ の場合と $2$ の場合を見てきましたが、濃度が $0$ の場合はどのようになるでしょうか。濃度が $0$ の集合はまさに要素数が $0$ なので空集合(empty set) $\phi$ に相当します。型の理論において要素を全く持たない型は空型(empty type)と呼ばれ、TypeScript では `never` 型が空型に相当します。
 
 ```ts
-declare let n1: never;
+let n1: never;
 n1 = 1; // => Error: 型 'number' を型 'never' に割り当てることはできません。
 ```
 
@@ -104,7 +104,7 @@ n1 = 1; // => Error: 型 'number' を型 'never' に割り当てることはで�
 
 ```ts
 // 濃度0の型
-declare let n2: never;
+let n2: never;
 n2 = 1 as never;
 ```
 
