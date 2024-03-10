@@ -8,9 +8,9 @@ tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
 aliases: AST本『代数的構造と代数法則』
 ---
 
-代数的構造 (Algebraic structure) は、集合上に定まった演算により決まる構造のことであり、形式的には元となる集合 (**台集合**と言います) $S$ とその集合上に定まった演算 $*$ の組 $(S, *)$ のことを言います。
+**代数的構造** ([algebraic structure](https://en.wikipedia.org/wiki/Algebraic_structure)) とは、集合上に定まった演算により決まる構造のことであり、形式的には元となる集合 (**台集合**と言います) $S$ とその集合上に定まった演算 $*$ の組 $(S, *)$ のことを言います。
 
-さて、代数的構造というからにはその構造が持つ演算はなんらかの代数法則 (laws of algebra) を満たしています。代数法則は以下のような恒等式 (identity) などによって表現されます。
+代数的というからにはその構造が持つ演算はなんらかの代数法則 (**laws of algebra**) を満たしています。代数法則は以下のような恒等式 ([identity](https://en.wikipedia.org/wiki/Identity_(mathematics))) などによって表現されます。
 
 $$
 (a + b) + c = a + (b + c) \quad \forall a,b,c \in S
@@ -22,7 +22,7 @@ $$
 $\forall a, b, c \in S$ の $\forall$ は "for all" つまり集合 $S$ 内の任意のあらゆる要素 $a, b, c$ についての言及を表現しており、上記の式では任意の３つの要素について成り立つ恒等式となっています。
 :::
 
-代数的構造には様々な種類があり、例えば「半群 (semigroup)」と呼ばれる構造は最もシンプルな代数的構造であるマグマ (magma) に上記の結合律を加えたものです。
+代数的構造には様々な種類があり、例えば「半群 ([semigroup](https://en.wikipedia.org/wiki/Semigroup))」と呼ばれる構造は最もシンプルな代数的構造であるマグマ ([magma](https://en.wikipedia.org/wiki/Magma_(algebra))) に上記の結合律を加えたものです。
 
 マグマ自体は、集合 $M$ とその上に定義された閉じた一つの二項演算 $*$ からなる組 $(M, *)$ のことです。マグマは演算がその集合 $M$ に閉じている (つまり演算結果が元の集合 $M$ に属している) ことのみを要求する構造でその他の追加の代数法則については何も言及しません。
 
