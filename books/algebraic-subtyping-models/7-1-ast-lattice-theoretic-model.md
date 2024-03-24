@@ -8,6 +8,10 @@ tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
 aliases: AST本『順序理論による模型(1)』
 ---
 
+:::message alert
+2024-03-24: この章では型の集合が束にならないことを前提にしている記述がありましたが修正しました。束になるかいなかはいまだ不明瞭な点があるため一部の記述が間違っている可能性があります。
+:::
+
 ## 束論の導入
 
 集合論による冪集合はボトムアップに見たりしないと結構扱いづらい概念なので、トップダウンからもボトムアップからも同じように構造を把握することができる半束(semilattice)と、上下方向を統一して構造全体を見ることができる束(lattice)の概念を導入して、束論からのメンタルモデルを構築します。
@@ -675,7 +679,9 @@ N --> E --> U
 ```
 
 :::message alert
-筆者はこの本を執筆するまで $\text{TYPES'}$ は有界束になると思っていました。しかし、そもそも束という構造自体がかなり強い条件を満たす必要があり、$\text{TYPES'}$ は部分的には束の構造を持つものの、全体としては束ではないことが判明しています。章の進行上の都合もありますが、束ではないが束の知識がないと構造が見えないという理由もあり、束についての知識は理解する必要があります。$\text{TYPES'}$ が束ではないことについての解説は後ほど行います。
+筆者はこの本を執筆するまで $\text{TYPES'}$ は有界束になると思っていました。しかし、そもそも束という構造自体がかなり強い条件を満たす必要があり、$\text{TYPES'}$ は部分的には束の構造を持つものの、~~全体としては束ではないことが判明しています~~。本当に束を満たすかどうかはまだ明らかではありません。
+
+章の進行上の都合もありますが、束ではないが束の知識がないと構造が見えないという理由もあり、束についての知識は理解する必要があります。$\text{TYPES'}$ が~~束ではないことについての解説は後ほど行います~~。
 :::
 
 さて、半順序や前順序では反射律という自己言及的な法則($A \le A$)があり、これも図で表現すると以下のようになりましたね。図が汚くなるので以後も省略します(上の全順序集合の図においても省略しています)。
@@ -1153,6 +1159,15 @@ linkStyle 16 stroke: red
 linkStyle 17 stroke: red
 ```
 
+:::message alert
+以下のアコーディオンには以前の間違った図式が記載されているので注意してください。オブジェクト型は基本的に束構造になると考えられ、下の節でそのことを説明しています。
+:::
+
+:::details 2024-03-09更新: 誤った図の説明
+以下の説明は、**必要な要素を抜かしてしまった以前の間違った解説**となるのでご注意ください。実際には上記で考えている構造は束になります。
+
+---
+
 さて、このような中途半端な構造が束にならない典型的な構造ですが、オブジェクト型の包含関係は以下のようにより複雑でした。
 
 ```mermaid
@@ -1418,6 +1433,7 @@ classDef mie stroke:#f5f, fill:#f66
 $\text{TYPES'}$ はこのような構造を部分集合としてもっています。束は任意の二元部分集合について最小下界と最大下界を持つ必要があったため、元の台集合のいかなる部分集合についてもその二元部分集合が束である必要があります。しかしここまで見てきたようにオブジェクト型のユニオンとインターセクションがなす型の構造は束にならないため、元の台集合である $\text{TYPES'}$ も束ではないことが言えます。
 
 また、オブジェクト型の集合族は集合の領域を完全に表現しきれていないことも判明しました。逆に考えると束ではないため冪集合を完全に表現できていないことも明らかになります(なぜなら冪集合は束だから)。
+:::
 
 ### 冪集合は有界束となる
 
@@ -1467,5 +1483,168 @@ classDef target2 fill:green
 
 オブジェクト型のユニオンとインターセクションがなす構造は束でないですが、このように似た構造である冪集合は束になります。
 
-そして、冪集合の束において、**最小上界は二元部分集合の要素の和集合が相当し**、**最大下界は二元部分集合の要素の共通部分となる**ことが知られています。冪集合は集合族であり要素は集合でした。実際に、$\lbrace 3, 1 \rbrace$ と $\lbrace 2, 3 \rbrace$ の和集合は $\lbrace 1, 2, 3 \rbrace$ であり、共通部分は $\lbrace 3 \rbrace$ です。
+一般に冪集合の束においては**最小上界は二元部分集合の要素の和集合が相当し**、**最大下界は二元部分集合の要素の共通部分となる**ことが知られています。冪集合は集合族であり要素は集合でした。実際に、$\lbrace 3, 1 \rbrace$ と $\lbrace 2, 3 \rbrace$ の和集合は $\lbrace 1, 2, 3 \rbrace$ であり、共通部分は $\lbrace 3 \rbrace$ です。
+
+### オブジェクト型の表現
+
+三つのオブジェクト型のベン図から構成したハッセ図(的な図式)は以下のようになりました。なお `{}` と `never` 型は考えている型の上界と下界の集合に必ず含まれるのが明らかなので除去しています。
+
+```mermaid
+graph BT
+Top["X ∪ Y ∪ Z"]
+
+x+y["X ∪ Y"]
+y+z["Y ∪ Z"]
+z+x["Z ∪ X"]
+
+x+yz["X ∪ (Y ∩ Z)"]
+y+zx["Y ∪ (Z ∩ X)"]
+z+xy["Z ∪ (X ∩ Y)"]
+
+x["X"]
+y["Y"]
+z["Z"]
+
+xy+yz+zx["(X ∩ Y) ∪ (Y ∩ Z) ∪ (Z ∩ X)"]
+
+xy+zx["(X ∩ Y) ∪ (Z ∩ X) \n = X ∩ (Y ∪ Z)"]
+yz+xy["(X ∩ Y) ∪ (Y ∩ Z) \n = Y ∩ (Z ∪ X)"]
+zx+yz["(Z ∩ X) ∪ (Y ∩ Z) \n = Z ∩ (X ∪ Y)"]
+
+xy["X ∩ Y"]
+zx["Z ∩ X"]
+yz["Y ∩ Z"]
+
+xyz["X ∩ Y ∩ Z"]
+
+xyz --> xy
+xyz --> yz
+xyz --> zx
+
+xy ---> yz+xy
+xy ---> xy+zx
+zx ---> xy+zx
+zx ---> zx+yz
+yz ---> yz+xy
+yz ---> zx+yz
+
+xy+zx --> x
+yz+xy --> y
+zx+yz --> z
+xy+zx -.-> xy+yz+zx
+yz+xy -.-> xy+yz+zx
+zx+yz -.-> xy+yz+zx
+
+x --> x+yz
+y --> y+zx
+xy+yz+zx -.-> y+zx
+xy+yz+zx -.-> z+xy
+z --> z+xy
+xy+yz+zx -.-> x+yz
+
+x+yz --> x+y
+x+yz --> z+x
+y+zx --> x+y
+y+zx --> y+z
+z+xy --> z+x
+z+xy --> y+z
+x+y --> Top
+z+x --> Top
+y+z --> Top
+
+style x stroke:red
+style z stroke:green
+style y stroke:blue
+
+style Top stroke:orange
+style xyz stroke:orange
+style xy+yz+zx stroke:fuchsia
+
+linkStyle 0 stroke: red
+linkStyle 1 stroke: blue
+linkStyle 2 stroke: green
+linkStyle 4 stroke: red
+
+linkStyle 6 stroke: green
+linkStyle 7 stroke: blue
+linkStyle 9 stroke: red
+
+linkStyle 10 stroke: blue
+linkStyle 11 stroke: green
+linkStyle 15 stroke: red
+
+linkStyle 16 stroke: blue
+linkStyle 19 stroke: green
+
+linkStyle 21 stroke: red
+linkStyle 24 stroke: blue
+linkStyle 25 stroke: green
+linkStyle 27 stroke: red
+
+linkStyle 28 stroke: green
+linkStyle 29 stroke: blue
+```
+
+この構造を考える上で『[集合論による模型](5-ast-order-theoretic-model)』の章においてもともと考えているベン図を構成する基本の型は以下のようなプリミティブ型を使ったオブジェクト型でした。
+
+```ts
+type X = { x: string };
+type Y = { y: number };
+type Z = { z: boolean };
+```
+
+このような型の和と積を作ると実はそれぞれの型の濃度差が大きく、その分だけ合成した型同士の間で型挿入が可能となってしまい、それ故に上の図式は厳密にはすべてのあり得る型の被覆関係を表現できていないことになりました。そのような構造を考えると少し混乱するので当該の三つのオブジェクト型をとりあえず以下のように濃度１のユニット型を使ったシンプルなものに置き換えます。
+
+```ts
+type X = { x: 1 };
+type Y = { y: 2 };
+type Z = { z: 3 };
+```
+
+このような型の場合、それぞれのオブジェクト型のプロパティが異なるため、`{ x: 1 } & { x: 2 }` の合成が `never` 型として解決された場合と違ってそれぞれの積の合成が空集合にならなくなります。これによって元の型の場合と同じ図式が濃度差を小さいままにつくることができそうです。
+
+
+`X` 型を主軸としたベン図内領域の包含関係は以下のような構造になっていました。
+
+![Xを主軸としたベン図の解体](/images/ast/img_venn-distruction-2.png)
+
+```ts
+type X = { x: 1 };
+type Y = { y: 2 };
+type Z = { z: 3 };
+
+type XoYoZ = X | Y | Z;
+// {x:1} | {y:2} | {z:3}
+type XoY = X | Y;
+// {x:1} | {y:2}
+type XoYaZ = X | (Y & Z);
+// {x:1} | ({y:2} & {z:3})
+type XaYoZ = X & (Y | Z);
+// {x:1} & ({y:2} | {z:3})
+type XaY = X & Y;
+// {x:1} & {y:2}
+type XaYaZ = X & Y & Z;
+// {x:1} & {y:2} & {z:3}
+
+type R1 = Relation<XaYaZ, XaY>;
+// => Subtype
+type R2 = Relation<XaY, XaYoZ>;
+// => Subtype
+type R3 = Relation<XaYoZ, X>;
+// => Subtype
+type R4 = Relation<X, XoYaZ>;
+// => Subtype
+type R5 = Relation<XoYaZ, XoY>;
+// => Subtype
+type R6 = Relation<XoY, XoYoZ>;
+// => Subtype
+
+type XaYoYaZoZaX = (X & Y) | (Y & Z) | (Z & X);
+// ({x:1} & {y:2}) | ({y:2} & {z:3}) | ({z:3} & {x:1})
+type R7 = Relation<XaYoZ, XaYoYaZoZaX>;
+// => Subtype
+type R8 = Relation<XaYoYaZoZaX, XoYaZ>;
+// => Subtype
+```
+
 
