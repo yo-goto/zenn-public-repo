@@ -16,8 +16,8 @@ aliases: AST本『順序理論による模型』
 
 二項関係においても、代数法則のような法則 (law) があり、例えば以下の二つの法則を満たす関係 $\prec$ を持つ集合 $S$ とその関係の組 $(S,\prec)$ は「**前順序集合** (pre-ordered set)」と呼ばれます。
 
-- 反射律 (reflexive) : $\forall a \in S\ (a \prec a)$
-- 推移律 (transitive) : $\forall a, b, c \in S\ (a \prec b \land b \prec c \Rightarrow a \prec c)$
+- **反射律** (reflexive law) : $a \prec a \ (\forall a \in S)$
+- **推移律** (transitive law) : $a \prec b \land b \prec c \Rightarrow a \prec c \ (\forall a, b, c \in S)$
 
 :::message
 それぞれの記号について、$\land$ は「かつ」、$\lor$ は「または」、$\Rightarrow$ は「ならば」の意味で使っています。$\prec$ は prec (precedes) 記号といい、一般的な順序を表現するときなどに使えます。また、任意を表す記号である $\forall$ については冗長となるので今後は省略しています。
@@ -29,13 +29,13 @@ aliases: AST本『順序理論による模型』
 
 前順序関係の二つの法則に加えて以下の法則を満たす関係は「**半順序関係** (partial order relation)」とよばれ、そのような二項関係を備えている集合を「**半順序集合** (partial ordered set)」と呼びます。
 
-- 反対称律 (asymmetric) : $\forall a, b \in S\ (a \prec b \land b \prec a \Rightarrow a = b)$
+- **反対称律** (asymmetric law) : $a \prec b \land b \prec a \Rightarrow a = b \ (\forall a, b \in S)$
 
 これは双方向に関係が成り立つなら、両者に等価関係 (equality) が成り立つ、つまり同一の数学的対象であることを示しています。
 
 さらに、半順序関係に加えて以下の法則を満たす関係は「**全順序関係** (total order relation)」と呼ばれ、そのような二項関係を備えている集合を「**全順序集合** (total ordered set)」と呼びます。
 
-- 完全律 (total) : $\forall a, b \in S\ (a \prec b \lor b \prec a)$
+- **完全律** (total law) : $a \prec b \lor b \prec a \ (\forall a, b \in S)$
 
 これは集合内の任意の二つの要素 $a, b$ について $a \prec b$ か $b \prec a$ の関係が必ずあるということを言っています。逆に、この法則を満たしていない前順序集合や半順序集合には関係を持たない要素同士があるということになります。
 
@@ -203,10 +203,21 @@ end
 
 ## 部分型関係の順序
 
-さて、ここまで順序関係について説明してきたのは、実は部分型関係 $<:$ は実は順序関係と同じ法則をいくつか満たしているからです。部分型関係は以下の法則を満たします (むしろこの法則を満たすように部分型関係は定義されます)。
+さて、ここまで順序関係について説明してきたのは、実は部分型関係 $<:$ は実は順序関係と同じ法則をいくつか満たしているからです。部分型関係は以下の法則を満たします。
 
 - 反射律 (reflexive) : $A <: A$
 - 推移律 (transitive) : $A <: B \land B <: C \Rightarrow A <: C$
+
+むしろこの法則を満たすように部分型関係は定義されると言ってもよいでしょう。前の章において部分型を持つ型システムでは以下のような推論規則(部分型付け規則)が用意されていると述べましたが、部分型関係が満たす反射律と推移律はこの二つの部分型付け規則によって保証されているわけです。
+
+$$
+\begin{gather}
+S <: S \\
+{S <: U \quad U <: T}
+\over
+{S <: T}
+\end{gather}
+$$
 
 型の集合内の任意の型 $A, B$ についてこれは成り立ちます。実際に確認してみます。
 

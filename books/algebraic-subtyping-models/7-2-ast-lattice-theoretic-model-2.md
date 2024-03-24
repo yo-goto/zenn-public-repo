@@ -8,6 +8,10 @@ tags: type/zenn/book, TypeTheory/Subtyping, TypeScript/type, math/algebra
 aliases: AST本『順序理論による模型(2)』
 ---
 
+:::message alert
+2024-03-24: この章では型の集合が束にならないことを前提にしていますが、束になるかいなかはいまだ不明瞭な点があるため一部の記述が間違っている可能性があります。
+:::
+
 ## 結びと交わり
 
 さて、任意の二要素についての最小上界と最大下界の存在は束の構成条件となることからその二つには特別な名前が付いています。束論の文脈では、最小上界は「**結び**(join)」という名前で呼ばれ、最大下界は「**交わり**(meet)」という名前で呼ばれます。
@@ -747,8 +751,7 @@ https://www.cs-study.com/koga/cmath/cmath01.html#bool
 
 ### 和集合と共通部分と補集合を有する型システム
 
-和集合に相当するユニオン型(join 演算)と共通部分に相当するインターセクション型(meet 演算)に加えて補集合に相当する否定型(not 演算)がある言語について興味があれば Giuseppe Castagna 氏による以下の論文が参考になるでしょう。
-※ 以下は Giuseppe 氏本人が公開している論文の URL です。
+和集合に相当するユニオン型(join 演算)と共通部分に相当するインターセクション型(meet 演算)に加えて補集合に相当する否定型(not 演算)がある言語について興味があれば [Giuseppe Castagna](https://www.irif.fr/~gc/) 氏による以下の論文『Programming with union, intersection, and negation types』が参考になるでしょう。以下は Giuseppe 氏本人が公開している論文の URL です。
 
 https://www.irif.fr/~gc/papers/set-theoretic-types-2022.pdf
 
@@ -766,6 +769,25 @@ Luau は通常の構文主導の構文的部分型(Syntactic Subtyping)のシス
 『[部分型関係の概念](4-ast-subtyping-concept)』の章において、部分型関係は厳密には集合の包含関係ではないと述べましたが、Semantic Subtyping の型システムにおいては集合論を公理として実装を行うため、これまで考えてきた部分型関係をそのまま集合の包含関係として扱うことができるようです。
 
 Luau でもすべての否定形を実装できているわけではなく、実装的に難しい箇所などによって理想的な意味論的部分型にはできていない部分もあるそうです。
+
+### Elixirの集合論型
+
+現在 Giuseppe 氏が主導となって開発に携わっているプロジェクトに [Elixir](https://elixir-lang.org) という言語があります。Elixir は動的型付けの関数型プログラミング言語ですが、2022年には上記論文『Programming with union, intersection, and negation types』で挙がっているような、和集合、共通部分、補集合などの集合演算を基本とした集合論的型システムの型システムを開発するとの発表がありました。
+
+https://elixir-lang.org/blog/2022/10/05/my-future-with-elixir-set-theoretic-types/
+
+> We want a type system that can elegantly model all of Elixir idioms and, at a first glance, set-theoretic types were an excellent match. In set-theoretic types, **we use set operations to define types and ensure that the types satisfy the associativity and distributivity properties of the corresponding set-theoretic operations**.
+
+型システムが集合演算の結合律と分配律を満たすように実装されると述べられていますね。また Elixir は動的型付け言語なので、型システムの研究開発によって TypeScript と同様に漸進的型付け言語になっていくとのことです。ただ、そもそも静的型システムが無いような状況では、いきなり型システムを導入するのが困難なので、コミュニティからのフィードバックをもらいつつ段階的に漸進的型付けのシステムを導入していくとのことです。これを上記記事では "**A gradual gradual type system**" (漸進的な漸進的型システム) と読んでいるようです。
+
+ちなみに、この記事の内容は以下の ElixirConf EU 2022 の José Valim 氏による基調講演の動画でも語られています。
+
+https://www.youtube.com/watch?v=Jf5Hsa1KOc8&t=2020s
+
+> it's also the direction that type systems such as flow type and Racket typescript are moving through they start with unions and now they are adding intersections and similar properties and they are going to that direction so I think if we start studying and exploring and we can start at the the at the destination right it can be really interesting
+> (上記動画がより引用)
+
+述べられているように大局的には Elixir は TypeScript と同じ方向に進もうとしているようです。
 
 ## 型束の代数的振る舞い
 
