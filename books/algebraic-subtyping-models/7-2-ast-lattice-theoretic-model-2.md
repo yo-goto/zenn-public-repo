@@ -747,8 +747,7 @@ https://www.cs-study.com/koga/cmath/cmath01.html#bool
 
 ### 和集合と共通部分と補集合を有する型システム
 
-和集合に相当するユニオン型(join 演算)と共通部分に相当するインターセクション型(meet 演算)に加えて補集合に相当する否定型(not 演算)がある言語について興味があれば Giuseppe Castagna 氏による以下の論文が参考になるでしょう。
-※ 以下は Giuseppe 氏本人が公開している論文の URL です。
+和集合に相当するユニオン型(join 演算)と共通部分に相当するインターセクション型(meet 演算)に加えて補集合に相当する否定型(not 演算)がある言語について興味があれば [Giuseppe Castagna](https://www.irif.fr/~gc/) 氏による以下の論文『Programming with union, intersection, and negation types』が参考になるでしょう。以下は Giuseppe 氏本人が公開している論文の URL です。
 
 https://www.irif.fr/~gc/papers/set-theoretic-types-2022.pdf
 
@@ -785,6 +784,7 @@ https://www.youtube.com/watch?v=Jf5Hsa1KOc8&t=2020s
 > (上記動画がより引用)
 
 述べられているように大局的には Elixir は TypeScript と同じ方向に進もうとしているようです。
+
 ## 型束の代数的振る舞い
 
 $\text{TYPES'}$ は厳密には束ではないですが、有向集合を前提としてかなり束に近い構造をしています。加えて任意の型についてユニークなユニオン型とインターセクション型を生成できます。仮にそれらの型が半順序集合内で最小上界や最大下界にならずとも、join と meet の演算結果が定まることから束と同じような代数的振る舞いを有することが推測されます。
