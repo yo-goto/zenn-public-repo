@@ -773,9 +773,35 @@ classDef lub fill:#f29
 classDef glb fill:#78d
 ```
 
-ということで、このダイアモンド形状の半順序集合は任意の二要素について最小上界と最大下界を持つことから束であることが言えます。
+ということで、このダイアモンド形状の半順序集合は任意の二要素について最小上界と最大下界を持つことから束であることが言えます。このような構造はリテラル型の小さな冪集合である `boolean` 型や `1 | 2` などと同じであり、つまり以下のような構造は必ず束となります。
 
-この単純な束を改造して、すこしだけ複雑な場合を考えてみましょう。基本的な配置はそのままに、$\text{Bottom}$ と $\text{Left}$ の間に $L2$ と挿入し、$\text{Bottom}$ と $\text{Right}$ の間に $R2$ を挿入します。この場合の最小上界と最大下界は実は単純な束と変わらず $\text{Top}$ と $\text{Bottom}$ のままとなります。
+```mermaid
+graph BT
+subgraph A'["二つの数値リテラル型からなる冪集合"]
+  direction BT
+  n1[never]:::glb
+  1
+  2
+  12["1 | 2"]:::lub
+
+  n1 --> 1 & 2 --> 12
+end
+
+subgraph A["二つの真偽値リテラル型からなる冪集合"]
+  direction BT
+  n2[never]:::glb
+  t[true]
+  f[false]
+  b2["boolean"]:::lub
+
+  n2 --> t & f --> b2
+end
+
+classDef lub fill:#f29
+classDef glb fill:#78d
+```
+
+このような単純な束の構造を改造して、すこしだけ複雑な場合を考えてみましょう。基本的な配置はそのままに $\text{Bottom}$ と $\text{Left}$ の間に $L2$ と挿入し、$\text{Bottom}$ と $\text{Right}$ の間に $R2$ を挿入します。この場合の最小上界と最大下界は実は単純な束と変わらず $\text{Top}$ と $\text{Bottom}$ のままとなります。
 
 ```mermaid
 graph BT
