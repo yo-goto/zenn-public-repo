@@ -6,11 +6,9 @@ emoji: "🕺"
 type: "tech"
 topics: ["typescript", "deno"]
 date: 2022-07-29
-modified: 2023-09-23
+modified: 2024-03-20
 url: "https://zenn.dev/estra/articles/typescript-widening"
-tags:
-  - type/zenn
-  - TypeScript/inference
+tags: type/zenn, TypeScript/inference
 aliases:
   - 記事『TypeScript の Widening』
   - Widening
@@ -269,7 +267,7 @@ obj = { a: "error", b: 100 }; // [Error]
 値の宣言は再代入しないなら `const` で宣言するのが通例です。Deno 環境でも、"[prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const)" というリンタールールが存在しており、`let` 宣言した変数で再代入していないものがあれば `const` を使って宣言するように注意されます。
 
 > Since ES2015, JavaScript supports `let` and `const` for declaring variables. If variables are declared with `let`, then **they become mutable**; we can set other values to them afterwards. Meanwhile, if declared with `const`, **they are immutable; we cannot perform re-assignment to them**.
-> 
+>
 > In general, to make the codebase more robust, maintainable, and readable, it is highly recommended to use `const` instead of `let` wherever possible. **The fewer mutable variables are, the easier it should be to keep track of the variable states** while reading through the code, and thus it is less likely to write buggy code. So this lint rule **checks if there are `let` variables that could potentially be declared with `const` instead**.
 > ([deno_lint docs prefer-const](https://lint.deno.land/?q=prefer-const#prefer-const) より引用、太字は筆者強調)
 
@@ -464,7 +462,7 @@ Literal Widening の具体的な機能やルールは以下のものであると
 > - The type inferred for a `let` variable, `var` variable, parameter, or non-readonly property with an initializer and no type annotation is the widened literal type of the initializer.
 > - The type inferred for a property in an object literal is the widened literal type of the expression unless the property has a contextual type that includes literal types.
 > - The type inferred for an element in an array literal is the widened literal type of the expression unless the element has a contextual type that includes literal types.
-> 
+>
 > ([Always use literal types by ahejlsberg · Pull Request #10676 · microsoft/TypeScript](https://github.com/Microsoft/TypeScript/pull/10676) より抜粋引用)
 
 長いので、全部いきなり理解するのは難しいですがすこしずつ見ていきます。まずはこれですが、式内でのリテラル値の型は常にリテラル型になるといっていますね。
