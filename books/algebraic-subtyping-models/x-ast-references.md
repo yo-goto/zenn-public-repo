@@ -32,6 +32,7 @@ https://www.bcs.org/media/2128/algebraic-subtyping.pdf
 - [Akihiko Koga, "順序集合や束などに関する基本的な概念の説明"](https://www.cs-study.com/koga/lattice/explanations_on_concepts_of_posets.html)
 - [Scala で始める圏論入門](https://criceta.com/category-theory-with-scala/)
 - [Haskell/圏論 - Wikibooks](https://ja.wikibooks.org/wiki/Haskell/%E5%9C%8F%E8%AB%96)
+- [集合としての型 · An Introduction to Elm](https://guide.elm-lang.jp/appendix/types_as_sets.html)
 
 論文
 - [Stephen Dolan, "Algebraic Subtyping"](https://www.bcs.org/media/2128/algebraic-subtyping.pdf)
