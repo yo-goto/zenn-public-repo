@@ -5,7 +5,7 @@
     "zenn:preview": "deno task zenn preview",
     "zenn:create:article": "deno task zenn new:article",
     "zenn:create:book": "deno task zenn new:book",
-    "lint": "deno run -A npm:textlint",
+    "lint": "deno run -A --unstable-fs npm:textlint",
     "lint:fix": "deno task lint --fix",
     "lint:dry": "deno task lint --dry-run"
   },
