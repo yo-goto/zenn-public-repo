@@ -502,7 +502,7 @@ deno add @yo-goto/type-relation
 npx jsr add @yo-goto/type-relation
 ```
 
-ソースコードでは以下のように import することでTypeScriptのプロジェクトで利用可能です。
+ソースコードでは以下のように import することで TypeScript のプロジェクトで利用可能です。
 
 ```ts
 import type { Relation } from "@yo-goto/type-relation";

@@ -772,7 +772,7 @@ Luau でもすべての否定形を実装できているわけではなく、実
 
 ### Elixirの集合論型
 
-現在 Giuseppe 氏が主導となって開発に携わっているプロジェクトに [Elixir](https://elixir-lang.org) という言語があります。Elixir は動的型付けの関数型プログラミング言語ですが、2022年には上記論文『Programming with union, intersection, and negation types』で挙がっているような、和集合、共通部分、補集合などの集合演算を基本とした集合論的型システムの型システムを開発するとの発表がありました。
+現在 Giuseppe 氏が主導となって開発に携わっているプロジェクトに [Elixir](https://elixir-lang.org) という言語があります。Elixir は動的型付けの関数型プログラミング言語ですが、２０２２年には上記論文『Programming with union, intersection, and negation types』で挙がっているような、和集合、共通部分、補集合などの集合演算を基本とした集合論的型システムの型システムを開発するとの発表がありました。
 
 https://elixir-lang.org/blog/2022/10/05/my-future-with-elixir-set-theoretic-types/
 
