@@ -137,7 +137,7 @@ a --> d
 b --> d --> e
 ```
 
-例えば、$e \not = f$ だが、$a \le f, b \le f, c \le f, d \le f$ なる順序関係を持つ要素 $f$ を追加した台集合 $S' = \lbrace a, b, c, d, e, f \rbrace$ は大小関係 $\le$ について反対称律が満たされない場合($e \le f \land f \le f \Rightarrow e = f$ は成り立たない)があるため、これは半順序集合ではなく前順序集合となります。この前順序集合は上のハッセ図を改造して以下のように表現できます。
+例えば、$e \not = f$ だが、$a \le f, b \le f, c \le f, d \le f$ なる順序関係を持つ要素 $f$ を追加した台集合 $S' = \lbrace a, b, c, d, e, f \rbrace$ は大小関係 $\le$ について反対称律が満たされない場合($e \le f \land f \le e \Rightarrow e = f$ は成り立たない)があるため、これは半順序集合ではなく前順序集合となります。この前順序集合は上のハッセ図を改造して以下のように表現できます。
 
 ```mermaid
 graph BT
