@@ -489,6 +489,28 @@ type Relation<Fst, Snd> =
     : Compat<Fst, Snd>;
 ```
 
+:::message
+この型ユーティリティ関数を使えるように、Deno が開発している新しい JavaScript/TypeScript パッケージのレジストリである [JSR](https://jsr.io) にて [type-relation](https://jsr.io/@yo-goto/type-relation) という名前のパッケージとして公開しました。
+
+JSR は複数のランタイム環境で利用可能です。以下のコマンドでプロジェクトにインストールできますので試してみてください。
+
+```sh
+# deno環境の場合
+deno add @yo-goto/type-relation
+
+# 他の環境でも以下のコマンドなどで利用可能
+npx jsr add @yo-goto/type-relation
+```
+
+ソースコードでは以下のように import することで TypeScript のプロジェクトで利用可能です。
+
+```ts
+import type { Relation } from "@yo-goto/type-relation";
+
+type R1 = Relation<string, string | number>; // => Subtype
+```
+:::
+
 さて、型について同値関係を導入できたので、次に同値類の概念を導入します。
 
 同値関係を備えた集合 $S$ において、同値関係にある要素同士を一つにまとめてその中の一つの代表となる要素として扱うように集合 $S$ を再構成した集合です。
