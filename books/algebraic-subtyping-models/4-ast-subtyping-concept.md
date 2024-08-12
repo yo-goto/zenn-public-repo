@@ -25,7 +25,7 @@ type B = { fst: number; snd: string; };
 
 // A型が期待される文脈でB型の項を割り当てることができる
 const b1: B = { fst: 42, snd: "st", };
-const a1: A = b;
+const a1: A = b1;
 
 // その逆はできない(安全に置換できない)
 const a2: A = { fst: 42, };
