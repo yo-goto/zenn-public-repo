@@ -2,10 +2,10 @@
 title: "EPAsync book 管理ノート"
 cssclass: zenn
 date: 2022-08-14
-modified: 2023-01-04
+modified: 2024-08-14
 url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop"
 AutoNoteMover: disable
-tags: [" #type/zenn/book #JavaScript/async  "]
+tags: type/zenn/book, JavaScript/async
 aliases:
   - EPAsync
   - Promise本『イベントループとプロミスチェーンで学ぶ非同期処理』
@@ -19,6 +19,8 @@ aliases:
 - [part-01-epasync](part-01-epasync)
 - [part-02-epasync](part-02-epasync)
 - [part-03-epasync](part-03-epasync)
+- [part-04-epasync](part-04-epasync)
+- [part-05-epasync](part-05-epasync)
 
 メイン
 - [1-epasync-begin](1-epasync-begin)

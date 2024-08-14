@@ -2,9 +2,9 @@
 title: "V8 エンジンによる async/await の内部変換"
 cssclass: zenn
 date: 2022-05-14
-modified: 2022-12-19
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『V8 エンジンによる async/await の内部変換』
 ---
 

@@ -2,10 +2,10 @@
 title: "async/await Pattern の歴史的発展"
 cssclass: zenn
 date: 2023-03-29
-modified: 2023-04-16
+modified: 2024-08-14
 url: "https://zenn.dev/estra/articles/o-epasync-async-await-pattern-history"
 AutoNoteMover: disable
-tags: [" #type/zenn/book #JavaScript/async  "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『async/await Pattern の歴史的発展』
 ---
 

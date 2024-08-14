@@ -2,9 +2,9 @@
 title: "Promise chain から async 関数へ"
 cssclass: zenn
 date: 2022-05-14
-modified: 2023-03-31
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『Promise chain から async 関数へ』
 ---
 

@@ -2,9 +2,9 @@
 title: "Promise の静的メソッドと並列化"
 cssclass: zenn
 date: 2022-06-26
-modified: 2023-03-31
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『Promise の静的メソッドと並列化』
 ---
 

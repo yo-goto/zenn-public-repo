@@ -2,9 +2,9 @@
 title: "コールバックで副作用となる非同期処理"
 cssclass: zenn
 date: 2022-04-17
-modified: 2023-02-17
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『コールバックで副作用となる非同期処理』
 ---
 

@@ -2,9 +2,9 @@
 title: "TypeScript における Promise の型注釈"
 cssclass: zenn
 date: 2022-07-12
-modified: 2022-11-14
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『TypeScript における Promise の型注釈』
 ---
 
