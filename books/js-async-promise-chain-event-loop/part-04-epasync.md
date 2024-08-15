@@ -20,4 +20,5 @@ aliases: EPAsync 第４部
 - [await 式の配置による制御](18-epasync-await-position)
 - [反復処理の制御](19-epasync-async-loop)
 - [イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)
-- [TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)
+- [TypeScript の基本知識](j-epasync-ts-basic)
+- [Promise の型注釈](j-epasync-ts-promise-type-annotation)

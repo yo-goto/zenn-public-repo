@@ -105,7 +105,7 @@ randomTimer("3rd", "[C-1]")
 (async () => {
   await fetch(urls[0])
     .then(response => response.text())
-    .then(text => console.log(text)); 
+    .then(text => console.log(text));
   console.log("fetch chainの１つ目が完了しました");
 
   await fetch(urls[1])
@@ -588,7 +588,7 @@ Top-level await が使えるのに async の即時実行などを解説に多用
 ```js
 // async 関数内に処理があるのに await 式が１つも無いと怒られる
 async function noAwait() {
-  asyncFunc1(); 
+  asyncFunc1();
   asyncFunc2();
   asyncFunc3();
 }
@@ -786,7 +786,7 @@ https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
 
 すでに `abort` イベントが発火されていれば拒否状態の Promise を返し、そうでなければ基本的なタイマー処理を開始します。`singal?.abortEventListener("abort", arbot, { once: true })` によって `abort` イベントをリスンして、通知を受ければアロー関数で定義された `abort` 関数を実行し `clearTimeout()` でタイマーのキャンセルを行います。`?.` 記号は JavaScript の[オプショナルチェーンチェーンという演算子](https://jsprimer.net/basic/object/#optional-chaining-operator)で、プロパティのアクセス元が `null` や `undefined` のときもエラーを発生させずにすみます。
 
-これを自分で実装すると中々手間がかかりますが、すでに std として提供されているのでこのタイマーを使わせてもらいます。型定義を見ると第二引数に `fetch()` と同じ様に `{ signal }` を渡すことができるようになっています(TypeScript での型定義については『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターで詳しく解説します)。
+これを自分で実装すると中々手間がかかりますが、すでに std として提供されているのでこのタイマーを使わせてもらいます。型定義を見ると第二引数に `fetch()` と同じ様に `{ signal }` を渡すことができるようになっています(TypeScript での型定義については『[Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターで詳しく解説します)。
 
 ```ts:delayの型定義
 function delay(ms: number, options?: DelayOptions): Promise<void>;
