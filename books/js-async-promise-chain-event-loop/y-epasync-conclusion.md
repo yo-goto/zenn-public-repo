@@ -84,12 +84,13 @@ JavaScript はメインスレッドという単一スレッド (シングルス�
 
 ## TypeScript は型を上乗せするだけ
 
-TypeScirpt は JavaScript に型システムを導入した言語ですが、本質的にはより良い JavaScript を書くための道具 (リンター) に過ぎません。非同期処理を理解するためにはイベントループの機構や JavaScript の実行環境とそこから提供される非同期 API、ECMAScript のシンタックスへの理解が欠かせません。
+TypeScript は JavaScript に型システムを導入した言語ですが、本質的にはより良い JavaScript を書くための道具 (リンター) に過ぎません。非同期処理を理解するためにはイベントループの機構や JavaScript の実行環境とそこから提供される非同期 API、ECMAScript のシンタックスへの理解が欠かせません。
 
 TypeScript によって上乗せされる型情報は本質的には非同期処理と関係がないものですが、モダンな開発では扱うデータの具象性を上げて堅牢でスケーラブルなコードを書くために学ぶ必要があります。
 
 :::details 参照チャプター
-- 『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』
+- 『[TypeScript の基本知識](j-epasync-ts-basic)』
+- 『[Promise の型注釈](j-epasync-ts-promise-type-annotation)』
 :::
 
 ## まとめ

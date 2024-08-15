@@ -53,6 +53,7 @@ aliases:
 - [f-epasync-synchronus-apis](f-epasync-synchronus-apis)
 - [g-epasync-resolve-reject](g-epasync-resolve-reject)
 - [h-epasync-catch-finally](h-epasync-catch-finally)
+- [j-epasync-ts-basic](j-epasync-ts-basic)
 - [j-epasync-ts-promise-type-annotation](j-epasync-ts-promise-type-annotation)
 - [k-epasync-iterator-generator](k-epasync-iterator-generator)
 - [m-epasync-promise-prototype-then](m-epasync-promise-prototype-then)
@@ -128,7 +129,8 @@ aliases:
   - 18-epasync-await-position # 『await 式の配置による制御』
   - 19-epasync-async-loop # 『反復処理の制御』
   - k-epasync-iterator-generator # 『イテレータとイテラブルとジェネレータ関数』
-  - j-epasync-ts-promise-type-annotation # 『TypeScript における Promise の型注釈』
+  - j-epasync-ts-basic # 『TypeScript の基本知識』
+  - j-epasync-ts-promise-type-annotation # 『Promise の型注釈』
   - part-05-epasync # 『第５部 - 仕様およびその他の番外編』
   - m-epasync-promise-prototype-then # 『Promise.prototype.then の仕様挙動』
   - n-epasync-promise-spec-compare # 『Promise chain と async/await の仕様比較』

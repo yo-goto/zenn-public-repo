@@ -61,7 +61,7 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Iteration_protoco
 // イテレータ(iterator protocol を満たすオブジェクト)
 const iterator = {
   next() { // メソッドの短縮記法
-    const iteratorResult = { 
+    const iteratorResult = {
       value: 42, // イテレータリザルトが持つべきプロパティ
       done: false // イテレータリザルトが持つべきプロパティ
     };
@@ -82,7 +82,7 @@ console.log(iterator.next());
 ```js
 // オブジェクトのメソッドの定義方法は３つ
 const obj = {
-  method1: function() { 
+  method1: function() {
     // function キーワードを使ったメソッド定義
   },
   method2: () => {
@@ -107,10 +107,10 @@ const obj = {
 ```js
 const iterableObject = {
   // 短縮記法と計算プロパティ名でメソッド定義
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     const iterator = {
       // 短縮記法でメソッド定義
-      next() { 
+      next() {
         const iteratorResult = { value: 42, done: false };
         // イテレータリザルトを返す
         return iteratorResult;
@@ -166,7 +166,7 @@ const iterableObject = {
 const iterator = iterableObject[Symbol.iterator]();
 
 // next() メソッドを実行するとイテレータリザルトが返ってくる
-console.log(iterator.next()); //  => { value: 1, done: false } 
+console.log(iterator.next()); //  => { value: 1, done: false }
 console.log(iterator.next()); //  => { value: 2, done: false }
 console.log(iterator.next()); //  => { value: 3, done: false }
 console.log(iterator.next()); // => { value: undefined, done: true }
@@ -868,11 +868,11 @@ async function* asyncGenFn(url) {
 
 ## 型注釈と型定義
 
-第４部の最終チャプター『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
+第４部の最終チャプター『[Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』において TypeScript について学んだら、この項目に戻ってきてみてください。理解できるようになっているはずです。
 
 ### イテレータとイテラブルの型注釈
 
-イテレータとイテラブルの型注釈にはそれぞれ専用の型が存在しています。『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』のチャプターで見たように `Promise<Type>` と同じくジェネリクスで型が定義された `Iterator<Type>` と `Iterable<Type>` が存在しているのでこの型を使って型注釈を行います。
+イテレータとイテラブルの型注釈にはそれぞれ専用の型が存在しています。『[Promise の型注釈](j-epasync-ts-promise-type-annotation#ジェネリクス)』のチャプターで見たように `Promise<Type>` と同じくジェネリクスで型が定義された `Iterator<Type>` と `Iterable<Type>` が存在しているのでこの型を使って型注釈を行います。
 
 とはいえ、自分でイテレータやイテラブルを作ることはあまりないかもしれませんが、自分で再び作成してみると型について理解できます。
 
@@ -1235,9 +1235,9 @@ const bear: Bear = {
 interface Iterator<T, TReturn = any, TNext = undefined> {
     next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
     // optional method
-    return?(value?: TReturn): IteratorResult<T, TReturn>; 
+    return?(value?: TReturn): IteratorResult<T, TReturn>;
     // optional method
-    throw?(e?: any): IteratorResult<T, TReturn>; 
+    throw?(e?: any): IteratorResult<T, TReturn>;
 }
 
 // Genrator は Iterator 型の拡張
