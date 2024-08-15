@@ -2,9 +2,9 @@
 title: "TypeScript における Promise の型注釈"
 cssclass: zenn
 date: 2022-07-12
-modified: 2022-11-14
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『TypeScript における Promise の型注釈』
 ---
 
@@ -34,19 +34,19 @@ https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop
 
 TypeScript は JavaScript に[型システム](https://www.wikiwand.com/ja/%E5%9E%8B%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0)を導入した言語です。
 
-個人的な(浅い)経験から言うと JavaScript をしっかり学べば TypeScript は怖くありません(使いこなせるかは別の話として、怖くないと思うことが重要です)。逆に TypeScript から入ってしまうと JavaScript の機能に加えて型情報の操作や型チェックのエラーといった学ぶべき事柄が膨大になるので圧倒されてしまいます。
+言語の基底となる JavaScript のことををしっかり学べば TypeScript は怖くありません。逆に TypeScript から入ってしまうと JavaScript の機能に加えて型情報の操作や型チェックのエラーといった学ぶべき事柄が膨大になるので圧倒されてしまいます。
 
-これは、TypeScript を理解するためには JavaScript の知識が欠かせないということでもあります。『[サバイバルTypeScript](https://typescriptbook.jp/)』でも次のように言われています。
+これは TypeScript を理解するためには JavaScript の知識が欠かせないということでもあります。『[サバイバルTypeScript](https://typescriptbook.jp/)』でも次のように言われています。
 
 >TypeScriptから見ると、JavaScriptはTypeScriptの一部と言えます。そのため、TypeScriptを十分に理解するには、JavaScriptの理解が欠かせません。まだJavaScriptをよく分かっていない場合は、TypeScriptの学習と平行してJavaScriptも学ぶ必要があります。
 >([JavaScriptはTypeScriptの一部 | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/overview/javascript-is-typescript) より引用)
 
-そして JavaScript での非同期処理が理解できれば TypeScript の非同期処理はおそるるに足りません。『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/recap)』でも次のように言われています。
+そして JavaScript での非同期処理が理解できれば TypeScript の非同期処理は恐るるに足りません。『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/recap)』でも次のように言われています。
 
->TypeScriptは、単に、JavaScriptのコードを良いドキュメントにする方法を標準化したものに過ぎません。
->(中略)
->本質的には、TypeScriptはJavaScriptのリンター(コードの静的解析ツール)です。型情報を持たない他のJavaScriptのリンターよりも優れているだけです。
->([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
+> TypeScriptは、単に、JavaScriptのコードを良いドキュメントにする方法を標準化したものに過ぎません。
+> (...中略)
+> 本質的には、TypeScriptはJavaScriptのリンター(コードの静的解析ツール)です。型情報を持たない他のJavaScriptのリンターよりも優れているだけです。
+> ([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
 
 TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。
 
@@ -1050,7 +1050,7 @@ const sp = new Promise(resolve => {
 });
 ```
 
-この変数 `sp` には Promise インスタンスが代入されるので Promise オブジェクトの型を注釈したいと思います。Promise オブジェクトの型はジェネリクスを使って `Promise<Type>` というような形式になっています。`Type` は上で見たような型変数であり、型注釈する際には実際に存在する型名を型引数として指定します。では型変数にどのような型引数を指定すればよいかというと、履行値の型名を指定してあげるのが基本となります。
+この変数 `sp` には Promise オブジェクトが割り当てられるので Promise の型を注釈したいと思います。Promise オブジェクトの型はジェネリクスを使って `Promise<Type>` というような形式で記述できます。`Type` は上で見たような型変数であり、型注釈する際には実際に存在する型名を型引数として指定します。では型変数にどのような型引数を指定すればよいかというと、履行値の型名を指定してあげるのが基本となります。
 
 この場合は `"文字列で履行する"` という文字列の値で履行するので `string` という型名を型引数として指定します。`Array<Type>` のように Promise 型で `Promise<Type>` のように型注釈する場合には型引数は省略できません。
 
@@ -1067,7 +1067,11 @@ const sp: Promise<string> = new Promise(resolve => {
 const np: Promise<number> = Promise.resolve(42);
 ```
 
-一般化して考えると、Promise は値を入れ込むことができたのでその値の型を型引数として指定するわけです。非同期 API である `fetch()` メソッドはその結果である `Response` オブジェクトを Promise の中に入れ込んで結果として返してくれました。そういう訳で `fetch()` から返ってくる Promise インスタンスを代入する変数には `Promise<Response>` というような型注釈ができます。
+一般化して考えると、Promise は値を入れ込むことができたのでその値の型を型引数として指定するわけです。
+
+### Response型
+
+非同期 API である `fetch()` メソッドはその結果である `Response` オブジェクトを Promise の中に入れ込んで結果として返してくれました。そういう訳で `fetch()` から返ってくる Promise インスタンスを代入する変数には `Promise<Response>` というような型注釈ができます。
 
 ```ts
 const responsePromise: Promise<Response> = fetch("https://api.github.com/zen");
@@ -1097,14 +1101,14 @@ class Response implements Body {
   readonly trailer: Promise<Headers>;
   readonly type: ResponseType;
   readonly url: string;
-  
+
   arrayBuffer(): Promise<ArrayBuffer>;
   blob(): Promise<Blob>;
   clone(): Response;
   formData(): Promise<FormData>;
   json(): Promise<any>;
   text(): Promise<string>;
-  
+
   static error(): Response;
   static json(data: unknown, init?: ResponseInit): Response;
   static redirect(url: string, status?: number): Response;
@@ -1130,9 +1134,125 @@ const pn = fetch("https://api.github.com/zen").then(response => response.text())
 
 結局のところ JavaScript が正しく書かれていれば TypeScript で動きます。ただし、正しい型注釈をしようと思ったらそれなりに TypeScript のことを知らないと難しいです。実際、現実的にはエラーハンドリングをしますから、エラーオブジェクトなどの型注釈も必要となります。
 
+### 履行値が無い場合のPromiseの型注釈
+
+Promise コンストラクタの `resolve()` 関数に何も引数を渡さない場合、履行値は `undefined` になります。この場合、Promise オブジェクトに対してどのように型付けするかといえば、大抵の場合 `Promise<void>` という型注釈をします。
+
+```ts
+const p1: Promise<void> = new Promise(resolve => {
+  resolve(); // 引数を何も渡さない場合には undefined が履行値になる
+});
+
+// Promise.resolve() でも同じように undefined で履行される
+const p2: Promise<void> = Promise.resolve();
+```
+
+履行値が `undefined` なので、もちろん `Promise<undefined>` としても良いわけですが、`undefined` を強調したいなどの理由がない限りは `Promise<void>` としておくのが一般的です。
+
+:::message
+`void` 型は戻り値が無い関数の型に利用され、以下のように `return` 文が無い関数の戻り値の型注釈として使われます。
+
+```ts
+// 戻り値が無い関数の型注釈は void とする
+function sayHello(): void {
+  console.log("Hello!");
+}
+const u = sayHello(); // => 実際には undefined が返る
+```
+
+JavaScriptの関数は戻り値が無い場合には値として `undefined` を返します。
+
+そして、`void` 型は `undefined` 型の上位型(supertype)であり、以下のように `undefined` 型の値を `void` 型の変数に割り当てることはできますが、逆はできません。
+
+```ts
+const v: void = undefined; // void型はundefined型の値を割当可能
+
+const u: undefined = v; // 逆はできないので型エラー
+//    ^ Error: Type 'void' is not assignable to type 'undefined'.(2322)
+```
+
+したがって、意図的に `undefined` を `return` するような関数の戻り値の型を `void` としても型エラーにはならない正しいコードとなります。
+
+```ts
+function noR1(): void {
+  return undefined;
+}
+
+function noR2(): void {
+  return;
+}
+
+function noR3(): void {
+}
+```
+
+もちろん、そのように書けたとしても `void` 型はそもそも戻り値が無いということを表現する型なので、`return` 文がそもそも無いような`no3` のような関数の戻り値の型注釈として使うのが適切です。
+:::
+
+`undefined` を使うのは例えば、`number | undefined` など他の型との合成型を作る場合などです。以下のようなコードでは数値 `42` が履行地としてあり得るので `Promise<number | undefined>` として型注釈します。
+
+```ts
+const p: Promise<number | undefined> = new Promise(resolve => {
+  const value = Math.random() < 0.5 ? 42 : undefined;
+  //    ^: number | undefined として型推論される
+  resolve(value);
+});
+```
+
+履行値を特に意識しない、最初から無いことがわかっているような場合には `undefined` は特に使う必要なく `Promise<void>` として扱えばいいです。
+
+実際、`Promise.resolve()` の場合には、型注釈を省略した場合でも `Promise<void>` として型推論されます。
+
+```ts
+const p1 = Promise.resolve();
+//    ^: Promise<void> と型推論される
+```
+
+:::message
+なお、拒否状態のPromiseオブジェクトの場合には `Promise<never>` として型推論されます。
+
+```ts
+const up = Promise.reject(42);
+//    ^: Promise<never> として型推論される
+```
+:::
+
+Promise コンストラクタで記述する場合、`resolve()` に引数を渡さない状態で型注釈をしないとエラーになります。
+
+```ts:この場合には型エラーになる
+const p2 = new Promise(resolve => {
+  resolve();
+  // Error: Expected 1 arguments, but got 0. Did you forget to include 'void' in your type argument to 'Promise'?
+  // (value: unknown) => void として型推論される
+});
+```
+
+このエラーは引数が 1 つ必要だが 0 つしか渡されていないというものです。この場合、`Promise<void>` という型注釈をすることで `resolve()` 関数の型推論が修正されてエラーを回避できます。
+
+```ts:型エラーにならない
+const p2: Promise<void> = new Promise(resolve => {
+  resolve();
+  // (value: void | PromiseLike<void>) => void として型推論される
+});
+```
+
+履行値が無い Promise オブジェクトが返るというのは意外とよくあるケースであり、次に説明する Promise オブジェクトを返す関数や戻り値が無い async 関数などの注釈には `Promise<void>` がよく使われます。例えば、Promise 化された`setTimeout()` によるタイマー関数などを考えると以下の様に `setTimeout()` の第一引数には `resolve` 関数をそのまま渡しており、実行されるときには引数なしで行われます。
+
+```ts
+const delay = (ms: number): Promise<void> => {
+  //                        ^^^^^^^^^^^^: この型注釈がないと Promise<unknown> として推論されてしまう
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+    //         ^: コールバックに渡したresolve関数は引数なしで実行されるので履行値は無い(undefined)
+  });
+};
+```
+
+こういった場合には型注釈を意図的に施さないと、関数の戻り値の型が`Promise<unknown>` として推論されてしまうので、`Promise<void>` として型注釈するか、`new Promise<void>` としてジェネリック関数の呼び出しを行うようにするのがいいでしょう。
+
 ## Promise を返す関数の型注釈
 
-Promise インスタンスを返す関数は次のように返り値の型注釈を書きます。履行値の値の型を `Promise<Type>` の型引数として指定することで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
+さて、上ですでに例を見ましたが、Promise インスタンスを返す関数は次のように返り値の型注釈を書きます。履行値の値の型を `Promise<Type>` の型引数として指定することで、この関数から返ってくる Promise インスタンスがどのような値をもっているのかがわかりやすくなりますね。
 
 ```ts
 function returnPromise(
@@ -1300,6 +1420,12 @@ Promise.resolve<string>("string") // 履行値の型を明示的に型引数と�
 ```ts
 // 履行値は number 型なので型引数に number 型を指定
 const p = new Promise<number>(resolve => resolve(42));
+```
+
+従って、履行値が無い場合の Promise については以下のように書くこともできます。
+
+```ts
+const p1 = new Promise<void>(resolve => resolve());
 ```
 
 さて、ジェネリック関数での定義がわかったところで Proimse-based なタイマーである `pTimer()` に対して TypeScript で型注釈を加えてみます。
@@ -1629,7 +1755,7 @@ async function fetcher(
 
 ## 型表現の多様さ
 
-実際、型の表現をいかにするかということが TypeScript の難しいところでもあり、醍醐味だとも思います。関数の返り値などは意図に応じて様々な型の表現がありえます。例えば次のような２つの数値の大きさを比較する関数を考えてみましょう。
+実際、型の表現をどのように行うかという点が TypeScript の難しいところでもあり、醍醐味でもあります。例えば、関数の返り値などは意図に応じて様々な型の表現がありえます。次のような２つの数値の大きさを比較する関数を考えてみましょう。
 
 ```ts
 function compare(

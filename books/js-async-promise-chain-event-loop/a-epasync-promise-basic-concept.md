@@ -2,9 +2,9 @@
 title: "Promise の基本概念"
 cssclass: zenn
 date: 2022-05-03
-modified: 2023-02-13
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『Promise の基本概念』
 ---
 

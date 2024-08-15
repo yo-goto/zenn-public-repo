@@ -2,9 +2,9 @@
 title: "はじめに"
 cssclass: zenn
 date: 2022-04-17
-modified: 2023-01-07
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『はじめに』
 ---
 
@@ -44,7 +44,7 @@ Promise について詳しくなることで非同期処理を柔軟に書ける
 
 この本では可能な限り正確な情報になるように努力していますが、学習者のアウトプットとしての側面も強いので、間違いや勘違い等があるかもしれません。その点についてはご容赦ください。すなわち、この本は既存の解説に対しての疑問点や矛盾点を解消したり、多数の断片的な情報をピースとして一貫性のあるストーリーを構築するなどの自分自身の学習プロセス自体を組み込んだボトムアップの解説書となります。
 
-そういった前提から、なにか不備や間違いを見つけた場合には[スクラップ](https://zenn.dev/estra/scraps/20dc6c4a1b64f8)や Github の issue などにて教えていただけると非常に助かります。
+そういった前提から、なにか不備や間違いを見つけた場合には[スクラップ](https://zenn.dev/estra/scraps/20dc6c4a1b64f8)や GitHub の issue などにて教えていただけると非常に助かります。
 
 ## 対象読者について
 
@@ -241,6 +241,8 @@ https://www.jsv9000.app
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2024-08-15
+  - 『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターで履行値のないPromiseオブジェクトの型注釈についての説明を追加
 - 2023-07-30
   - 「章」を「部」に修正
   - 『[catch メソッドと finally メソッド](h-epasync-catch-finally)』の「finally メソッドの値を繋げる」の箇所に誤りがあったため修正

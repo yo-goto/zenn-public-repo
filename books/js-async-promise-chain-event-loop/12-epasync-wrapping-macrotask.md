@@ -2,9 +2,9 @@
 title: "古い非同期 API を Promise でラップする"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-12-04
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases:
   - Promise本『古い非同期 API を Promise でラップする』
   - Promisify

@@ -2,9 +2,9 @@
 title: "イテレータとイテラブルとジェネレータ関数"
 cssclass: zenn
 date: 2022-07-18
-modified: 2022-11-02
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『イテレータとイテラブルとジェネレータ関数』
 ---
 

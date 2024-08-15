@@ -2,9 +2,9 @@
 title: "await 式の配置による制御"
 cssclass: zenn
 date: 2022-06-30
-modified: 2022-11-02
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『await 式の配置による制御』
 ---
 

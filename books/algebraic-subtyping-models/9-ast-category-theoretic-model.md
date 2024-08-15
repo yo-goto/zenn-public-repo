@@ -973,7 +973,7 @@ IEnumerable<object> objects = strings;
 
 ![csharpのIEnumerable関手](/images/ast/img_csharp-ienumerable-functor.png)
 
-逆に[ `Action<T>`](https://learn.microsoft.com/ja-jp/dotnet/api/system.action-1?view=net-9.0) の型構築子は反変関手となるため、順序関係(部分型関係)を反転して構造をマッピングします。
+逆に [`Action<T>`](https://learn.microsoft.com/ja-jp/dotnet/api/system.action-1?view=net-9.0) の型構築子は反変関手となるため、順序関係(部分型関係)を反転して構造をマッピングします。
 
 ```cs
 static void SetObject(object o) { }
@@ -1025,4 +1025,3 @@ https://www.kyoritsu-pub.co.jp/book/b10008105.html
 https://booth.pm/ja/items/4435258
 
 この本でもいずれ扱うかもしれません。
-

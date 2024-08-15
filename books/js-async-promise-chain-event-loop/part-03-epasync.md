@@ -2,10 +2,10 @@
 title: "第３部 - async 関数と await 式の挙動"
 cssclass: zenn
 date: 2022-06-16
-modified: 2022-11-02
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
-alieases: [EPAsync 第３部]
+tags: type/zenn/book, JavaScript/async
+aliases: EPAsync 第３部
 ---
 
 ## この部について

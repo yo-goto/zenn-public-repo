@@ -4,8 +4,8 @@ cssclass: zenn
 date: 2022-07-13
 modified: 2022-11-02
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
-alieases: [EPAsync 第４部]
+tags: type/zenn/book, JavaScript/async
+aliases: EPAsync 第４部
 ---
 
 ## この部について

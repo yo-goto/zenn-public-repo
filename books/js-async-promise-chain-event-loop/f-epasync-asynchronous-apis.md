@@ -2,9 +2,9 @@
 title: "非同期 API と環境"
 cssclass: zenn
 date: 2022-05-06
-modified: 2023-03-31
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『非同期 API と環境』
 ---
 

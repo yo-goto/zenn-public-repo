@@ -2,11 +2,10 @@
 title: "Promise chain と async/await の仕様比較"
 cssclass: zenn
 date: 2023-01-09
-modified: 2023-01-09
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
-aliases:
-  - "Promise本『Promise chain と async/await の仕様比較』"
+tags: type/zenn/book, JavaScript/async
+aliases: "Promise本『Promise chain と async/await の仕様比較』"
 ---
 
 ## このチャプターについて

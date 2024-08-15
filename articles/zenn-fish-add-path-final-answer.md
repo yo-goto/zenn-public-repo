@@ -178,9 +178,9 @@ https://fishshell.com/docs/current/index.html#configuration-files
 /opt/homebrew/bin # index: 4
 ```
 
->Components are added in the order they are given, and they are prepended to the path unless `--append` is given  
->コンポーネントは指定された順番に追加され、`--append` スイッチが使用されない限りパスの先頭に追加されます。  
->[fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html) より引用
+> Components are added in the order they are given, and they are prepended to the path unless `--append` is given
+> コンポーネントは指定された順番に追加され、`--append` スイッチが使用されない限りパスの先頭に追加されます。
+> [fish documents: fish_add_path](https://fishshell.com/docs/current/cmds/fish_add_path.html) より引用
 
 パスを削除する場合、fish の立ち上げ時に再びパスが登録されないよう、まず `config.fish` にある `fish_add_paths` の行を削除するかコメントアウトしてください。
 
@@ -424,14 +424,14 @@ set -Ux PATH $HOME/.deno/bin $PATH
 
 ユニバーサル変数は全シェルセッションで共有され、永続化しているので、あるシェルセッションを開始した際に、`config.fish` が読み込まれると `PATH` の値に `$HOME/.deno/bin` が追加されます。
 
-~~さらに別の新しいシェルセッションを開始すると、再び `config.fish` を読み込み、`PATH` に `$HOME/.deno/bin` を追加します。これによって `PATH` には重複した `$HOME/.deno/bin` がいくつも追加された状態となります。~~  
+~~さらに別の新しいシェルセッションを開始すると、再び `config.fish` を読み込み、`PATH` に `$HOME/.deno/bin` を追加します。これによって `PATH` には重複した `$HOME/.deno/bin` がいくつも追加された状態となります。~~
 
 **修正**: 実際にはグローバル変数 `PATH` の値は環境から継承されるので、fish 起動時に生成されます。その生成されたグローバル変数 `PATH` の値が、起動時に実行される `set -U PATH $HOME/.deno/bin $PATH` によってユニバーサル変数 `PATH` へと追加されるため、パス自体がどんどん長くなるということはありませんでした。ただ、scope shadowing の問題からパスが通らないというだけです。
 
 :::message
-Scope Shadowing の問題。  
+Scope Shadowing の問題。
 
-変数のスコープルールとして "inside out" つまりローカルからグローバル、そして最後にユニバーサルという優先順位でサーチが行われるため、グローバルな環境変数と同一名のユニバーサルな環境変数があった場合、グローバル環境変数が優先されて参照されます。 これにってユニバーサルな環境変数の値を変更してもグローバルな環境変数が存在するため、変更が反映されないという "scope shadowing" と呼ばれる問題が引き起こされます。  
+変数のスコープルールとして "inside out" つまりローカルからグローバル、そして最後にユニバーサルという優先順位でサーチが行われるため、グローバルな環境変数と同一名のユニバーサルな環境変数があった場合、グローバル環境変数が優先されて参照されます。 これにってユニバーサルな環境変数の値を変更してもグローバルな環境変数が存在するため、変更が反映されないという "scope shadowing" と呼ばれる問題が引き起こされます。
 
 >Environment variables such as EDITOR or TZ can be set universally using set -Ux. However, if there is an environment variable already set before fish starts (such as by login scripts or system administrators), it is imported into fish as a global variable. **The variable scopes are searched from the "inside out", which means that local variables are checked first, followed by global variables, and finally universal variables**.
 >[fish Documents: Why doesn't set -Ux (exported universal variables) seem to work?](https://fishshell.com/docs/current/faq.html#why-doesn-t-set-ux-exported-universal-variables-seem-to-work) より引用
@@ -676,7 +676,7 @@ $ brew install pstree
 
 この `pstree` は、「現在動作しているプロセスをツリー形式で表示するコマンドのプロセスからどのプロセスが起動しているのか」という親子関係を表示できます。
 
-`fish_pid` という fihs の提供する特殊変数に現在実行中のシェルプロセスの PID(process ID) が格納されているので、その値を使って、プロセス (プログラムのインスタンス) 間の関係を表示してみます。`pstree -p PID` で指定した PID の親と子孫のみを表示できます。 
+`fish_pid` という fihs の提供する特殊変数に現在実行中のシェルプロセスの PID(process ID) が格納されているので、その値を使って、プロセス (プログラムのインスタンス) 間の関係を表示してみます。`pstree -p PID` で指定した PID の親と子孫のみを表示できます。
 自分は `tmux` を使用しているので、現在実行中のプロセスの親子関係を表示すると次のようになります。
 
 ```shell
@@ -812,9 +812,9 @@ set -U fish_user_paths $HOME/.deno/bin $fish_user_paths
 
 先述した引用では「パスがどんどん長くなる」と言及されていますが、完全にこのパターンのことです。
 
->Or you can modify $fish_user_paths yourself, but you should be careful not to append to it unconditionally in config.fish, or it will grow longer and longer.
->`$fish_user_paths` を自身で修正することも可能ですが、`config.fish` では無条件で追加しないように注意する必要があります。そうしないと、`$fish_user_paths` はどんどん長くなっていきます。  
->[fish documents: $PATH](https://fishshell.com/docs/current/tutorial.html#path) より引用
+> Or you can modify $fish_user_paths yourself, but you should be careful not to append to it unconditionally in config.fish, or it will grow longer and longer.
+>`$fish_user_paths`を自身で修正することも可能ですが、`config.fish`では無条件で追加しないように注意する必要があります。そうしないと、`$fish_user_paths` はどんどん長くなっていきます。
+> [fish documents: $PATH](https://fishshell.com/docs/current/tutorial.html#path) より引用
 
 もし `config.fish` で `set -U fish_user_paths` をやるなら `PATH` のときに説明したようにすべての要素を書くようにします。
 

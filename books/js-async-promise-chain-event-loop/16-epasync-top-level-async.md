@@ -2,9 +2,9 @@
 title: "Top-level await"
 cssclass: zenn
 date: 2022-05-28
-modified: 2022-11-14
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『Top-level await』
 ---
 

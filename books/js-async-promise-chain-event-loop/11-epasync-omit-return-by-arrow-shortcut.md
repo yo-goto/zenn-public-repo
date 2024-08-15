@@ -2,9 +2,9 @@
 title: "アロー関数で return を省略する"
 cssclass: zenn
 date: 2022-04-17
-modified: 2022-11-02
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『アロー関数で return を省略する』
 ---
 

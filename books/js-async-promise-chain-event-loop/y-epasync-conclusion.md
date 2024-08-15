@@ -2,9 +2,9 @@
 title: "総括 - 非同期処理のまとめ"
 cssclass: zenn
 date: 2022-07-21
-modified: 2023-01-23
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『総括 - 非同期処理のまとめ』
 ---
 

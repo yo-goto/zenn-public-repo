@@ -2,9 +2,9 @@
 title: "Promise.prototype.then の仕様挙動"
 cssclass: zenn
 date: 2022-11-02
-modified: 2023-01-09
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases:
   - Promise本『Promise.prototype.then の仕様挙動』
   - thenメソッドの勘違いの修正

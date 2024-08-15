@@ -2,9 +2,9 @@
 title: "Promise chain はネストさせない"
 cssclass: zenn
 date: 2022-04-17
-modified: 2023-01-06
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『Promise chain はネストさせない』
 ---
 

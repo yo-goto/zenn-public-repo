@@ -2,9 +2,9 @@
 title: "あとがき"
 cssclass: zenn
 date: 2022-06-06
-modified: 2022-12-22
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
+tags: type/zenn/book, JavaScript/async
 aliases: Promise本『あとがき』
 ---
 

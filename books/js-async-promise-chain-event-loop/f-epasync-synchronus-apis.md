@@ -2,7 +2,7 @@
 title: "同期 API とブロッキング"
 cssclass: zenn
 date: 2022-06-15
-modified: 2023-07-02
+modified: 2024-08-14
 url: "https://zenn.dev/estra/books/js-async-promise-chain-event-loop/viewer/f-epasync-synchronus-apis"
 AutoNoteMover: disable
 tags: type/zenn/book, JavaScript/async

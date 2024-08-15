@@ -2,10 +2,10 @@
 title: "第１部 - API を提供する環境と実行メカニズム"
 cssclass: zenn
 date: 2022-06-16
-modified: 2022-11-02
+modified: 2024-08-14
 AutoNoteMover: disable
-tags: [" #type/zenn/book  #JavaScript/async "]
-alieases: [EPAsync 第１部]
+tags: type/zenn/book, JavaScript/async
+aliases: EPAsync 第１部
 ---
 
 ## この部について
