@@ -243,6 +243,7 @@ https://www.jsv9000.app
 :::details ChangeLog
 - 2024-08-15
   - 『[Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターを分割して、履行値のない Promise オブジェクトの型注釈についての説明を追加
+  - 『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターに `PromiseWithResolvers()` メソッドの説明を追加
 - 2023-07-30
   - 「章」を「部」に修正
   - 『[catch メソッドと finally メソッド](h-epasync-catch-finally)』の「finally メソッドの値を繋げる」の箇所に誤りがあったため修正

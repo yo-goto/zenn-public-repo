@@ -975,11 +975,14 @@ V8 内部変換で実際にどのようにしているかは分かりません�
 
 https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-the-promise-constructor-scope
 
-```js
+```js:Promiseを外から解決・拒否する方法
+// Executor関数のコールバックを外部管理するための変数
 let promiseResolve, promiseReject;
 
 const promise = new Promise((resolve, reject) => {
+  // resolve関数を外部の変数に束縛
   promiseResolve = resolve;
+  // reject関数を外部の変数に束縛
   promiseReject = reject;
 }).then(() => console.log("resolve完了"));
 
@@ -996,16 +999,41 @@ resolve完了
 */
 ```
 
+:::message
+なお、Promise オブジェクトを外から解決・拒否する方法は、このようなテクニックだけでなく、[Promise.withResolvers](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) という ES2024 で追加された新しい Promise の静的メソッドでも実現可能となりました。
+
+この `Promise.withResolvers()` メソッドを使うことで Promise の解決と拒否を Promise インスタンスの生成後に自由に外部から制御できます。上のコードと同等のことを `Promise.withResolvers()` を使って書くと次のようになります。
+
+```js
+const { promise, resolve, reject } = Promise.withResolvers();
+
+// Promiseが解決後に実行されるコールバックをthenメソッドで登録
+promise.then(() => console.log("resolve完了"));
+
+setTimeout(() => {
+  console.log("Start");
+  resolve();
+  console.log("End");
+}, 1000);
+
+/* 出力結果
+Start
+End
+resolve完了
+*/
+```
+:::
+
 V8 での変換後のコードにある `resolvePromise()` を再度考えます。
 
 ```js
-  resolvePromise(implicit_promise, Promise.resolve(42));
+resolvePromise(implicit_promise, Promise.resolve(42));
 ```
 
 コンストラクタ外部からの resolve ができることを踏まると、結局このコードは以下のようなことを行っています。実際には Promise インスタンスは以前に作成したもので、外部から resolve していますが、分かりやすいようにあえてコンストラクタ関数で考えています。
 
 ```js:V8_convertingで考える
-// Promise.resolve(42) で implicit_proise を resolve する
+// Promise.resolve(42) で implicit_promise を resolve する
 const implicit_promise = new Promise(resolve => {
   resolve(Promise.resolve(42));
 });
