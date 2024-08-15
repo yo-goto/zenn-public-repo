@@ -138,7 +138,7 @@ function sayHello(): void {
 const u = sayHello(); // => 実際には undefined が返る
 ```
 
-JavaScriptの関数は戻り値が無い場合には値として `undefined` を返します。
+JavaScript の関数は戻り値が無い場合には値として `undefined` を返します。
 
 そして、`void` 型は `undefined` 型の上位型(supertype)であり、以下のように `undefined` 型の値を `void` 型の変数に割り当てることはできますが、逆はできません。
 
@@ -164,7 +164,7 @@ function noR3(): void {
 }
 ```
 
-もちろん、そのように書けたとしても `void` 型はそもそも戻り値が無いということを表現する型なので、`return` 文がそもそも無いような`no3` のような関数の戻り値の型注釈として使うのが適切です。
+もちろん、そのように書けたとしても `void` 型はそもそも戻り値が無いということを表現する型なので、`return` 文がそもそも無いような `no3` のような関数の戻り値の型注釈として使うのが適切です。
 :::
 
 `undefined` を使うのは例えば、`number | undefined` など他の型との合成型を作る場合などです。以下のようなコードでは数値 `42` が履行地としてあり得るので `Promise<number | undefined>` として型注釈します。
@@ -187,7 +187,7 @@ const p1 = Promise.resolve();
 ```
 
 :::message
-なお、拒否状態のPromiseオブジェクトの場合には `Promise<never>` として型推論されます。
+なお、拒否状態の Promise オブジェクトの場合には `Promise<never>` として型推論されます。
 
 ```ts
 const up = Promise.reject(42);
@@ -214,7 +214,7 @@ const p2: Promise<void> = new Promise(resolve => {
 });
 ```
 
-履行値が無い Promise オブジェクトが返るというのは意外とよくあるケースであり、次に説明する Promise オブジェクトを返す関数や戻り値が無い async 関数などの注釈には `Promise<void>` がよく使われます。例えば、Promise 化された`setTimeout()` によるタイマー関数などを考えると以下の様に `setTimeout()` の第一引数には `resolve` 関数をそのまま渡しており、実行されるときには引数なしで行われます。
+履行値が無い Promise オブジェクトが返るというのは意外とよくあるケースであり、次に説明する Promise オブジェクトを返す関数や戻り値が無い async 関数などの注釈には `Promise<void>` がよく使われます。例えば、Promise 化された `setTimeout()` によるタイマー関数などを考えると以下の様に `setTimeout()` の第一引数には `resolve` 関数をそのまま渡しており、実行されるときには引数なしで行われます。
 
 ```ts
 const delay = (ms: number): Promise<void> => {
@@ -226,7 +226,7 @@ const delay = (ms: number): Promise<void> => {
 };
 ```
 
-こういった場合には型注釈を意図的に施さないと、関数の戻り値の型が`Promise<unknown>` として推論されてしまうので、`Promise<void>` として型注釈するか、`new Promise<void>` としてジェネリック関数の呼び出しを行うようにするのがいいでしょう。
+こういった場合には型注釈を意図的に施さないと、関数の戻り値の型が `Promise<unknown>` として推論されてしまうので、`Promise<void>` として型注釈するか、`new Promise<void>` としてジェネリック関数の呼び出しを行うようにするのがいいでしょう。
 
 ## Promise を返す関数の型注釈
 
