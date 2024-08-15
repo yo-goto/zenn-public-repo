@@ -7,7 +7,9 @@
     "zenn:create:book": "deno task zenn new:book",
     "lint": "deno run -A --unstable-fs npm:textlint",
     "lint:fix": "deno task lint --fix",
-    "lint:dry": "deno task lint --dry-run"
+    "lint:dry": "deno task lint --dry-run",
+    "markdownlint": "deno run -A npm:markdownlint-cli2",
+    "markdownlint:fix": "deno task markdownlint --fix '**/*.md'"
   },
   "fmt": {
     "useTabs": false,

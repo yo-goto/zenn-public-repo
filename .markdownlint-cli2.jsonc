@@ -1,0 +1,17 @@
+{
+  "config": {
+    "default": false,
+    // 有効化ルール
+    "no-empty-links": true,
+    "single-trailing-newline": true,
+    "no-reversed-links": true,
+    "no-space-in-links": true,
+    "no-space-in-code": true,
+    "no-multiple-space-blockquote": false,
+    "no-blanks-blockquote": true,
+    // 明示的に無効化するルール
+    "no-bare-urls": false,
+    "no-space-in-emphasis":false
+  },
+  "ignores": ["./git", "node_modules"]
+}
