@@ -34,19 +34,19 @@ https://zenn.dev/mizchi/articles/understanding-promise-by-ts-eventloop
 
 TypeScript は JavaScript に[型システム](https://www.wikiwand.com/ja/%E5%9E%8B%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0)を導入した言語です。
 
-個人的な(浅い)経験から言うと JavaScript をしっかり学べば TypeScript は怖くありません(使いこなせるかは別の話として、怖くないと思うことが重要です)。逆に TypeScript から入ってしまうと JavaScript の機能に加えて型情報の操作や型チェックのエラーといった学ぶべき事柄が膨大になるので圧倒されてしまいます。
+言語の基底となる JavaScript のことををしっかり学べば TypeScript は怖くありません。逆に TypeScript から入ってしまうと JavaScript の機能に加えて型情報の操作や型チェックのエラーといった学ぶべき事柄が膨大になるので圧倒されてしまいます。
 
-これは、TypeScript を理解するためには JavaScript の知識が欠かせないということでもあります。『[サバイバルTypeScript](https://typescriptbook.jp/)』でも次のように言われています。
+これは TypeScript を理解するためには JavaScript の知識が欠かせないということでもあります。『[サバイバルTypeScript](https://typescriptbook.jp/)』でも次のように言われています。
 
 >TypeScriptから見ると、JavaScriptはTypeScriptの一部と言えます。そのため、TypeScriptを十分に理解するには、JavaScriptの理解が欠かせません。まだJavaScriptをよく分かっていない場合は、TypeScriptの学習と平行してJavaScriptも学ぶ必要があります。
 >([JavaScriptはTypeScriptの一部 | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/overview/javascript-is-typescript) より引用)
 
-そして JavaScript での非同期処理が理解できれば TypeScript の非同期処理はおそるるに足りません。『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/recap)』でも次のように言われています。
+そして JavaScript での非同期処理が理解できれば TypeScript の非同期処理は恐るるに足りません。『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/recap)』でも次のように言われています。
 
->TypeScriptは、単に、JavaScriptのコードを良いドキュメントにする方法を標準化したものに過ぎません。
->(中略)
->本質的には、TypeScriptはJavaScriptのリンター(コードの静的解析ツール)です。型情報を持たない他のJavaScriptのリンターよりも優れているだけです。
->([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
+> TypeScriptは、単に、JavaScriptのコードを良いドキュメントにする方法を標準化したものに過ぎません。
+> (...中略)
+> 本質的には、TypeScriptはJavaScriptのリンター(コードの静的解析ツール)です。型情報を持たない他のJavaScriptのリンターよりも優れているだけです。
+> ([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
 
 TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。
 
@@ -1097,14 +1097,14 @@ class Response implements Body {
   readonly trailer: Promise<Headers>;
   readonly type: ResponseType;
   readonly url: string;
-  
+
   arrayBuffer(): Promise<ArrayBuffer>;
   blob(): Promise<Blob>;
   clone(): Response;
   formData(): Promise<FormData>;
   json(): Promise<any>;
   text(): Promise<string>;
-  
+
   static error(): Response;
   static json(data: unknown, init?: ResponseInit): Response;
   static redirect(url: string, status?: number): Response;
@@ -1629,7 +1629,7 @@ async function fetcher(
 
 ## 型表現の多様さ
 
-実際、型の表現をいかにするかということが TypeScript の難しいところでもあり、醍醐味だとも思います。関数の返り値などは意図に応じて様々な型の表現がありえます。例えば次のような２つの数値の大きさを比較する関数を考えてみましょう。
+実際、型の表現をどのように行うかという点が TypeScript の難しいところでもあり、醍醐味でもあります。例えば、関数の返り値などは意図に応じて様々な型の表現がありえます。次のような２つの数値の大きさを比較する関数を考えてみましょう。
 
 ```ts
 function compare(
