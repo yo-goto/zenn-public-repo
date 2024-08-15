@@ -241,6 +241,8 @@ https://www.jsv9000.app
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2024-08-15
+  - 『[TypeScript における Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターで履行値のないPromiseオブジェクトの型注釈についての説明を追加
 - 2023-07-30
   - 「章」を「部」に修正
   - 『[catch メソッドと finally メソッド](h-epasync-catch-finally)』の「finally メソッドの値を繋げる」の箇所に誤りがあったため修正
