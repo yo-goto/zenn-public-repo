@@ -416,7 +416,7 @@ python3 is /opt/homebrew/bin/python3
 /opt/homebrew/bin/python3
 ```
 
-つまり、`python3` を実行しようとすると、最新バージョンである `/opt/homebrew/bin/python3` が実行されます。これは Homebrew 用に通したパス `/opt/homebrew/bin` のほうが `/usr/bin/ ` よりも後から追加されたものであるため、そちらが先に検索対象となるからです。
+つまり、`python3` を実行しようとすると、最新バージョンである `/opt/homebrew/bin/python3` が実行されます。これは Homebrew 用に通したパス `/opt/homebrew/bin` のほうが `/usr/bin/` よりも後から追加されたものであるため、そちらが先に検索対象となるからです。
 
 このように `/usr/bin` に配置されているコマンドと同一名の homebrew でインストールされているコマンドを探してみると結構あることがわかりました。これはインストールしたパッケージの依存関係に入っていたと思われます。
 

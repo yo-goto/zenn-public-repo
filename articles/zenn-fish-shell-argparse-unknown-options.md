@@ -302,7 +302,7 @@ function bad-pattern
 end
 ```
 
-この場合、`argparse` のオプション処理対象として定義している `-v, --version` と `-h, --help` についてはうまく処理しますが、未定義のオプション(例えば `deno run` の ` --allow-read` オプションなど)を入力したときにエラーを吐き出します。
+この場合、`argparse` のオプション処理対象として定義している `-v, --version` と `-h, --help` についてはうまく処理しますが、未定義のオプション(例えば `deno run` の `--allow-read` オプションなど)を入力したときにエラーを吐き出します。
 
 ```shell
 ❯ bad-pattern test.ts -v
