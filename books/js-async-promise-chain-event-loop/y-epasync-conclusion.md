@@ -78,7 +78,7 @@ JavaScript はメインスレッドという単一スレッド (シングルス�
 :::details 参照チャプター
 - 『[Promise chain から async 関数へ](14-epasync-chain-to-async-await)』
 - 『[コールバックで副作用となる非同期処理](10-epasync-dont-use-side-effect)』
-- 『[Promise の静的メソッドと並列化](17-epasync-static-method)』
+- 『[Promise の静的メソッド](17-epasync-static-method)』
 - 『[反復処理の制御](19-epasync-async-loop)』
 :::
 

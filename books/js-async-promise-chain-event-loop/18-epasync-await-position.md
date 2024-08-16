@@ -16,7 +16,7 @@ aliases: Promise本『await 式の配置による制御』
 
 ## 不定性の制御
 
-前の『[Promise の静的メソッドと並列化](17-epasync-static-method)』のチャプターにおいて、`fetch()` から始まる chain の並列化(本質的には非同期 API の並列化)を見ましたが、次のように変形してみるとどこかで視たことのある気がしてきます。
+前の『[Promise の静的メソッド](17-epasync-static-method)』のチャプターにおいて、`fetch()` から始まる chain の並列化(本質的には非同期 API の並列化)を見ましたが、次のように変形してみるとどこかで視たことのある気がしてきます。
 
 ```js
 fetch(urls[0])

@@ -16,7 +16,8 @@ aliases: EPAsync 第４部
 
 ## チャプター
 
-- [Promise の静的メソッドと並列化](17-epasync-static-method)
+- [Promise の静的メソッド](17-epasync-static-method)
+- [Promise Combinator と並列化](q-epasync-promise-combinators)
 - [await 式の配置による制御](18-epasync-await-position)
 - [反復処理の制御](19-epasync-async-loop)
 - [イテレータとイテラブルとジェネレータ関数](k-epasync-iterator-generator)
