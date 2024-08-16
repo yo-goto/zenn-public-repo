@@ -131,7 +131,7 @@ const promiseTry = (func) => {
 };
 ```
 
-引数の `func` は `new Promise(executor)` の `executor` 関数と同じ様に同期的に実行されます。その関数ではプレーンな値やPromiseオブジェクトが返されたり、例外が投げられたりすることができます。`Promise.try()` ではそれぞれの場合で上記コードのように解決が行われる Promise オブジェクトが返されます。
+引数の `func` は `new Promise(executor)` の `executor` 関数と同じ様に同期的に実行されます。その関数ではプレーンな値や Promise オブジェクトが返されたり、例外が投げられたりすることができます。`Promise.try()` ではそれぞれの場合で上記コードのように解決が行われる Promise オブジェクトが返されます。
 
 ```js
 const f1 = () => {
