@@ -18,7 +18,7 @@ aliases: Promise本『Promise コンストラクタと Executor 関数』
 
 Promise オブジェクトは `fetch()` といった非同期 API (ECMAScript の一部ではなくブラウザやランタイムの環境が提供する機能)の処理の結果として返されるパターンが多いですが、Promise そのものは**ビルトインオブジェクト**であり、ECMAScript (JavaScript の言語コア) の一部であることを忘れないようにしてください。
 
-また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "**Promise-based API**" (PromiseベースのAPI) のことを指しており、Promise 自体が API であるわけではないので注意してください。他の解説によっては、Promise の静的メソッドである `Promise.all()` などを指している場合もあります。
+また、"Promise API" という言葉がありますが、これは Promise インスタンスを返すタイプの非同期 API である "**Promise-based API**" (Promise ベースの API) のことを指しており、Promise 自体が API であるわけではないので注意してください。他の解説によっては、Promise の静的メソッドである `Promise.all()` などを指している場合もあります。
 
 :::message alert
 この本ではそうしませんが、他の解説では Promise API といっているときは JavaScript エンジンの文脈で話していることがあり、その場合に `Promise.all` や `Promise.allSettled`、また `Promise(executor)` コンストラクタなどを "Promise API" と言っている場合があるので注意してください。

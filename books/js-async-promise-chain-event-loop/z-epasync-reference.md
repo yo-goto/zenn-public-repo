@@ -223,7 +223,15 @@ MDN
 
 ## [第４部 - 制御と型注釈](part-04-epasync)
 
-### [Promise の静的メソッドと並列化](17-epasync-static-method)
+### [Promise の静的メソッド](17-epasync-static-method)
+
+MDN
+- [Promise.resolve() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve)
+- [Promise.reject() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject)
+- [Promise.withResolvers() - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers)
+- [Promise.try() - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/try)
+
+### [Promise Combinator と並列化](q-epasync-promise-combinator)
 
 - [Promise combinators · V8](https://v8.dev/features/promise-combinators)
 

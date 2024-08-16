@@ -241,6 +241,8 @@ https://www.jsv9000.app
 大きな変更のみトラッキングしています。
 
 :::details ChangeLog
+- 2024-08-16
+  - 『[Promise の静的メソッド](17-epasync-static-method)』の内容を『[Promise Combinator と並列化](q-epasync-promise-combinator)』に移動して、静的メソッド(`Promise.withResolvers()` と `Promise.try()` など)の内容を追加
 - 2024-08-15
   - 『[Promise の型注釈](j-epasync-ts-promise-type-annotation)』のチャプターを分割して、履行値のない Promise オブジェクトの型注釈についての説明を追加
   - 『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターに `PromiseWithResolvers()` メソッドの説明を追加

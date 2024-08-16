@@ -59,6 +59,7 @@ aliases:
 - [m-epasync-promise-prototype-then](m-epasync-promise-prototype-then)
 - [n-epasync-promise-spec-compare](n-epasync-promise-spec-compare)
 - [o-epasync-async-await-pattern-history](o-epasync-async-await-pattern-history)
+- [q-epasync-promise-combinator](q-epasync-promise-combinator)
 - [x-epasync-epilogue](x-epasync-epilogue)
 - [y-epasync-conclusion](y-epasync-conclusion)
 - [z-epasync-reference](z-epasync-reference)
@@ -125,7 +126,8 @@ aliases:
   - 15-epasync-v8-converting # 『V8 エンジンによる async/await の内部変換』
   - 16-epasync-top-level-async # 『Top-level await』
   - part-04-epasync # 『第４部 - 制御と型注釈』
-  - 17-epasync-static-method # 『Promise の静的メソッドと並列化』
+  - 17-epasync-static-method # 『Promise の静的メソッド』
+  - q-epasync-promise-combinator # 『Promise Combinator と並列化』
   - 18-epasync-await-position # 『await 式の配置による制御』
   - 19-epasync-async-loop # 『反復処理の制御』
   - k-epasync-iterator-generator # 『イテレータとイテラブルとジェネレータ関数』

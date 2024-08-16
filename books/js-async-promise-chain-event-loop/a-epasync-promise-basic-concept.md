@@ -10,9 +10,7 @@ aliases: Promise本『Promise の基本概念』
 
 ## このチャプターについて
 
-このチャプターでは Promise の基本的な概念と用語を紹介しておきます。Promise の知識自体は他の解説やドキュメントなどで目にしていると思うので、簡単な説明自体は省いて本質的な部分のみにフォーカスして解説します。
-
-Promise のコードについての具体的な解説は『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで行います。
+このチャプターでは Promise の基本的な概念と用語を紹介しておきます。Promise の知識自体は他の解説やドキュメントなどで目にしていると思うので、簡単な説明自体は省いて本質的な部分のみにフォーカスして解説します。なお、Promise を使った具体的なコードについての解説は『[Promise コンストラクタと Executor 関数](3-epasync-promise-constructor-executor-func)』のチャプターで行います。
 
 :::message alert
 このチャプターでの解説では `then()` メソッドを持つ Promise ライクなオブジェクト "Thenable" については混乱をさけるために意図的に省いているので注意して下さい。Thenable については『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで ECMAScript 仕様と共に解説しています。
@@ -73,13 +71,13 @@ Unresolved な Promise インスタンスは必然的に Pending 状態です。
 Resolved であるかどうかということを示す Promise の Fate 概念は ECMAScript 仕様上では [CreateResolvingFunctions](https://tc39.es/ecma262/#sec-createresolvingfunctions) 抽象操作によって作成される `resolve` 関数と `reject` 関数が持つ `[[AlreadyResolved]]` という内部スロットに真偽値で追跡されています。この値が `true` なら Fate は Resolved であり、`false` なら Fate は Unresolved ということになります。
 :::
 
-### 注意
+## 用語の使い分けに注意
 
-翻訳した日本語で考えてしまうと用語がややこしくなるので、なるべくオリジナルの英単語を使って理解した方が良いです。特に日本語の " 解決する " などの単語には注意を払った方が良いでしょう。
+用語や概念についての注意点として、翻訳した日本語で考えてしまうと用語がややこしくなるので、なるべくオリジナルの英単語を使って理解した方が良いです。特に日本語の「**解決する**」などの単語には注意を払った方が良いでしょう。
 
-とは言っても基本的に英語でもややこしく、"resolve" と言ったときに、単に fulfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fulfill であり、これは単に履行状態にするという意味で捉えることができます。
+とは言っても、基本的に英語の用語でもややこしく、"resolve" と言ったときに、単に fulfill(履行状態にするという意味) にすることと同じ意味で言っている場合があったりします。従って、"resolve" を考えるときは "resolve with ~" というように **何で resolve するのか** を考えると理解しやすくなります。"resolve with a plain value" というように、単なる値で resolve するなら fulfill であり、これは単に履行状態にするという意味で捉えることができます。
 
-動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` 関数の挙動が `reject()` 関数に比べて複雑であり、引数の値の種類によって処理的な場合分けがあるからです。`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promise インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap を行わずシンプルに Rejected 状態に遷移するような操作となっています。
+動詞の意味がややこしくなる理由は、動詞の元となる実際の `resolve()` 関数の挙動が `reject()` 関数に比べて複雑であり、**引数の値の種類によって処理的な場合分けがあるから**です。`resolve(promise)` というように Promise インスタンスで resolve を試みると unwrap という現象が起きて、その従っている Promise インスタンスの状態に同化します。逆に、`reject(promise)` は unwrap を行わずシンプルに Rejected 状態に遷移するような操作となっています。
 
 :::details 仕様上の補足
 `resolve` 関数の挙動について仕様的に何が起きるのかについては『[Promise.prototype.then の仕様挙動](m-epasync-promise-prototype-then)』のチャプターで解説していますが、簡易的に説明すると `resolve` 関数の挙動を定義しているのは ECMAScript 仕様上の [Promise Resolve Functions](https://tc39.es/ecma262/#sec-promise-resolve-functions) であり、`reject` 関数の挙動は [Promise Reject Functions](https://tc39.es/ecma262/#sec-promise-reject-functions) という項目です。
@@ -94,7 +92,7 @@ Promise Reject Functions の仕様が短いのに対して Promise Resolve Funct
 仕様が理解できるようになってくると分かることですが、このように解決 (Resolution) によって起きることは図にある通り履行 (Fulfillment) や引数に取った Promise オブジェクトの状態に応じて拒否 (Rejection) を起こすなど多数の場合があるので注意してください。
 
 :::message
-Unwrapping については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』で解説しています。そちらを参照してください。
+Unwrapping の概念については『[resolve 関数と reject 関数の使い方](g-epasync-resolve-reject)』で解説しているので、そちらのチャプターを参照してください。
 :::
 
 難しいですが、Fate の概念は他の文章を読むときには役立つことがあります。または、`Promise.fulfill()` というメソッドではなく `Promise.resolve()` というメソッドが存在している理由の理解に役立ちます。あとは、`resolve()` や `Promise.resolve()` の挙動・意味をしっかり理解しようとすると必要になってきます。

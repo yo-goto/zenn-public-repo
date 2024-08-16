@@ -640,7 +640,7 @@ console.log("🦖 [3] MAINLINE: End");
 実行順番は次のようになります (どちらの場合でも同じ)。
 
 ```sh
-❯ v8 awaitPlainValu.js
+❯ v8 awaitPlainValue.js
 🦖 [1] MAINLINE: Start
 🦖 [2] MAINLINE: In async function
 🦖 [3] MAINLINE: End
@@ -1000,28 +1000,7 @@ resolve完了
 ```
 
 :::message
-なお、Promise オブジェクトを外から解決・拒否する方法は、このようなテクニックだけでなく、[Promise.withResolvers](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) という ES2024 で追加された新しい Promise の静的メソッドでも実現可能となりました。
-
-この `Promise.withResolvers()` メソッドを使うことで Promise の解決と拒否を Promise インスタンスの生成後に自由に外部から制御できます。上のコードと同等のことを `Promise.withResolvers()` を使って書くと次のようになります。
-
-```js
-const { promise, resolve, reject } = Promise.withResolvers();
-
-// Promiseが解決後に実行されるコールバックをthenメソッドで登録
-promise.then(() => console.log("resolve完了"));
-
-setTimeout(() => {
-  console.log("Start");
-  resolve();
-  console.log("End");
-}, 1000);
-
-/* 出力結果
-Start
-End
-resolve完了
-*/
-```
+なお、Promise オブジェクトを外から解決・拒否する方法は、このようなテクニックだけでなく、`Promise.withResolvers()` という ES2024 で追加された新しい Promise の静的メソッドでも実現可能となりました。`Promise.withResolvers()` については『[Promise の静的メソッド](17-epasync-static-method)』のチャプターで解説します。
 :::
 
 V8 での変換後のコードにある `resolvePromise()` を再度考えます。

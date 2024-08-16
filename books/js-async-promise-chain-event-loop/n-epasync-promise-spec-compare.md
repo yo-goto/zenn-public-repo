@@ -67,7 +67,7 @@ PromiseResolve 操作から呼び出される [IsPromise](https://tc39.es/ecma26
 new Promise(resolve => {
   resolve(Promise.resolve("A"));
   // 🔥 引数が Promise なら追加で２つのマイクロタスクが発生
-  // <1-a[1]> Promise.reoslve("A").then(resolve, reject) の呼び出し
+  // <1-a[1]> Promise.resolve("A").then(resolve, reject) の呼び出し
   // ↪ <3-a[2]> resolve 関数の実行
 }).then(console.log); // <4-a[3]>
 //      ^^^^^^^^^^^ ３個目のマイクロタスクで出力
