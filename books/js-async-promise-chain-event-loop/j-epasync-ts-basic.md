@@ -36,8 +36,8 @@ TypeScript は JavaScript に[型システム](https://www.wikiwand.com/ja/%E5%9
 
 これは TypeScript を理解するためには JavaScript の知識が欠かせないということでもあります。『[サバイバルTypeScript](https://typescriptbook.jp/)』でも次のように言われています。
 
->TypeScriptから見ると、JavaScriptはTypeScriptの一部と言えます。そのため、TypeScriptを十分に理解するには、JavaScriptの理解が欠かせません。まだJavaScriptをよく分かっていない場合は、TypeScriptの学習と平行してJavaScriptも学ぶ必要があります。
->([JavaScriptはTypeScriptの一部 | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/overview/javascript-is-typescript) より引用)
+> TypeScriptから見ると、JavaScriptはTypeScriptの一部と言えます。そのため、TypeScriptを十分に理解するには、JavaScriptの理解が欠かせません。まだJavaScriptをよく分かっていない場合は、TypeScriptの学習と平行してJavaScriptも学ぶ必要があります。
+> ([JavaScriptはTypeScriptの一部 | TypeScript入門『サバイバルTypeScript』](https://typescriptbook.jp/overview/javascript-is-typescript) より引用)
 
 そして JavaScript での非同期処理が理解できれば TypeScript の非同期処理は恐るるに足りません。『[TypeScript Deep Dive](https://typescript-jp.gitbook.io/deep-dive/recap)』でも次のように言われています。
 
@@ -834,7 +834,19 @@ const result2 = returnArrEl<string>(["A", "B", "C"]);
 console.log(result2); // => "A"
 ```
 
-**入力と出力の値の型がリンクしているため**、実は型引数の部分は省略しても引数の値から型推論してくれます。
+:::message
+次の章で解説しますが、ジェネリック関数はこのようなユーザー定義の関数だけでなく、ビルトインのオブジェクトのメソッドなどでも利用されています。実際 `Promise.resolve()` などはジェネリック関数になっているので、`Promise.resolve<number>` や `new Promise<void>()` などのように履行値についての方指定ができるようになっています。
+
+```ts
+const p1 = Promise.resolve<number>(42);
+//    ^: Promise<number> 型として推論される
+
+const p2 = new Promise<string>(resolve => resolve("st"));
+//    ^: Promise<string> 型として推論される
+```
+:::
+
+このようなジェネリック関数では、**入力と出力の値の型がリンクしているため**、実は型引数の部分は省略しても引数の値から型推論してくれます。
 
 ```ts
 // 両方とも型エラーにならない

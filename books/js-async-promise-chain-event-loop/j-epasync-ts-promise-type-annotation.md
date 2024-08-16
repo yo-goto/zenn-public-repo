@@ -10,9 +10,7 @@ aliases: Promise本『Promise の型注釈』
 
 ## このチャプターについて
 
-このチャプターでは、TypeScript での Promise の型注釈について考えてみます。
-
-async 関数では Promise を扱っているということを意識することが重要なので、TypeScript における型注釈を通して考えてみるのは非常に有用です。
+このチャプターでは、TypeScript での Promise の型注釈について考えてみます。async 関数では本質的には「**Promise オブジェクトを扱っている**」ということを意識することが重要なので、TypeScript を使って型注釈を通じて async 関数などを考えてみるのは理解の上で重要となります。
 
 :::message alert
 TypeScript について詳しくない場合には、このチャプターを読む前に前のチャプター『[TypeScript の基本知識](j-epasync-ts-basic)』を読むようにしてください。
@@ -47,7 +45,7 @@ const np: Promise<number> = Promise.resolve(42);
 
 一般化して考えると、Promise は値を入れ込むことができたのでその値の型を型引数として指定するわけです。
 
-### Response型
+### Response 型
 
 非同期 API である `fetch()` メソッドはその結果である `Response` オブジェクトを Promise の中に入れ込んで結果として返してくれました。そういう訳で `fetch()` から返ってくる Promise インスタンスを代入する変数には `Promise<Response>` というような型注釈ができます。
 
@@ -112,9 +110,9 @@ const pn = fetch("https://api.github.com/zen").then(response => response.text())
 
 結局のところ JavaScript が正しく書かれていれば TypeScript で動きます。ただし、正しい型注釈をしようと思ったらそれなりに TypeScript のことを知らないと難しいです。実際、現実的にはエラーハンドリングをしますから、エラーオブジェクトなどの型注釈も必要となります。
 
-### 履行値が無い場合のPromiseの型注釈
+### 履行値が無い場合の Promise の型注釈
 
-Promise コンストラクタの `resolve()` 関数に何も引数を渡さない場合、履行値は `undefined` になります。この場合、Promise オブジェクトに対してどのように型付けするかといえば、大抵の場合 `Promise<void>` という型注釈をします。
+Promise コンストラクタの `resolve()` 関数に何も引数を渡さない場合、履行値は `undefined` ちなります。この場合、Promise オブジェクトに対してどのように型付けするかといえば、大抵の場合 `Promise<void>` という型注釈をします。
 
 ```ts
 const p1: Promise<void> = new Promise(resolve => {
@@ -130,8 +128,7 @@ const p2: Promise<void> = Promise.resolve();
 :::message
 `void` 型は戻り値が無い関数の型に利用され、以下のように `return` 文が無い関数の戻り値の型注釈として使われます。
 
-```ts
-// 戻り値が無い関数の型注釈は void とする
+```ts:戻り値が無い関数の型注釈はvoidとする
 function sayHello(): void {
   console.log("Hello!");
 }
@@ -142,7 +139,7 @@ JavaScript の関数は戻り値が無い場合には値として `undefined` �
 
 そして、`void` 型は `undefined` 型の上位型(supertype)であり、以下のように `undefined` 型の値を `void` 型の変数に割り当てることはできますが、逆はできません。
 
-```ts
+```ts:voidはundefinedの上位型
 const v: void = undefined; // void型はundefined型の値を割当可能
 
 const u: undefined = v; // 逆はできないので型エラー
@@ -151,7 +148,7 @@ const u: undefined = v; // 逆はできないので型エラー
 
 したがって、意図的に `undefined` を `return` するような関数の戻り値の型を `void` としても型エラーにはならない正しいコードとなります。
 
-```ts
+```ts:voidによる関数の型注釈
 function noR1(): void {
   return undefined;
 }
@@ -167,7 +164,7 @@ function noR3(): void {
 もちろん、そのように書けたとしても `void` 型はそもそも戻り値が無いということを表現する型なので、`return` 文がそもそも無いような `no3` のような関数の戻り値の型注釈として使うのが適切です。
 :::
 
-`undefined` を使うのは例えば、`number | undefined` など他の型との合成型を作る場合などです。以下のようなコードでは数値 `42` が履行地としてあり得るので `Promise<number | undefined>` として型注釈します。
+`undefined` を使うのは例えば、`number | undefined` など他の型との合成型を作る場合などです。以下のようなコードでは数値 `42` が履行値としてあり得るので `Promise<number | undefined>` として型注釈します。
 
 ```ts
 const p: Promise<number | undefined> = new Promise(resolve => {
