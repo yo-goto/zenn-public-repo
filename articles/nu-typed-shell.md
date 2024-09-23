@@ -12,25 +12,27 @@ aliases: 記事『Nushell』
 
 ## はじめに
 
-これまで Zenn では fish shell の記事をいくつか書いてきましたが、現在は Nushell という新しいシェルを使っています。
+これまで Zenn では [fish shell](https://fishshell.com) の記事をいくつか書いてきましたが、現在は Nushell という新しいシェルを使っています。
 
 https://www.nushell.sh
 
-実は Nushell のことは以前から知っていましたが、利用されてているプログラミング言語の概念やその恩恵についての知識が無かったため、より初心者にわかりやすい fish shell を利用していました。最近になって型システムや関数型言語などについての概念を取得したため、ようやく Nushell を使い始められました。この記事では Nushell とはどのようなシェルか、また fish で作成してきたようないくつかのコマンドを Nushell でどのように定義するかを見てきいきます。
+実は Nushell のことは以前から知っていましたが、利用されてているプログラミング言語の概念やその恩恵についての知識が無かったため、より初心者にわかりやすい fish shell を利用していました。最近になって型システムや関数型言語などについての概念を取得したため、ようやく Nushell を使い始められました。
+
+使い始めてからまだ1ヶ月ぐらいですが、かなり奥が深く一つの記事で解説しきるのは難しいので、この記事では基本体な設定と型とコマンドについて重点をおいて最後は具体的なカスタムコマンドの定義をいくつか取り上げて解説したいとおもいます。
 
 ## Nushellとは
 
 Nushell とは Rust 言語で開発された新しいタイプのシェルであり、以下のような特徴があります。
 
 - クロスプラットフォームシェル(Linux, macOS, Windows)
-- 型システムと構造化データ
-- 強力なプラグインシステム
 - 既存データフォーマットとの連携(json, csv, toml, yaml, ...)
+- 強力なプラグインシステム
+- 型システムと構造化データ
 - 分かりやすいエラーメッセージ
 - パイプラインを前提とした設計
 - スコープされた環境
 - デフォルトでイミュータブルな変数
-- LSPやIDEのサポート
+- LSP、IDEサポートの提供
 
 Nushell はシェルでもあると同時にプログラミング言語でもあり、２つの機能的な側面が一つのパッケージとして完全に統合されて提供されています。Nushell のデザイン目標はシンプルなコマンドをパイプラインで組み合わせて利用する Unix の思想を背景に、以下のような様々な領域からヒントを得てモダンな開発スタイルを構築することです。
 
@@ -43,6 +45,8 @@ Nushell はシェルでもあると同時にプログラミング言語でもあ
 fish 然り、そもそもシェルは「コマンド」という非常に小さな単位でインタラクティブにプログラムを行うことができる環境であり、即座のフィードバックを得られ学習が容易であることから個人的に好きなツールなのですが、そのようなシェル環境においても漸進的な型システムや関数型スタイルなどのモダンプログラミングのスタイルを利用できるのが Nushell の面白いところです。
 
 ## 使い方
+
+まず、使い方についてですがクロスプラットフォームシェルを謳っているため、以下のようにそれぞれのプラットフォームで簡単にインストールできます。
 
 ### インストール
 
@@ -65,7 +69,7 @@ winget install nushell
 
 #### 設定ファイルの場所
 
-macOS での環境構築について説明します。意図的にログインシェルにはしないため注意してください(※ログインシェルは zsh を想定します)。
+ここでは macOS での環境構築について説明します。fish 以上に Nushell はPOSIXに準拠しておらず、意図的にログインシェルにはしないようにしていますので注意してください。(※ログインシェルは zsh を想定します)。
 
 Nushell の環境設定は `XDG_CONFIG_HOME` という環境変数にあるロケーションを見るようになっており、macOS では少し設定がしずらい状況にあります。最新バージョン(0.98.0)においても、`$HOME/.config` 配下を見るようにはなっていないので `.zshrc` などで以下のように環境変数を export します。
 
@@ -75,7 +79,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 これで他のdotfilesなどの設定と同じ様に `~/.config` などに設定ファイルを配置できいます。
 
-ログインシェルは zsh で、インタラクティブシェルとして起動した時には Nushell にしたい場合には `.zshrc` に以下のようにインタラクティブシェルとして Nushell を起動させるようにします。
+ログインシェルは zsh としておいて、インタラクティブシェルとして起動した時には Nushell とする場合には `.zshrc` に以下のようにインタラクティブシェルとして Nushell を起動させるようにします。
 
 ```zsh:.zshrc
 # Zshがインタラクティブシェルとして起動しているか確認
@@ -175,27 +179,30 @@ PATH の書き方はまさにパイプライン(`|`)を使ったコマンドの�
 
 #### 設定ファイルの分割
 
-設定や後で解説するカスタムコマンド(fish でいうところの function)は分割して管理したいので、自分の環境では
+設定や後で解説するカスタムコマンド(fish でいうところの function)は分けて管理したいので、自分の環境では以下のように環境設定をディレクトリに分割して管理しています。
 
 ```sh
 ~/.config/nushell/
-├── env.nu
-├── config.nu
-├── completions/
-│  └── git-completions.nu
-├── conf.d/
+.
+├── completions
+│  ├── external.nu
+│  ├── git-completions.nu
+│  └── index.nu
+├── conf.d
 │  ├── alias.nu
-│  ├── commands.nu
-│  ├── completions.nu
-│  ├── main.nu
+│  ├── index.nu
 │  └── theme.nu
-├── functions/
-│  ├── ggl-f.nu
-│  ├── mod.nu
-│  └── to.nu
-└── misc/
+├── functions
+│  ├── f-ggl.nu
+│  ├── f-lt.nu
+│  ├── f-mkdir-cd.nu
+│  ├── f-relogin.nu
+│  ├── f-to.nu
+│  ├── f-vs.nu
+│  └── mod.nu
+├── config.nu
+└── env.nu
 ```
-
 
 #### Starshipの設定
 
@@ -220,7 +227,7 @@ use ~/.cache/starship/init.nu
 
 ## データ型
 
-Nushell の機能で特に強力なのが型システムであり、伝統的な標準入出力に頼る Bash などとは異なり、漸進的型付けのシステムや構造的データ型を利用して、あらゆる箇所に型をつけることができるようになっています。
+Nushell の機能で特に強力なのが型システムであり、文字列により標準入出力に頼るトラディショナルなUnixシェルとは異なり、漸進的型付けのシステムや構造的データ型を利用して、あらゆる箇所に型をつけることができるようになっています。
 
 これによってコマンド実行時の型の不一致を検知して分かりやすくエラーメッセージとして表示することができます。
 
@@ -232,23 +239,24 @@ Nushell の機能で特に強力なのが型システムであり、伝統的な
 
 https://github.com/nushell/vscode-nushell-lang
 
-### any と nothing
+### 基本的な型と値
 
-漸進的型付けを採用しているため、オプショナルな型付けが可能で、コンパイルタイムとランタイムで型チェックを行います。漸進的型付けのシステムで利用される Dynamic type (TypeScriptで言うところの `any` 型)に相当する `any` 型や `null` という単一項からなる Unit type である `nothing` 型が利用できるようになっており、柔軟な型システムとなっています。
+型 | 値の例
+--|--
+整数(`int`) | `-65535`
+浮動小数点数(`float`) | `9.9999`, `Infinity`
+文字列(`string`)	| `"hole 18"`, `'hole 18'`, `` `hole 18` ``, `hole18`, `r#'hole18'#`
+真偽値(`bool`) | `true`
+日付(`datetime`) | `2000-01-01`
+間隔(`duration`) | `2min + 12sec`
+ファイルサイズ(`filesize`) | `64mb`
+範囲(`range`) | `0..4, 0..<5`, `0..`, `..4`
+バイナリー(`binary`) | `0x[FE FF]`
+クロージャ(`closure`) | `{\|e\| $e + 1 \| into string }`, `{ $in.name.0 \| path exists }`
+セルパス(`cell-path`) | `$.name.0`
+ブロック | `if true { print "hello!" }`, `loop { print "press ctrl-c to exit" }`
 
-### 構造的データ型
-
-Nushell では以下の構造的データ型が利用できます。
-
-- list
-- record
-- table
-
-構造的型付けのシステムのため、$record<a: int, b: int> <: record<a: int>$ のような互換性があります。
-
-### キャスト
-
-
+この他にも注釈できないような特殊な型などが複数個存在しています。
 
 ### desribe コマンド
 
@@ -261,6 +269,134 @@ https://www.nushell.sh/commands/docs/describe.html
 string
 > 42 | describe
 int
+```
+
+### 特殊な型
+
+漸進的型付けを採用しているため、オプショナルな型付けが可能で、コンパイルタイムとランタイムで型チェックを行います。漸進的型付けのシステムにおける静的に未知な型である [Dynamic type](https://en.wikipedia.org/wiki/Gradual_typing) (TypeScriptで言うところの `any` 型)に相当する `any` 型や、`null` という単一項からなる [Unit type](https://en.wikipedia.org/wiki/Unit_type) である `nothing` 型が利用できるようになっており、柔軟な型システムとなっています。
+
+#### any
+
+https://www.nushell.sh/lang-guide/chapters/types/basic_types/any.html
+
+`any` 型はあらゆる型のスーパーセットとなります。`any` 型として注釈した変数・パラメータ・入力はあらゆる型の値を受け入れるようになります。
+
+```nu
+mux x: any = null
+x = 42
+x = 'st'
+```
+
+#### nothing
+
+https://www.nushell.sh/lang-guide/chapters/types/basic_types/nothing.html
+
+`nothing` 型は「値がないこと」を表現する型です。TypeScriptでは`void`型や`null`型が近いです。NushellではTS同様に`null`という値があり、この単一項からなるUnit typeとして`nothing`型が利用されます。
+
+```nu
+> null | describe
+nothing
+> null | to json
+null
+> "null" | from json
+# => 出力なし
+```
+
+コマンドの入出力について明示的に何も無いことを示したい場合などはこの型で注釈できます。
+
+```nu
+def take-nothing []: nothing -> nothing {
+  print "何もしない"
+}
+
+# 入力になんらかの値を渡すと型エラー
+42 | take-nothing
+#    ^^^^^^^^^^^^ Error: Command does not support int input
+
+# これはnothing型の値を渡すのでOK
+null | take-nothing
+```
+
+例えば、ビルトインコマンドである [`print`](https://www.nushell.sh/commands/docs/print.html#print-for-strings) は入出力として可能な値の肩は以下のパターンとなっています。
+
+input	| output
+--|--
+any	| nothing
+nothing	| nothing
+
+これはつまり、パイプラインの入力から何も値を受け取らないかあらゆる値を受け取る、そしてパイプラインの出力に何も値を渡さないというパターンとなります。
+
+```nu
+# 入力としてint型の値を渡す
+> 42 | print
+42
+
+# 入力に何も渡さない
+> print
+# => 出力なし
+
+# 上と同じこと
+> null | print
+# => 出力なし
+```
+
+### 構造的データ型
+
+Nushell では以下の構造的データ型が利用できます。
+
+型 | 値の例
+--|--
+リスト(`list`)	| `[0 1 'two' 3]`
+レコード(`record`) |	`{name:"Nushell", lang: "Rust"}`
+テーブル(`table`) | `[{x:12, y:15}, {x:8, y:9}]`, `[[x, y]; [12, 15], [8, 9]]`
+
+構造的型付けのシステムのため、$record \langle a: int, b: int \rangle <: record \langle a: int \rangle$ のような互換性があります。
+
+```nu
+let l: list<string> = ['Sam', 'Fred', 'George']
+
+let r: record<name: string, gender: string> = {
+  name: 'taro',
+  gender: 'male'
+}
+
+let t: table<x: int, y: int> = [
+  {x: 12, y: 5},
+  {x: 3, y: 6}
+]
+```
+
+テーブル型は例えば、`ls` コマンドの出力などに利用されています。
+
+```sh
+> ls
+╭───┬─────────────┬──────┬──────────┬──────────────╮
+│ # │    name     │ type │   size   │   modified   │
+├───┼─────────────┼──────┼──────────┼──────────────┤
+│ 0 │ completions │ dir  │    160 B │ 2 days ago   │
+│ 1 │ conf.d      │ dir  │    192 B │ 2 days ago   │
+│ 2 │ config.nu   │ file │ 25.0 KiB │ 2 days ago   │
+│ 3 │ env.nu      │ file │  2.0 KiB │ 2 days ago   │
+│ 4 │ functions   │ dir  │    320 B │ 2 days ago   │
+│ 5 │ history.txt │ file │ 13.8 KiB │ a minute ago │
+╰───┴─────────────┴──────┴──────────┴──────────────╯
+> ls | describe
+table<name: string, type: string, size: filesize, modified: date> (stream)
+```
+
+### キャスト
+
+型のキャストについては [`into`](https://www.nushell.sh/commands/docs/into.html) コマンドで行うことができます。例えば、`bool` 型の値への変換は [`into bool`](https://www.nushell.sh/commands/docs/into_bool.html) というコマンドで可能です。
+
+```nu
+> true | into bool
+true
+> 1 | into bool
+true
+> 0 | into bool
+false
+> '1' | into bool
+true
 ```
 
 ## 変数宣言
@@ -345,9 +481,125 @@ Error:   × Can't evaluate block in IR mode
 
 ## パイプライン
 
+トラディショナルなUnixシェルでは文字列による標準入出力を使って複数のコマンドを組み合わせ処理するパイプラインという技術を利用しています。
+
+### 外部コマンドとの組み合わせ
+
+Nushellのビルトインコマンド(内部コマンド)同士のパイプラインではNushellのデータ型を使ったやり取りがおこなわれますが、外部コマンドが絡んだ以下のようなパターンでは、それぞれうまく機能するように調整されています。
+
+パイプラインのパターン | 処理
+`内部コマンド \| 内部コマンド` |
+`内部コマンド \| 外部コマンド` | 内部コマンドの出力は文字列に変換されて外部コマンドの`stdin`へと送信される
+`外部コマンド \| 内部コマンド` | 外部コマンドの出力は自動的にUTF-8テキストへと変換されて内部コマンドへと送信される
+`外部コマンド \| 外部コマンド` | Bashなどの他のシェルと同様に扱われる
+
+### 特殊な in 変数
+
+パイプラインの入力として渡ってくる値は一時的に変数として参照できると便利で、各パイプラインの `in` という変数に保持されます。例えば、明日の日付を使ってディレクトリを作成する際には以下のようなパイプラインを実行すればいいですが、`date now` というコマンドの出力結果は `$in` で参照できるので、その日付の値に一日追加することで次の日付が作成でき、その値を更に次のパイプラインへと流してフォーマットするということができています。
+
+```nu
+date now            # 1: 今日の日付
+| $in + 1day        # 2: 明日の日付
+| format date '%F'  # 3: YYYY-MM-DD としてフォーマット
+| $'($in) Report'   # 4: ディレクトリ名を作成
+| mkdir $in         # 5: ディレクトリの作成
+```
+
+この `in` 変数はコマンドのパラメータとして入力値を渡したいときや何らかの条件でフィルターなどを行うときなどに有用です。
+
 ## カスタムコマンド
 
-### シグネチャ
+https://www.nushell.sh/book/custom_commands.html
+
+fish shell の [`function`](https://fishshell.com/docs/current/cmds/function.html) のようにカスタムのコマンドを定義するには Nushell では [`def`](https://www.nushell.sh/commands/docs/def.html) コマンドを使って以下のようなシグネチャでコマンドを定義します。
+
+```nu
+def greet [name] {
+  ['hello' $name]
+}
+```
+
+`greet` はコマンド名で、`name` はパラメータ名となります。そして Nushell ではカスタムコマンドの最後の行がそのコマンドの返り値として扱われます。つまり、次のパイプラインの入力として渡すことができる値を生成します。
+
+:::message
+`return` コマンドで明示的に返り値とすることも可能です。
+:::
+
+Nushellでは型注釈はオプショナルなので、上記コマンドのパラメータ `name` は `any` 型として推論されますが、型注釈を施すと以下のようにできます。
+
+```nu
+def greet [name: string] -> list<string> {
+  ['hello' $name]
+}
+```
+
+### コマンドの型シグネチャ
+
+コマンドの型シグネチャは少し特殊です。普通のプログラミング言語の関数の入出力では単に引数と返り値という２つしかなく、それらに型注釈を施します。例えば TypeScript で以下のように定義したコマンドを考えます。
+
+```ts:TypeScript
+function greetSentence(name: string): string {
+  return `hello, ${name}`;
+}
+```
+
+似た処理を Nushell のカスタムコマンドで定義すると以下のようになるでしょうか？
+
+```nu
+def greetSentence [name: string] -> string {
+  $"hello, ($name)"
+}
+```
+
+ここで注意したいのは、シェルにおける入出力はパイプラインについてのものであり、パラメータは入力とは異なるものです。以下のようなパイプラインを考えると分かりやすいですが、コマンドのパラメータとは別にパイプラインの入力という値がコマンドに渡ってくるわけです。
+
+```nu
+| 42 | greetSentence 'Alice' | print
+#   --> パイプラインの入力として42が渡る
+#                  <--- コマンドのパラメータとして 'Alice' が greetSentence に渡る
+#                           --> パイプラインの出力として "hello, Alice" が次のコマンドに渡る
+```
+
+ということで、`greetSentence` のパイプラインからの入力を主な処理として考える場合には以下のようにコマンドを定義します。
+
+```nu
+def greetSentence []: string -> string {
+  $"hello, ($in)"
+}
+```
+
+パイプラインの入力として渡ってくる値は特殊な `in` 変数で参照できたのでこのような形になります。
+
+ちょっと分かりづらいですが、要するにカスタムコマンドの最初の一行目のコマンドがパイプラインの入力を受ける訳です。
+
+わかりやすく別の変数に保持させるようにすれば以下のようになります。
+
+```nu
+def greetSentence []: string -> string {
+  let name: string = $in;
+  $"hello, ($name)"
+}
+```
+
+まあ、このような処理の場合にはパラメータとして定義して、利用するパイプラインにおいて `$in` で参照してパラメータとして渡すとかの方が自然な感じがしますね。後、パイプラインの入力について明示的に `any` 型を受けるとして型注釈を行う事もできます。
+
+```nu
+def greetSentence [name: string] -> string {
+  $"hello, ($name)"
+}
+
+'Alice` | greetSentence $in
+```
+
+少し話がそれましたが、カスタムコマンドの型シグネチャは以下のようになります。
+
+```nu
+def command-name [
+  param: ParamType
+]: InputType -> OutputType {
+  # ...
+}
+```
 
 ### 具体例
 
@@ -366,9 +618,32 @@ def --env mkdir-cd [dirname: path] {
 
 まず、コマンド引数の変数は `path` 型の注釈が必要となります。`string` 型とは少々扱いが異なるで fish などとのコマンド定義とは違う点に注意が必要です。
 
-また、Nushell では環境変数の変換はブロックでスコープされてしまうので、外部へと継続させるために `def` コマンドに `--env` オプションを付ける必要があります。`cd` コマンドはそもそも `pwd` という環境変数を変更するため、`cd $dirname` での環境変数の変更をコマンド外部へと継続できるようになります。
+https://www.nushell.sh/lang-guide/chapters/types/other_types/path.html
+
+公式ドキュメントの説明を使わせてもらうと、以下のようにカスタムコマンドのパラメータの型注釈を `string` とするか `path` 型とするかで、処理が異なります。
+
+```nu
+> def show_difference [
+ p: path
+ s: string
+] {
+ print $"The path is expanded: ($p)"
+ print $"The string is not: ($s)"
+}
+
+# 使ってみると path 型の変数はパスを展開してくれることがわかる
+> show_difference ~ ~
+The path is expanded: /Users/roshi
+The string is not: ~
+```
+
+このように `path` 型として注釈することで正しくパスを認識して展開できるようになるので、パラメータの型注釈は `path` とする必要があります。
+
+また、Nushell では環境変数の変換はブロックでスコープされてしまうので、外部へと継続させるために [`def`](https://www.nushell.sh/commands/docs/def.html) コマンドに `--env` オプションを付ける必要があります。`cd` コマンドはそもそも `PWD` という環境変数を変更するため、`cd $dirname` での環境変数の変更をスコープ化されたコマンドブロックの外部へと継続できるようになります。
 
 #### vscode のラッパーコマンド
+
+次は、`code` という vscode のCLIコマンドのラッパーを定義します。
 
 ```nu
 # vscodeのラッパー
@@ -384,7 +659,46 @@ def vs [
 }
 ```
 
-#### ezaのオプションラッパー
+これもパス文字列をパラメータとして受ける場合には `path` 型として型注釈を施す必要があります。この時、`vs` とだけコマンドを実行した場合にはカレントディレクトリの vscode で開きたいのでデフォルト引数として `.` カレントディレクトリを指定します。
+
+また、Insiderバージョンを使いたい場合があるので、その場合に備えてパラメータに `--insider` または省略版の `-i` と取るように定義します。
+
+そして、外部コマンドを明示的に指定する場合には `^commandName` のように頭にキャレットをつけるようにします。これで名前が他のカスタムコマンドや内部コマンドと衝突することを避けることができます。
+
+これで、以下のようなコマンド形式で実行することが可能となります。
+
+```sh
+# 一つ上のディレクトリ階層をインサイダー版で開く
+vs ../ -i
+```
+
+また、コマンド定義を見ると `#` でコマンド名の前と、パラメータの後に説明を加えていることがわかると思いますが、これのコメントは自動的に `-h` または `--help` オプションで出力されるようになるという便利機能がついています。
+
+```sh
+> vs -h
+vscodeのラッパー
+
+Usage:
+  > vs {flags} (p)
+
+Flags:
+  -i, --insider - insider版を使うか
+  -h, --help - Display the help message for this command
+
+Parameters:
+  p <path>: パス (optional, default: '.')
+
+Input/output types:
+  ╭───┬───────┬────────╮
+  │ # │ input │ output │
+  ├───┼───────┼────────┤
+  │ 0 │ any   │ any    │
+  ╰───┴───────┴────────╯
+```
+
+#### eza のオプションラッパー
+
+次はモダンな`ls`コマンドである [`eza`](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi18YOuxNiIAxV4lFYBHf_NFFQQFnoECBUQAQ&url=https%3A%2F%2Fgithub.com%2Feza-community%2Feza&usg=AOvVaw37eaziSid2ANrcBeH3wcXU&opi=89978449) (`exa` のメンテナンス版)の `--level` オプションを使いやすくするためのラッパーコマンドを定義します。
 
 ```nu
 # ezaのツリー表示
@@ -397,4 +711,12 @@ def lt [
 }
 ```
 
-#### Web検索コマンド
+vscode では単に `-i` という形でしたが、このコマンドのフラグパラメータ `-l` は `-l 2` のような形式で引数を取ることを可能にしています。型注釈は他のパラメータと同じ様にして、これもデフォルト引数を `1` で取るようにしてます。
+
+他のオプションはレストパラメータ(`...`)の形式で `eza` にわたすことができるようにしています。
+
+## 終わり
+
+いかがでしたたでしょうか。自分もNushellを使い始めて日が浅いので細かいことはまだ調べ中ですが、型がついていたり、TypeScriptのようなエディタ上での書き味でシェルスクリプトが書けるので非常に気に入っています。
+
+自分のようにTypeSciptを使っている方であれば気に入ると思うので是非使ってみてください。
