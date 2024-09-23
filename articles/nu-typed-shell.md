@@ -1,6 +1,6 @@
 ---
 title: "Nushell - 型付きシェルの基本とコマンド定義"
-published: false
+published: true
 cssclass: zenn
 emoji: "🔮"
 type: "tech"
@@ -202,6 +202,53 @@ PATH の書き方はまさにパイプライン(`|`)を使ったコマンドの�
 │  └── mod.nu
 ├── config.nu
 └── env.nu
+```
+
+設定を分割するには、`source`コマンドによる設定の読み込みや、モジュールシステム用の`use`コマンドによるカスタムコマンドのimportを行うことで可能となります。
+
+まず、基本的な設定の分割ですが、aliasやthemeといったものは散らかりがちなので `conf.d` というディレクトリを作成しておいて、それぞれ `alias.nu` と `theme.nu` というファイルに定義しておきます。`conf.d/index.nu` ではそれらの設定ファイルを `source` コマンドで読み込みます。
+
+```nu:conf.d/index.nu
+source theme.nu
+source alias.nu
+source .zoxide.nu
+```
+
+:::message alert
+環境変数の読み込み順番に注意してください。`$env.config` 内で変数などを参照するには事前に `source` しておく必要がありますので、`config.nu` ファイルでは先頭で `source` するようにします。
+:::
+
+そして、`config.nu` ファイルでこの `index.nu` ファイルを `soruce` します。これで設定の分割が完了です。`completions` ディレクトリについても同様です。
+
+```nu
+source conf.d/index.nu
+source completions/index.nu
+```
+
+カスタムコマンドについては `source` でもできるのですが、どうせなら[モジュールシステム](https://www.nushell.sh/book/modules.html#modules-from-directories)を使おうということで、それぞれのカスタムコマンドには `export` コマンドを付与しておきます。後で解説する、`mkdir-cd` というコマンド定義では以下のように `def` コマンドの頭に `export` を付けます。
+
+```nu:f-mkdir-cd.nu
+export def --env mkdir-cd [dirname: path] {
+  mkdir $dirname
+  cd $dirname
+}
+```
+
+そしで、`functions` ディレクトリ内の `mod.nu` というファイルを作成して、各カスタムコマンドのimportと再exportを以下の形式で行います。
+
+```nu:functions/mod.nu
+export use f-ggl.nu *
+export use f-vs.nu *
+export use f-relogin.nu *
+export use f-lt.nu *
+export use f-mkdir-cd.nu *
+```
+
+そして、`config.nu` で以下の様にimportすることでカスタムコマンドの利用ができるようになります。
+
+```nu:config.nu
+# 関数の利用
+use functions/
 ```
 
 #### Starshipの設定
@@ -608,7 +655,7 @@ def command-name [
 #### mkdir して cd するコマンド
 
 ```nu
-def --env mkdir-cd [dirname: path] {
+export def --env mkdir-cd [dirname: path] {
   mkdir $dirname
   cd $dirname
 }
@@ -647,7 +694,7 @@ The string is not: ~
 
 ```nu
 # vscodeのラッパー
-def vs [
+export def vs [
   p: path = '.', # パス
   --insider (-i) # insider版を使うか
 ] {
@@ -702,7 +749,7 @@ Input/output types:
 
 ```nu
 # ezaのツリー表示
-def lt [
+export def lt [
   path: path = '.',
   --level (-l): int = 1,
   ...options: string
