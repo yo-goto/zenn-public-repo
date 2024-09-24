@@ -394,9 +394,7 @@ Nushell では以下の構造的データ型が利用できます。
 --|--
 リスト(`list`)	| `[0 1 'two' 3]`
 レコード(`record`) |	`{name:"Nushell", lang: "Rust"}`
-テーブル(`table`) | `[{x:12, y:15}, {x:8, y:9}]`, `[[x, y]; [12, 15], [8, 9]]`
-
-構造的型付けのシステムのため、$record \langle a: int, b: int \rangle <: record \langle a: int \rangle$ のような互換性があります。
+テーブル(`table`) | `[{x:12, y:15}, {x:8, y:9}]`, `[[x, y]; [12, 15], [8, 9]]
 
 ```nu
 let l: list<string> = ['Sam', 'Fred', 'George']
@@ -410,6 +408,28 @@ let t: table<x: int, y: int> = [
   {x: 12, y: 5},
   {x: 3, y: 6}
 ]
+```
+
+公式ドキュメントには明示されていませんが、以下のソースコードの部分で２つの型の互換性チェックを行っているようで、構造的部分型付け(**structural subtyping**)のシステムになっているようです。これによって $record \langle a: int, b: int \rangle <: record \langle a: int \rangle$ といった互換性があります。
+
+https://github.com/nushell/nushell/blob/a948ec6c2cd2d2486589e73e701bd2c0a91a7547/crates/nu-parser/src/type_check.rs#L10-L69
+
+実際、型注釈で `record<a: int>` を期待する型でパラメータを注釈したとして、このコマンドに `record<a: int, b: int>` のような型の値を渡しても問題はありません。
+
+```sh
+> def type-ch [param: record<a: int>] { print $param }
+# OK な例
+> type-ch {a : 1, b: 2}
+# NG な例
+> type-ch {b : 2}
+Error: nu::parser::type_mismatch
+
+  × Type mismatch.
+   ╭─[entry #16:1:9]
+ 1 │ type-ch {b : 2}
+   ·         ───┬───
+   ·            ╰── expected record<a: int>, found record<b: int>
+   ╰────
 ```
 
 テーブル型は例えば、`ls` コマンドの出力などに利用されています。
