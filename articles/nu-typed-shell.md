@@ -394,16 +394,21 @@ Nushell では以下の構造的データ型が利用できます。
 --|--
 リスト(`list`)	| `[0 1 'two' 3]`
 レコード(`record`) |	`{name:"Nushell", lang: "Rust"}`
-テーブル(`table`) | `[{x:12, y:15}, {x:8, y:9}]`, `[[x, y]; [12, 15], [8, 9]]
+テーブル(`table`) | `[{x:12, y:15}, {x:8, y:9}]`, `[[x, y]; [12, 15], [8, 9]]`
+
+変数宣言では以下のようになります。なお`table`型の値は内部的には`record`の`list`となっています。
 
 ```nu
+# list型
 let l: list<string> = ['Sam', 'Fred', 'George']
 
+# record型
 let r: record<name: string, gender: string> = {
   name: 'taro',
   gender: 'male'
 }
 
+# table型
 let t: table<x: int, y: int> = [
   {x: 12, y: 5},
   {x: 3, y: 6}
@@ -420,6 +425,10 @@ https://github.com/nushell/nushell/blob/a948ec6c2cd2d2486589e73e701bd2c0a91a7547
 > def type-ch [param: record<a: int>] { print $param }
 # OK な例
 > type-ch {a : 1, b: 2}
+╭───┬───╮
+│ a │ 1 │
+│ b │ 2 │
+╰───┴───╯
 # NG な例
 > type-ch {b : 2}
 Error: nu::parser::type_mismatch
