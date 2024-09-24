@@ -16,7 +16,7 @@ aliases: 記事『Nushell』
 
 https://www.nushell.sh
 
-実は Nushell のことは以前から知っていましたが、利用されてているプログラミング言語の概念やその恩恵についての知識が無かったため、より初心者にわかりやすい fish shell を利用していました。最近になって型システムや関数型言語などについての概念を取得したため、ようやく Nushell を使い始められました。
+実は Nushell のことは以前から知っていましたが、利用されているプログラミング言語の概念やその恩恵についての知識が無かったため、より初心者にわかりやすい fish shell を利用していました。最近になって型システムや関数型言語などについての概念を取得したため、ようやく Nushell を使い始められました。
 
 使い始めてからまだ1ヶ月ぐらいですが、かなり奥が深く一つの記事で解説しきるのは難しいので、この記事では基本体な設定と型とコマンドについて重点をおいて最後は具体的なカスタムコマンドの定義をいくつか取り上げて解説したいとおもいます。
 
@@ -24,17 +24,17 @@ https://www.nushell.sh
 
 Nushell とは Rust 言語で開発された新しいタイプのシェルであり、以下のような特徴があります。
 
-- クロスプラットフォームシェル(Linux, macOS, Windows)
+- クロスプラットフォームシェル(Linux, macOS, Windows, ...)
 - 既存データフォーマットとの連携(json, csv, toml, yaml, ...)
 - 強力なプラグインシステム
-- 型システムと構造化データ
+- **型システムと構造化データ**
 - 分かりやすいエラーメッセージ
-- パイプラインを前提とした設計
+- **パイプラインを前提とした設計**
 - スコープされた環境
 - デフォルトでイミュータブルな変数
 - LSP、IDEサポートの提供
 
-Nushell はシェルでもあると同時にプログラミング言語でもあり、２つの機能的な側面が一つのパッケージとして完全に統合されて提供されています。Nushell のデザイン目標はシンプルなコマンドをパイプラインで組み合わせて利用する Unix の思想を背景に、以下のような様々な領域からヒントを得てモダンな開発スタイルを構築することです。
+Nushell はシェルでもあると同時にプログラミング言語でもあり、２つの機能的な側面が一つのパッケージとして完全に統合されて提供されています。Nushell のデザイン目標は**シンプルなコマンドをパイプラインで組み合わせて利用する Unix の思想を背景に、以下のような様々な領域からヒントを得てモダンな開発スタイルを構築すること**です。
 
 - Bashのような伝統的なシェル
 - PowerShellのようなオブジェクトベースのシェル
@@ -50,7 +50,7 @@ fish 然り、そもそもシェルは「コマンド」という非常に小さ
 
 ### インストール
 
-Nushell はバイナリをダウンロードしてインストールが可能です。macOSならHomebrewなどでのインストールが簡単です。
+macOSならHomebrewなどでのインストールが簡単です。
 
 ```sh:macOS/Linux
 # Homebrew
@@ -79,19 +79,6 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 これで他のdotfilesなどの設定と同じ様に `~/.config` などに設定ファイルを配置できいます。
 
-ログインシェルは zsh としておいて、インタラクティブシェルとして起動した時には Nushell とする場合には `.zshrc` に以下のようにインタラクティブシェルとして Nushell を起動させるようにします。
-
-```zsh:.zshrc
-# Zshがインタラクティブシェルとして起動しているか確認
-if [[ $- == *i* ]]; then
-  # インタラクティブシェルの場合のみnushellを起動
-  exec nu
-fi
-```
-
-参考
-https://qiita.com/tak-onda/items/a90b63d9618d6b15c18c
-
 :::message
 Nushell が [Alacritty](https://alacritty.org/config-alacritty.html) のように複数のロケーションを見てくれれば楽なのですがね。
 
@@ -107,6 +94,19 @@ Nushell が [Alacritty](https://alacritty.org/config-alacritty.html) のよう�
 
 参考: https://github.com/dirs-dev/directories-rs/issues/47
 :::
+
+ログインシェルは zsh としておいて、インタラクティブシェルとして起動した時には Nushell とする場合には `.zshrc` に以下のようにインタラクティブシェルとして Nushell を起動させるようにします。
+
+```zsh:.zshrc
+# Zshがインタラクティブシェルとして起動しているか確認
+if [[ $- == *i* ]]; then
+  # インタラクティブシェルの場合のみnushellを起動
+  exec nu
+fi
+```
+
+参考
+https://qiita.com/tak-onda/items/a90b63d9618d6b15c18c
 
 これで `~/.config/nushell` 配下に設定ファイルを置けるようになりました。この状態で nushell を起動すればデフォルト設定となるファイルをそのディレクトリにダウンロードするかどうかを尋ねるプロンプトが表示されるので Yes としてデフォルト設定を配置します。
 
@@ -129,7 +129,7 @@ Nushell は起動時に `.nu` 拡張子のスクリプトファイルをロー�
 
 そしてこの２つは以下の環境変数からロケーションを参照できます。
 
-```nu
+```sh
 # env.nuの場所
 > $nu.env-path
 
@@ -137,9 +137,9 @@ Nushell は起動時に `.nu` 拡張子のスクリプトファイルをロー�
 > $nu.config-path
 ```
 
-環境変数 `$env.EDITOR` にデフォルトのエディタを設定できるようになっており、例えば vscode (`code`) を設定しておくことで、以下のコマンドから設定ファイルを直接アクセスできるようになります。
+環境変数 `$env.EDITOR` にデフォルトのエディタを設定できるようになっており、例えば vscode (`code`) を設定しておくことで、以下のコマンドから設定ファイルを直接エディタを開いて編集できるようになります。
 
-```nu
+```sh
 # env.nuの編集
 > config env
 
@@ -151,7 +151,7 @@ Nushell は起動時に `.nu` 拡張子のスクリプトファイルをロー�
 
 `env.nu` に以下のように環境変数やPATHなどの設定を記述することでパスを通すことができます。それぞれの環境変数は `$env` 配下に設定するようにして、`PATH` も同様に `$env.PATH` 配下に設定します。変数の参照については後で改めて解説しますが他のシェルと同じ様に `$` を変数名にプレフィックスして `$env` のように参照することが可能です。
 
-```nu:.env.nu
+```sh:.env.nu
 # PATHに関連する環境変数の設定
 $env.RUSTUP_HOME = ($env.HOME + '/.rustup')
 $env.CARGO_HOME = ($env.HOME + '/.cargo')
@@ -183,7 +183,6 @@ PATH の書き方はまさにパイプライン(`|`)を使ったコマンドの�
 
 ```sh
 ~/.config/nushell/
-.
 ├── completions
 │  ├── external.nu
 │  ├── git-completions.nu
@@ -311,7 +310,7 @@ https://www.nushell.sh/commands/docs/describe.html
 
 `describe` はパイプされた値のデータ型と構造を出力するコマンドです。このコマンドを使うことで値の型をインタラクティブに知ることができます。
 
-```nu
+```sh
 > 'hello' | describe
 string
 > 42 | describe
@@ -328,10 +327,10 @@ https://www.nushell.sh/lang-guide/chapters/types/basic_types/any.html
 
 `any` 型はあらゆる型のスーパーセットとなります。`any` 型として注釈した変数・パラメータ・入力はあらゆる型の値を受け入れるようになります。
 
-```nu
-mux x: any = null
-x = 42
-x = 'st'
+```sh
+> mux x: any = null
+> x = 42
+> x = 'st'
 ```
 
 #### nothing
@@ -340,7 +339,7 @@ https://www.nushell.sh/lang-guide/chapters/types/basic_types/nothing.html
 
 `nothing` 型は「値がないこと」を表現する型です。TypeScriptでは`void`型や`null`型が近いです。NushellではTS同様に`null`という値があり、この単一項からなるUnit typeとして`nothing`型が利用されます。
 
-```nu
+```sh
 > null | describe
 nothing
 > null | to json
@@ -373,7 +372,7 @@ nothing	| nothing
 
 これはつまり、パイプラインの入力から何も値を受け取らないかあらゆる値を受け取る、そしてパイプラインの出力に何も値を渡さないというパターンとなります。
 
-```nu
+```sh
 # 入力としてint型の値を渡す
 > 42 | print
 42
@@ -435,7 +434,7 @@ table<name: string, type: string, size: filesize, modified: date> (stream)
 
 型のキャストについては [`into`](https://www.nushell.sh/commands/docs/into.html) コマンドで行うことができます。例えば、`bool` 型の値への変換は [`into bool`](https://www.nushell.sh/commands/docs/into_bool.html) というコマンドで可能です。
 
-```nu
+```sh
 > true | into bool
 true
 > 1 | into bool
@@ -450,7 +449,7 @@ true
 
 Nushell で値は `let`, `const`, `mut` キーワードを使って名前付き変数に割り当て可能で、変数宣言後には `$` を変数名にプレフィックスして参照することが可能です。
 
-```nu
+```sh
 > let val = 42
 > print $val
 42
@@ -464,20 +463,20 @@ Nushell で値は `let`, `const`, `mut` キーワードを使って名前付き�
 
 他のシェルでは一般的な `$` をプレフィックスして変数を宣言する事が可能となっており、この場合には `$` を付けずに宣言した場合と同じように扱われます。
 
-```nu
+```sh
 let $val = 42
 # `let val = 42` と同じ扱いとなる
 ```
 
-Nushell には３つの変数宣言がありますが、関数型プログラミングのスタイルを受けて変数はデフォルトでイミュータブルなものとして扱われます。
+Nushell には３つの変数宣言がありますが、関数型プログラミングのスタイルを受けて変数は**デフォルトでイミュータブル**なものとして扱われます。
 
 宣言の種類 | 作成される変数
 --|--
-let 宣言 | 宣言後に変更不可なミュータブルな変数(イミュータブル変数)
-const 宣言 | パース時に完全に評価できるイミュータブルな変数(コンスタント変数)
-mut 宣言 | 宣言後に再割り当て可能なイミュータブルな変数(ミュータブル変数)
+`let` 宣言 | 宣言後に変更不可なイミュータブルな変数(**イミュータブル変数**)
+`const` 宣言 | パース時に完全に評価できるイミュータブルな変数(**コンスタント変数**)
+`mut` 宣言 | 宣言後に再割り当て可能なミュータブルな変数(**ミュータブル変数**)
 
-```nu
+```sh
 > let v1 = 42
 > $v1 = 2 # NG
 Error: nu::compile::assignment_requires_mutable_variable
@@ -499,7 +498,7 @@ Error:   × Can't evaluate block in IR mode
   help: the IrBlock is probably missing due to a compilation error
 ```
 
-```nu
+```sh
 > const v2 = 42
 > $v2 = 2 # NG
 Error: nu::compile::assignment_requires_mutable_variable
@@ -521,7 +520,7 @@ Error:   × Can't evaluate block in IR mode
   help: the IrBlock is probably missing due to a compilation error
 ```
 
-```nu
+```sh
 > mut v3 = 42
 > $v3 = 2 # OK
 ```
@@ -543,7 +542,7 @@ Nushellのビルトインコマンド(内部コマンド)同士のパイプラ�
 
 パイプラインの入力として渡ってくる値は一時的に変数として参照できると便利で、各パイプラインの `in` という変数に保持されます。例えば、明日の日付を使ってディレクトリを作成する際には以下のようなパイプラインを実行すればいいですが、`date now` というコマンドの出力結果は `$in` で参照できるので、その日付の値に一日追加することで次の日付が作成でき、その値を更に次のパイプラインへと流してフォーマットするということができています。
 
-```nu
+```sh
 date now            # 1: 今日の日付
 | $in + 1day        # 2: 明日の日付
 | format date '%F'  # 3: YYYY-MM-DD としてフォーマット
@@ -599,7 +598,7 @@ def greetSentence [name: string] -> string {
 
 ここで注意したいのは、シェルにおける入出力はパイプラインについてのものであり、パラメータは入力とは異なるものです。以下のようなパイプラインを考えると分かりやすいですが、コマンドのパラメータとは別にパイプラインの入力という値がコマンドに渡ってくるわけです。
 
-```nu
+```sh
 | 42 | greetSentence 'Alice' | print
 #   --> パイプラインの入力として42が渡る
 #                  <--- コマンドのパラメータとして 'Alice' が greetSentence に渡る
@@ -763,6 +762,8 @@ vscode では単に `-i` という形でしたが、このコマンドのフラ�
 
 ## 終わり
 
-いかがでしたたでしょうか。自分もNushellを使い始めて日が浅いので細かいことはまだ調べ中ですが、型がついていたり、TypeScriptのようなエディタ上での書き味でシェルスクリプトが書けるので非常に気に入っています。
+いかがでしたでしょうか。自分もNushellを使い始めて日が浅いので細かいことについてはまだ調査中ですが、型がついていたり、TypeScriptのようなエディタ上での書き味でシェルスクリプトが書けるので非常に気に入っています。
+
+まだまだ開発途中のシェルなので、fish shell の方が優れている部分もいくつかあります。例えば補完周りの機能は圧倒的に fish shell の方が良いですし、`abbr` といった便利なシステムもありません。そしてなにより fish shell の方がユーザーフレンドリーで初心者にも若入りやすいです。ただ、型システムや構造化データ、パイプラインを全面に押し出した設計などは、他のプログラミング言語でそういったものに慣れていると非常に使い勝手の良いシェルに思えてきます。
 
 自分のようにTypeSciptを使っている方であれば気に入ると思うので是非使ってみてください。
