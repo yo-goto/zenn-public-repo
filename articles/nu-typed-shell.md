@@ -7,7 +7,7 @@ type: "tech"
 topics: [nushell, shell]
 date: 2024-09-20
 url: "https://zenn.dev/estra/articles/nu-typed-shell"
-aliases: 記事『Nushell』
+aliases: 記事『Nushell - 型付きシェルの基本とコマンド定義』
 ---
 
 ## はじめに
@@ -28,21 +28,28 @@ Nushell とは Rust 言語で開発された新しいタイプのシェルであ
 - 既存データフォーマットとの連携(json, csv, toml, yaml, ...)
 - 強力なプラグインシステム
 - **型システムと構造化データ**
-- 分かりやすいエラーメッセージ
+- **分かりやすいエラーメッセージ**
 - **パイプラインを前提とした設計**
 - スコープされた環境
 - デフォルトでイミュータブルな変数
+- パターンマッチング
+- SQLライクな条件記述
 - LSP、IDEサポートの提供
+- GitHub Actionsでの利用が可能
 
 Nushell はシェルでもあると同時にプログラミング言語でもあり、２つの機能的な側面が一つのパッケージとして完全に統合されて提供されています。Nushell のデザイン目標は**シンプルなコマンドをパイプラインで組み合わせて利用する Unix の思想を背景に、以下のような様々な領域からヒントを得てモダンな開発スタイルを構築すること**です。
 
-- Bashのような伝統的なシェル
-- PowerShellのようなオブジェクトベースのシェル
-- TypeScriptのような漸進的型付け
+- [Bash](https://www.gnu.org/software/bash/)のような伝統的なシェル
+- [PowerShell](https://github.com/PowerShell/PowerShell)のようなオブジェクトベースのシェル
+- [TypeScript](https://www.typescriptlang.org)のような漸進的型付け
 - 関数型プログラミング
 - システムプログラミング
 
 fish 然り、そもそもシェルは「コマンド」という非常に小さな単位でインタラクティブにプログラムを行うことができる環境であり、即座のフィードバックを得られ学習が容易であることから個人的に好きなツールなのですが、そのようなシェル環境においても漸進的な型システムや関数型スタイルなどのモダンプログラミングのスタイルを利用できるのが Nushell の面白いところです。
+
+開発者には、[早期の TypeScirpt の開発](https://devblogs.microsoft.com/typescript/announcing-typescript-1-0/)や、[Rust のエラーメッセージのデザイン](https://blog.rust-lang.org/2016/08/10/Shape-of-errors-to-come.html)などに携わっていた Sophia J. Turner という方がコアメンバーとして入っており(現在はメンバーから外れた模様)、Nushell は TypeScirpt と Rust の息吹が随所に感じられる言語となっています。彼女の次のブログ記事では Nushell が bash/zsh/fish/PowerShell とどのように違うかや、POSIX にしない理由、構造化データがなぜ重要なのかといった理由が語られています。
+
+https://www.sophiajt.com/case-for-nushell/
 
 ## 使い方
 
@@ -67,6 +74,14 @@ winget install nushell
 
 ### 環境設定
 
+:::message
+筆者の環境は以下となります。Nushell はまだまだ破壊的変更があるのでバージョンに注意してください。
+
+- macOS: Sonoma v14.7
+- nushell: v0.98.0
+- terminal: Alacritty
+:::
+
 #### 設定ファイルの場所
 
 ここでは macOS での環境構築について説明します。fish 以上に Nushell はPOSIXに準拠しておらず、意図的にログインシェルにはしないようにしていますので注意してください。(※ログインシェルは zsh を想定します)。
@@ -84,11 +99,8 @@ Nushell が [Alacritty](https://alacritty.org/config-alacritty.html) のよう�
 
 ```sh:AlacrittyのUNIXシステムでのconfigロケーション
 `$XDG_CONFIG_HOME/alacritty/alacritty.toml`
-
 `$XDG_CONFIG_HOME/alacritty.toml`
-
 `$HOME/.config/alacritty/alacritty.toml`
-
 `$HOME/.alacritty.toml`
 ```
 
@@ -105,7 +117,6 @@ if [[ $- == *i* ]]; then
 fi
 ```
 
-参考
 https://qiita.com/tak-onda/items/a90b63d9618d6b15c18c
 
 これで `~/.config/nushell` 配下に設定ファイルを置けるようになりました。この状態で nushell を起動すればデフォルト設定となるファイルをそのディレクトリにダウンロードするかどうかを尋ねるプロンプトが表示されるので Yes としてデフォルト設定を配置します。
@@ -681,7 +692,16 @@ def command-name [
 
 #### mkdir して cd するコマンド
 
-```nu
+以下のようにディレクトリを作成してそのままディレクトリに入りたいという場合がありますが、これを一つのコマンドで実現する `mkdir-cd` というコマンドを定義したいと思います。
+
+```sh
+> mdkir test
+> cd test
+```
+
+`mkdir-cd` は Nushell では以下のように定義できます。
+
+```nu:f-mkdir-cd.nu
 export def --env mkdir-cd [dirname: path] {
   mkdir $dirname
   cd $dirname
@@ -717,9 +737,9 @@ The string is not: ~
 
 #### vscode のラッパーコマンド
 
-次は、`code` という vscode のCLIコマンドのラッパーを定義します。
+次は、vscode のCLIコマンド(`code`)のラッパーコマンドとなる`vs`コマンドを定義します。
 
-```nu
+```nu:f-vs.nu
 # vscodeのラッパー
 export def vs [
   p: path = '.', # パス
@@ -772,9 +792,9 @@ Input/output types:
 
 #### eza のオプションラッパー
 
-次はモダンな`ls`コマンドである [`eza`](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi18YOuxNiIAxV4lFYBHf_NFFQQFnoECBUQAQ&url=https%3A%2F%2Fgithub.com%2Feza-community%2Feza&usg=AOvVaw37eaziSid2ANrcBeH3wcXU&opi=89978449) (`exa` のメンテナンス版)の `--level` オプションを使いやすくするためのラッパーコマンドを定義します。
+次はモダンな`ls`コマンドである [`eza`](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi18YOuxNiIAxV4lFYBHf_NFFQQFnoECBUQAQ&url=https%3A%2F%2Fgithub.com%2Feza-community%2Feza&usg=AOvVaw37eaziSid2ANrcBeH3wcXU&opi=89978449) (`exa` のメンテナンス版)の `--tree` オプションによるツリー表示で、その深さを決める `--level` オプションを使いやすくするためのラッパーコマンド `lt` を定義します。
 
-```nu
+```nu:f-lt.nu
 # ezaのツリー表示
 export def lt [
   path: path = '.',
@@ -789,10 +809,47 @@ vscode では単に `-i` という形でしたが、このコマンドのフラ�
 
 他のオプションはレストパラメータ(`...`)の形式で `eza` にわたすことができるようにしています。
 
+
+これで以下のようにディレクトリ内のツリー表示が簡単にできるようになります。
+
+```sh
+> lt -l 2
+.
+├── completions
+│  ├── external.nu
+│  ├── git-completions.nu
+│  └── index.nu
+├── conf.d
+│  ├── alias.nu
+│  ├── index.nu
+│  └── theme.nu
+├── config.nu
+├── env.nu
+├── functions
+│  ├── f-desktop.nu
+│  ├── f-ggl.nu
+│  ├── f-lt.nu
+│  ├── f-mkdir-cd.nu
+│  ├── f-relogin.nu
+│  ├── f-to.nu
+│  ├── f-vs.nu
+│  ├── mod.nu
+│  └── to.fish
+└── history.txt
+> lt
+.
+├── completions
+├── conf.d
+├── config.nu
+├── env.nu
+├── functions
+└── history.txt
+```
+
 ## 終わり
 
 いかがでしたでしょうか。自分もNushellを使い始めて日が浅いので細かいことについてはまだ調査中ですが、型がついていたり、TypeScriptのようなエディタ上での書き味でシェルスクリプトが書けるので非常に気に入っています。
 
-まだまだ開発途中のシェルなので、fish shell の方が優れている部分もいくつかあります。例えば補完周りの機能は圧倒的に fish shell の方が良いですし、`abbr` といった便利なシステムもありません。そしてなにより fish shell の方がユーザーフレンドリーで初心者にも若入りやすいです。ただ、型システムや構造化データ、パイプラインを全面に押し出した設計などは、他のプログラミング言語でそういったものに慣れていると非常に使い勝手の良いシェルに思えてきます。
+まだまだ開発途中のシェルなので、fish shell の方が優れている部分もいくつかあります。例えば補完周りの機能は圧倒的に fish shell の方が良いですし、`abbr` といった便利なシステムもありません。なにより fish shell の方がユーザーフレンドリーで初心者にも分かりやすいです。ただ、型システムや構造化データ、パイプラインを全面に押し出した設計などは、他のプログラミング言語でそういったものに慣れていると非常に使い勝手の良いシェルに思えてきます。
 
 自分のようにTypeSciptを使っている方であれば気に入ると思うので是非使ってみてください。
