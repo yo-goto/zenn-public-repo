@@ -352,7 +352,7 @@ Nushellでは以下のような基本型が提供されており、この他に�
 セルパス(`cell-path`) | `$.name.0`
 ブロック | `if true { print "hello!" }`, `loop { print "press ctrl-c to exit" }`
 
-### desribe コマンド
+### describe コマンド
 
 https://www.nushell.sh/commands/docs/describe.html
 
