@@ -315,7 +315,7 @@ https://github.com/nushell/vscode-nushell-lang
 
 この他にも注釈できないような特殊な型などが複数個存在しています。
 
-### desribe コマンド
+### describe コマンド
 
 https://www.nushell.sh/commands/docs/describe.html
 
