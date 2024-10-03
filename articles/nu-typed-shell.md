@@ -434,9 +434,9 @@ nothing	| nothing
 # => 出力なし
 ```
 
-### 構造的データ型
+### 構造化データ型
 
-Nushell では以下の構造的データ型が利用できます。
+Nushell では以下の構造化データ型(structured data types)が利用できます。
 
 型 | 値の例
 --|--
@@ -463,7 +463,7 @@ let t: table<x: int, y: int> = [
 ]
 ```
 
-公式ドキュメントには明示されていませんが、以下のソースコードの部分で２つの型の互換性チェックを行っているようで、構造的部分型付け(**structural subtyping**)のシステムになっているようです。これによって $record \langle a: int, b: int \rangle <: record \langle a: int \rangle$ といった互換性があります。
+公式ドキュメントには明示されていませんが、以下のソースコードの部分で２つの型の互換性チェックを行っているようで、構造的部分型付け(**structural subtyping**)のシステムになっているようです。これによって $record \langle a: int, b: int \rangle <: record \langle a: int \rangle$ といった互換性があります。`any`型などはいずれの型とも互換性あり(`true`)としているがわかるかと思います。
 
 https://github.com/nushell/nushell/blob/a948ec6c2cd2d2486589e73e701bd2c0a91a7547/crates/nu-parser/src/type_check.rs#L10-L69
 
