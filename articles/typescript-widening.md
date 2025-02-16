@@ -33,10 +33,10 @@ const str3 = "文字列リテラル";
 // 文字列リテラルで初期化しているのは明らかであり、型注釈は省略できる
 ```
 
-そして、[Deno 環境](https://deno.land/manual) には備え付けのリンターがあり、変数の初期化で型が明らかなものではむしろ型注釈を省略しないと注意される [no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) というリンタールールがありました。
+そして、[Deno 環境](https://deno.land/manual) には備え付けのリンターがあり、変数の初期化で型が明らかなものではむしろ型注釈を省略しないと注意される [no-inferable-types](https://lint.deno.land/?q=infer#no-inferrable-types) というリンタールールがありました。
 
 > Variable initializations to JavaScript primitives (and `null`) are obvious in their type. Specifying their type can add additional verbosity to the code. For example, with `const x: number = 5`, specifying `number` is unnecessary as it is obvious that `5` is a number.
-> ([deno_lint docs no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
+> ([deno_lint docs no-inferable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
 
 実際、以下のような TypeScript を書くとリンターに型注釈を省略するように注意されます。
 
@@ -161,7 +161,7 @@ str = 1000;
 // [Error]: Type 'number' is not assignable to type 'string'
 ```
 
-これは、変数の初期化の時点での型注釈を省略してもまったく同じことになります。むしろ型注釈を省略することで "no-inferrable-types" のリンタールールに怒られなくなります。
+これは、変数の初期化の時点での型注釈を省略してもまったく同じことになります。むしろ型注釈を省略することで "no-inferable-types" のリンタールールに怒られなくなります。
 
 ```ts:型注釈の省略
 let str = "text";
@@ -449,7 +449,7 @@ Widening (型の拡大) や Narrowing (型の絞り込み) は変数の型を拡
 
 今まで見てきたようなリテラル型に関しての Widening はより具体的には **Literal Widening** と呼ばれており、`const` 宣言では初期値から具体的なリテラル型として型推論されたのに、`let` 宣言ではより一般的な型として拡大されて型推論されるのもこの Literal Widening の一部です。
 
-TypeScirpt におけるこの "Literal Widening" の機能はそこそこ大きなもので、次の Pull request でマージされた機能 (あるいはコンセプト) であり、PR ではそのコンセプトの説明もなされています。
+TypeScript におけるこの "Literal Widening" の機能はそこそこ大きなもので、次の Pull request でマージされた機能 (あるいはコンセプト) であり、PR ではそのコンセプトの説明もなされています。
 
 https://github.com/Microsoft/TypeScript/pull/10676
 
@@ -791,7 +791,7 @@ let strLet4 = strConst4;
 
 今まで見てきたように Widening が抑制されていないリテラル型は Widening literal type は以下のように型が拡大されます。
 
-- 文字列リテラル型 → `stirng` 型
+- 文字列リテラル型 → `string` 型
 - 数値リテラル型 → `number` 型
 - 真偽値リテラル型 → `boolean` 型
 
@@ -823,7 +823,7 @@ const y = "y";
 
 const xy = [x, y];
 //    ^^: string[] 型
-const frist_of_xy = xy[0];
+const first_of_xy = xy[0];
 //    ^^^^^^^^^^^: string 型
 const second_of_xy = xy[1];
 //    ^^^^^^^^^^^: string 型
@@ -842,7 +842,7 @@ const w = "w" as const;
 
 const vw = [v, w];
 //    ^^: ["v", "W"] 型
-const frist_of_vw = vw[0];
+const first_of_vw = vw[0];
 //    ^^^^^^^^^^^: "v" | "w" 型
 const second_of_vw = vw[1];
 //    ^^^^^^^^^^^: "w" | "w" 型
@@ -970,7 +970,7 @@ const strLiteralUnion: "text" | "mytext" = str; // [Error]
 
 型には親子関係のようなものが存在しており、文字列リテラル型と `string` 型の関係は subtype と supertype です。
 
-supertype とは subtype の逆で派生元となる型のことです。つまり、`stirng` 型は `"text"` という文字列リテラル型の supertype です。Literal widening で起きるのは subtype である文字列リテラル型からプリミティブ型の supertype である `string` 型への拡大です。
+supertype とは subtype の逆で派生元となる型のことです。つまり、`string` 型は `"text"` という文字列リテラル型の supertype です。Literal widening で起きるのは subtype である文字列リテラル型からプリミティブ型の supertype である `string` 型への拡大です。
 
 supertype と subtype の話はリテラル型だけではなく、タプル型と通常の配列型などの関係においても言えることです。配列要素の型が同じであれば subtype と言え、タプル型は通常の配列型の変数に代入可能あるいは割当可能 (assignable) です。
 
@@ -1009,7 +1009,7 @@ const strLiteral = "text";
 //    ^^^^^^^^^: "text" 文字列リテラル型として型推論される
 
 const strUpper = strLiteral.toUpperCase();
-//                          ^^^^^^^^^^^ stirng 型と文字列リテラル型で使えるプロトタイプメソッド
+//                          ^^^^^^^^^^^ string 型と文字列リテラル型で使えるプロトタイプメソッド
 //    ^^^^^^^^: string 型として型推論される
 ```
 

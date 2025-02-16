@@ -363,7 +363,7 @@ $ exa --tree --level=2 -a --classify /opt/homebrew/Cellar/fish/3.4.0/
 
 - `man`, `help`
 - `type`
-- `functions`, `bultin`, `command`
+- `functions`, `builtin`, `command`
 
 基本的には `man` と `help` コマンドを調べたいコマンドの頭につけて実行することでマニュアルを確認できます。`man` はビルトイン・関数・外部コマンドについて存在するマニュアルを表示し、`help` はビルトイン・関数についてマニュアルをブラウザで開きます。
 
@@ -431,7 +431,7 @@ $ type -t cd
 function
 ```
 
-`functions` や `buitin`、`command` などを使用してそれぞれの種類のコマンドについて調べることも可能です。
+`functions` や `builtin`、`command` などを使用してそれぞれの種類のコマンドについて調べることも可能です。
 
 ```shell
 # 定義済み関数を表示: アンダースコアから始まるやつは表示しない (省略)

@@ -131,7 +131,7 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Object_
 
 ## イテラブルの活用
 
-反復可能プロトコル(iteable protocol)を満たしていれば `[Symbol.iterator]()` メソッドがイテレータを返すので、ほとんど反復処理プロトコル(iteration protcol)を満たしていると言ってもよいでしょう。
+反復可能プロトコル(iteable protocol)を満たしていれば `[Symbol.iterator]()` メソッドがイテレータを返すので、ほとんど反復処理プロトコル(iteration protocol)を満たしていると言ってもよいでしょう。
 
 ということで、反復処理プロトコル(iteration protocol)という言葉はあまり使われず、反復可能プロトコル(iterable protocol)を満たしているかどうかに基本的に焦点があてられます。
 
@@ -162,7 +162,7 @@ const iterableObject = {
 イテラブルオブジェクトの `[Symbol.iterator]()` メソッドを実行するとイテレータが返ってきました。さらにイテレータは `next()` メソッドを持っており、このメソッドを実行すると `value` と `done` プロパティを持つイテレータリザルトというオブジェクトが返ってきます。
 
 ```js
-// [Symbol.iteartor]() メソッドを実行するとイテレータが返ってくる
+// [Symbol.iterator]() メソッドを実行するとイテレータが返ってくる
 const iterator = iterableObject[Symbol.iterator]();
 
 // next() メソッドを実行するとイテレータリザルトが返ってくる
@@ -409,7 +409,7 @@ console.log(char2); // => B
 console.log(char3); // => C
 ```
 
-`Promise.all()` などの Promise の性的メソッドは実は引数にイテラブルオブジェクトを取るようになっています。
+`Promise.all()` などの Promise の静的メソッドは実は引数にイテラブルオブジェクトを取るようになっています。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 
@@ -804,7 +804,7 @@ const asyncIterable = {
 
 ### 非同期ジェネレータ関数
 
-ジェネレータ関数が反復可能プロトコルを実装していたように、非同期ジェネレータ関数(async generator funciton)は非同期反復可能プロトコルを実装しています。
+ジェネレータ関数が反復可能プロトコルを実装していたように、非同期ジェネレータ関数(async generator function)は非同期反復可能プロトコルを実装しています。
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator
 
@@ -1030,7 +1030,7 @@ console.log(iterator.next());
 console.log(iterator.next());
 // => { value: 3, done: false }
 console.log(iterator.next());
-// => { value: undfined, done: ture }
+// => { value: undefined, done: ture }
 ```
 
 型エイリアスで定義された `IteratorResult<T, TReturn = any>` 型には実は２つの型変数が `T` と `TReturn` 使われていますが、片方の `TReturn` はデフォルト型引数として `any` が指定されているので、型注釈する際には省略できるようになっています。
@@ -1205,7 +1205,7 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 }
 ```
 
-結構複雑に見えますが、１つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extention)です。
+結構複雑に見えますが、１つずつ見ていけばそこまで難しいものではありません。まずは、`extends` ですが、これは型の拡張(extension)です。
 
 https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces
 
@@ -1240,7 +1240,7 @@ interface Iterator<T, TReturn = any, TNext = undefined> {
     throw?(e?: any): IteratorResult<T, TReturn>;
 }
 
-// Genrator は Iterator 型の拡張
+// Generator は Iterator 型の拡張
 interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterator<T, TReturn, TNext> {
     next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
     return(value: TReturn): IteratorResult<T, TReturn>;
@@ -1262,7 +1262,7 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 
 イテレータとイテラブルの型定義でみたものとまったく同じです。
 
-このようなジェネリクス型による型定義によって、型引数が内部的にリンクしていることが分かります。トップにあるインターフェイスで定義された `Geneartor<T = unknown, TReturn = any, TNext = unknown>` で定義された３つの型変数 `T`、`Teturn`、`TNext` は内部で型定義されている `next()` や `return()` メソッドの型定義に使われている `IteratorResult<Tyep>` などにカスケードして利用されています。
+このようなジェネリクス型による型定義によって、型引数が内部的にリンクしていることが分かります。トップにあるインターフェイスで定義された `Geneartor<T = unknown, TReturn = any, TNext = unknown>` で定義された３つの型変数 `T`、`Teturn`、`TNext` は内部で型定義されている `next()` や `return()` メソッドの型定義に使われている `IteratorResult<Type>` などにカスケードして利用されています。
 
 基本的にはイテレータリザルトの `value` プロパティの値の型となる第一型引数のみを気にすればよいです。
 
@@ -1301,7 +1301,7 @@ function* genFn(
 ```ts
 function* genFn(
   n: number
-) { // Genrator<number, void, unknown> として推論される
+) { // Generator<number, void, unknown> として推論される
   n++;
   yield n; // number 型
   n++;
@@ -1311,12 +1311,12 @@ function* genFn(
 }
 ```
 
-明示的に `yield` される値の型を指定したいなら、その型を `Genrator` 型の第一型引数に指定します。
+明示的に `yield` される値の型を指定したいなら、その型を `Generator` 型の第一型引数に指定します。
 
 ```ts
 function* genFn(
   n: number
-): Generator<number> { // Genrator<number, void, unknown> として推論される
+): Generator<number> { // Generator<number, void, unknown> として推論される
   n++;
   yield n; // number 型
   n++;
@@ -1336,7 +1336,7 @@ function* genMultiType(): Generator<number | string | boolean> { // 第一型引
 }
 ```
 
-このような場合に `Genrator` の型注釈を省略してしまうと、ジェネレータ型の第一型引数の型がそれぞれの値のリテラル型のユニオン型として型推論されてしまいます。
+このような場合に `Generator` の型注釈を省略してしまうと、ジェネレータ型の第一型引数の型がそれぞれの値のリテラル型のユニオン型として型推論されてしまいます。
 
 ```ts
 // Generator<true | 42 | "ABC", void, unknown> として型推論される
@@ -1376,7 +1376,7 @@ interface AsyncIterable<T> {
 }
 ```
 
-通常のイテレータ `Iteartor` やジェネレータオブジェクト `Generator` の型定義と大差ありません、次のように比較してみれば分かりますが、ただ中身がそれぞれ `Promise<Type>` でラップされているだけです。
+通常のイテレータ `Iterator` やジェネレータオブジェクト `Generator` の型定義と大差ありません、次のように比較してみれば分かりますが、ただ中身がそれぞれ `Promise<Type>` でラップされているだけです。
 
 ```ts
 interface Iterator<T, TReturn = any, TNext = undefined> {

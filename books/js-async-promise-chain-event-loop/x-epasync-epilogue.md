@@ -109,7 +109,7 @@ https://zenn.dev/estra/books/ts-the-minimum
 
 せっかくなので、最後に自分が初めて翻訳に関わったツールである Obisidian について宣伝しておきます。
 
-最近は忙しくてあまりドキュメントなどの保守ができていませんが、個人のためのナレッジベース (PKM: Personal Knowlege Base) を作るモダンなマークダウンメモツールである Obsidian を是非使ってみてください (ちなみに Electron で開発されており、モバイルも含めてクロスプラットフォームで使えます)。
+最近は忙しくてあまりドキュメントなどの保守ができていませんが、個人のためのナレッジベース (PKM: Personal Knowledge Base) を作るモダンなマークダウンメモツールである Obsidian を是非使ってみてください (ちなみに Electron で開発されており、モバイルも含めてクロスプラットフォームで使えます)。
 
 https://obsidian.md
 

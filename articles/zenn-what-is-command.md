@@ -387,7 +387,7 @@ cp        df        kill      ls        pwd       stty      wait4path
 /Users/roshi/.deno/bin /Users/roshi/.nodebrew/current/bin /opt/homebrew/bin /usr/local/bin /usr/bin /bin /usr/sbin /sbin
 ```
 
-なので、例えば `foo` という存在しないコマンドを入力して実行した際には、`foo` という名前の Fuction を探し、次に `foo` という Builtin を探します。見つからないので、外部コマンドから探しますが、PATH に登録されている上記の順番にコマンドサーチが実行された結果、どのディレクトリにも見つけられなかったため、`fish: Unknown command: foo` というエラーメッセージが出力されます。
+なので、例えば `foo` という存在しないコマンドを入力して実行した際には、`foo` という名前の Function を探し、次に `foo` という Builtin を探します。見つからないので、外部コマンドから探しますが、PATH に登録されている上記の順番にコマンドサーチが実行された結果、どのディレクトリにも見つけられなかったため、`fish: Unknown command: foo` というエラーメッセージが出力されます。
 
 ```shel
 ❯ foo

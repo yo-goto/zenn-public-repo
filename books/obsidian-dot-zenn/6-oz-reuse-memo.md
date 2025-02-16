@@ -49,7 +49,7 @@ Zenn での技術記事などは１つのページで様々なことを解説す
 
 ただし、マークダウンフォーマットが利用できる記事であるなら、見出しというレベルで情報が区切られて粒度が管理されています。これによって記事で詳しく解説した内容の一部を自分のメモ内で参照して再利用することが可能となります。
 
-例えば、『[イベントループとプロミスチェーンで学ぶ非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』の『[同期 API とブロッキング](f-epasync-synchronus-apis)』のチャプターのページは見出しと使って以下のようなアウトラインとなっています。
+例えば、『[イベントループとプロミスチェーンで学ぶ非同期処理](https://zenn.dev/estra/books/js-async-promise-chain-event-loop)』の『[同期 API とブロッキング](f-epasync-synchronous-apis)』のチャプターのページは見出しと使って以下のようなアウトラインとなっています。
 
 ```md
 # このチャプターについて
@@ -73,11 +73,11 @@ Zenn での技術記事などは１つのページで様々なことを解説す
 
 これによって Obsidian 内部のメモからはそれぞれの見出しに対してリンクしたり、その見出し部分だけを切り出して埋め込むことができます。
 
-実際に『[API としてのビルトインオブジェクト](f-epasync-synchronus-apis#API としてのビルトインオブジェクト)』の見出し部分を埋め込みたい場合にはノートで次のように記載します。
+実際に『[API としてのビルトインオブジェクト](f-epasync-synchronous-apis#API としてのビルトインオブジェクト)』の見出し部分を埋め込みたい場合にはノートで次のように記載します。
 
 ```md
 ウィキリンク形式
-![[f-epasync-synchronus-apis#API としてのビルトインオブジェクト]]
+![[f-epasync-synchronous-apis#API としてのビルトインオブジェクト]]
 ```
 
 ![img](/images/oz/img_oz-embed-article-headerlevel.jpg)

@@ -597,7 +597,7 @@ while (true) {
 
 この動画では、Rendering pipeline の直前に実行する別のタスクのためのキューとして Animation Frame callback queue というもの存在しており、そのキューにアニメーション用のタスクを発火する `requestAnimationFrame` という API があることが理解できます。これによって、ブラウザ環境でのレンダリングとフレームを考慮したイベントループの仕組みと、それぞれのタスクが遂行されるタイミングについて細かく理解できます。
 
-関連して、次の MDN の記事を読んでおくことで、実行コンテキストと Call stack への理解が深まります。特に Global exectution context を理解することで最初のマイクロタスク実行のタイミングについて納得できます。これらの記事を読んでみて、個人的には、**マイクロタスクよりもタスクの方が理解の上で重要である**と感じました。
+関連して、次の MDN の記事を読んでおくことで、実行コンテキストと Call stack への理解が深まります。特に Global execution context を理解することで最初のマイクロタスク実行のタイミングについて納得できます。これらの記事を読んでみて、個人的には、**マイクロタスクよりもタスクの方が理解の上で重要である**と感じました。
 
 https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide
 
@@ -880,7 +880,7 @@ MDN でも明確に「**タスクが終了して実行コンテキストが空�
 > Each time a task exits, and the execution context stack is empty, each microtask in the microtask queue is executed, one after another.
 > ([In depth: Microtasks and the JavaScript runtime environment - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth) より引用)
 
-HMTL 仕様にブラウザ環境とランタイム環境は従うはずですから、タスクとマイクロタスクの関係性は V8 を埋め込んでいるこれらの環境では同じです (同じモデルになるように実装するはずと想定します、バグなど以外は**実際そうなっています**)。
+HTML 仕様にブラウザ環境とランタイム環境は従うはずですから、タスクとマイクロタスクの関係性は V8 を埋め込んでいるこれらの環境では同じです (同じモデルになるように実装するはずと想定します、バグなど以外は**実際そうなっています**)。
 
 V8 のドキュメントでもマイクロタスクは各タスクの終了時に実行され、マイクロタスクキューはイベントループに戻る前に常に空にされると記載されていました。
 
@@ -972,7 +972,7 @@ resumable function foo(v) {
   w = suspend(«foo», implicit_promise);
   // (4) w = のところから async 関数の処理再開となる
 
-  // (5) async 関数で return していた値である w で最終的に implict_promise を解決する
+  // (5) async 関数で return していた値である w で最終的に implicit_promise を解決する
   resolvePromise(implicit_promise, w);
 }
 

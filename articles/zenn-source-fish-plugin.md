@@ -242,7 +242,7 @@ file
 function > builtin > external command 
 ```
 
-つまり、ビルトインである `type` は external command である `type` よりも優先度が高いので、ビルトインの `type` が呼び出されるということです。このように、[コマンドとして呼び出されるものには優先度があり](https://github.com/fish-shell/fish-shell/issues/1732)、自分で定義する funciton などが最優先になるため、仮に同じ名前の builtin や exteranl command があってもそれらは呼び出されなくなります。
+つまり、ビルトインである `type` は external command である `type` よりも優先度が高いので、ビルトインの `type` が呼び出されるということです。このように、[コマンドとして呼び出されるものには優先度があり](https://github.com/fish-shell/fish-shell/issues/1732)、自分で定義する function などが最優先になるため、仮に同じ名前の builtin や exteranl command があってもそれらは呼び出されなくなります。
 
 :::message
 Bash でのコマンドサーチも同様です。
@@ -279,13 +279,13 @@ man はtypeされません
 builtin を呼び出す場合にはそのまま `builtin` というコマンドを頭につけることで呼び出せます。
 
 ```console
-❯ bultin type man
+❯ builtin type man
 # 省略。先述のビルトインを使った type man の結果が表示される
 ```
 
 external command を呼び出す場合には `command` というコマンドを頭につけることで呼び出せます。この場合に呼び出されるコマンド種類は環境によって異なります。macOS なら**BSD実装**の type、Linux のディストリビューションなら**GNU実装**の type が呼び出されます。それぞれで挙動が異なることがあるので注意してください。ググるとでてくるのは基本的に GNU 実装のコマンドの解説です。
 
-```cosole
+```console
 ❯ command type man
 man is /usr/bin/man
 ```
@@ -397,7 +397,7 @@ function __source-fish_help
     set_color yellow
     echo "Usage:"
     echo "      source-fish [OPTION]"
-    echo "      source-fish DIRECOTRIES..."
+    echo "      source-fish DIRECTORIES..."
     echo "Options:"
     echo "      -v, --version   Show version info"
     echo "      -h, --help      Show help"

@@ -192,7 +192,7 @@ https://github.com/zenn-dev/zenn-editor/blob/75953c40fdc882c157bb27108b72cf8e6cf
 
 これで無事に改行されたサマリーも表示されるようになりました。
 
-ただ、`yarn lint` でリンターを実行するのをわすれていたため型エラーになり、後で修正してもらいました。パッケージのメソッドの返り値の型を `uknown` から `any` などに変更するにはアンビエント宣言で上書きする必要があるようです (これは知らなかったです)。
+ただ、`yarn lint` でリンターを実行するのをわすれていたため型エラーになり、後で修正してもらいました。パッケージのメソッドの返り値の型を `unknown` から `any` などに変更するにはアンビエント宣言で上書きする必要があるようです (これは知らなかったです)。
 
 ## ⏰ (2) 公開予約時間が正しくプレビューされないバグを修正
 
@@ -352,7 +352,7 @@ https://github.com/zenn-dev/zenn-vscode-extension/blob/b1d34b1d48e39d45b60678b6e
 
 https://github.com/zenn-dev/zenn-vscode-extension/blob/b1d34b1d48e39d45b60678b6e3cece31870df61f/src/treeview/guide/guideTreeItem.ts#L7-L28
 
-`PreivewTreeItem` クラスの `iconPath` にはアイコンファイルへのパスか、ThemeIcon を指定します。ここで、VSCode で利用できる `map` と `map-filled` という２つのデフォルトアイコンを使用し、ベータ版なら通常の `map` アイコンが表示されるようにしました。
+`PreviewTreeItem` クラスの `iconPath` にはアイコンファイルへのパスか、ThemeIcon を指定します。ここで、VSCode で利用できる `map` と `map-filled` という２つのデフォルトアイコンを使用し、ベータ版なら通常の `map` アイコンが表示されるようにしました。
 
 ```ts
 this.iconPath = new vscode.ThemeIcon(isBeta ? "map" : "map-filled");
@@ -402,7 +402,7 @@ VSCode のローカライズの方法については以下の記事がわかり�
 
 https://qiita.com/wraith13/items/8f873a1867a5cc2865a8
 
-オリジナルのコマンド名は `package.json` に定義されますが、コマンド名 (`title` の値) を `%<command-name>%` のフォーマットで定義することで置換できるようになります。`pakcage.json` に定義したコマンドはすべてこのフォーマットで書き直します。
+オリジナルのコマンド名は `package.json` に定義されますが、コマンド名 (`title` の値) を `%<command-name>%` のフォーマットで定義することで置換できるようになります。`package.json` に定義したコマンドはすべてこのフォーマットで書き直します。
 
 https://github.com/zenn-dev/zenn-vscode-extension/blob/152c3f56fa2cebaf31ba3e80a5d95d094ee818b8/package.json#L67-L116
 

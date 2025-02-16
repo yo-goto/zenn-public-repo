@@ -443,7 +443,7 @@ git config --global core.quotepath false
 
 ![2-GitHubでフォーク](https://storage.googleapis.com/zenn-user-upload/hisqw3tezev16w87t3mver3ax1kk)
 
-![3-frokで作成された自分のリポジトリ](https://storage.googleapis.com/zenn-user-upload/5ldouqa8nd0ex0y1jed65uqpy6qp)
+![3-fromで作成された自分のリポジトリ](https://storage.googleapis.com/zenn-user-upload/5ldouqa8nd0ex0y1jed65uqpy6qp)
 
 ![3-クリップボードにコピー](https://storage.googleapis.com/zenn-user-upload/jwq8xcxsra470ka8nh8r8kcv3y85)
 
@@ -469,7 +469,7 @@ git branch -a
 git add ja/folderName_1
 git add ja/folderName_2
 # ファイルごと、フォルダごとにaddする
-git committ -m "ja: update"
+git commit -m "ja: update"
 # コミットメッセージを添えてコミット
 git push origin translation
 # originの作業ブランチtranslationにpush
@@ -653,7 +653,7 @@ git merge origin/main # origin/main の変更を main に反映
 なお、`git pull` というコマンドはこの作業を一気に行うコマンドであり、このコマンドを使う場合にはリモート追跡ブランチを意識する必要なく以下のように描いて実行できます。
 
 ```sh
-git chekcout main
+git checkout main
 git pull origin main
 # origin main の変更を origin/main に反映してからその変更を main に反映
 ```
@@ -777,7 +777,7 @@ git checkout translation
 git add ja/folderName_1
 git add ja/folderName_2
 # ファイルごと、フォルダごとにaddする
-git committ -m "ja: update"
+git commit -m "ja: update"
 # コミットメッセージを添えてコミット
 git push origin translation
 # originの作業ブランチtranslationにpush
@@ -869,7 +869,7 @@ gh repo sync yo-goto/obsidian-docs
 git pull origin master
 ```
 
-ワークフローの全体図を `fetch` + `merge` も `pull` に置き換えると、Sycn fork バージョンにすると以下のようにシンプルかつ分かりやすくなります。
+ワークフローの全体図を `fetch` + `merge` も `pull` に置き換えると、Sync fork バージョンにすると以下のようにシンプルかつ分かりやすくなります。
 
 ```mermaid
 ---

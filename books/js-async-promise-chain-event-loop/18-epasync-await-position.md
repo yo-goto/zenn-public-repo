@@ -743,7 +743,7 @@ fetch(url, { signal })
 controller.abort(); // abort イベントの発火
 ```
 
-`setTimeout()` で 500 ミリ秒後に `conroller.abort()` を起動することで `fetch()` 処理の中止を通知させるコードを考えてみると次のようになります。
+`setTimeout()` で 500 ミリ秒後に `controller.abort()` を起動することで `fetch()` 処理の中止を通知させるコードを考えてみると次のようになります。
 
 ```js
 const url = "https://api.github.com/zen";
@@ -792,7 +792,7 @@ https://github.com/denoland/deno_std/blob/0.145.0/async/delay.ts
 function delay(ms: number, options?: DelayOptions): Promise<void>;
 ```
 
-```ts:DelayOptoinsの型定義
+```ts:DelayOptionsの型定義
 interface DelayOptions {
   signal?: AbortSignal;
 }

@@ -58,7 +58,7 @@ https://zenn.dev/estra/articles/zenn-fish-plugin-template
 `deno-run-out.fish` は次のような感じで、このテンプレートを改造していきます。
 
 ```shell:functions/deno-run-out.fish
-function deno-run-out -d 'DISCRIPTION'
+function deno-run-out -d 'DESCRIPTION'
     argparse \ 
         -x 'v,h' \ 
         'v/version' 'h/help' -- $argv

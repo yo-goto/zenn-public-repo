@@ -37,8 +37,8 @@ Node や Deno では HTTP やファイルシステムにアクセスする機能
     - [fsPromises.writeFile](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fspromiseswritefilefile-data-options) (Promise-based API)
   - Deno: [Deno.writeFile](https://doc.deno.land/deno/stable/~/Deno.writeFile) (Promise-based API)
 - 同期 API (Blocking API)
-  - Node: [fs.wirteFileSync](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilesyncfile-data-options)
-  - Deno: [Deno.wirteFileSync](https://doc.deno.land/deno/stable/~/Deno.writeFileSync)
+  - Node: [fs.writeFileSync](https://nodejs.org/dist/v18.2.0/docs/api/fs.html#fswritefilesyncfile-data-options)
+  - Deno: [Deno.writeFileSync](https://doc.deno.land/deno/stable/~/Deno.writeFileSync)
 
   [^callback-based]: Node に存在している古いタイプのタスクベースの API です。これを使って逐次処理を行うには Callback hell をつくることになります。
 

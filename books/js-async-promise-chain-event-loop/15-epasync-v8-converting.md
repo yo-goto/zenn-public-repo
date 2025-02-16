@@ -100,7 +100,7 @@ resumable function foo(v) {
   w = suspend(«foo», implicit_promise);
   // (4) w = のところから async 関数の処理再開となる
 
-  // (5) async 関数で return していた値である w で最終的に implict_promise を解決する
+  // (5) async 関数で return していた値である w で最終的に implicit_promise を解決する
   resolvePromise(implicit_promise, w);
 }
 
@@ -127,7 +127,7 @@ function promiseResolve(v) {
 変換後のコードで普通の `return` が存在していないのは、`suspend()` の時点で呼び出し元である Caller へと Promise インスタンスとして `implicit_promise` を返してるからです。async 関数はどんなときでも、Promise インスタンスを返します。async 関数の処理が一次中断して、呼び出し元に制御が戻った時にすでに返り値として Promise インスタンスを用意していなければいけません。ただし、その時に返り値の Promise インスタンスが履行されている必要はなく、Pending 状態のままでいいのです。
 
 :::details 仕様解説
-この `implictPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文指向操作から呼び出される [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promise コンストラクタ関数で実際に Promise インスタンスが作成されています。
+この `implicitPromise` という async 関数から返される暗黙的な Promise オブジェクトが作成されているのは、[EvaluateAsyncFunctionBody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncfunctionbody) や [EvaluateAsyncConcisebody](https://tc39.es/ecma262/#sec-runtime-semantics-evaluateasyncconcisebody) 構文指向操作から呼び出される [NewPromiseCapability](https://tc39.es/ecma262/#sec-newpromisecapability) 抽象操作です。ここから更に起動される Promise コンストラクタ関数で実際に Promise インスタンスが作成されています。
 :::
 
 再び、async 関数の処理が再開し、最終的に async 関数で `return w` としていた値 `w` で `implicit_promise` が解決されることで、呼び出し元に返ってきていた Promise インスタンスが Settled になり、その値 `w` を Promise chain などで利用できるようになります。
@@ -138,12 +138,12 @@ function promiseResolve(v) {
 
 ```js:V8エンジンによる変換コード
 // 途中で一次中断できる関数として resumable (再開可能) のマーキング
-// async 関数からは、susupend のところまで行った時点で処理を中断して Pending 状態の Promise インスタンス(implicit_promise)が呼び出し元に返される
+// async 関数からは、suspend のところまで行った時点で処理を中断して Pending 状態の Promise インスタンス(implicit_promise)が呼び出し元に返される
 // 通常の return は意味がない(generator の yield と同じ)
 resumable function foo(v) {
   implicit_promise = createPromise();
   // async 関数の返り値となる promise インスタンスを作成
-  // 非同期処理を一次中断(susupend)したときもこれが呼び出し元に返ってきている
+  // 非同期処理を一次中断(suspend)したときもこれが呼び出し元に返ってきている
 
   // １つの await 式 (必ず１つはマイクロタスクが生成される)
   // (1). v を promise でラップする
@@ -279,7 +279,7 @@ performPromiseThen(
 ```
 :::
 
-`peformPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。仕様的には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) という抽象操作から作成されます。
+`performPromiseThen()` に渡す引数である `promise` が Settled になることで、`then()` メソッドのコールバックのようにマイクロタスクが発行されます。このマイクロタスクは `PromiseReactionJob` と呼ばれています。仕様的には [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) という抽象操作から作成されます。
 
 この `PromiseReactionJob` というマイクロタスクがマイクロタスクキューからコールスタックへと送られます。そのマイクロタスクによって更にコールスタック上で async 関数の関数実行コンテキストが再度プッシュされて積まれることで処理を再開できるようになっています。await 式ごとにこの `performPromiseThen()` の実行が必要となります。つまり、`then()` メソッドのようにマイクロタスクが発行されるので、Promise chain で考えれば理解できるはずです。
 
@@ -331,7 +331,7 @@ resumable function foo2(v, x) {
 }
 ```
 
-await 式が何個あっても同じことです。各 await 式で async 関数は実行フローの分割が起きます。実行フローの分割とは V8 エンジン的に言えば、`performPromiseThen()` の処理で処理再開を告げるマイクロタスクを発行して、`susupend()` で現在の関数実行を一時中断しているということになります。
+await 式が何個あっても同じことです。各 await 式で async 関数は実行フローの分割が起きます。実行フローの分割とは V8 エンジン的に言えば、`performPromiseThen()` の処理で処理再開を告げるマイクロタスクを発行して、`suspend()` で現在の関数実行を一時中断しているということになります。
 
 ![async関数の実行フロー分割](/images/js-async/img_asyncfunc-splited.jpg)
 
@@ -419,7 +419,7 @@ resumable function empty() {
 
 `await` がないので、各 await 式に必要ないつものコードはありません。そして、`return` している値も無いので、`return` する値は `undefined` となり、async 関数から返される Promise インスタンスは `undefined` で解決されます。
 
-そして `peformPromiseThen()` が無いのでマイクロタスクは１つも発行されず、async 関数から返ってくる Promise インスタンスはただちに履行状態となります。
+そして `performPromiseThen()` が無いのでマイクロタスクは１つも発行されず、async 関数から返ってくる Promise インスタンスはただちに履行状態となります。
 
 :::message
 async 関数 (Async function) はどんなときでも必ず Promise インスタンスを返します。
@@ -1412,7 +1412,7 @@ try/catch で捕捉しない場合は async 関数内の処理がそこで終わ
   suspend(«fooR», implicit_promise);
 ```
 
-`peformPromiseThen()` で `promise` に対して Rejected 状態となったときのハンドラもアタッチしていたので、Rejected なら resume(再開) ではなく、throw を告げるマイクロタスクを発行します。
+`performPromiseThen()` で `promise` に対して Rejected 状態となったときのハンドラもアタッチしていたので、Rejected なら resume(再開) ではなく、throw を告げるマイクロタスクを発行します。
 
 実際のコードでまた考えてみます。
 

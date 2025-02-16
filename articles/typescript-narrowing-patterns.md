@@ -319,7 +319,7 @@ const truty1 = !!42;
 //    ^^^^^^: true リテラル型
 ```
 
-この変換自体は上記の truhy/falsy による評価によって行われます。`!!tuthy` は `true` を返し、`!!falsy` は `false` を返します。ただし、`NaN` の二重否定は `false` という値自体は返しますが、変数の型は `boolan` 型として型推論されます。
+この変換自体は上記の truhy/falsy による評価によって行われます。`!!tuthy` は `true` を返し、`!!falsy` は `false` を返します。ただし、`NaN` の二重否定は `false` という値自体は返しますが、変数の型は `boolean` 型として型推論されます。
 
 `null` や `undefined` などが絡む際には、変数の値が falsy かどうかのチェック、つまり Truthiness narrowing をして型を絞り込みます。この際に 0 や空文字列が falsy であることが厄介です。
 
