@@ -156,12 +156,12 @@ const str3 = "文字列リテラル"; // TypeScript
 
 型を省略してもそのコードから型を推論して自動的に型情報が得られるこの機能を型推論 (type inference ) と言います。上のような変数宣言では初期値から型が推論されます。
 
-Deno ではこのような明らかに型推論が容易な変数宣言ではむしろ型注釈を省略するように促すリンタールール "no-inferable-types" がありますので、省略しないと怒られてしまいます。
+Deno ではこのような明らかに型推論が容易な変数宣言ではむしろ型注釈を省略するように促すリンタールール "no-inferrable-types" がありますので、省略しないと怒られてしまいます。
 
 https://lint.deno.land/?q=infer#no-inferrable-types
 
   > Variable initializations to JavaScript primitives (and `null`) are obvious in their type. Specifying their type can add additional verbosity to the code. For example, with `const x: number = 5`, specifying `number` is unnecessary as it is obvious that `5` is a number.
-> ([deno_lint docs no-inferable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
+> ([deno_lint docs no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
 
 リンタードキュメントには記載されていますが、以下のような型注釈に警告がなされて冗長なので型注釈を省略するようにと言われます。
 

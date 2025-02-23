@@ -33,10 +33,10 @@ const str3 = "文字列リテラル";
 // 文字列リテラルで初期化しているのは明らかであり、型注釈は省略できる
 ```
 
-そして、[Deno 環境](https://deno.land/manual) には備え付けのリンターがあり、変数の初期化で型が明らかなものではむしろ型注釈を省略しないと注意される [no-inferable-types](https://lint.deno.land/?q=infer#no-inferrable-types) というリンタールールがありました。
+そして、[Deno 環境](https://deno.land/manual) には備え付けのリンターがあり、変数の初期化で型が明らかなものではむしろ型注釈を省略しないと注意される [no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) というリンタールールがありました。
 
 > Variable initializations to JavaScript primitives (and `null`) are obvious in their type. Specifying their type can add additional verbosity to the code. For example, with `const x: number = 5`, specifying `number` is unnecessary as it is obvious that `5` is a number.
-> ([deno_lint docs no-inferable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
+> ([deno_lint docs no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types) より引用)
 
 実際、以下のような TypeScript を書くとリンターに型注釈を省略するように注意されます。
 
@@ -161,7 +161,7 @@ str = 1000;
 // [Error]: Type 'number' is not assignable to type 'string'
 ```
 
-これは、変数の初期化の時点での型注釈を省略してもまったく同じことになります。むしろ型注釈を省略することで "no-inferable-types" のリンタールールに怒られなくなります。
+これは、変数の初期化の時点での型注釈を省略してもまったく同じことになります。むしろ型注釈を省略することで "no-inferrable-types" のリンタールールに怒られなくなります。
 
 ```ts:型注釈の省略
 let str = "text";

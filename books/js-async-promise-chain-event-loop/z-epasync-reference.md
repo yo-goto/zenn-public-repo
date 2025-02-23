@@ -277,7 +277,7 @@ MDN
 - [JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap)
 - [TypeScript: Documentation - TypeScript for JavaScript Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
 - [TypeScript: Documentation - Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)
-- [deno lint rule no-inferable-types](https://lint.deno.land/?q=infer#no-inferrable-types)
+- [deno lint rule no-inferrable-types](https://lint.deno.land/?q=infer#no-inferrable-types)
 - [deno lint rule no-explicit-any](https://lint.deno.land/?q=any#no-explicit-any)
 - [Async Await try-catch hell - YouTube](https://www.youtube.com/watch?v=ITogH7lJTyE)
 
