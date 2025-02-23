@@ -195,7 +195,7 @@ https://doc.deno.land/deno/stable/~/setTimeout
 
 #### setInterval API
 
-タスクベースの非同期 API である、`setInterval()` は、`setInverval(cb, interval)` というように指定したインターバル時間が経過するたびに、引数のコールバック関数をタスクとしてタスクキューに発行します。
+タスクベースの非同期 API である、`setInterval()` は、`setInterval(cb, interval)` というように指定したインターバル時間が経過するたびに、引数のコールバック関数をタスクとしてタスクキューに発行します。
 
 ```js
 // タスクベースの非同期 API

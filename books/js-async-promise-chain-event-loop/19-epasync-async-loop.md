@@ -182,7 +182,7 @@ E
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
 
-`reduce()` メソッドはコールバック関数と累積処理に利用する初期値を引数に取ります。コールバックが配列要素の個数分だけ累積処理を行った最終結果の値が返り値として返ってきます。各コールバック関数内で `return` した値が次の反復処理で使われます。その `return` した値が次のコールバックの入力の `priviousValue` となります。
+`reduce()` メソッドはコールバック関数と累積処理に利用する初期値を引数に取ります。コールバックが配列要素の個数分だけ累積処理を行った最終結果の値が返り値として返ってきます。各コールバック関数内で `return` した値が次の反復処理で使われます。その `return` した値が次のコールバックの入力の `previousValue` となります。
 
 ```js
 const result = array.reduce((
@@ -211,7 +211,7 @@ const result = array.reduce((previousValue, currentItem) => {
 console.log(result); //=>  1006
 ```
 
-初期値を渡さない場合には配列の最初の要素が初期値となり、最初のコールバック処理では、`previosuValue` が `array[0]`、`currentItem` が `value[1]` となります。
+初期値を渡さない場合には配列の最初の要素が初期値となり、最初のコールバック処理では、`previousValue` が `array[0]`、`currentItem` が `value[1]` となります。
 
 ```js
 const array = [1, 2, 3];
@@ -449,7 +449,7 @@ const urls = [
 ```sh
 ❯ deno run -A forEachAsync.js
 これが先に出力されてしまう
-{ userId: 1, id: 2, title: "quis ut nam facilis et officia qui", completed: false }
+{ userId: 1, id: 2, title: "quis ut name facilis et officia qui", completed: false }
 { userId: 1, id: 1, title: "delectus aut autem", completed: false }
 { userId: 1, id: 3, title: "fugiat veniam minus", completed: false }
 ```
@@ -497,7 +497,7 @@ console.log("これが先に出力されてしまう");
 ```sh
 ❯ deno run -A forEachAsync.js
 これが先に出力されてしまう
-{ userId: 1, id: 2, title: "quis ut nam facilis et officia qui", completed: false }
+{ userId: 1, id: 2, title: "quis ut name facilis et officia qui", completed: false }
 { userId: 1, id: 1, title: "delectus aut autem", completed: false }
 { userId: 1, id: 3, title: "fugiat veniam minus", completed: false }
 ```
@@ -561,7 +561,7 @@ const urls = [
 ❯ deno run -A forEachOk.js
 [
   { userId: 1, id: 1, title: "delectus aut autem", completed: false },
-  { userId: 1, id: 2, title: "quis ut nam facilis et officia qui", completed: false },
+  { userId: 1, id: 2, title: "quis ut name facilis et officia qui", completed: false },
   { userId: 1, id: 3, title: "fugiat veniam minus", completed: false }
 ]
 データフェッチがすべて終わってから出力できる
@@ -668,7 +668,7 @@ async function fetchThenConsole(url) {
 {
   "userId": 1,
   "id": 2,
-  "title": "quis ut nam facilis et officia qui",
+  "title": "quis ut name facilis et officia qui",
   "completed": false
 }
 {

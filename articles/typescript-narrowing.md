@@ -148,7 +148,7 @@ acceptOptionalStr(); // 引数は省略可能
 オプション引数ではなく、引数の型注釈を直接的に `string | undefined` というように注釈すると引数が省略できなくなるという違いがあるので注意してください。
 :::
 
-`string | undefined` というユニオン型は `string` 型よりも広い集合 (superset) を表現しており、`string` 型や `undefined` 型の supertype となります。広いといっても実際には具体的な `undefined` リテラルから構成される Unit type である `undefined` 型を `stirng` 型に加えただけです。
+`string | undefined` というユニオン型は `string` 型よりも広い集合 (superset) を表現しており、`string` 型や `undefined` 型の supertype となります。広いといっても実際には具体的な `undefined` リテラルから構成される Unit type である `undefined` 型を `string` 型に加えただけです。
 
 この場合に `string` 型で利用できるプロトタイプメソッド `toUpperCase()` を関数内で利用しようとすると型エラーになります。もちろん、`undefined` にはプロパティとして `toUpperCase()` というようなメソッドを持たないからです。
 
@@ -162,7 +162,7 @@ function acceptOptionalStr(
 }
 
 acceptOptionalStr("text"); // string 型を渡せる
-acceptOptionalStr(); // 引数省略した際には自動的に undefiend となりエラーとなる
+acceptOptionalStr(); // 引数省略した際には自動的に undefined となりエラーとなる
 ```
 
 このコードは実行時にエラーとなります。これを回避するにはいくつか方法はあると思いますが、例えば ES2020 で ECMAScript の新機能として導入された [Optional chaining 演算子](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Optional_chaining)(`?.`) を使うことで回避できます。これを使うことで `undefined.toUpperCase()` のような存在しないプロパティアクセスによる例外発生を回避して `undefined` を返すことができます。
@@ -425,7 +425,7 @@ type Shape = {
 
 const sORt: Shape = {
   kind: "square",
-  lenth: 100,
+  length: 100,
   radius: 50, // "square" では無駄なプロパティ
 };
 ```

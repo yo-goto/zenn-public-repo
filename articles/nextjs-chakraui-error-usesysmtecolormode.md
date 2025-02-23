@@ -23,7 +23,7 @@ TypeError: Cannot read properties of undefined (reading 'useSystemColorMode')
 ```
 
 # 解決策
-冒頭で紹介した Next.js で Chakara UI を使用するための [公式ドキュメント](https://chakra-ui.com/guides/getting-started/nextjs-guide)では以下の項目が記載されていたが、"Provider Setup" の項目だけ行ってしまうと冒頭の TypeErorr が出力されてしまう。
+冒頭で紹介した Next.js で Chakra UI を使用するための [公式ドキュメント](https://chakra-ui.com/guides/getting-started/nextjs-guide)では以下の項目が記載されていたが、"Provider Setup" の項目だけ行ってしまうと冒頭の TypeError が出力されてしまう。
 
 - Provider Setup
 - **Customizing theme**
@@ -93,7 +93,7 @@ function MyApp({ Component, pageProps }) {
 export default MyApp
 ````
 
-ただし、この状態で `npm run dev` すると冒頭の TypeErorr が起きる。
+ただし、この状態で `npm run dev` すると冒頭の TypeError が起きる。
 
 :::message
 ちなみに、`MyApp` コンポーネントに渡す props は以下のものとなる。

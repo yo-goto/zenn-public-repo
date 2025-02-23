@@ -22,9 +22,9 @@ aliases:
 
 ## モチベーション
 
-[前回の記事](https://zenn.dev/estra/articles/zenn-source-fish-plugin) では、プラグイン開発用ディレクトリにある複数の fish ファイルを一気に `soruce` するプラグインの開発について解説しました。
+[前回の記事](https://zenn.dev/estra/articles/zenn-source-fish-plugin) では、プラグイン開発用ディレクトリにある複数の fish ファイルを一気に `source` するプラグインの開発について解説しました。
 
-プラグインを開発することで、そろそろ fish shell script に慣れてました。プラグインの構造や公開に必要なファイル郡がテンプレート化してきたので、高速に開発できるようにそれらのプラグインテンプレートをディレクトリに展開するプラグインを開発してみました。今回、解説する `fish-plugin-template` を使えば、５秒で fish プラグインの開発をスタートできます。
+プラグインを開発することで、そろそろ fish shell script に慣れてました。プラグインの構造や公開に必要なファイル群がテンプレート化してきたので、高速に開発できるようにそれらのプラグインテンプレートをディレクトリに展開するプラグインを開発してみました。今回、解説する `fish-plugin-template` を使えば、５秒で fish プラグインの開発をスタートできます。
 
 https://github.com/yo-goto/fish-plugin-template
 
@@ -87,8 +87,8 @@ graph TD
     id0[fpt]
     id2[__fpt_help]
     id3[__fpt_make_template]
-    id4[__fpt_wirte_template]
-    id5[__fpt_wirte_template_override]
+    id4[__fpt_write_template]
+    id5[__fpt_write_template_override]
     id6[__fpt_interactive]
     id0 --> |with -h option|id2
     id0 --> |with target dir or file|id3
@@ -148,7 +148,7 @@ _flag_debug:  -d
 ↓ 一方、問題である `--argument-names` オプションを併用した場合。
 
 ```shell:--argument-namesオプションを併用した場合
-function argtest-argparse-arguemnts-names \
+function argtest-argparse-arguments-names \
     --argument-names 'one' 'two' 'three'
     argparse 'd/debug' -- $argv
     or return 1
@@ -167,7 +167,7 @@ end
 この `argtest-argparse-arguments-names` を実行すると、次のようになります。
 
 ```shell
-$ argtest-argparse-arguemnts-names 1 -d 2 3
+$ argtest-argparse-arguments-names 1 -d 2 3
 one:  1
 two:  -d
 three: 2
@@ -179,7 +179,7 @@ _flag_debug:  -d
 
 出力結果を見ると、`argparse` だけの場合から期待する引数の対応関係が１つずつずれてしまっています。具体的には、`$argv` は `argparse -- $argv` によってオプション引数が除去されているため、`$argv[1], $argv[2], $argv[3]` には期待どおりに引数が入っていますが、`--argument-names` オプションで名前を付けた変数 (`one, two, three`) はずれてしまい、`twe` に `-d` オプションフラグが入ってしまっています。
 
-渡す引数の順番をしっかり意識していれば特に問題はないのですが、どの変数に何が入っているのかという混乱のもとにはなりますし、オプションについては順番を気にせず使えたほうが便利です。以下の例のように `--argment-names` オプションの使用を避け、コメントで引数の名前のみを書き、`set -l one $argv[1]` のようにしてリストである `$argv` の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
+渡す引数の順番をしっかり意識していれば特に問題はないのですが、どの変数に何が入っているのかという混乱のもとにはなりますし、オプションについては順番を気にせず使えたほうが便利です。以下の例のように `--argument-names` オプションの使用を避け、コメントで引数の名前のみを書き、`set -l one $argv[1]` のようにしてリストである `$argv` の要素の順番と変数名を対応付けるようにします。さらに、オプションとして渡せるような種類の条件はすべてオプション引数として渡すようにします。
 
 これでオプション引数の順番を気にすることなく、普通の引数の順番だけを考慮すればよくなります。
 
@@ -344,7 +344,7 @@ https://github.com/yo-goto/fish-plugin-template/blob/f6f3cd34aac2789474e765f2f41
 
 ```shell
 # generated function template from fish-plugin
-function plugin-name -d 'DISCRIPTION'
+function plugin-name -d 'DESCRIPTION'
    argparse \ 
        -x 'v,h' \ 
        'v/version' 'h/help' -- $argv

@@ -355,7 +355,7 @@ async function returnText(url) {
 }
 ```
 
-「環境がバックグラウンドで並列的に作業する非同期 API の処理の完了」を直接的に待つのか、「イベントループで並行 (concurrent) に処理される非同期処理 (Promise chain で登録されたコールバック関数や aysnc 関数) の完了」を待つのかで印象がかなり変わってくるため、非同期の学習ではここで勘違いや混乱などが起きることが多いです (個人的にはそうでした)。
+「環境がバックグラウンドで並列的に作業する非同期 API の処理の完了」を直接的に待つのか、「イベントループで並行 (concurrent) に処理される非同期処理 (Promise chain で登録されたコールバック関数や async 関数) の完了」を待つのかで印象がかなり変わってくるため、非同期の学習ではここで勘違いや混乱などが起きることが多いです (個人的にはそうでした)。
 
 通常は「非同期処理」という１つの単語に様々な要素が含まれるので内訳を意識しておかないと混乱します。
 
@@ -908,7 +908,7 @@ async 関数では古典的な例外捕捉の方法として try/catch/finally �
 ```js
 // awaitRejectPromise-kai.js
 (async function increment() {
-  let value = "defalut value";
+  let value = "default value";
   try {
     value = await Promise.reject("reason");
     console.log("😭 これは実行されない");
@@ -930,7 +930,7 @@ async 関数では古典的な例外捕捉の方法として try/catch/finally �
 ❯ v8 awaitRejectPromise-kai.js
 👹 実行される: reason
 🦄 最後に実行される
-😅 これは実行される: defalut value
+😅 これは実行される: default value
 🦄 最後に実行される
 ```
 
@@ -938,7 +938,7 @@ async 関数内で try/catch/finally を使えば、今までのようにチェ�
 
 ```js
 (async function increment() {
-  let value = "defalut value";
+  let value = "default value";
   try {
     value = await Promise.reject("reason");
     console.log("😭 これは実行されない");

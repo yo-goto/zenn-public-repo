@@ -25,7 +25,7 @@ https://zenn.dev/estra/articles/obsidian-plugin-dev_1
 
 ## そもそも
 
-Obsidian のプラグイン開発において Github のリポジトリから clone したリポジトリで手動でビルドする必要があり、`npm i` で必要なパッケージが `node_modules` というディレクトリにインストールされるということは知っていたが、`node_moduels` ディレクトリになぜこんなにも多くのパッケージがインストールされているのか疑問だった。`package.json` ファイルの dependencies の項目に記載されているパッケージが動作に必要で devDependencies は開発に必要なパッケージであるということはわかったが、その 2 つのセクションに書いていないパッケージが `node_modules` に入っており意味がわからないというのが調査の発端。
+Obsidian のプラグイン開発において Github のリポジトリから clone したリポジトリで手動でビルドする必要があり、`npm i` で必要なパッケージが `node_modules` というディレクトリにインストールされるということは知っていたが、`node_modules` ディレクトリになぜこんなにも多くのパッケージがインストールされているのか疑問だった。`package.json` ファイルの dependencies の項目に記載されているパッケージが動作に必要で devDependencies は開発に必要なパッケージであるということはわかったが、その 2 つのセクションに書いていないパッケージが `node_modules` に入っており意味がわからないというのが調査の発端。
 
 また npm もかなり漠然と使ってたため、良い機会なので概念や目的も色々と調べてみた。
 
@@ -34,7 +34,7 @@ Obsidian のプラグイン開発において Github のリポジトリから cl
 『依存関係 (dependencies)』とは
 プログラム内で外部ライブラリを使っていて、それが無いと動かないという状態を依存関係という。npm を導入する理由で最も多いのはこの依存関係を管理するためとのこと。
 
-- プロジェクトルートにある `pacakge.json` の dependencies に記載されているパッケージがインストールされる (場合によっては devDependencies も)。
+- プロジェクトルートにある `package.json` の dependencies に記載されているパッケージがインストールされる (場合によっては devDependencies も)。
 - インストールされる dependencies に記載されているパッケージが持つ各 `package.json` ファイルの dependencies に記載されているパッケージが更にインストールされる。そして、すべての依存しているパッケージがインストールされる。
 - `package-lock.json` にはインストールされたすべてのパッケージの正確なバージョン情報が記載されており、このファイルを使えば異なるマシンで異なる時間にパッケージのインストールをしても正確に同じ環境を作ることができる。
 - npm にはバージョンがあり、使用しているバージョンの `package-lock.json` 構造について知る必要があり、npm v7 では `package` オブジェクトが読み取られ、`dependencies` オブジェクトは無視されるため気にかける必要はない。
@@ -46,7 +46,7 @@ Obsidian のプラグイン開発において Github のリポジトリから cl
 `npm i` でインストールするといっても色々とパターンがあるのでそれぞれ試してみた。
 
 - パターン 1: 最初から package.json がある状態で `npm i`
-	- 自分で `npm init` せずに Github のリポジトリからクローンしたものなどは `package.json` が最初からある状態で `npm i` コマンドでインストールすると、dependenceis に書かれているパッケージ以外のパッケージが node_modules にインストールされた。
+	- 自分で `npm init` せずに Github のリポジトリからクローンしたものなどは `package.json` が最初からある状態で `npm i` コマンドでインストールすると、dependencies に書かれているパッケージ以外のパッケージが node_modules にインストールされた。
 - パターン 2: 自分で package.json を用意してから `npm i`
 	- `npm init` でプロジェクトを初期化して `package.json` を用意、dependencies に 1 つだけパッケージを記載して `npm i` を行ってみたところ、まったく知らないパッケージが `node_modules` にインストールされた。
 - パターン 3: package.json を用意してから `npm i パッケージ名`
@@ -60,7 +60,7 @@ Obsidian のプラグイン開発において Github のリポジトリから cl
 
 つまり、インストールしたいパッケージが特定の 1 つであってもそれを動かすためには依存しているパッケージもろもろすべてが必要であるためプロジェクトルートの `package.json` に記載されていないそれらを `node_modules` にインストールしていたということだった。
 
-たとえば動画のように `npm install chalk` で chalk というパッケージ 1 つをインストールしてみると `node_moduels` には chalk 以外の 5 つのパッケージがインストールされている。
+たとえば動画のように `npm install chalk` で chalk というパッケージ 1 つをインストールしてみると `node_modules` には chalk 以外の 5 つのパッケージがインストールされている。
 
 ![](/images/npm-dependencies/img_npmdependencies_0.jpg)
 
@@ -75,9 +75,9 @@ Obsidian のプラグイン開発において Github のリポジトリから cl
 
 chalk というパッケージはこの dependencies に記載されている ansi-styles、supports-color というパッケージが動かすために必要ということだ。そのため `npm i chalk` では chalk を実際に使うために ansi-styles、supports-color というパッケージを追加でインストールされている。
 
-しかし、まだ３つも知らないパッケージが `node_modues` には存在している。理由は簡単で chalk を動かすために必要な 2 つのパッケージにもそれぞれ動かすために必要なパッケージがあったということだ。2 つのパッケージのディレクトリも覗いてみると chalk と同様にそれぞれ `pacakge.json` ファイルを持ち、dependencies を持っていることがわかった。
+しかし、まだ３つも知らないパッケージが `node_modues` には存在している。理由は簡単で chalk を動かすために必要な 2 つのパッケージにもそれぞれ動かすために必要なパッケージがあったということだ。2 つのパッケージのディレクトリも覗いてみると chalk と同様にそれぞれ `package.json` ファイルを持ち、dependencies を持っていることがわかった。
 
-```json:ansi-sytlesのpackage.jsonのdependencies
+```json:ansi-stylesのpackage.jsonのdependencies
 "dependencies": {
 	"color-convert": "^2.0.1"
 },
@@ -195,7 +195,7 @@ node_modules/get-stdin
     cowsay@"^1.5.0" from the root project
 
 # strip-anisはdeduped(重複)した依存なので色々なパッケージから必要とされていることがわかる
-$ npm expalin strip-ansi
+$ npm explain strip-ansi
 strip-ansi@6.0.1
 node_modules/cliui/node_modules/strip-ansi
   strip-ansi@"^6.0.0" from cliui@6.0.0
@@ -287,7 +287,7 @@ node_modules/yargs/node_modules/strip-ansi
 },
 ```
 
-dependencies に記載されているパッケージ (get-stdin, string-widht, strip-final-newline, yargs の 4 つ) は cowsay が動作する上で必要なのでこのパッケージもインストールされる。しかし、この 4 つのパッケージにもそれぞれ `package.json` ファイルがあり、それぞれ dependencies を持つ。つまりそれらの dependencies も動作する上で必要なのでインストールされる。更にインストールされたパッケージも更に dependencies を持つ、動作に必要なのでインストールされる....ということを繰り返してすべての依存関係のあるパッケージがインストールされた結果として node_modules ディレクトリが大きくなり、`npm ls -a` で表示されるような依存ツリーが出来上がる。
+dependencies に記載されているパッケージ (get-stdin, string-width, strip-final-newline, yargs の 4 つ) は cowsay が動作する上で必要なのでこのパッケージもインストールされる。しかし、この 4 つのパッケージにもそれぞれ `package.json` ファイルがあり、それぞれ dependencies を持つ。つまりそれらの dependencies も動作する上で必要なのでインストールされる。更にインストールされたパッケージも更に dependencies を持つ、動作に必要なのでインストールされる....ということを繰り返してすべての依存関係のあるパッケージがインストールされた結果として node_modules ディレクトリが大きくなり、`npm ls -a` で表示されるような依存ツリーが出来上がる。
 
 次のようなパッケージの依存関係をグラフ表示てくれるサービスもあるので試してみた。
 
@@ -328,7 +328,7 @@ https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json
 参考: [Lockfile とは?このファイルのコミットって必要？ [Beginner's Series to Node.js 9/26]](https://youtu.be/7XQU0Obs_wk)
 :::
 
-## pacakge.json だけではだめな理由
+## package.json だけではだめな理由
 
 そもそもの package.json ではなぜ正確な依存関係をインストールできないのか。
 
@@ -348,7 +348,7 @@ https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json
 - z: **パッチバージョン**  
     バグフィクス、メンテンスリリース、後方互換
 
-このセマンティックバージョニングを使ってソフトウェアのバージョン管理を行うのが一般的であり、`package.json` ではこの番号を dependencies や devDepenendencies にパッケージ名と共に記述する。しかし、このバージョン指定の方法によって正確な依存関係をインストールできなくなっている。例えば、先程の chalk のパッケージ内に含まれる `package.json` の dependenceis では以下のようにセマンティックバージョニングのバージョン番号の頭にキャレット `^` と呼ばれる記号がついている。
+このセマンティックバージョニングを使ってソフトウェアのバージョン管理を行うのが一般的であり、`package.json` ではこの番号を dependencies や devDependencies にパッケージ名と共に記述する。しかし、このバージョン指定の方法によって正確な依存関係をインストールできなくなっている。例えば、先程の chalk のパッケージ内に含まれる `package.json` の dependencies では以下のようにセマンティックバージョニングのバージョン番号の頭にキャレット `^` と呼ばれる記号がついている。
 
 ```json:chalkのpackage.jsonのdependencies
 "dependencies": {
@@ -359,7 +359,7 @@ https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json
 
 このキャレットがついたバージョン番号は「一番左側にある、ゼロではないバージョンは変えず、それ以下のバージョンが有る場合には許容してインストールする」ことを意味している。つまり、ansi-styles というパッケージについては「`4.1.0以上4.2.0未満` の最新バージョンをインストールする」というバージョンの範囲を指定していることになる。したがって `npm i` ではこの範囲での ansi-styles の最新バージョンをインストールする。
 
-ある時間にインストールした ansi-sytles のバージョンが `4.1.1` であったとしても、ソフトウェアの開発は時間と共に進み ansi-styles というパッケージのバージョンは進むので、別の時間インストールすると `4.1.7` というバージョンがインストールされることがある。このバージョンの範囲指定での最新を入れるので他の人が同じ `package.json` ファイルを使ってインストールしても異なるバージョンのパッケージ群が入ってしまう可能性が大きい。より複雑なプロジェクトになれば依存先はかなり多いため各パッケージのバージョン更新が短い間にいくつもあるかもしれない。
+ある時間にインストールした ansi-styles のバージョンが `4.1.1` であったとしても、ソフトウェアの開発は時間と共に進み ansi-styles というパッケージのバージョンは進むので、別の時間インストールすると `4.1.7` というバージョンがインストールされることがある。このバージョンの範囲指定での最新を入れるので他の人が同じ `package.json` ファイルを使ってインストールしても異なるバージョンのパッケージ群が入ってしまう可能性が大きい。より複雑なプロジェクトになれば依存先はかなり多いため各パッケージのバージョン更新が短い間にいくつもあるかもしれない。
 
 といことで、実際に開発の環境でインストールしたパッケージの正確なバージョン番号というものが必要になってくるわけだ。
 
@@ -374,13 +374,13 @@ https://zenn.dev/luvmini511/articles/56bf98f0d398a5
 	- [The semver parser for node](https://github.com/npm/node-semver#versions) に範囲の記述方法のすべてが記載されている。
 - `devDependencies`
 	- そのパッケージを開発・ビルドするための外部ツールやフレームワークなど、ただプログラムを実行して使いたいユーザーには必要ないパッケージ。
-	- この項目にリストされているパッケージはこれが記載されている `pakcage.json` ファイルがルートにある状態で `npm install` まはた `npm link` コマンドを実行したとき。
+	- この項目にリストされているパッケージはこれが記載されている `package.json` ファイルがルートにある状態で `npm install` まはた `npm link` コマンドを実行したとき。
 
 https://docs.npmjs.com/cli/v7/configuring-npm/package-json#main
 
 ## package-lock.json の構造
 
-主要なフィールドについて同様に公式ドキュメントから抜粋して調べてみた。npm v5/v6 からこのロックファイルの構造は変わったようだ。ドキュメントを読んでいると以前のバージョンでは `package.json` と `package-lock.json` の両方を読んでいたようだが、いまや `pakage-lock.json` が完全な依存ツリーの情報を持つようになったのでパフォーマンスが向上したとのこと。
+主要なフィールドについて同様に公式ドキュメントから抜粋して調べてみた。npm v5/v6 からこのロックファイルの構造は変わったようだ。ドキュメントを読んでいると以前のバージョンでは `package.json` と `package-lock.json` の両方を読んでいたようだが、いまや `package-lock.json` が完全な依存ツリーの情報を持つようになったのでパフォーマンスが向上したとのこと。
 
 - `name`: パッケージの名前
 	`package.json` の name と一致する
@@ -399,8 +399,8 @@ https://docs.npmjs.com/cli/v7/configuring-npm/package-json#main
 		- npm レジストリから取得されている場合には tarball への URL
 		- Git 依存の場合にはコミットハッシュ付き git のフル URL
 	- `integrity` : このロケーションに解凍された依存パッケージに対する SRI(サブリソース完全性: [Standard Subresource Integrity](https://w3c.github.io/webappsec/specs/subresourceintegrity/)) として使われる文字列 (sha512 または sha1 で暗号化されたハッシュ値)
-	- `bin`, `license`, `engines`, `dependenceis`, `optionalDependnecies`: `package.json` に記載されているフィールドから転記。
-- `dependencies`: `lockfileVersion: 1` を使用している npm のバージョンをサポートするレガシーデータ。npm v7 では `pacakge` セクションが存在すればこのセクションを完全に無視するが、npm v6 と v7 のスイッチングをサポートするためにデータを保持している。なので基本的に v7 を使っていれば中身は無視してよい。
+	- `bin`, `license`, `engines`, `dependencies`, `optionalDependnecies`: `package.json` に記載されているフィールドから転記。
+- `dependencies`: `lockfileVersion: 1` を使用している npm のバージョンをサポートするレガシーデータ。npm v7 では `package` セクションが存在すればこのセクションを完全に無視するが、npm v6 と v7 のスイッチングをサポートするためにデータを保持している。なので基本的に v7 を使っていれば中身は無視してよい。
 
 ```json:package-lock.jsonファイルの中身(chalk単体インストール)
 {
@@ -493,7 +493,7 @@ npm v7 においては、`node_modules/.package-lock.json` という隠しロッ
 }
 ```
 
-`pakcage-lock.json` との違いは npm v5/v6 用のフィールドとしてあった "dependencies" がなくなっているのとルートプロジェクトを示す "" がなくなっている以外は同じ。
+`package-lock.json` との違いは npm v5/v6 用のフィールドとしてあった "dependencies" がなくなっているのとルートプロジェクトを示す "" がなくなっている以外は同じ。
 
 参考: 
 https://nitayneeman.com/posts/catching-up-with-package-lockfile-changes-in-npm-v7/

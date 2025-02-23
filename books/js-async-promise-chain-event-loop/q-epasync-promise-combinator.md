@@ -343,7 +343,7 @@ async/await で書くなら次のような感じで、「複数の Promise 処�
 await 式の特徴である Promise インスタンスを評価して値を取り出すという性質を利用すれば複数のリクエストのレスポンスをまとめて抽出できます。
 
 ```js
-const reponses = await Promise.all([
+const responses = await Promise.all([
   fetch(urls[0]),
   fetch(urls[1]),
   fetch(urls[2]),

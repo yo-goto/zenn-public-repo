@@ -74,7 +74,7 @@ TypeScript は JavaScript に [型システム](https://www.wikiwand.com/ja/%E5%
 
   > TypeScrip t は、単に、JavaScrip t のコードを良いドキュメントにする方法を標準化したものに過ぎません。
 > (中略)
-> 本質的には、Type S cript は Java Script のリンター(コードの静的 解析ツール) です。型情報を 持たない他の Java Script のリンターよりも優れているだけです。
+> 本質的には、TypeScript は Java Script のリンター(コードの静的 解析ツール) です。型情報を 持たない他の Java Script のリンターよりも優れているだけです。
 > ([JavaScript - TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive/recap) より引用)
 
 TypeScript はより良い JavaScript を書くためのリンターに過ぎません。つまり JavaScript を書くための道具です。
@@ -733,7 +733,7 @@ const numProp: GeneralProp<number> = {
 型変数の名前はなんでもよいので今回は `YourType` としてみました。慣習的は `T` や `K` などの文字が使われます。
 
 ## ジェネリック関数
-ジェネリック関数 (generic functio n) はこのジェネリクスの概念を利用した関数になります。
+ジェネリック関数 (generic function n) はこのジェネリクスの概念を利用した関数になります。
 
 https://www.typescriptlang.org/docs/handbook/2/generics.html
 
@@ -1452,7 +1452,7 @@ const rTimes = [200, 100, 300];
 他には、３つの API のエンドポイントからデータフェッチする関数を考えみると次のような感じになるでしょうか。
 
 ```ts:TypeScript
-const urls: stirng[] = [
+const urls: string[] = [
   "https://jsonplaceholder.typicode.com/todos/1",
   "https://jsonplaceholder.typicode.com/todos/2",
   "https://jsonplaceholder.typicode.com/todos/3",
@@ -1498,7 +1498,7 @@ https://typescriptbook.jp/reference/values-types-variables/tuple
 関数は基本的に１つの値しか返せないため、戻り値を複数にしたい場合には配列に格納して返すことで実現できます。
 
 ```js:JavaScript
-function reutrnMultipleValue() {
+function returnMultipleValue() {
   return [42, "文字列", true];
   // 色々な型の値が要素となった配列を返す
 }
@@ -1507,7 +1507,7 @@ function reutrnMultipleValue() {
 この戻り値を型注釈するためにタプル型と呼ばれる型の書き方で注釈します。
 
 ```ts:TypeScript(タプルの型注釈)
-function reutrnMultipleValue(): [number, string, boolean] {
+function returnMultipleValue(): [number, string, boolean] {
   return [42, "文字列", true];
 }
 ```
@@ -1515,11 +1515,11 @@ function reutrnMultipleValue(): [number, string, boolean] {
 タプル型は変数宣言のときには次のようになります。
 
 ```ts
-const list1: [number, string, boolean] = reutrnMultipleValue();
+const list1: [number, string, boolean] = returnMultipleValue();
 
 // 型エイリアスで型を作成した場合
 type MyTuple = [number, string, boolean];
-const list2: MyTuple = reutrnMultipleValue();
+const list2: MyTuple = returnMultipleValue();
 ```
 
 複数の型の要素を受け入れる配列に対して、タプル型として型注釈を加えない場合にはそれぞれの要素の値の型のユニオン型の配列となります。これはタプル型ではないので注意してください。

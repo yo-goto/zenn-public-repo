@@ -237,7 +237,7 @@ npm と呼ばれるパッケージマネジャーの役割は大きく分けて�
 
 まずは再び `package-lock.json` ファイルの構造を見てみる (※相対パスの後は省略してある)。冒頭で行ったように `npm install cowsay@1.5.0` を実行すると以下のようなロックファイルが生成される。
 
-```json:pakcage-lock.jsonの構造
+```json:package-lock.jsonの構造
 {
   "name": "cows",
   "version": "1.0.0",
@@ -295,7 +295,7 @@ npm v7 で見るべき package のフィールドに記載されているのは 
 
 `node_modules/cliui` の後を見ると、つぎのように node_modules フォルダがネストされた状態で `ansi-regex`、`is-fullwidth-code-print`、`string-width`、`strip-ansi` という 4 つのパッケージが配置されていることがわかる。
 
-```json:pakcage-lock.json
+```json:package-lock.json
     "node_modules/cliui/node_modules/ansi-regex": {...},
     "node_modules/cliui/node_modules/is-fullwidth-code-point": {...},
     "node_modules/cliui/node_modules/string-width": {...},
@@ -366,7 +366,7 @@ https://en.wikipedia.org/wiki/Acyclic_dependencies_principle?oldformat=true
 正確な定義は記載されていないが公式ドキュメントの後にはこう書かれている。
 
 > `npm ls` コマンドの出力と動作は npm がすべての依存関係を単純にネストする node_modules フォルダを作成していたときには非常に意味があった (npm v2 以前)。そのような場合には、論理的依存ツリーと物理的にディスク上に存在しているパッケージツリー(physical tree of packages on disk) がほぼ同じであった。
->npm v3 において登場したインストール時自動重複排除 (automatic install-time deduplication of depednencies) の機能によって npm ls の出力は論理的依存グラフ (logical depdendency graph) をツリー構造として表示するように修正された。
+>npm v3 において登場したインストール時自動重複排除 (automatic install-time deduplication of depednencies) の機能によって npm ls の出力は論理的依存グラフ (logical dependency graph) をツリー構造として表示するように修正された。
 > ([npm-ls | npm Docs](https://docs.npmjs.com/cli/v7/commands/npm-ls) より筆者意訳)
 
 つまり「論理的依存ツリー」とは、本来の依存関係としてのグラフ構造がツリー構造として表現できるように修正されたものであった。
@@ -409,7 +409,7 @@ cows@1.0.0 /Users/roshi/Projects/Cows
 
 strip-ansi について ls 出力してみると上の様に表示される。strip-ansi というパッケージが出現しているのは 6 箇所あるが、deduped とついた箇所が 2 つある。これはその 2 箇所にインストールされるはずだった strip-ansi パッケージは実際には取り除かれているということを意味している。
 
-逆に strip-ansi がどこへインストールされているかを `npm expalin` で調べる。`explain` コマンドは指定パッケージのインストール原因となる依存関係をボトムアップにプロジェクトルートまで駆け上がって表示してくれる。
+逆に strip-ansi がどこへインストールされているかを `npm explain` で調べる。`explain` コマンドは指定パッケージのインストール原因となる依存関係をボトムアップにプロジェクトルートまで駆け上がって表示してくれる。
 
 :::message
 ちなみに、`npm explain` コマンドはエイリアスとして `npm why` が利用でき、`npm ls` コマンドではエイリアスとして `npm list` などが使える。
@@ -566,7 +566,7 @@ https://npm.github.io/how-npm-works-docs/npm3/how-npm3-works.html
 - (1) dependency graph (依存グラフ)
 	- パッケージ間の本質的な依存関係をグラフ構造に表現したもの
 	- 実際の構造は DAG (Directed acyclic graph) と呼ばれるもの
-- (2) logical dependnecy tree (論理的依存ツリー)
+- (2) logical dependency tree (論理的依存ツリー)
 	- node_modules tree とは異なる依存の論理的な木構造
 	- dependency graph を tree 構造に overlay したもの
 	- `npm ls` コマンドで出力される tree 構造
@@ -580,7 +580,7 @@ https://npm.github.io/how-npm-works-docs/npm3/how-npm3-works.html
 	- node_modules フォルダのルートに配置されたパッケージ
 	- この状態を「Flat にインストール」とか言う。
 - **Nested** package
-	- Flat packge フォルダ内部の node_modules フォルダ内部に配置されたパッケージ
+	- Flat package フォルダ内部の node_modules フォルダ内部に配置されたパッケージ
 
 #### 依存構造にまつわる俗語
 
@@ -985,7 +985,7 @@ node_modules/wrap-ansi/node_modules/strip-ansi
 
 なぜこれほどに面倒で厄介なことが起きているかというと、結局のところ依存関係というのものがグラフ構造 (DAG: directed accclic graph) であったのに、それをツリー構造に無理やり変換して disk 上のファイルシステム上に実現しようとしているからだ。
 
-Primary が中心となってできる DAG を Primay を階層のルートとしたツリー構造にすると閉路や重複した部分において依存を一度切り離す必要がでてくる。切り離した結果として重複する。もう一度ドキュメントを見てみると次のように書いてあった。
+Primary が中心となってできる DAG を Primary を階層のルートとしたツリー構造にすると閉路や重複した部分において依存を一度切り離す必要がでてくる。切り離した結果として重複する。もう一度ドキュメントを見てみると次のように書いてあった。
 
 > パッケージマネジメントについて議論される際に dependency tree(依存ツリー) という言葉に言及したくなるが、実質的に dependencies の間での関係性は厳密にはツリー(tree) ではなくグラフ (graph) である。サイクル (閉路) や重複する関係性を持つため、単一のノードがシステムの中で複数の役割を果たすことができる。
 > ([npm Blog Archive: npm v7 Series - Arborist Deep Dive](https://blog.npmjs.org/post/618653678433435649/npm-v7-series-arborist-deep-dive.html) より筆者意訳)
@@ -1097,7 +1097,7 @@ node_modules/cliui/node_modules/strip-ansi
 .
 └── node_modules
     └── cliui@6.0.0
-        ├── index.js # ←reqire('strip-ansi')
+        ├── index.js # ←require('strip-ansi')
         └── node_modules
             ├── string-width@4.2.3
             │   └── index.js
@@ -1200,7 +1200,7 @@ Phantom Dependency を図にすると次のようになる。プロジェクト�
 
 逆に Phantom ではない通常の依存関係について考えてみる。
 
-`chalk@4.1.2` の `node_moduels` フォルダ内にあるすべてのパッケージディレクトリをみてみると、それぞれが `package.json` を持っていることが分かる。例えば、`ansi-styles` の `package.json` ファイルでは依存として次のものが宣言されている。
+`chalk@4.1.2` の `node_modules` フォルダ内にあるすべてのパッケージディレクトリをみてみると、それぞれが `package.json` を持っていることが分かる。例えば、`ansi-styles` の `package.json` ファイルでは依存として次のものが宣言されている。
 
 ```json:node_modules/ansi-styles/package.json
   "dependencies": {
@@ -1223,7 +1223,7 @@ Phantom Dependency を作ってしまった場合には Primary に対してだ�
 - 配布の際に依存関係が欠落する: プログラム内で動作させるのに必要な処理として使用しているのに `devDependencies` に記載していない場合は、このパッケージを取得したユーザーから実際には機能していないように見えて、追跡困難な問題が発生する
 
 :::message
-後述する [pnpm](#pnpm-による解決) というパッケージマネージャではこの問題を特殊な node_modeuls フォルダの構造によってそもそも Secondary を呼び出せないようにして解決しているが、Phantom dependency の問題を抱えるパッケージというのは実際には世の中に配布されており、その場合には pnpm では利用できないという問題がでてくる。
+後述する [pnpm](#pnpm-による解決) というパッケージマネージャではこの問題を特殊な node_modules フォルダの構造によってそもそも Secondary を呼び出せないようにして解決しているが、Phantom dependency の問題を抱えるパッケージというのは実際には世の中に配布されており、その場合には pnpm では利用できないという問題がでてくる。
 :::
 
 詳しくは Rush のドキュメントを見てほしいが、このように Primary 以外の依存、つまり Secondary の依存内からモジュールを使用できてしまうことから、いくつかの弊害が起きる。
@@ -1322,7 +1322,7 @@ https://github.com/npm/rfcs/blob/main/accepted/0042-isolated-mode.md
 
 # Arborist(樹林管理士) について
 
-実際にフォルダツリーの構築を行っているのは npm v7 の時点では [Arborist](https://github.com/npm/arborist) という大規模にリファクタリングされたプログラムが中核を担っているみたいである。さすがに Arborist のソースコードまで立ち入ることはむずかしいが、概要としては Aroborist は `actualTree`, `virtualTree`, `idealTree` という 3 つのツリーを管理し、`pakcage-lock.json` などのメタデータより読み込まれた `virtualTree` から実際の `node_modules` ツリーである `actualTree` のデータを `idealTree` との差分を取りながら変形していくとのことである。
+実際にフォルダツリーの構築を行っているのは npm v7 の時点では [Arborist](https://github.com/npm/arborist) という大規模にリファクタリングされたプログラムが中核を担っているみたいである。さすがに Arborist のソースコードまで立ち入ることはむずかしいが、概要としては Aroborist は `actualTree`, `virtualTree`, `idealTree` という 3 つのツリーを管理し、`package-lock.json` などのメタデータより読み込まれた `virtualTree` から実際の `node_modules` ツリーである `actualTree` のデータを `idealTree` との差分を取りながら変形していくとのことである。
 
 参考: 
 https://blog.npmjs.org/post/618653678433435649/npm-v7-series-arborist-deep-dive.html

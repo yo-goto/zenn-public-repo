@@ -60,7 +60,7 @@ Obsidian は「マークダウン」のフォーマットによってドキュ�
 
 マークダウンエディタといえば、Typora や iAwriter、Mweb、Inkdrop など多くの種類がありますが、Obsidian は単純なドキュメントやメモの作成のためのマークダウンエディタとして開発された訳ではなく、近年 Web 上で盛り上がりつつある「個人知識管理 (PKM:  Personal Knowledge Management)」のためのツールととして開発されているのが非常に特徴的になっています。
 
-[公式サイト](https://obsidian.md) にも記載されているように Obsidain は個人にとっての「第二の脳 (Second brain)」となるようなツールを目指しています。
+[公式サイト](https://obsidian.md) にも記載されているように Obsidian は個人にとっての「第二の脳 (Second brain)」となるようなツールを目指しています。
 
 ![エディタ画像](/images/oz/img_oz-official-page-start.jpg)*https://obsidian.md より*
 

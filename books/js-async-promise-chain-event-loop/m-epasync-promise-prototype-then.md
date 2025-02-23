@@ -28,7 +28,7 @@ aliases:
 
 ### 参考文献
 
-こちらのチャプターの解説で使用する ECMASciript の仕様のコードは [ESLint](https://eslint.org) の開発者である Nicholas C. Zakas 氏のブログ記事シリーズから参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
+こちらのチャプターの解説で使用する ECMAScript の仕様のコードは [ESLint](https://eslint.org) の開発者である Nicholas C. Zakas 氏のブログ記事シリーズから参考にさせていただきました。非常に分かりやすく解説されているので、自分自身で Promise の仕様を実装して学びたい場合には是非参考にしてください。
 
 - [Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/)
 - [Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes](https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/)
@@ -256,7 +256,7 @@ const thenable = {
 
 このように `then` メソッドを持っていれば、await 式の評価や Promise chain で promise オブジェクトと同じように扱えます。このような動作があるのは、Promise 自体が元はそれを実装するコミュニティベースのライブラリがいくつかあり、あとになって仕様に導入されるようになった経緯があるからです。
 
-つまり、Promise 以外の `then` を持つオブジェクト (ECMAScirpt 実装ではない Promise) などがネイティブの Promise のように扱えるようにした仕組みが Thenable と言えます。
+つまり、Promise 以外の `then` を持つオブジェクト (ECMAScript 実装ではない Promise) などがネイティブの Promise のように扱えるようにした仕組みが Thenable と言えます。
 
 さて、実はそういったオブジェクトそのものを使いたいからこの概念の説明をしたわけではありません。問題である `Promise.prototype.then` の挙動について説明するのに必要なのでこの概念の解説をしています。
 
@@ -294,7 +294,7 @@ ECMAScript 仕様のプロトタイプメソッドや静的メソッド、抽象
 
 ちなみに、ECMAScript 仕様を直接見て各操作感の関係を辿るのが億劫なら、V8 エンジン側での実装を直接見て理解するのも一つの手です。『[V8 エンジンによる async/await の内部変換](15-epasync-v8-converting)』のチャプターで言ったとおり、ECMAScript の V8 実装は [V8 Torque](https://v8.dev/docs/torque) (TypeScript ライクな V8 エンジンの開発専用の言語) や C++ で GitHub リポジトリの [builtins](https://github.com/v8/v8/tree/main/src/builtins) の場所に記載されています。
 
-ECMASciript の Promise にまつわる抽象操作の項目である Promise Abstract Operations は同じ名前のファイルとして [v8/src/builtins/promise-abstract-operations.tq](https://github.com/v8/v8/blob/main/src/builtins/promise-abstract-operations.tq) で記述されています(`.tq` 拡張子は **T**or**q**ue 言語で書かれたファイルです)。仕様に定義されている抽象操作が同じ名前の関数としてそのまま定義されていることが分かります。
+ECMAScript の Promise にまつわる抽象操作の項目である Promise Abstract Operations は同じ名前のファイルとして [v8/src/builtins/promise-abstract-operations.tq](https://github.com/v8/v8/blob/main/src/builtins/promise-abstract-operations.tq) で記述されています(`.tq` 拡張子は **T**or**q**ue 言語で書かれたファイルです)。仕様に定義されている抽象操作が同じ名前の関数としてそのまま定義されていることが分かります。
 
 https://github.com/v8/v8/blob/a760f03a6e99bf4863d8d21c5f7896a74a0a39ea/src/builtins/promise-abstract-operations.tq#L150-L263
 
@@ -312,7 +312,7 @@ https://source.chromium.org/chromium/chromium/src/+/main:v8/src/builtins/promise
 だたし、ECMAScript では「マイクロタスク」は [Job](https://tc39.es/ecma262/#job) と呼ばれるものとして扱われていることに注意してください。マイクロタスク自体はあくまで WHATWG の HTML 仕様に定義されているものです。
 :::
 
-Job というのは実際には内部的な仕様の型 (Specifiaction type) である抽象クロージャ ([Abstact Closure](https://tc39.es/ecma262/#sec-abstract-closure)) という型の値です。
+Job というのは実際には内部的な仕様の型 (Specifiaction type) である抽象クロージャ ([Abstract Closure](https://tc39.es/ecma262/#sec-abstract-closure)) という型の値です。
 
 抽象クロージャの作成時には指定されたアルゴリズムステップと複数の値のコレクションをキャプチャします。簡単にいえば、抽象クロージャは関数の挙動を示すものであり、実際に [CreateBuiltinFunction](https://tc39.es/ecma262/#sec-createbuiltinfunction) という抽象操作は抽象クロージャを引数にしてその抽象クロージャが記述した振る舞いを持つ関数オブジェクトを作成します。
 
@@ -446,7 +446,7 @@ NewPromiseReactiobJob は上で説明したように Job (マイクロタスク)
 実際にこの操作で作成される関数を JavaScript で実装してみます。細かい部分は気にせずに重要な箇所だけ考えていき、関数として記述できる step.4 から 16 までを考えて、徐々に埋めてきましょう。
 
 ```js:resolve 関数
-const resolve = (resoltion) => {
+const resolve = (resolution) => {
   // ...仕様のアルゴリズムステップを実装
 }
 ```
@@ -482,7 +482,7 @@ ECMAScript のアルゴリズムステップにおける "Lex x be someValue" �
 >
 > When a promise resolve function is called with argument resolution, the following steps are taken:
 
-Promise Resole Function は `[[Promise]]` と `[[AlradyResolve]]` という内部スロットを持つ無名のビルトイン関数 (ECMAScript に備え付けの関数) であり、引数 `resolution` で呼び出されることで記述されているアルゴリズムステップを実行するとのことです。
+Promise Resole Function は `[[Promise]]` と `[[AlreadyResolve]]` という内部スロットを持つ無名のビルトイン関数 (ECMAScript に備え付けの関数) であり、引数 `resolution` で呼び出されることで記述されているアルゴリズムステップを実行するとのことです。
 
 実はこの引数 `resolution` が非常に重要です。`resolve` 関数が呼び出されるのは以下のような形式となっていますね。
 
@@ -545,7 +545,7 @@ step.10 以降の処理は例外が起きた場合やその場合分けに適さ
 それでは、まずは step.7 から step.11 を実装してみます。
 
 ```js:resolve 関数
-const resolve = (resoltion) => {
+const resolve = (resolution) => {
 
   // step.7 (a/b/c) : 「元の promise そのもの」の場合では解決できないので直ちに拒否する
   if (Object.is(resolution, promise)) {
@@ -607,7 +607,7 @@ step.13 では、マイクロタスクとして実行するコールバック関
 これを JS で実装してみると以下のようになります。
 
 ```js:resolve 関数
-const resolve = (resoltion) => {
+const resolve = (resolution) => {
   // ...仕様のアルゴリズムステップ(省略)
 
   let thenAction;
@@ -744,7 +744,7 @@ function createResolvingFunctions(promise) {
     //...
   };
   // step.10 ~ 11 : 関数の内部プロパティに参照させる
-  reject.alreadResolved = alreadyResolved;
+  reject.alreadyResolved = alreadyResolved;
   reject.promise = promise;
 
   // step.12 : 最終的に resolve と reject の両方の関数オブジェクトを格納した Record を返す
@@ -771,7 +771,7 @@ Promise.resolve(42)
 ```js
 // step.1
 class PromiseResolveThenableJob {
-  constrcutor(
+  constructor(
     promiseToResolve, // promise (元の未解決プロミス)
     thenable, // 解決値 (thenメソッドを持つ)
     then // JobCallback Record (thenメソッドを含むRecord)
@@ -811,12 +811,12 @@ Promise.resolve(42)
 
 return される関数そのものが２個目のマイクロタスクであるわけですが、実際の処理がどのようなものかを説明すると、Thenable 用の解決関数である `resolve` と `reject` の作成を行い、さらにそれらを引数として `thenable.then(resolve, reject)` を起動します。このとき、`thenable` は `Promise.resolve(43)` という値であったので、履行しており、`resolve` 関数がマイクロタスクとして発行されます。これが３個目に発行されるマイクロタスクの正体です。
 
-`resolve` 関数はすでに解説した `resolution` の値の種類によって処理が分かれる Promise Resolve Funciton です。このときの `resolution` は `thenable` (`Promise.resolve(43)`) が内包する値である `43` です。
+`resolve` 関数はすでに解説した `resolution` の値の種類によって処理が分かれる Promise Resolve Function です。このときの `resolution` は `thenable` (`Promise.resolve(43)`) が内包する値である `43` です。
 
 `43` は通常の値なので、ただちに Fulfill されることになります。
 
 ```js:resolve 関数
-const resolve = (resoltion) => {
+const resolve = (resolution) => {
   // ... 省略
 
   // stpe.8 (a/b) : 「オブジェクトではない値」の場合には直ちに履行する

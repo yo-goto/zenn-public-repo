@@ -509,7 +509,7 @@ TypeScript ではクラスをキーワードとして使うことができます
 class クラス名 {
 	メンバ1: 型;
 	メンバ2: 型;
-	construtor(メンバ1: 型, メンバ2: 型) {
+	constructor(メンバ1: 型, メンバ2: 型) {
 		初期化処理
 	} 
 	メソッド1(引数: 型){
@@ -588,7 +588,7 @@ export abstract class PluginSettingTab extends SettingTab {
 }
 ```
 
-`PluginSettingTab` クラスは `SettingTab` クラスのサブクラスなのでさらに `obsidian.d.ts` の `SetttingTab` クラスを見てみると次のようになっています。
+`PluginSettingTab` クラスは `SettingTab` クラスのサブクラスなのでさらに `obsidian.d.ts` の `SettingTab` クラスを見てみると次のようになっています。
 
 ```ts
 /**
@@ -656,12 +656,12 @@ let containerEl = this.contentEl;
 詳しくは以下のドキュメントによくまとまっています。
 https://ja.javascript.info/destructuring-assignment
 
-`containerEl` は抽象クラス `SettingTab` を見てみると内側で定義されていたプロパティです。`containerEl: HTMLElement;` と書いてあるので型は HTMLElment です。
+`containerEl` は抽象クラス `SettingTab` を見てみると内側で定義されていたプロパティです。`containerEl: HTMLElement;` と書いてあるので型は HTMLElement です。
 
-実は API のいくつかのコンポーネントで `containerEl` や `contentEl` などのプロパティがあります。これらの型は `HTMLElment` であり、画面構成や UI、後で解説するモーダルの作成にも使用します。`HTMLElment` の親の親のインターフェースである `Node` には `empty()` メソッドがあります。初期化的なメソッドです。画面構築などをする際にはこのメソッドをとりあえず使用します。
+実は API のいくつかのコンポーネントで `containerEl` や `contentEl` などのプロパティがあります。これらの型は `HTMLElement` であり、画面構成や UI、後で解説するモーダルの作成にも使用します。`HTMLElement` の親の親のインターフェースである `Node` には `empty()` メソッドがあります。初期化的なメソッドです。画面構築などをする際にはこのメソッドをとりあえず使用します。
 
 ```ts
-containerEl.emtpy();
+containerEl.empty();
 ```
 
 さて、`containerEl` の初期化が終わったらここに色々な要素をつけて画面をつくります。
@@ -827,7 +827,7 @@ class SampleSettingTab extends PluginSettingTab {...}
 
 ちなみに設定画面がいらなければ (E) の部分もいりません。
 
-## sytles.css
+## styles.css
 
 `styles.css` はプラグインを設定から有効化すると読み込まれるスタイルファイルで、カスタム CSS スニペットと同じように考えてもらえばよいです。サンプルプラグインでやっているのは単純に文字の色を赤に変更するというものです。`styles.css` を覗いてみると次のコードしかかれていません。
 
@@ -881,7 +881,7 @@ manifeset.json ですが、これもプラグインのコード配布に必要�
 
 ソースコードを読み解いたりコーディングするのには以下 4 つのドキュメントがおすすめです。
 
-JavaScritp 用リソース
+JavaScript 用リソース
 https://jsprimer.net
 
 https://ja.javascript.info
