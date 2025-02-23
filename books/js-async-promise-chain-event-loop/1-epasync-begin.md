@@ -284,7 +284,7 @@ https://www.jsv9000.app
 - 2022-06-16
   - 部分けのためのチャプターを追加
 - 2022-06-15
-  - 新チャプター『[同期 API とブロッキング](f-epasync-synchronous-apis)』を追加
+  - 新チャプター『[同期 API とブロッキング](f-epasync-synchronus-apis)』を追加
 - 2022-06-06
   - すべてのチャプターの説明を新しい知見に基づく内容へと書き換え完了
   - 新チャプター『[あとがき](x-epasync-epilogue)』を追加

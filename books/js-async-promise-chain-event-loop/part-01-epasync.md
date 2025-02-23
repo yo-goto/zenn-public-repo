@@ -25,7 +25,7 @@ https://www.youtube.com/watch?v=8aGhZQkoFbQ
 ## チャプター
 
 - [非同期 API と環境](f-epasync-asynchronous-apis)
-- [同期 API とブロッキング](f-epasync-synchronous-apis)
+- [同期 API とブロッキング](f-epasync-synchronus-apis)
 - [イベントループの概要と注意点](2-epasync-event-loop)
 - [タスクキューとマイクロタスクキュー](d-epasync-task-microtask-queues)
 - [V8 エンジンについて](e-epasync-v8-engine)

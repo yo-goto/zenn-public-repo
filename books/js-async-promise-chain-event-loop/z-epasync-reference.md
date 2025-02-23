@@ -29,7 +29,7 @@ MDN
 - [Atomics - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Atomics)
 - [SharedArrayBuffer - JavaScript | MDN](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer)
 
-### [同期 API とブロッキング](f-epasync-synchronous-apis)
+### [同期 API とブロッキング](f-epasync-synchronus-apis)
 
 - [スレッドセーフ - Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E3%82%BB%E3%83%BC%E3%83%95)
 - [ブロッキングとノンブロッキングの概要 | Node.js](https://nodejs.org/ja/docs/guides/blocking-vs-non-blocking/)

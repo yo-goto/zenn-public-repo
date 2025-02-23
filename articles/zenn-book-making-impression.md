@@ -256,7 +256,7 @@ chapters:
   - 1-epasync-begin # 『はじめに』
   - sec-01-epasync # 『第１章 - API を提供する環境と実行メカニズム』
   - f-epasync-asynchronous-apis # 『非同期 API と環境』
-  - f-epasync-synchronous-apis # 『同期 API とブロッキング』
+  - f-epasync-synchronus-apis # 『同期 API とブロッキング』
   - 2-epasync-event-loop # 『イベントループの概要と注意点』
   - d-epasync-task-microtask-queues # 『タスクキューとマイクロタスクキュー』
   - e-epasync-v8-engine # 『V8エンジン』
