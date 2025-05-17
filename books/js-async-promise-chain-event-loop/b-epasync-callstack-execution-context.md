@@ -2,7 +2,7 @@
 title: "コールスタックと実行コンテキスト"
 cssclass: zenn
 date: 2022-05-06
-modified: 2024-08-14
+modified: 2025-05-17
 AutoNoteMover: disable
 tags: type/zenn/book, JavaScript/async
 aliases: Promise本『コールスタックと実行コンテキスト』
@@ -143,13 +143,13 @@ Chrome などのブラウザ環境ではソースにブレークポイントを�
 
 ```js:simpleTask.js
 // simpleTask.js
-console.log("[1] 🦖 MAINLINE: Start [GEC]");
+console.log("[1] 🦖 MAINLINE: Start [FEC]");
 
 setTimeout(function taskFunc() {
-  console.log("[3] ⏰ TIMERS: timeout 5000ms [EFC]");
+  console.log("[3] ⏰ TIMERS: timeout 5000ms [FEC]");
 }, 5000); // 5000 ミリ秒後にタスクキューへタスクを発行
 
-console.log("[2] 🦖 MAINLINE: End [GEC]");
+console.log("[2] 🦖 MAINLINE: End [FEC]");
 ```
 
 :::message
@@ -159,8 +159,8 @@ console.log("[2] 🦖 MAINLINE: End [GEC]");
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINLINE: Start [GEC]
-[2] 🦖 MAINLINE: End [GEC]
+[1] 🦖 MAINLINE: Start [FEC]
+[2] 🦖 MAINLINE: End [FEC]
 [3] ⏰ TIMERS: timeout 5000ms [FEC (taskFunc)]
 ```
 
@@ -196,21 +196,21 @@ console.log("[2] 🦖 MAINLINE: End [GEC]");
 
 ```js:simpleMicroTask.js
 // simpleMicroTask.js
-console.log("[1] 🦖 MAINLINE: Start [GEC]");
+console.log("[1] 🦖 MAINLINE: Start [FEC]");
 
 Promise.resolve()
   .then(function microTaskFunc() {
     console.log("[3] 👦 MICRO: [FEC (microTaskFunc)]");
   }); // 直ちにマイクロタスクキューへマイクロタスクを発行する
 
-console.log("[2] 🦖 MAINLINE: End [GEC]");
+console.log("[2] 🦖 MAINLINE: End [FEC]");
 ```
 
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINLINE: Start [GEC]
-[2] 🦖 MAINLINE: End [GEC]
+[1] 🦖 MAINLINE: Start [FEC]
+[2] 🦖 MAINLINE: End [FEC]
 [3] 👦 MICRO: [FEC (microTaskFunc)]
 ```
 
@@ -248,14 +248,14 @@ Promise.resolve().then(function mircoTask1() {
   console.log("[2] 👦 THEN: [FEC]/[Microtask1]");
 });
 
-console.log("[1] 🦖 MAINLINE: End [GEC]/[Task1]");
+console.log("[1] 🦖 MAINLINE: End [FEC]/[Task1]");
 // Task1 ->
 ```
 
 この時の出力は次のようになります。
 
 ```sh
-[1] 🦖 MAINLINE: End [GEC]/[Task1]
+[1] 🦖 MAINLINE: End [FEC]/[Task1]
 [2] ⏰ TIMERS: [FEC]/[Task2]
 [3] 👦 THEN: [FEC]/[Microtask1]
 [4] 👦 THEN: [FEC]/[Microtask2]
