@@ -553,7 +553,7 @@ promise in rAF 2
 
 rAF から発行されるコールバックがタスクであるということは、whatwg の仕様で名言されておらず、W３C ワーキンググループの古い仕様で示唆されているというよく分からない状況になっているそうです。とにかく、rAF のコールバックは animation task source から供給されるタスクとして処理されます。
 
-https://404forest.com/2017/07/18/how-javascript-actually-works-eventloop-and-uirendering/
+https://jin5354.github.io/2017/07/18/how-javascript-actually-works-eventloop-and-uirendering/
 https://github.com/whatwg/html/issues/2637
 
 つまり、「**単一タスクを実行したら、すべてのマイクロタスクを処理する**」といういつものルールがここでも適用されます。考え方としては、「**Call stack が空になったらマイクロタスクが処理される**」というように捉えた方が理解しやすいかもしれません。というわけで、ブラウザ環境におけるイベントループの擬似コードは最終的に以下のようになります。
