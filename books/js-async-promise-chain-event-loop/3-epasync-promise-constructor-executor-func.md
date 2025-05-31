@@ -409,7 +409,7 @@ const MyComponentReturn = () => {
 
 ```jsx
 function Home() {
-  const name = ["Tarou", "Hanako", "Kaoru"];
+  const names = ["Tarou", "Hanako", "Kaoru"];
   return (
     <div className="container">
       <div className="mylist">
