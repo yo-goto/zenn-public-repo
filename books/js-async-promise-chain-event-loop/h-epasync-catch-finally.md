@@ -40,23 +40,6 @@ new Promise((resolve, reject) => {
 
 `then()` メソッドからは常に新しい Promise インスタンスが返ってきたように、`catch()` メソッドと `finally()` メソッドでも新しい Promise インスタンスが返ってきますので、チェーンできます。
 
-言ったように、`finally()` メソッドに値は繋げませんので、上のコードを実行すると `undefined` が出力されます。
-
-```sh
-❯ v8 catchFinally.js
-👹 エラー: Error: 例外発生
-👻 これは実行される
-😭 データ: undefined
-👦 最後に実行される
-❯ v8 catchFinally.js
-🤟 データ: 42
-👻 これは実行される
-😭 データ: undefined
-👦 最後に実行される
-```
-
-`catch()` メソッドによって返ってくる Promise インスタンスは履行状態で返ってきますので、次の `then()` メソッドのコールバックを実行できます。
-
 ### finally メソッド
 
 `finally` メソッドは少しクセがあるのでいくつか注意点を解説しておきます。
@@ -85,6 +68,23 @@ new Promise((resolve, reject) => {
     console.log("👦 最後に実行される");
   });
 ```
+
+言ったように、`finally()` メソッドに値は繋げませんので、上のコードを実行すると `undefined` が出力されます。
+
+```sh
+❯ v8 catchFinally.js
+👹 エラー: Error: 例外発生
+👻 これは実行される
+😭 データ: undefined
+👦 最後に実行される
+❯ v8 catchFinally.js
+🤟 データ: 42
+👻 これは実行される
+😭 データ: undefined
+👦 最後に実行される
+```
+
+`catch()` メソッドによって返ってくる Promise インスタンスは履行状態で返ってきますので、次の `then()` メソッドのコールバックを実行できます。
 
 #### 元の履行値と拒否理由を透過させる
 
