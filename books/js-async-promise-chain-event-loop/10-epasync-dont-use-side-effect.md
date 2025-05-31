@@ -269,7 +269,7 @@ console.log("🦖 [H] Sync");
 Promise インスタンスを返すような処理を `return` しない場合に実行順番が保証できなくなってしまう例を挙げてみます。次のコードでは、`returnPromise()` 関数の内部に `then()` メソッドを更に追加して Promise chain を伸ばしています。実行順番を予想してみてください。
 
 ```js
-// promiseShouldBeReturnedNest-3rd.js
+// promiseShouldBeReturnedNest-2nd.js
 console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
@@ -307,7 +307,7 @@ console.log("🦖 [N] Sync");
 
 数字付きで実際に出力してみるとこうなります。
 ```sh
-❯ deno run promiseShouldBeReturnedNest-3rd.js
+❯ deno run promiseShouldBeReturnedNest-2nd.js
 🦖 [A-1] Sync
 👻 [B-2] (a)sync
 🦖 [N-3] Sync
@@ -329,14 +329,14 @@ console.log("🦖 [N] Sync");
 
 言葉で説明するのが難しいので、実際に見てみてください。
 
-- [promiseShouldBeReturnedNest-3rd.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LTNyZC5qcwpjb25zb2xlLmxvZygiW0EtMV0gU3luYyBwcm9jZXNzIik7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyLCBzZWNvbmRPcmRlciwgdGhpcmRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgICBjb25zb2xlLmxvZyhgJHtvcmRlcn0gVGhpcyBsaW5lIGlzIChBKVN5bmNocm9ub3VzbHkgZXhlY3V0ZWRgKTsKICAgICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7c2Vjb25kT3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICAgIHJldHVybiB2YWx1ZTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7dGhpcmRPcmRlcn0gQWRkaXRpb25hbCBuZXN0ZWQgY2hhaW5gKTsKICAgICAgcmV0dXJuIHZhbHVlOwogICAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIsICJbRC01XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0UtNl0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICAgIHJldHVyblByb21pc2UoIjJuZCBQcm9taXNlIiwgIltGLTddIiwgIltHLThdIiwgIltILTEwXSIpOwogIH0pCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0ktOV0gVGhpcyBsaW5lIGlzIEFzeW5jaHJvbm91c2x5IGV4ZWN1dGVkIik7CiAgICBjb25zb2xlLmxvZygiUmVzb2x2ZWQgdmFsdWU6ICIsIHZhbHVlKTsKICB9KTsKCmNvbnNvbGUubG9nKCJbTi0zXSBTeW5jIHByb2Nlc3MiKTsK)
+- [promiseShouldBeReturnedNest-2nd.js - JS Visualizer](https://www.jsv9000.app/?code=Ly8gcHJvbWlzZVNob3VsZEJlUmV0dXJuZWROZXN0LTJuZC5qcwpjb25zb2xlLmxvZygiW0EtMV0gU3luYyBwcm9jZXNzIik7Cgpjb25zdCByZXR1cm5Qcm9taXNlID0gKHJlc29sdmVkVmFsdWUsIG9yZGVyLCBzZWNvbmRPcmRlciwgdGhpcmRPcmRlcikgPT4gewogIHJldHVybiBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgICBjb25zb2xlLmxvZyhgJHtvcmRlcn0gVGhpcyBsaW5lIGlzIChBKVN5bmNocm9ub3VzbHkgZXhlY3V0ZWRgKTsKICAgICAgcmVzb2x2ZShyZXNvbHZlZFZhbHVlKTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7c2Vjb25kT3JkZXJ9IEFkZGl0aW9uYWwgbmVzdGVkIGNoYWluYCk7CiAgICAgIHJldHVybiB2YWx1ZTsKICAgIH0pCiAgICAudGhlbigodmFsdWUpID0%2BIHsKICAgICAgY29uc29sZS5sb2coYCR7dGhpcmRPcmRlcn0gQWRkaXRpb25hbCBuZXN0ZWQgY2hhaW5gKTsKICAgICAgcmV0dXJuIHZhbHVlOwogICAgfSk7Cn07CgpyZXR1cm5Qcm9taXNlKCIxc3QgUHJvbWlzZSIsICJbQi0yXSIsICJbQy00XSIsICJbRC01XSIpCiAgLnRoZW4oKHZhbHVlKSA9PiB7CiAgICBjb25zb2xlLmxvZygiW0UtNl0gVGhpcyBsaW5lIGlzIChBKXN5bmNocm9ub3VzbHkgZXhlY3V0ZWQiKTsKICAgIGNvbnNvbGUubG9nKCJSZXNvbHZlZCB2YWx1ZTogIiwgdmFsdWUpOwogICAgcmV0dXJuUHJvbWlzZSgiMm5kIFByb21pc2UiLCAiW0YtN10iLCAiW0ctOF0iLCAiW0gtMTBdIik7CiAgfSkKICAudGhlbigodmFsdWUpID0%2BIHsKICAgIGNvbnNvbGUubG9nKCJbSS05XSBUaGlzIGxpbmUgaXMgKEEpc3luY2hyb25vdXNseSBleGVjdXRlZCIpOwogICAgY29uc29sZS5sb2coIlJlc29sdmVkIHZhbHVlOiAiLCB2YWx1ZSk7CiAgfSk7Cgpjb25zb2xlLmxvZygiW04tM10gU3luYyBwcm9jZXNzIik7Cg%3D%3D)
 - ⚠️ 注意: JS Visualizer ではグローバルコンテキストは可視化されないので最初のマイクロタスク・タスクの実行タイミングについて誤解しないように注意してください
 - ⚠️ 注意: JS Visualizer では可視化されていないマイクロタスクが存在しています
 
 とにかく、Promise インスタンスを返すような処理は Promise chain において、`return` しないと意図した実行の順番を保証できないので、返す `return` するようにしてください。
 
 ```js
-// promiseShouldBeReturnedNest-3rdReturn.js
+// promiseShouldBeReturnedNest-2ndReturn.js
 console.log("🦖 [A] Sync");
 
 const returnPromise = (resolvedValue, order, secondOrder, thirdOrder) => {
@@ -372,7 +372,7 @@ console.log("🦖 [N] Sync");
 上のコードでは、しっかりと `return` するように変更しました。このコードの実行結果は以下のようになります。
 
 ```sh
-❯ deno run promiseShouldBeReturnedNest-3rdReturn.js
+❯ deno run promiseShouldBeReturnedNest-2ndReturn.js
 🦖 [A-1] Sync
 👻 [B-2] (a)sync
 🦖 [N-3] Sync
