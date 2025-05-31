@@ -94,7 +94,7 @@ MDN
 - [How Blink works - Google ドキュメント](https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/)
 - [Life of a Pixel - Google スライド](https://docs.google.com/presentation/d/1boPxbgNrTU0ddsc144rcXayGA_WF53k96imRH8Mp34Y/edit#slide=id.ga884fe665f_64_6)
 - [Jake Archibald: In The Loop - setTimeout, micro tasks, requestAnimationFrame, requestIdleCallback, … - YouTube](https://www.youtube.com/watch?v=cCOL7MC4Pl0)
-- [深入探究 eventloop 与浏览器渲染的时序问题 - 404Forest](https://404forest.com/2017/07/18/how-javascript-actually-works-eventloop-and-uirendering/)
+- [深入探究 eventloop 与浏览器渲染的时序问题 - 404Forest](https://jin5354.github.io/2017/07/18/how-javascript-actually-works-eventloop-and-uirendering/)
 - [Timing of microtask triggered from requestAnimationFrame · Issue #2637 · whatwg/html](https://github.com/whatwg/html/issues/2637)
 - [The Node.js Event Loop, Timers, and process.nextTick() | Node.js](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#event-loop-explained)
 - [2016 Node Interactive.pdf - Google ドライブ](https://drive.google.com/file/d/0B1ENiZwmJ_J2a09DUmZROV9oSGc/view?resourcekey=0-lR-GaBV1Bmjy086Fp3J4Uw)
