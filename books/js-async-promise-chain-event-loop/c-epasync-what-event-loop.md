@@ -394,7 +394,6 @@ requestAnimationFrame(() => {
 
 実はこの Web API 用に "Animation Frame Callback Queue" というタスクキューが存在しています。このタスクキューに送られるタスクはアニメーションタスクなどと呼ばれることもあります。rAF のコールバックがタスクとなることは HTML 仕様では明確に述べられていませんが、W3C ワーキンググループの古い仕様で読み取れる部分があります。いずれにせよ便宜的にタスクとして考えます。
 
-https://404forest.com/2017/07/18/how-javascript-actually-works-eventloop-and-uirendering/
 https://github.com/whatwg/html/issues/2637
 
 このアニメーションタスクはタスクでありマイクロタスクではありません。イベントループの一周において、その時点で Animation Frame Callback Queue にある分のタスクすべてを処理します。処理された rAF のアニメーションタスクから更にアニメーションタスクが生み出されてしまった場合は、次のループで処理されることに注意してください。
