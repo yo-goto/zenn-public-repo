@@ -1164,7 +1164,7 @@ c
 b
 ```
 
-`Promise()` コンストラクタに引数として渡すコールバックである Executor 関数自体は同期的に実行されるので、直感的にはすべてのマイクロタスクが直ちにマイクロタスクキューへ送られて順番に処理されると考えて a → b → c の順番であると予測してしまいます。ですが、2 番目の `Promise()` コンストラクタ内部では `Promise.resolve('B')` という Promise インスタンスで resolve を試みているため、このような結果となります。
+`Promise()` コンストラクタに引数として渡すコールバックである Executor 関数自体は同期的に実行されるので、直感的にはすべてのマイクロタスクが直ちにマイクロタスクキューへ送られて順番に処理されると考えて a → b → c の順番であると予測してしまいます。ですが、2 番目の `Promise()` コンストラクタ内部では `Promise.resolve('b')` という Promise インスタンスで resolve を試みているため、このような結果となります。
 
 ```js
 new Promise(resolve => {
@@ -1470,7 +1470,7 @@ async 関数では、try/catch/finally の構文が使用できるので、async
   } catch (err) {
     console.log("例外発生", err.stack);
   } finally {
-    cosnole.log("最後に実行できる");
+    console.log("最後に実行できる");
   }
 })()
   .then(() => console.log("これは実行される"))
@@ -1508,7 +1508,7 @@ V8 の内部変換で考えてみるとこんな感じでしょうか。
     // throw された例外を捕捉するところから再開
     console.log("例外発生", err.stack);
   } finally {
-     cosnole.log("最後に実行できる");
+     console.log("最後に実行できる");
   }
 ```
 
