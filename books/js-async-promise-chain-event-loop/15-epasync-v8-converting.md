@@ -1534,14 +1534,14 @@ Promise.resolve().then(() => console.log("👦 [3] <1-Sync> MICRO: then"));
     console.log("👹 [5] <2-Sync> MICRO: 最後に実行");
   }
 })()
-  .then(() => console.log("👻 [6] <4-Async> MICRO: 実行される [Fulfilled]"))
-  .catch((err) => console.log("😭 [(8)] <6-Async> MICRO: 実行されないがマイクロタスクを発行 [Rejected]", err.stack))
-  .finally(() => console.log("👍 [10] <8-Async> MICRO: 最後に実行 [Finally]"));
+  .then(() => console.log("👻 [7] <4-Async> MICRO: 実行される [Fulfilled]"))
+  .catch((err) => console.log("😭 [(9)] <6-Async> MICRO: 実行されないがマイクロタスクを発行 [Rejected]", err.stack))
+  .finally(() => console.log("👍 [11] <8-Async> MICRO: 最後に実行 [Finally]"));
 
 Promise.resolve()
   .then(() => console.log("🤪 [6] <3-Sync> MICRO: then"))
-  .then(() => console.log("🤪 [4] <5-Async> MICRO: then"))
-  .then(() => console.log("🤪 [9] <7-Async> MICRO: then"));
+  .then(() => console.log("🤪 [8] <5-Async> MICRO: then"))
+  .then(() => console.log("🤪 [10] <7-Async> MICRO: then"));
 
 console.log("🦖 [2] MAINLINE: End");
 ```
@@ -1560,10 +1560,10 @@ console.log("🦖 [2] MAINLINE: End");
     at promiseRejectionRX.js:17:3
 👹 [5] <2-Sync> MICRO: 最後に実行
 🤪 [6] <3-Sync> MICRO: then
-👻 [6] <4-Async> MICRO: 実行される [Fulfilled]
-🤪 [4] <5-Async> MICRO: then
-🤪 [9] <7-Async> MICRO: then
-👍 [10] <8-Async> MICRO: 最後に実行 [Finally]
+👻 [7] <4-Async> MICRO: 実行される [Fulfilled]
+🤪 [8] <5-Async> MICRO: then
+🤪 [10] <7-Async> MICRO: then
+👍 [11] <8-Async> MICRO: 最後に実行 [Finally]
 ```
 
 ## async/await の最適化
