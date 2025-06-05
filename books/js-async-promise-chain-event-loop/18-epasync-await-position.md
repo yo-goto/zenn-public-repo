@@ -152,7 +152,7 @@ randomTimer("1st", "[A-1]")
   .then(() => {
     console.log("randomTimer chainの１つ目が完了しました");
     return randomTimer("2nd", "[A-4]")
-  });
+  })
   .then(val => console.log("👦 [A-5]", val))
   .then(() => console.log("👦 [A-6]"))
   .then(() => {
@@ -683,9 +683,9 @@ function pTimer(time, order) {
 
 `Promise.race()` を使う目的は複数の Promise 処理を競争させて最初に完了したものの後に何かするということです。より分かりやすく考えると、例えば `fetch()` メソッドなら複数のリソースから同時にデータフェッチさせて一番最初に取得できたデータだけを表示させるなどがやりたい時に利用します。しかし、一番最初に完了したもの以外の `fetch()` はどうなるでしょうか。上の `raceTime.js` のコードで見たように「投げっぱなし」となり、利用する async 関数自体が完了した後になってから投げっぱなしになった処理が完了します。
 
-投げっぱなしになっている処理は気持ち悪いので `Promise.reace()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぐため一番最初に完了したもの以外を停止させます。
+投げっぱなしになっている処理は気持ち悪いので `Promise.race()` が完了したら全部キャンセルすることを考えます。例えば、複数のリソースからデータフェッチをして一番最初に完了したものしか使わない場合は環境がバックグラウンドで行っている他のすべての `fetch()` を無駄なので止めたいとか、async 関数の外側で投げっぱなしになった処理によってあとから副作用のようになって制御できないような場合を防ぐため一番最初に完了したもの以外を停止させます。
 
-一旦 Promise 処理から離れると、`setTimeout()` API は `clearTimeout()` API を利用することで停止を実現できます。`setTimeout()` からは戻りとしてタイマーの ID である数値が返ってくるのでそれを `clearTimeout()` に入力として渡すことでタイマーをキャンセルできます。
+一旦 Promise 処理から離れると、`setTimeout()` API は `clearTimeout()` API を利用することで停止を実現できます。`setTimeout()` からは戻り値としてタイマーの ID である数値が返ってくるのでそれを `clearTimeout()` に入力として渡すことでタイマーをキャンセルできます。
 
 ```js
 const timerId = setTimeout(() => console.log("🥺 これは出力されないよ"), 1000);
@@ -774,8 +774,8 @@ setTimeout(() => {
 ```sh
 ❯ deno run -A fetchAbort.js
 fetchを開始します
-時間切れなのでフェッチをキャンセルしました
 DOMException: The signal has been aborted
+時間切れなのでフェッチをキャンセルしました
 ```
 
 `signal.aborted` ですでに `controller.abort()` によって `abort` イベントが発火されたかどうかを確認できます。また、`signal.addEventListener("abort", eventhandler)` で `abort` イベントをリスンしてハンドルできます。
