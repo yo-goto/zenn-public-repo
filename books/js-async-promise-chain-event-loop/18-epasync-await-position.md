@@ -774,8 +774,8 @@ setTimeout(() => {
 ```sh
 ❯ deno run -A fetchAbort.js
 fetchを開始します
-時間切れなのでフェッチをキャンセルしました
 DOMException: The signal has been aborted
+時間切れなのでフェッチをキャンセルしました
 ```
 
 `signal.aborted` ですでに `controller.abort()` によって `abort` イベントが発火されたかどうかを確認できます。また、`signal.addEventListener("abort", eventhandler)` で `abort` イベントをリスンしてハンドルできます。
