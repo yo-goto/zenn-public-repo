@@ -197,7 +197,7 @@ const result = array.reduce((
 }, initialValue); // 初期値(最初の previousValue)
 ```
 
-例えば、1000 という数値に対して配列内の各数値を足した値を算出します。`reduce()` メソッドの第二引数に初期値を渡すと、その初期値が最初のコールバック処理の `prviousValue` として与えられます。
+例えば、1000 という数値に対して配列内の各数値を足した値を算出します。`reduce()` メソッドの第二引数に初期値を渡すと、その初期値が最初のコールバック処理の `previousValue` として与えられます。
 
 ```js
 const startVal = 1000;
@@ -206,7 +206,7 @@ const result = array.reduce((previousValue, currentItem) => {
   return previousValue + currentItem;
   // 最初 1000 + 1 = 1001 が返却される
   // 次 1001 + 2 = 1003 が返却される
-  // 最後 1003 + 4 = 1006 が返却される
+  // 最後 1003 + 3 = 1006 が返却される
 }, startVal);
 console.log(result); //=>  1006
 ```
