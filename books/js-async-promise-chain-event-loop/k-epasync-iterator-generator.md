@@ -184,7 +184,7 @@ console.log(iterator.next()); //  => { value: undefined, done: true }
 
 先程定義したイテラブルオブジェクトを実際に `while` ループで `done` プロパティが `true` になるまで反復処理を行ってみましょう。
 
-```js:sympleIterable.js
+```js:simpleIterable.js
 const iterableObject = {
   [Symbol.iterator]() {
     let count = 0;
@@ -230,7 +230,7 @@ while (true) {
 }
 ```
 
-そこで ES2015 で追加された `for...of` の構文を利用します。この構文は上のような処理の手続きをまとめて行ってくれるのでイテレータから値を反復して取り出すのが簡単にできます(実際には、「`for...or` 構文を使えるのがイテラブルオブジェクト」という認識で良いです)。
+そこで ES2015 で追加された `for...of` の構文を利用します。この構文は上のような処理の手続きをまとめて行ってくれるのでイテレータから値を反復して取り出すのが簡単にできます(実際には、「`for...of` 構文を使えるのがイテラブルオブジェクト」という認識で良いです)。
 
 https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...of
 
@@ -653,8 +653,7 @@ console.log(gen.next()); // => { value: C, done: false }
 console.log(gen.next()); // => { value: undefined, done: true }
 ```
 
-上のジェネレータ関数を `yield` のみで書くと次のようになります。`yield*` はイテラブルなオブジェクトの要素に対する連続的な `yield` を
-yield await Promise.resolve(2);表現していると捉えられます。
+上のジェネレータ関数を `yield` のみで書くと次のようになります。`yield*` はイテラブルなオブジェクトの要素に対する連続的な `yield` を表現していると捉えられます。
 
 ```js
 function* genFnA() {
