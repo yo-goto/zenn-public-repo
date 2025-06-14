@@ -258,11 +258,11 @@ function generalPromise<Type>( // Type は型変数
 
 ```ts
 // オブジェクトの型 { key: string } を型引数として指定
-generalProimse<{ key: string }>({ key: "value" })
+generalPromise<{ key: string }>({ key: "value" })
   .then(val => console.log(val));
 
 // 型引数を省略しても引数から型推論してくれる
-generalProimse({ key: "value" })
+generalPromise({ key: "value" })
   .then(val => console.log(val));
 ```
 
@@ -403,14 +403,14 @@ const p = new Promise<number>(resolve => resolve(42));
 const p1 = new Promise<void>(resolve => resolve());
 ```
 
-さて、ジェネリック関数での定義がわかったところで Proimse-based なタイマーである `pTimer()` に対して TypeScript で型注釈を加えてみます。
+さて、ジェネリック関数での定義がわかったところで Promise-based なタイマーである `pTimer()` に対して TypeScript で型注釈を加えてみます。
 
 ```js:JavaScript
 function pTimer(time) {
   return new Promise(resolve => setTimeout(() => {
     console.log(`${time}[ms]でタイムアウトしました`);
     resolve(time);
-  }), time);
+  }, time));
 }
 ```
 
